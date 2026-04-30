@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GiveCentral Atlas — Campaign Overview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --navy:        #0E1E35; --navy-2:     #152844; --navy-3:     #1E3A5F;
+      --blue:        #2563EB; --blue-mid:   #3B82F6; --blue-light: #DBEAFE; --blue-pale:  #EFF6FF;
+      --green:       #15803D; --green-light:#DCFCE7;
+      --amber:       #D97706; --amber-light:#FEF3C7;
+      --rose:        #BE185D; --rose-light: #FCE7F3;
+      --teal:        #0D9488; --teal-light: #CCFBF1;
+      --purple:      #7C3AED; --purple-light:#EDE9FE;
+      --text:        #0F172A; --text-2:     #334155; --text-3:     #64748B;
+      --border:      #E2E8F0; --surface:    #F8FAFC; --white:      #FFFFFF;
+    }
+    html { font-size: 14px; -webkit-font-smoothing: antialiased; }
+    body { font-family: 'DM Sans', sans-serif; background: #F0F4F8; color: var(--text); min-height: 100vh; display: flex; overflow: hidden; height: 100vh; }
+
+    /* ── SIDEBAR ── */
+    .sidebar { width: 220px; background: var(--navy); height: 100vh; display: flex; flex-direction: column; flex-shrink: 0; overflow-y: auto; }
+    .sidebar-logo { padding: 18px 18px 14px; display: flex; align-items: center; gap: 9px; border-bottom: 1px solid rgba(255,255,255,.08); }
+    .logo-mark { width: 30px; height: 30px; background: var(--blue); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+    .logo-mark svg { width: 15px; height: 15px; }
+    .logo-name { font-family: 'DM Serif Display', serif; font-size: 15px; color: white; line-height: 1; }
+    .logo-sub  { font-size: 9px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.3); margin-top: 3px; }
+    .nav-group { padding: 10px 8px 0; }
+    .nav-label { font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.28); padding: 0 10px; margin-bottom: 4px; }
+    .nav-item  { display: flex; align-items: center; gap: 9px; padding: 8px 10px; border-radius: 7px; font-size: 12px; font-weight: 500; color: rgba(255,255,255,.55); cursor: pointer; transition: all .15s; margin-bottom: 1px; }
+    .nav-item:hover  { background: rgba(255,255,255,.07); color: rgba(255,255,255,.85); }
+    .nav-item.active { background: var(--blue); color: white; }
+    .nav-item svg    { width: 14px; height: 14px; flex-shrink: 0; }
+    .nav-badge { margin-left: auto; background: rgba(255,255,255,.1); color: rgba(255,255,255,.5); border-radius: 10px; padding: 1px 7px; font-size: 10px; font-weight: 600; }
+    .nav-item.active .nav-badge { background: rgba(255,255,255,.2); color: white; }
+    .sidebar-user { margin-top: auto; padding: 12px; border-top: 1px solid rgba(255,255,255,.08); display: flex; align-items: center; gap: 9px; }
+    .user-avatar { width: 30px; height: 30px; border-radius: 50%; background: var(--blue); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: white; flex-shrink: 0; }
+    .user-name { font-size: 12px; font-weight: 500; color: rgba(255,255,255,.75); }
+    .user-role { font-size: 10px; color: rgba(255,255,255,.35); margin-top: 1px; }
+
+    /* ── MAIN ── */
+    .main { flex: 1; min-width: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+
+    /* Topbar */
+    .topbar { background: white; border-bottom: 1px solid var(--border); padding: 0 24px; height: 52px; display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+    .topbar-icon { width: 28px; height: 28px; background: var(--blue-pale); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+    .topbar-icon svg { width: 14px; height: 14px; color: var(--blue); }
+    .topbar-title { font-size: 15px; font-weight: 600; color: var(--text); }
+    .topbar-sep { width: 1px; height: 18px; background: var(--border); }
+    .topbar-sub { font-size: 12px; color: var(--text-3); }
+    .topbar-right { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+    .tb-btn { padding: 6px 14px; border-radius: 7px; font-size: 12px; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .15s; display: flex; align-items: center; gap: 6px; }
+    .tb-btn svg { width: 12px; height: 12px; }
+    .tb-ghost  { background: none; border: 1px solid var(--border); color: var(--text-2); }
+    .tb-ghost:hover { background: var(--surface); border-color: #94A3B8; }
+    .tb-primary { background: var(--blue); border: none; color: white; box-shadow: 0 1px 4px rgba(37,99,235,.3); }
+    .tb-primary:hover { background: #1D4ED8; }
+
+    /* ── CONTENT AREA ── */
+    .content { flex: 1; overflow-y: auto; padding: 20px 24px 32px; display: flex; flex-direction: column; gap: 16px; }
+
+    /* ── PORTFOLIO BANNER ── */
+    .portfolio-banner { background: var(--navy); border-radius: 14px; padding: 20px 26px; position: relative; overflow: hidden; flex-shrink: 0; }
+    .pb-bg { position: absolute; inset: 0; background: radial-gradient(circle at 88% 50%, rgba(37,99,235,.22) 0%, transparent 55%), radial-gradient(circle at 8% 80%, rgba(13,148,136,.1) 0%, transparent 50%); }
+    .pb-inner { position: relative; z-index: 1; display: flex; align-items: center; gap: 24px; }
+    .pb-left { flex: 1; }
+    .pb-eyebrow { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: rgba(255,255,255,.4); margin-bottom: 6px; }
+    .pb-title { font-family: 'DM Serif Display', serif; font-size: 20px; color: white; margin-bottom: 12px; letter-spacing: -.01em; }
+    .pb-progress { }
+    .pb-track { height: 8px; background: rgba(255,255,255,.1); border-radius: 4px; overflow: visible; position: relative; margin-bottom: 8px; }
+    .pb-fill { height: 100%; border-radius: 4px; background: var(--blue-mid); position: relative; transition: width 1.2s ease; }
+    .pb-pace-marker { position: absolute; top: -4px; width: 2px; height: 16px; background: rgba(255,255,255,.5); border-radius: 1px; }
+    .pb-pace-label { position: absolute; top: -22px; font-size: 9px; color: rgba(255,255,255,.5); transform: translateX(-50%); white-space: nowrap; }
+    .pb-totals { display: flex; justify-content: space-between; font-size: 11px; color: rgba(255,255,255,.5); }
+    .pb-raised { font-family: 'DM Serif Display', serif; font-size: 26px; color: white; letter-spacing: -.02em; }
+    .pb-stats { display: flex; gap: 0; border-left: 1px solid rgba(255,255,255,.1); padding-left: 24px; }
+    .pb-stat { padding: 0 18px; border-right: 1px solid rgba(255,255,255,.1); text-align: center; }
+    .pb-stat:last-child { border-right: none; }
+    .pb-stat-val { font-family: 'DM Serif Display', serif; font-size: 20px; color: white; line-height: 1; }
+    .pb-stat-val.amber { color: #FCD34D; }
+    .pb-stat-val.rose  { color: #FDA4AF; }
+    .pb-stat-val.green { color: #86EFAC; }
+    .pb-stat-lbl { font-size: 9px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: rgba(255,255,255,.4); margin-top: 4px; }
+
+    /* ── CONTROLS BAR ── */
+    .controls-bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; background: white; border: 1px solid var(--border); border-radius: 10px; padding: 10px 16px; flex-shrink: 0; }
+    .ctrl-label { font-size: 11px; font-weight: 600; color: var(--text-3); white-space: nowrap; }
+    .ctrl-select { border: 1.5px solid var(--border); border-radius: 7px; padding: 5px 26px 5px 10px; font-size: 12px; color: var(--text-2); outline: none; background: var(--surface); font-family: 'DM Sans', sans-serif; cursor: pointer; transition: border-color .15s; -webkit-appearance: none; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath d='M2 3.5l3 3 3-3' stroke='%2364748B' stroke-width='1.3' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; }
+    .ctrl-select:focus { border-color: var(--blue); }
+    .ctrl-sep { width: 1px; height: 22px; background: var(--border); margin: 0 4px; }
+    .view-toggle { display: flex; background: var(--surface); border: 1px solid var(--border); border-radius: 7px; overflow: hidden; }
+    .vt-btn { padding: 5px 11px; font-size: 11px; font-weight: 500; color: var(--text-3); cursor: pointer; border: none; background: none; font-family: 'DM Sans', sans-serif; transition: all .15s; display: flex; align-items: center; gap: 4px; }
+    .vt-btn svg { width: 12px; height: 12px; }
+    .vt-btn.active { background: white; color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+    .status-pills { display: flex; gap: 5px; }
+    .sp { padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 500; border: 1px solid var(--border); color: var(--text-3); cursor: pointer; background: white; transition: all .15s; user-select: none; }
+    .sp:hover { border-color: #94A3B8; color: var(--text-2); }
+    .sp.active { background: var(--blue); color: white; border-color: var(--blue); font-weight: 600; }
+
+    /* ── MAIN GRID: TABLE + GURU ── */
+    .main-grid { display: grid; grid-template-columns: 1fr 300px; gap: 14px; flex: 1; min-height: 0; }
+
+    /* ── CAMPAIGN TABLE ── */
+    .campaign-table-card { background: white; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; }
+    .ct-head { padding: 12px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .ct-title { font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--text-3); }
+    .ct-count { font-size: 11px; color: var(--text-3); }
+
+    .ct-table { width: 100%; border-collapse: collapse; }
+    .ct-table thead tr { background: var(--surface); }
+    .ct-table th { font-size: 10px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--text-3); padding: 8px 14px; text-align: left; border-bottom: 1px solid var(--border); white-space: nowrap; cursor: pointer; user-select: none; }
+    .ct-table th:hover { color: var(--blue); }
+    .ct-table th.sorted { color: var(--blue); }
+    .sort-arr { font-size: 10px; margin-left: 3px; }
+    .ct-table td { padding: 0; border-bottom: .5px solid var(--border); vertical-align: middle; }
+    .ct-table tr:last-child td { border-bottom: none; }
+    .ct-table tr { cursor: pointer; transition: background .1s; }
+    .ct-table tr:hover td { background: var(--blue-pale); }
+    .ct-table tr.selected td { background: #EFF6FF; }
+    .ct-table tr.selected td:first-child { box-shadow: inset 3px 0 0 var(--blue); }
+
+    .td-inner { padding: 12px 14px; }
+
+    /* Campaign name cell */
+    .camp-name-cell { display: flex; align-items: center; gap: 11px; }
+    .camp-icon { width: 32px; height: 32px; border-radius: 9px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .camp-icon svg { width: 14px; height: 14px; }
+    .camp-name { font-size: 13px; font-weight: 500; color: var(--text); line-height: 1.3; }
+    .camp-type { font-size: 10px; color: var(--text-3); margin-top: 2px; }
+
+    /* Dual progress bar */
+    .dual-prog { width: 140px; }
+    .dual-prog-track { height: 5px; background: var(--border); border-radius: 3px; overflow: visible; position: relative; margin-bottom: 4px; }
+    .dual-prog-fill { height: 100%; border-radius: 3px; position: absolute; top: 0; left: 0; transition: width .8s ease; }
+    .dual-prog-pace { position: absolute; top: -3px; width: 2px; height: 11px; border-radius: 1px; background: var(--text-3); opacity: .6; }
+    .dual-prog-labels { display: flex; justify-content: space-between; font-size: 9px; color: var(--text-3); }
+    .dual-prog-labels span.ahead { color: var(--green); font-weight: 600; }
+    .dual-prog-labels span.behind { color: var(--rose); font-weight: 600; }
+
+    /* Status badge */
+    .status-pill { display: inline-flex; align-items: center; gap: 4px; padding: 3px 9px; border-radius: 20px; font-size: 10px; font-weight: 700; white-space: nowrap; }
+    .s-on    { background: var(--green-light); color: var(--green); }
+    .s-risk  { background: var(--amber-light); color: var(--amber); }
+    .s-behind{ background: var(--rose-light);  color: var(--rose); }
+    .s-done  { background: var(--blue-light);  color: #1D4ED8; }
+    .s-dot   { width: 5px; height: 5px; border-radius: 50%; }
+
+    /* ── GURU AI PANEL ── */
+    .guru-panel { background: var(--navy); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; }
+    .guru-header { padding: 14px 16px; border-bottom: 1px solid rgba(255,255,255,.08); display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+    .guru-icon { width: 28px; height: 28px; background: var(--purple); border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .guru-icon svg { width: 13px; height: 13px; }
+    .guru-title { font-size: 13px; font-weight: 600; color: white; }
+    .guru-sub   { font-size: 10px; color: rgba(255,255,255,.4); margin-top: 1px; }
+    .guru-body  { flex: 1; overflow-y: auto; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; }
+    .guru-insight { padding: 11px 12px; background: rgba(255,255,255,.06); border-radius: 9px; }
+    .gi-type { font-size: 9px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 6px; }
+    .git-pacing  { color: #FCA5A5; }
+    .git-overlap { color: #93C5FD; }
+    .git-lybunt  { color: #FCD34D; }
+    .git-pledge  { color: #86EFAC; }
+    .gi-text { font-size: 11px; color: rgba(255,255,255,.72); line-height: 1.55; }
+    .gi-text strong { color: white; font-weight: 600; }
+    .gi-action { margin-top: 8px; }
+    .gi-action button { font-size: 10px; font-weight: 600; color: #93C5FD; background: rgba(37,99,235,.2); border: 1px solid rgba(37,99,235,.35); border-radius: 6px; padding: 4px 10px; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .15s; }
+    .gi-action button:hover { background: rgba(37,99,235,.35); color: white; }
+    .guru-query-wrap { padding: 10px 14px; border-top: 1px solid rgba(255,255,255,.08); flex-shrink: 0; }
+    .guru-query-bar { display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 8px; padding: 8px 11px; }
+    .guru-query-bar input { flex: 1; background: none; border: none; outline: none; font-size: 12px; color: rgba(255,255,255,.7); font-family: 'DM Sans', sans-serif; }
+    .guru-query-bar input::placeholder { color: rgba(255,255,255,.3); }
+    .guru-send { width: 24px; height: 24px; background: var(--purple); border-radius: 6px; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: background .15s; }
+    .guru-send:hover { background: #6D28D9; }
+    .guru-send svg { width: 11px; height: 11px; }
+
+    /* ── DETAIL DRAWER ── */
+    .detail-drawer { width: 340px; flex-shrink: 0; background: white; border-left: 1px solid var(--border); height: 100%; overflow-y: auto; transition: width .25s ease, opacity .25s; display: flex; flex-direction: column; }
+    .detail-drawer.closed { width: 0; opacity: 0; overflow: hidden; pointer-events: none; }
+    .dd-header { padding: 14px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; gap: 10px; flex-shrink: 0; }
+    .dd-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .dd-icon svg { width: 16px; height: 16px; }
+    .dd-name { font-size: 14px; font-weight: 600; color: var(--text); line-height: 1.3; }
+    .dd-type { font-size: 11px; color: var(--text-3); margin-top: 3px; }
+    .dd-close { width: 26px; height: 26px; border: 1px solid var(--border); border-radius: 7px; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-left: auto; transition: background .15s; flex-shrink: 0; }
+    .dd-close:hover { background: var(--surface); }
+    .dd-close svg { width: 11px; height: 11px; }
+    .dd-section { padding: 14px 18px; border-bottom: 1px solid var(--border); }
+    .dds-title { font-size: 10px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--text-3); margin-bottom: 10px; }
+
+    /* Goal gauge in drawer */
+    .gauge-wrap { display: flex; flex-direction: column; align-items: center; }
+    .gauge-svg { width: 140px; height: 78px; }
+    .gauge-val { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--text); text-align: center; margin-top: -2px; }
+    .gauge-sub { font-size: 11px; color: var(--text-3); text-align: center; margin-top: 2px; }
+    .gauge-stats { display: flex; gap: 10px; margin-top: 12px; width: 100%; }
+    .gs { flex: 1; background: var(--surface); border-radius: 8px; padding: 8px 10px; }
+    .gs-lbl { font-size: 10px; color: var(--text-3); margin-bottom: 3px; }
+    .gs-val { font-size: 14px; font-weight: 600; color: var(--text); }
+    .gs-val.amber { color: var(--amber); }
+
+    /* Pacing indicator */
+    .pacing-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .pacing-label { font-size: 12px; color: var(--text-2); }
+    .pacing-badge { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px; }
+    .pb-ahead  { background: var(--green-light); color: var(--green); }
+    .pb-risk   { background: var(--amber-light); color: var(--amber); }
+    .pb-behind { background: var(--rose-light);  color: var(--rose); }
+    .pacing-track { height: 6px; background: var(--border); border-radius: 3px; overflow: visible; position: relative; margin-bottom: 5px; }
+    .pacing-fill  { height: 100%; border-radius: 3px; position: absolute; top: 0; left: 0; }
+    .pacing-marker { position: absolute; top: -4px; width: 2px; height: 14px; border-radius: 1px; background: var(--text-3); }
+    .pacing-key { display: flex; justify-content: space-between; font-size: 9px; color: var(--text-3); }
+
+    /* Mini bar chart in drawer */
+    .mini-bars { display: flex; align-items: flex-end; gap: 3px; height: 60px; margin-bottom: 6px; }
+    .mb { flex: 1; border-radius: 2px 2px 0 0; min-height: 2px; cursor: pointer; transition: opacity .15s; }
+    .mb:hover { opacity: .7; }
+    .mb.current { background: var(--blue); }
+    .mb.past    { background: var(--blue-light); }
+    .mini-labels { display: flex; justify-content: space-between; font-size: 9px; color: var(--text-3); }
+
+    /* Parish leaderboard in drawer */
+    .parish-list { display: flex; flex-direction: column; gap: 6px; }
+    .parish-row { display: flex; align-items: center; gap: 9px; padding: 8px 10px; background: var(--surface); border-radius: 8px; cursor: pointer; transition: background .12s; }
+    .parish-row:hover { background: var(--blue-pale); }
+    .parish-row.you { background: var(--blue-pale); border: 1px solid rgba(37,99,235,.2); }
+    .pr-rank { width: 20px; height: 20px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; flex-shrink: 0; }
+    .r1 { background: var(--amber-light); color: var(--amber); }
+    .r2 { background: var(--surface);     color: var(--text-3); border: 1px solid var(--border); }
+    .r3 { background: var(--surface);     color: var(--text-3); border: 1px solid var(--border); }
+    .pr-name { font-size: 12px; font-weight: 500; color: var(--text); flex: 1; }
+    .pr-you  { font-size: 9px; font-weight: 700; background: var(--blue-light); color: #1D4ED8; border-radius: 10px; padding: 1px 6px; margin-left: 4px; }
+    .pr-amt  { font-size: 12px; font-weight: 600; color: var(--text); }
+    .pr-pct  { font-size: 10px; color: var(--text-3); }
+
+    /* Segment mini grid */
+    .seg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+    .seg-item { background: var(--surface); border-radius: 8px; padding: 9px 11px; }
+    .seg-val { font-size: 18px; font-weight: 600; color: var(--text); font-family: 'DM Serif Display', serif; }
+    .seg-lbl { font-size: 10px; color: var(--text-3); margin-top: 2px; }
+
+    /* Recent gifts */
+    .gift-feed { display: flex; flex-direction: column; }
+    .gift-row { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: .5px solid var(--border); }
+    .gift-row:last-child { border-bottom: none; }
+    .gift-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
+    .gift-name { font-size: 12px; font-weight: 500; color: var(--text); flex: 1; min-width: 0; }
+    .gift-org  { font-size: 10px; color: var(--text-3); }
+    .gift-amt  { font-size: 12px; font-weight: 600; color: var(--green); flex-shrink: 0; }
+    .gift-time { font-size: 10px; color: var(--text-3); }
+
+    /* Drawer CTA */
+    .dd-cta { padding: 14px 18px; display: flex; gap: 8px; flex-shrink: 0; }
+    .dd-cta-btn { flex: 1; padding: 9px; border-radius: 9px; font-size: 12px; font-weight: 600; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all .15s; display: flex; align-items: center; justify-content: center; gap: 5px; }
+    .dd-cta-btn svg { width: 11px; height: 11px; }
+    .dd-primary { background: var(--blue); color: white; border: none; box-shadow: 0 1px 4px rgba(37,99,235,.25); }
+    .dd-primary:hover { background: #1D4ED8; }
+    .dd-ghost { background: none; border: 1px solid var(--border); color: var(--text-2); }
+    .dd-ghost:hover { background: var(--surface); }
+
+    /* Animations */
+    @keyframes fadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+    .portfolio-banner { animation: fadeUp .3s ease forwards; }
+    .controls-bar     { animation: fadeUp .3s ease .04s forwards; opacity: 0; }
+    .main-grid        { animation: fadeUp .3s ease .08s forwards; opacity: 0; }
+    .detail-drawer:not(.closed) { animation: slideIn .25s ease forwards; }
+    @keyframes slideIn { from{opacity:0;transform:translateX(20px)} to{opacity:1;transform:translateX(0)} }
+  </style>
+</head>
+<body>
+
+<!-- ── SIDEBAR ── -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-mark">
+      <svg viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7.5" stroke="white" stroke-width="1.5"/><path d="M5.5 9.5C6.5 11.5 9 13 9 13s2.5-1.5 3.5-3.5S12 5 9 5 4.5 7.5 5.5 9.5z" fill="white" fill-opacity=".9"/></svg>
+    </div>
+    <div><div class="logo-name">GiveCentral</div><div class="logo-sub">Atlas CRM</div></div>
+  </div>
+  <div class="nav-group">
+    <div class="nav-label">Main</div>
+    <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><rect x="1.5" y="1.5" width="4" height="4" rx="1.2"/><rect x="8.5" y="1.5" width="4" height="4" rx="1.2"/><rect x="1.5" y="8.5" width="4" height="4" rx="1.2"/><rect x="8.5" y="8.5" width="4" height="4" rx="1.2"/></svg>Dashboard</div>
+    <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="6" cy="4.5" r="3"/><path d="M1 13c0-2.8 2.2-5 5-5h1c2.8 0 5 2.2 5 5"/></svg>Donors<span class="nav-badge">3,847</span></div>
+    <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M7 1.5v11M2 6.5h10"/></svg>Gifts &amp; pledges</div>
+    <div class="nav-item active"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M1.5 8.5l2.5-2.5 2 2 2.5-2.5 2 2"/><rect x="1.5" y="1.5" width="11" height="11" rx="2"/></svg>Campaigns<span class="nav-badge">9</span></div>
+    <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M1.5 3h11M1.5 7h7M1.5 11h5"/></svg>Reports</div>
+  </div>
+  <div class="nav-group" style="margin-top:8px">
+    <div class="nav-label">Fundraising</div>
+    <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="7" cy="7" r="5.5"/><path d="M7 4v4M7 10v.5"/></svg>Prospect pipeline<span class="nav-badge">28</span></div>
+    <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><rect x="1.5" y="2.5" width="11" height="9" rx="1.5"/><path d="M1.5 6h11M5 2.5v2M9 2.5v2"/></svg>Tasks<span class="nav-badge">7</span></div>
+  </div>
+  <div class="nav-group" style="margin-top:8px">
+    <div class="nav-label">Intelligence</div>
+    <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="7" cy="5" r="3.5"/><path d="M5 10c0 2 4 2 4 0M4.5 8.5c-2 1-3 3.5-3 4.5M9.5 8.5c2 1 3 3.5 3 4.5"/></svg>Guru AI</div>
+  </div>
+  <div class="sidebar-user">
+    <div class="user-avatar">SR</div>
+    <div><div class="user-name">Sarah Reynolds</div><div class="user-role">Development Director</div></div>
+  </div>
+</aside>
+
+<!-- ── MAIN ── -->
+<div class="main" id="main-area">
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="topbar-icon"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M1.5 8.5l2.5-2.5 2 2 2.5-2.5 2 2"/><rect x="1.5" y="1.5" width="11" height="11" rx="2"/></svg></div>
+    <span class="topbar-title">Campaigns</span>
+    <div class="topbar-sep"></div>
+    <span class="topbar-sub">Diocese of St. Petersburg · FY 2026</span>
+    <div class="topbar-right">
+      <button class="tb-btn tb-ghost"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M6 1v7M3 5.5l3 3 3-3"/><path d="M1.5 10.5h9"/></svg>Export</button>
+      <button class="tb-btn tb-primary"><svg viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="1.4" stroke-linecap="round"><path d="M6 1v10M1 6h10"/></svg>New campaign</button>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="content" id="content-area">
+
+    <!-- Portfolio banner -->
+    <div class="portfolio-banner">
+      <div class="pb-bg"></div>
+      <div class="pb-inner">
+        <div class="pb-left">
+          <div class="pb-eyebrow">Diocese of St. Petersburg · FY 2026 portfolio</div>
+          <div class="pb-title">$1.73M raised across 6 active campaigns</div>
+          <div class="pb-progress">
+            <div class="pb-track">
+              <div class="pb-fill" id="pb-fill" style="width:53%"></div>
+              <div class="pb-pace-marker" style="left:49%">
+                <div class="pb-pace-label">Calendar pace (49%)</div>
+              </div>
+            </div>
+            <div class="pb-totals">
+              <span>$1,730,000 raised</span>
+              <span style="color:rgba(255,255,255,.7);font-weight:600">53% of $3.25M goal</span>
+              <span>$1,520,000 remaining</span>
+            </div>
+          </div>
+        </div>
+        <div class="pb-stats">
+          <div class="pb-stat"><div class="pb-stat-val green">4</div><div class="pb-stat-lbl">On pace</div></div>
+          <div class="pb-stat"><div class="pb-stat-val amber">2</div><div class="pb-stat-lbl">At risk</div></div>
+          <div class="pb-stat"><div class="pb-stat-val">4,812</div><div class="pb-stat-lbl">Active donors</div></div>
+          <div class="pb-stat"><div class="pb-stat-val rose">$312K</div><div class="pb-stat-lbl">Pledges due</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls-bar">
+      <span class="ctrl-label">Fiscal year</span>
+      <select class="ctrl-select"><option>FY 2026</option><option>FY 2025</option><option>FY 2024</option><option>All time</option></select>
+      <div class="ctrl-sep"></div>
+      <span class="ctrl-label">Status</span>
+      <div class="status-pills">
+        <div class="sp active" onclick="filterStatus(this,'all')">All (9)</div>
+        <div class="sp" onclick="filterStatus(this,'active')">Active (6)</div>
+        <div class="sp" onclick="filterStatus(this,'upcoming')">Upcoming (2)</div>
+        <div class="sp" onclick="filterStatus(this,'completed')">Completed (1)</div>
+      </div>
+      <div class="ctrl-sep"></div>
+      <select class="ctrl-select"><option>All types</option><option>Annual appeal</option><option>Capital campaign</option><option>Special event</option></select>
+      <div class="ctrl-sep"></div>
+      <div class="view-toggle">
+        <button class="vt-btn active"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M1.5 3h9M1.5 6h9M1.5 9h9"/></svg>Table</button>
+        <button class="vt-btn"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><rect x="1.5" y="1.5" width="4" height="4" rx="1"/><rect x="6.5" y="1.5" width="4" height="4" rx="1"/><rect x="1.5" y="6.5" width="4" height="4" rx="1"/><rect x="6.5" y="6.5" width="4" height="4" rx="1"/></svg>Cards</button>
+      </div>
+    </div>
+
+    <!-- Main grid -->
+    <div class="main-grid">
+
+      <!-- Campaign table -->
+      <div class="campaign-table-card">
+        <div class="ct-head">
+          <span class="ct-title">Campaign health</span>
+          <span class="ct-count" id="ct-count">6 active campaigns</span>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="ct-table" id="campaign-table">
+            <thead>
+              <tr>
+                <th style="width:240px">Campaign</th>
+                <th>Raised</th>
+                <th>Goal</th>
+                <th>Progress &amp; pacing</th>
+                <th onclick="sortBy('status')">Status <span class="sort-arr">↕</span></th>
+                <th onclick="sortBy('days')">Days left <span class="sort-arr">↕</span></th>
+              </tr>
+            </thead>
+            <tbody id="ct-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Guru AI panel -->
+      <div class="guru-panel">
+        <div class="guru-header">
+          <div class="guru-icon"><svg viewBox="0 0 13 13" fill="none" stroke="white" stroke-width="1.3" stroke-linecap="round"><circle cx="6.5" cy="4.5" r="3.5"/><path d="M4.5 9c0 2 4 2 4 0M3.5 8c-2 1-3 3.5-3 4.5M9.5 8c2 1 3 3.5 3 4.5"/></svg></div>
+          <div><div class="guru-title">Guru AI</div><div class="guru-sub">4 portfolio insights today</div></div>
+        </div>
+        <div class="guru-body">
+          <div class="guru-insight">
+            <div class="gi-type git-pacing">Pacing alert</div>
+            <div class="gi-text"><strong>Cathedral Capital Fund</strong> is 18% behind pace — at current trajectory it will reach $723K by year-end, $277K short of goal.</div>
+            <div class="gi-action"><button onclick="">View Cathedral campaign →</button></div>
+          </div>
+          <div class="guru-insight">
+            <div class="gi-type git-overlap">Donor overlap</div>
+            <div class="gi-text"><strong>47 CMA donors</strong> who gave $500+ last year haven't given to the Cathedral Fund yet. Combined 2025 giving: $68K — high conversion potential.</div>
+            <div class="gi-action"><button>Create outreach list →</button></div>
+          </div>
+          <div class="guru-insight">
+            <div class="gi-type git-lybunt">LYBUNT alert</div>
+            <div class="gi-text">Across all active campaigns, <strong>163 LYBUNT donors</strong> gave $124K combined last year but haven't given this year. April 30 is optimal outreach timing.</div>
+            <div class="gi-action"><button>View 163 donors →</button></div>
+          </div>
+          <div class="guru-insight">
+            <div class="gi-type git-pledge">Pledge urgency</div>
+            <div class="gi-text"><strong>$86K in pledge installments</strong> are due in the next 30 days across 4 campaigns. 3 are already overdue by 2–5 days.</div>
+            <div class="gi-action"><button>Review overdue pledges →</button></div>
+          </div>
+        </div>
+        <div class="guru-query-wrap">
+          <div class="guru-query-bar">
+            <input type="text" placeholder="Ask about any campaign…" id="guru-input" onkeydown="if(event.key==='Enter')handleGuruQuery()">
+            <button class="guru-send" onclick="handleGuruQuery()"><svg viewBox="0 0 11 11" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round"><path d="M1 5.5h9M6.5 2.5L9.5 5.5l-3 3"/></svg></button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ── DETAIL DRAWER ── -->
+<div class="detail-drawer closed" id="detail-drawer">
+  <div class="dd-header" id="dd-header">
+    <div class="dd-icon" id="dd-icon" style="background:#E8F0FB"><svg viewBox="0 0 14 14" fill="none" stroke="#2563EB" stroke-width="1.5" stroke-linecap="round"><path d="M7 1v12M3 5h8"/></svg></div>
+    <div><div class="dd-name" id="dd-name">Campaign name</div><div class="dd-type" id="dd-type">Campaign type</div></div>
+    <div class="dd-close" onclick="closeDrawer()"><svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 2l7 7M9 2l-7 7"/></svg></div>
+  </div>
+  <div id="dd-body" style="flex:1;overflow-y:auto;display:flex;flex-direction:column"></div>
+  <div class="dd-cta">
+    <button class="dd-cta-btn dd-primary"><svg viewBox="0 0 11 11" fill="none" stroke="white" stroke-width="1.4" stroke-linecap="round"><path d="M1.5 8.5l2-2 1.5 1.5 2-2 1.5 1.5"/><rect x="1.5" y="2" width="8" height="7" rx="1.2"/></svg>Full campaign portal</button>
+    <button class="dd-cta-btn dd-ghost"><svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M5.5 1v7M2.5 5l3 3 3-3"/><path d="M1 9.5h9"/></svg>Export PDF</button>
+  </div>
+</div>
+
+<script>
+/* ── DATA ── */
+const CAMPAIGNS = [
+  {
+    id:1, name:"Catholic Ministry Appeal 2026", type:"Annual appeal",
+    raised:1248000, goal:1600000, pct:78, calPct:64, days:88,
+    status:"on", statusLabel:"On track",
+    iconBg:"#E8F0FB", iconStroke:"#2563EB",
+    months:[820,940,1120,980,890,940,790,880,880,920,1010,1780],
+    parishes:[{r:1,name:"Cathedral of St. Jude",amt:"$184K",pct:94},{r:2,name:"Holy Cross",amt:"$97K",pct:88},{r:3,name:"St. Anthony's",amt:"$72K",pct:82},{r:4,name:"St. Michael's",amt:"$54K",pct:69,you:true},{r:5,name:"San Juan Diego",amt:"$49K",pct:65}],
+    segs:{active:3847,lybunt:163,recurring:892,new:214},
+    gifts:[{name:"James O'Brien",org:"Cathedral",amt:"$10,000",time:"2h ago"},{name:"Margaret Sullivan",org:"St. Michael's",amt:"$2,500",time:"3h ago"},{name:"Patricia Kim",org:"Holy Cross",amt:"$500",time:"5h ago"}],
+    pledgeOverdue:3, pledgeAmt:"$43,800",
+  },
+  {
+    id:2, name:"Cathedral Capital Fund", type:"Capital campaign",
+    raised:430000, goal:1000000, pct:43, calPct:61, days:212,
+    status:"risk", statusLabel:"At risk",
+    iconBg:"#EDE9FE", iconStroke:"#7C3AED",
+    months:[210,280,340,260,230,250,210,230,230,240,260,460],
+    parishes:[{r:1,name:"Cathedral of St. Jude",amt:"$312K",pct:78},{r:2,name:"St. Michael's",amt:"$48K",pct:24,you:true},{r:3,name:"Holy Cross",amt:"$42K",pct:21},{r:4,name:"Diocese Direct",amt:"$28K",pct:14}],
+    segs:{active:1240,lybunt:47,recurring:312,new:88},
+    gifts:[{name:"Morrison Foundation",org:"Corporate gift",amt:"$100,000",time:"1d ago"},{name:"Thomas Kowalski",org:"St. Michael's",amt:"$5,000",time:"2d ago"}],
+    pledgeOverdue:1, pledgeAmt:"$28,000",
+  },
+  {
+    id:3, name:"Marian Congress 2026", type:"Special event",
+    raised:45500, goal:50000, pct:91, calPct:95, days:14,
+    status:"on", statusLabel:"On track",
+    iconBg:"#CCFBF1", iconStroke:"#0D9488",
+    months:[12,18,32,24,22,24,20,22,22,24,26,0],
+    parishes:[{r:1,name:"St. Michael's",amt:"$18K",pct:96,you:true},{r:2,name:"Cathedral",amt:"$16K",pct:88},{r:3,name:"Holy Cross",amt:"$12K",pct:82}],
+    segs:{active:428,lybunt:18,recurring:124,new:56},
+    gifts:[{name:"Elena Ramirez",org:"St. Michael's",amt:"$1,000",time:"1h ago"},{name:"Barbara Costello",org:"Holy Cross",amt:"$500",time:"4h ago"}],
+    pledgeOverdue:0, pledgeAmt:"$4,200",
+  },
+  {
+    id:4, name:"Youth Ministry Retreat Fund", type:"Special event",
+    raised:31000, goal:50000, pct:62, calPct:58, days:62,
+    status:"on", statusLabel:"On track",
+    iconBg:"#DCFCE7", iconStroke:"#15803D",
+    months:[8,12,18,14,12,14,10,12,12,14,16,0],
+    parishes:[{r:1,name:"St. Michael's",amt:"$14K",pct:74,you:true},{r:2,name:"Holy Family",amt:"$10K",pct:62},{r:3,name:"San Juan Diego",amt:"$7K",pct:48}],
+    segs:{active:312,lybunt:22,recurring:88,new:34},
+    gifts:[{name:"Carlos Mendez",org:"San Juan Diego",amt:"$350",time:"6h ago"},{name:"Youth Group",org:"St. Michael's",amt:"$250",time:"8h ago"}],
+    pledgeOverdue:0, pledgeAmt:"$2,100",
+  },
+  {
+    id:5, name:"Blessed Trinity School Campaign", type:"Annual appeal",
+    raised:88000, goal:140000, pct:63, calPct:72, days:44,
+    status:"risk", statusLabel:"At risk",
+    iconBg:"#FEF3C7", iconStroke:"#D97706",
+    months:[28,36,48,38,34,38,30,34,34,36,40,0],
+    parishes:[{r:1,name:"Holy Cross",amt:"$48K",pct:74},{r:2,name:"St. Michael's",amt:"$24K",pct:60,you:true},{r:3,name:"Cathedral",amt:"$16K",pct:44}],
+    segs:{active:724,lybunt:58,recurring:186,new:42},
+    gifts:[{name:"Kowalski Family",org:"Holy Cross",amt:"$5,000",time:"1d ago"},{name:"Angela Liu",org:"Cathedral",amt:"$750",time:"2d ago"}],
+    pledgeOverdue:2, pledgeAmt:"$12,800",
+  },
+  {
+    id:6, name:"Archdiocese Annual Fund 2025", type:"Annual appeal",
+    raised:310000, goal:310000, pct:100, calPct:100, days:0,
+    status:"done", statusLabel:"Completed",
+    iconBg:"#DBEAFE", iconStroke:"#1D4ED8",
+    months:[82,98,140,112,102,114,88,102,102,112,122,236],
+    parishes:[{r:1,name:"Cathedral",amt:"$124K",pct:100},{r:2,name:"Holy Cross",amt:"$86K",pct:100},{r:3,name:"St. Michael's",amt:"$62K",pct:100,you:true}],
+    segs:{active:2180,lybunt:0,recurring:512,new:178},
+    gifts:[{name:"Campaign complete",org:"",amt:"$310,000",time:"Dec 31"}],
+    pledgeOverdue:0, pledgeAmt:"$0",
+  },
+];
+
+let selectedId = null;
+let currentFilter = 'all';
+
+/* ── RENDER TABLE ── */
+function renderTable() {
+  const body = document.getElementById('ct-body');
+  const filtered = currentFilter === 'all' ? CAMPAIGNS
+    : currentFilter === 'active'    ? CAMPAIGNS.filter(c => c.status !== 'done' && c.days > 0)
+    : currentFilter === 'upcoming'  ? CAMPAIGNS.filter(c => c.days > 180)
+    : currentFilter === 'completed' ? CAMPAIGNS.filter(c => c.status === 'done')
+    : CAMPAIGNS;
+
+  document.getElementById('ct-count').textContent = filtered.length + ' campaign' + (filtered.length!==1?'s':'');
+
+  body.innerHTML = filtered.map(c => {
+    const isPace = c.pct >= c.calPct;
+    const diff = c.pct - c.calPct;
+    const diffLabel = diff > 0 ? `+${diff}% ahead` : diff < 0 ? `${diff}% behind` : 'on pace';
+    const diffCls  = diff > 0 ? 'ahead' : diff < 0 ? 'behind' : '';
+    const sCls = c.status==='on'?'s-on':c.status==='risk'?'s-risk':c.status==='behind'?'s-behind':'s-done';
+    const sDot = c.status==='on'?'var(--green)':c.status==='risk'?'var(--amber)':c.status==='behind'?'var(--rose)':'#1D4ED8';
+    const isSelected = c.id === selectedId;
+    const raised = c.raised >= 1e6 ? '$'+(c.raised/1e6).toFixed(2)+'M' : '$'+(c.raised/1000).toFixed(0)+'K';
+    const goal   = c.goal >= 1e6   ? '$'+(c.goal/1e6).toFixed(1)+'M'   : '$'+(c.goal/1000).toFixed(0)+'K';
+    const barColor = c.status==='on'?'var(--blue)':c.status==='risk'?'var(--amber)':'var(--rose)';
+    return `<tr class="${isSelected?'selected':''}" onclick="openDrawer(${c.id})">
+      <td><div class="td-inner">
+        <div class="camp-name-cell">
+          <div class="camp-icon" style="background:${c.iconBg}"><svg viewBox="0 0 14 14" fill="none" stroke="${c.iconStroke}" stroke-width="1.5" stroke-linecap="round"><path d="M7 1v12M3 5h8"/></svg></div>
+          <div><div class="camp-name">${c.name}</div><div class="camp-type">${c.type}</div></div>
+        </div>
+      </div></td>
+      <td><div class="td-inner" style="font-weight:600;color:var(--text)">${raised}</div></td>
+      <td><div class="td-inner" style="color:var(--text-3)">${goal}</div></td>
+      <td><div class="td-inner">
+        <div class="dual-prog">
+          <div class="dual-prog-track">
+            <div class="dual-prog-fill" style="width:${c.pct}%;background:${barColor}"></div>
+            <div class="dual-prog-pace" style="left:${c.calPct}%"></div>
+          </div>
+          <div class="dual-prog-labels">
+            <span>${c.pct}% funded</span>
+            <span class="${diffCls}">${diffLabel}</span>
+          </div>
+        </div>
+      </div></td>
+      <td><div class="td-inner"><span class="status-pill ${sCls}"><span class="status-dot s-dot" style="background:${sDot}"></span>${c.statusLabel}</span></div></td>
+      <td><div class="td-inner" style="font-weight:500;color:${c.days===0?'var(--text-3)':'var(--text)'}">${c.days===0?'—':c.days+'d'}</div></td>
+    </tr>`;
+  }).join('');
+}
+
+/* ── DETAIL DRAWER ── */
+function openDrawer(id) {
+  selectedId = id;
+  renderTable();
+  const c = CAMPAIGNS.find(x => x.id === id);
+  const drawer = document.getElementById('detail-drawer');
+  drawer.classList.remove('closed');
+
+  document.getElementById('dd-icon').style.background = c.iconBg;
+  document.getElementById('dd-icon').querySelector('svg').style.stroke = c.iconStroke;
+  document.getElementById('dd-name').textContent = c.name;
+  document.getElementById('dd-type').textContent = c.type + ' · ' + (c.days===0 ? 'Completed' : c.days + ' days remaining');
+
+  const pct = c.pct; const cal = c.calPct; const diff = pct - cal;
+  const pBadge = diff > 3 ? `<span class="pacing-badge pb-ahead">+${diff}% ahead of pace</span>`
+                : diff < -5 ? `<span class="pacing-badge pb-behind">${diff}% behind pace</span>`
+                : `<span class="pacing-badge pb-risk">Within ${Math.abs(diff)}% of pace</span>`;
+
+  const maxM = Math.max(...c.months);
+  const bars = c.months.map((v,i) => {
+    const h = maxM>0 ? Math.max((v/maxM)*52,2) : 2;
+    const isCurr = i === new Date().getMonth();
+    return `<div class="mb ${isCurr?'current':'past'}" style="height:${h}px"></div>`;
+  }).join('');
+
+  const rnks = ['r1','r2','r3','r2','r2'];
+  const parishRows = c.parishes.map((p,i) => `
+    <div class="parish-row ${p.you?'you':''}">
+      <div class="pr-rank ${rnks[i]||'r2'}">${p.r}</div>
+      <div class="pr-name">${p.name}${p.you?'<span class="pr-you">You</span>':''}</div>
+      <div><div class="pr-amt">${p.amt}</div><div class="pr-pct">${p.pct}%</div></div>
+    </div>`).join('');
+
+  const giftRows = c.gifts.map(g => `
+    <div class="gift-row">
+      <div class="gift-dot"></div>
+      <div><div class="gift-name">${g.name}</div><div class="gift-org">${g.org}</div></div>
+      <div style="text-align:right"><div class="gift-amt">${g.amt}</div><div class="gift-time">${g.time}</div></div>
+    </div>`).join('');
+
+  const raised = c.raised >= 1e6 ? '$'+(c.raised/1e6).toFixed(2)+'M' : '$'+(c.raised/1000).toFixed(0)+'K';
+  const remaining = ((c.goal - c.raised)/1000).toFixed(0);
+
+  document.getElementById('dd-body').innerHTML = `
+    <div class="dd-section">
+      <div class="dds-title">Goal progress</div>
+      <div class="gauge-wrap">
+        <svg class="gauge-svg" viewBox="0 0 140 78">
+          <path d="M 18 74 A 52 52 0 0 1 122 74" fill="none" stroke="var(--border)" stroke-width="10" stroke-linecap="round"/>
+          <path d="M 18 74 A 52 52 0 0 1 ${18 + Math.cos(Math.PI - (c.pct/100)*Math.PI)*104} ${74 - Math.sin((c.pct/100)*Math.PI)*104}" fill="none" stroke="${c.iconStroke}" stroke-width="10" stroke-linecap="round"/>
+          <text x="70" y="52" text-anchor="middle" font-family="DM Serif Display,serif" font-size="18" fill="var(--text)">${c.pct}%</text>
+        </svg>
+        <div class="gauge-sub">${raised} of $${(c.goal/1000).toFixed(0)}K goal</div>
+        <div class="gauge-stats">
+          <div class="gs"><div class="gs-lbl">Remaining</div><div class="gs-val amber">$${remaining}K</div></div>
+          <div class="gs"><div class="gs-lbl">Days left</div><div class="gs-val">${c.days===0?'Done':c.days}</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="dd-section">
+      <div class="dds-title">Pace analysis</div>
+      <div class="pacing-row"><span class="pacing-label">Fundraising vs. calendar</span>${pBadge}</div>
+      <div class="pacing-track">
+        <div class="pacing-fill" style="width:${c.pct}%;background:${c.iconStroke}"></div>
+        <div class="pacing-marker" style="left:${c.calPct}%"></div>
+      </div>
+      <div class="pacing-key"><span>${c.pct}% raised</span><span style="color:var(--text-3)">|${c.calPct}% of calendar</span></div>
+    </div>
+    <div class="dd-section">
+      <div class="dds-title">Monthly giving trend</div>
+      <div class="mini-bars">${bars}</div>
+      <div class="mini-labels"><span>Jan</span><span>Apr</span><span>Jul</span><span>Oct</span><span>Dec</span></div>
+    </div>
+    <div class="dd-section">
+      <div class="dds-title">Parish leaderboard</div>
+      <div class="parish-list">${parishRows}</div>
+    </div>
+    <div class="dd-section">
+      <div class="dds-title">Donor segments</div>
+      <div class="seg-grid">
+        <div class="seg-item"><div class="seg-val" style="color:var(--green)">${c.segs.active.toLocaleString()}</div><div class="seg-lbl">Active donors</div></div>
+        <div class="seg-item"><div class="seg-val" style="color:var(--amber)">${c.segs.lybunt}</div><div class="seg-lbl">LYBUNT</div></div>
+        <div class="seg-item"><div class="seg-val" style="color:var(--blue)">${c.segs.recurring}</div><div class="seg-lbl">Recurring</div></div>
+        <div class="seg-item"><div class="seg-val" style="color:var(--teal)">${c.segs.new}</div><div class="seg-lbl">First-time</div></div>
+      </div>
+    </div>
+    <div class="dd-section">
+      <div class="dds-title">Recent gifts</div>
+      <div class="gift-feed">${giftRows}</div>
+    </div>
+    ${c.pledgeOverdue > 0 ? `<div class="dd-section">
+      <div class="dds-title">Open pledges</div>
+      <div style="background:var(--amber-light);border-radius:9px;padding:11px 13px;border-left:3px solid var(--amber);border-radius:0 9px 9px 0;font-size:12px;color:#78350F;line-height:1.55">
+        <strong>${c.pledgeAmt} outstanding</strong> · ${c.pledgeOverdue} installment${c.pledgeOverdue>1?'s':''} overdue. <span style="color:var(--amber);font-weight:600;cursor:pointer">Review pledges →</span>
+      </div>
+    </div>` : ''}
+  `;
+}
+
+function closeDrawer() {
+  selectedId = null;
+  renderTable();
+  document.getElementById('detail-drawer').classList.add('closed');
+}
+
+function filterStatus(el, val) {
+  document.querySelectorAll('.sp').forEach(s => s.classList.remove('active'));
+  el.classList.add('active');
+  currentFilter = val;
+  renderTable();
+}
+
+function sortBy(col) {
+  // Simple toggle sort
+  CAMPAIGNS.sort((a,b) => col==='days' ? a.days - b.days : a.status.localeCompare(b.status));
+  renderTable();
+}
+
+function handleGuruQuery() {
+  const inp = document.getElementById('guru-input');
+  if (!inp.value.trim()) return;
+  inp.value = '';
+  inp.placeholder = 'Thinking…';
+  setTimeout(() => { inp.placeholder = 'Ask about any campaign…'; }, 1400);
+}
+
+// Init
+renderTable();
+// Auto-open CMA for demo
+setTimeout(() => openDrawer(1), 600);
+</script>
+</body>
+</html>

@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GiveCentral Atlas — Guru AI Query Interface</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:        #0E1E35;
+      --navy-2:      #152844;
+      --navy-3:      #1E3A5F;
+      --blue:        #2563EB;
+      --blue-mid:    #3B82F6;
+      --blue-light:  #DBEAFE;
+      --blue-pale:   #EFF6FF;
+      --teal:        #0D9488;
+      --teal-light:  #CCFBF1;
+      --green:       #15803D;
+      --green-light: #DCFCE7;
+      --amber:       #D97706;
+      --amber-light: #FEF3C7;
+      --rose:        #BE185D;
+      --rose-light:  #FCE7F3;
+      --purple:      #7C3AED;
+      --purple-light:#EDE9FE;
+      --text:        #0F172A;
+      --text-2:      #334155;
+      --text-3:      #64748B;
+      --border:      #E2E8F0;
+      --surface:     #F8FAFC;
+      --white:       #FFFFFF;
+    }
+
+    html { font-size: 14px; -webkit-font-smoothing: antialiased; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--surface); color: var(--text); min-height: 100vh; display: flex; }
+
+    /* ══ SIDEBAR ══ */
+    .sidebar {
+      width: 220px; background: var(--navy); min-height: 100vh;
+      display: flex; flex-direction: column; flex-shrink: 0;
+      position: sticky; top: 0; height: 100vh; overflow-y: auto;
+    }
+    .sidebar-logo {
+      padding: 18px 18px 14px; display: flex; align-items: center; gap: 9px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+    }
+    .logo-mark { width: 30px; height: 30px; background: var(--blue); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+    .logo-mark svg { width: 15px; height: 15px; }
+    .logo-name { font-family: 'DM Serif Display', serif; font-size: 15px; color: white; }
+    .logo-sub  { font-size: 9px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.3); margin-top: 3px; }
+
+    .nav-group { padding: 10px 8px 0; }
+    .nav-label { font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.28); padding: 0 10px; margin-bottom: 4px; }
+    .nav-item  {
+      display: flex; align-items: center; gap: 9px; padding: 8px 10px;
+      border-radius: 7px; font-size: 12px; font-weight: 500;
+      color: rgba(255,255,255,.55); cursor: pointer; transition: all .15s; margin-bottom: 1px;
+    }
+    .nav-item:hover  { background: rgba(255,255,255,.07); color: rgba(255,255,255,.85); }
+    .nav-item.active { background: rgba(124,58,237,.35); color: #C4B5FD; border: 1px solid rgba(124,58,237,.4); }
+    .nav-item svg    { width: 14px; height: 14px; flex-shrink: 0; }
+    .nav-badge { margin-left: auto; background: rgba(255,255,255,.1); color: rgba(255,255,255,.5); border-radius: 10px; padding: 1px 7px; font-size: 10px; font-weight: 600; }
+
+    .sidebar-user {
+      margin-top: auto; padding: 12px; border-top: 1px solid rgba(255,255,255,.08);
+      display: flex; align-items: center; gap: 9px;
+    }
+    .user-avatar { width: 30px; height: 30px; border-radius: 50%; background: var(--blue); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: white; flex-shrink: 0; }
+    .user-name { font-size: 12px; font-weight: 500; color: rgba(255,255,255,.75); }
+    .user-role { font-size: 10px; color: rgba(255,255,255,.35); margin-top: 1px; }
+
+    /* ══ MAIN ══ */
+    .main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+
+    .topbar {
+      background: white; border-bottom: 1px solid var(--border);
+      padding: 0 24px; height: 52px; display: flex; align-items: center; gap: 12px; flex-shrink: 0;
+    }
+    .topbar-icon { width: 28px; height: 28px; background: var(--purple-light); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+    .topbar-icon svg { width: 14px; height: 14px; color: var(--purple); }
+    .topbar-title { font-size: 15px; font-weight: 600; color: var(--text); }
+    .topbar-sub { font-size: 12px; color: var(--text-3); }
+    .topbar-right { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+    .tb-btn { padding: 6px 14px; border-radius: 7px; font-size: 12px; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .15s; display: flex; align-items: center; gap: 6px; border: 1px solid var(--border); background: none; color: var(--text-2); }
+    .tb-btn:hover { background: var(--surface); border-color: #94A3B8; }
+    .tb-btn svg { width: 12px; height: 12px; }
+
+    /* ══ Two-panel layout ══ */
+    .guru-layout { flex: 1; display: grid; grid-template-columns: 360px 1fr; min-height: 0; }
+
+    /* ══ LEFT: chat ══ */
+    .chat-col {
+      border-right: 1px solid var(--border);
+      display: flex; flex-direction: column;
+      background: white; min-height: 0;
+    }
+
+    .chat-history { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+
+    /* Query suggestions */
+    .suggestions-header { font-size: 11px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; color: var(--text-3); margin-bottom: 10px; }
+    .suggestion-chips { display: flex; flex-direction: column; gap: 7px; margin-bottom: 20px; }
+    .chip {
+      display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px;
+      background: var(--surface); border: 1px solid var(--border); border-radius: 9px;
+      cursor: pointer; transition: all .15s; font-size: 12px; color: var(--text-2); line-height: 1.45;
+    }
+    .chip:hover { border-color: rgba(124,58,237,.35); background: var(--purple-light); color: var(--purple); }
+    .chip-icon { width: 22px; height: 22px; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+    .chip-icon svg { width: 11px; height: 11px; }
+    .chip-text { flex: 1; }
+    .chip-cat { font-size: 9px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--text-3); display: block; margin-bottom: 1px; }
+
+    /* Chat messages */
+    .msg { display: flex; flex-direction: column; gap: 6px; }
+    .msg-user {
+      align-self: flex-end; max-width: 88%;
+      background: var(--navy); color: white;
+      border-radius: 12px 12px 2px 12px; padding: 10px 14px;
+      font-size: 13px; line-height: 1.5;
+    }
+    .msg-guru { align-self: flex-start; max-width: 100%; }
+    .msg-guru-header { display: flex; align-items: center; gap: 7px; margin-bottom: 8px; }
+    .guru-avatar { width: 24px; height: 24px; background: var(--purple); border-radius: 7px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .guru-avatar svg { width: 12px; height: 12px; }
+    .guru-name { font-size: 11px; font-weight: 700; color: var(--purple); }
+    .guru-time { font-size: 10px; color: var(--text-3); }
+
+    .msg-guru-bubble {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 2px 12px 12px 12px; padding: 12px 14px;
+      font-size: 12px; color: var(--text-2); line-height: 1.6;
+    }
+    .msg-guru-bubble strong { color: var(--text); font-weight: 600; }
+    .msg-guru-bubble .highlight { color: var(--purple); font-weight: 600; }
+    .msg-actions { display: flex; gap: 7px; margin-top: 8px; flex-wrap: wrap; }
+    .msg-action-btn {
+      display: flex; align-items: center; gap: 5px; padding: 5px 11px; border-radius: 20px;
+      font-size: 11px; font-weight: 600; cursor: pointer; border: 1px solid var(--border);
+      background: white; color: var(--text-2); font-family: 'DM Sans', sans-serif;
+      transition: all .15s;
+    }
+    .msg-action-btn:hover { border-color: var(--purple); color: var(--purple); background: var(--purple-light); }
+    .msg-action-btn svg { width: 10px; height: 10px; }
+    .msg-action-btn.primary { background: var(--purple); color: white; border-color: var(--purple); }
+    .msg-action-btn.primary:hover { background: #6D28D9; }
+
+    /* Thinking indicator */
+    .thinking { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-3); padding: 6px 0; }
+    .thinking-dots { display: flex; gap: 3px; }
+    .thinking-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--purple); animation: blink 1.2s ease-in-out infinite; }
+    .thinking-dot:nth-child(2) { animation-delay: .2s; }
+    .thinking-dot:nth-child(3) { animation-delay: .4s; }
+    @keyframes blink { 0%,80%,100%{opacity:.2} 40%{opacity:1} }
+
+    /* Input bar */
+    .chat-input-wrap {
+      padding: 14px 16px; border-top: 1px solid var(--border);
+      background: white; flex-shrink: 0;
+    }
+    .chat-input-bar {
+      display: flex; align-items: flex-end; gap: 10px;
+      background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: 12px; padding: 10px 12px;
+      transition: border-color .15s, box-shadow .15s;
+    }
+    .chat-input-bar:focus-within { border-color: var(--purple); box-shadow: 0 0 0 3px rgba(124,58,237,.1); }
+    .chat-input-bar textarea {
+      flex: 1; background: none; border: none; outline: none; resize: none;
+      font-size: 13px; font-family: 'DM Sans', sans-serif; color: var(--text);
+      line-height: 1.5; max-height: 120px; min-height: 22px;
+    }
+    .chat-input-bar textarea::placeholder { color: #9CA3AF; }
+    .send-btn {
+      width: 30px; height: 30px; background: var(--purple); border-radius: 8px;
+      border: none; display: flex; align-items: center; justify-content: center;
+      cursor: pointer; flex-shrink: 0; transition: background .15s;
+    }
+    .send-btn:hover { background: #6D28D9; }
+    .send-btn svg { width: 13px; height: 13px; }
+    .input-hint { font-size: 10px; color: var(--text-3); margin-top: 7px; display: flex; align-items: center; gap: 5px; }
+    .input-hint svg { width: 10px; height: 10px; }
+
+    /* ══ RIGHT: results ══ */
+    .results-col { display: flex; flex-direction: column; min-height: 0; overflow-y: auto; }
+
+    .results-header {
+      padding: 16px 24px; border-bottom: 1px solid var(--border);
+      background: white; flex-shrink: 0; display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    }
+    .results-query {
+      font-size: 13px; font-weight: 500; color: var(--text);
+      background: var(--purple-light); border-radius: 8px; padding: 6px 12px;
+      border: 1px solid rgba(124,58,237,.2); flex: 1;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .results-query svg { width: 13px; height: 13px; color: var(--purple); flex-shrink: 0; }
+    .results-meta { font-size: 12px; color: var(--text-3); white-space: nowrap; }
+    .results-export {
+      display: flex; gap: 7px;
+    }
+    .export-btn {
+      display: flex; align-items: center; gap: 5px; padding: 6px 12px; border-radius: 7px;
+      font-size: 11px; font-weight: 600; cursor: pointer; border: 1px solid var(--border);
+      background: none; color: var(--text-2); font-family: 'DM Sans', sans-serif; transition: all .15s;
+    }
+    .export-btn:hover { border-color: #94A3B8; background: var(--surface); }
+    .export-btn svg { width: 11px; height: 11px; }
+    .export-btn.primary { background: var(--purple); color: white; border-color: var(--purple); }
+    .export-btn.primary:hover { background: #6D28D9; }
+
+    /* Summary row */
+    .results-summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; padding: 16px 24px; background: var(--surface); border-bottom: 1px solid var(--border); flex-shrink: 0; }
+    .sum-card { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; }
+    .sum-label { font-size: 10px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--text-3); margin-bottom: 6px; }
+    .sum-value { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--text); letter-spacing: -.02em; line-height: 1; }
+    .sum-value.green  { color: var(--green); }
+    .sum-value.amber  { color: var(--amber); }
+    .sum-value.purple { color: var(--purple); }
+    .sum-sub { font-size: 10px; color: var(--text-3); margin-top: 4px; }
+
+    /* Results filter bar */
+    .results-filters { padding: 12px 24px; border-bottom: 1px solid var(--border); background: white; display: flex; align-items: center; gap: 10px; flex-shrink: 0; flex-wrap: wrap; }
+    .filter-label { font-size: 11px; font-weight: 600; color: var(--text-3); }
+    .filter-pills { display: flex; gap: 6px; flex-wrap: wrap; }
+    .filter-pill {
+      padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 500;
+      border: 1px solid var(--border); color: var(--text-3); cursor: pointer;
+      background: white; transition: all .15s; user-select: none;
+    }
+    .filter-pill:hover { border-color: var(--purple); color: var(--purple); }
+    .filter-pill.active { background: var(--purple); color: white; border-color: var(--purple); }
+    .filter-count { font-size: 11px; color: var(--text-3); margin-left: auto; }
+
+    /* Donor table */
+    .results-table-wrap { flex: 1; overflow-y: auto; padding: 0 24px 24px; }
+    .donor-table { width: 100%; border-collapse: collapse; margin-top: 14px; }
+    .donor-table th {
+      font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+      color: var(--text-3); padding: 8px 12px; text-align: left;
+      background: var(--surface); border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; white-space: nowrap;
+    }
+    .donor-table th:first-child { border-radius: 8px 0 0 0; }
+    .donor-table th:last-child  { border-radius: 0 8px 0 0; }
+    .donor-table th.sortable { cursor: pointer; }
+    .donor-table th.sortable:hover { color: var(--purple); }
+    .donor-table th.sorted { color: var(--purple); }
+    .sort-arrow { font-size: 10px; margin-left: 3px; }
+    .donor-table td {
+      padding: 11px 12px; font-size: 12px; border-bottom: .5px solid var(--border);
+      color: var(--text-2); vertical-align: middle;
+    }
+    .donor-table tr:hover td { background: #FAFAFA; }
+    .donor-table tr.highlighted td { background: #FDF8FF; }
+
+    .donor-name-cell { display: flex; align-items: center; gap: 10px; }
+    .d-avatar {
+      width: 30px; height: 30px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px; font-weight: 700; flex-shrink: 0;
+    }
+    .d-name  { font-size: 12px; font-weight: 600; color: var(--text); }
+    .d-org   { font-size: 10px; color: var(--text-3); }
+    .d-link  { color: var(--blue); cursor: pointer; }
+    .d-link:hover { color: #1D4ED8; }
+
+    .tag-pill {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 2px 8px; border-radius: 20px; font-size: 10px; font-weight: 600;
+    }
+    .tag-lybunt   { background: var(--amber-light); color: var(--amber); }
+    .tag-major    { background: var(--purple-light); color: var(--purple); }
+    .tag-recurring{ background: var(--blue-light);   color: #1D4ED8; }
+    .tag-lapsed   { background: var(--rose-light);   color: var(--rose); }
+    .tag-new      { background: var(--green-light);  color: var(--green); }
+
+    .last-gift-green { color: var(--green); font-weight: 600; }
+    .last-gift-amber { color: var(--amber); font-weight: 600; }
+    .last-gift-rose  { color: var(--rose);  font-weight: 600; }
+
+    .score-pill {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 20px;
+    }
+    .score-high { background: var(--green-light); color: var(--green); }
+    .score-mid  { background: var(--blue-light);  color: #1D4ED8; }
+    .score-low  { background: var(--amber-light); color: var(--amber); }
+
+    .row-action {
+      display: flex; align-items: center; gap: 5px; padding: 5px 10px; border-radius: 7px;
+      font-size: 11px; font-weight: 600; cursor: pointer; border: 1px solid var(--border);
+      background: white; color: var(--text-2); font-family: 'DM Sans', sans-serif; transition: all .15s;
+      white-space: nowrap;
+    }
+    .row-action:hover { border-color: var(--purple); color: var(--purple); background: var(--purple-light); }
+    .row-action svg { width: 10px; height: 10px; }
+
+    /* NLP explanation banner */
+    .nlp-explain {
+      background: var(--navy); border-radius: 10px; padding: 12px 16px;
+      display: flex; align-items: flex-start; gap: 10px; margin: 14px 0 0;
+    }
+    .nlp-explain-icon { width: 24px; height: 24px; background: var(--purple); border-radius: 7px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .nlp-explain-icon svg { width: 11px; height: 11px; }
+    .nlp-explain-text { font-size: 11px; color: rgba(255,255,255,.7); line-height: 1.55; }
+    .nlp-explain-text strong { color: white; }
+    .nlp-explain-chips { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+    .nlp-chip {
+      display: flex; align-items: center; gap: 4px; padding: 3px 9px; border-radius: 20px;
+      font-size: 10px; font-weight: 600; background: rgba(255,255,255,.1); color: rgba(255,255,255,.75);
+      border: 1px solid rgba(255,255,255,.15); cursor: pointer; transition: background .15s;
+    }
+    .nlp-chip:hover { background: rgba(255,255,255,.18); color: white; }
+
+    /* Animations */
+    @keyframes fadeIn  { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes slideIn { from{opacity:0;transform:translateX(-8px)} to{opacity:1;transform:translateX(0)} }
+    .msg         { animation: fadeIn .25s ease forwards; }
+    .results-col { animation: slideIn .3s ease forwards; }
+    .sum-card    { animation: fadeIn .3s ease forwards; opacity: 0; }
+    .sum-card:nth-child(1) { animation-delay: .05s; }
+    .sum-card:nth-child(2) { animation-delay: .10s; }
+    .sum-card:nth-child(3) { animation-delay: .15s; }
+    .sum-card:nth-child(4) { animation-delay: .20s; }
+    .donor-table tr { animation: fadeIn .25s ease forwards; opacity: 0; }
+    .donor-table tr:nth-child(1) { animation-delay: .10s; }
+    .donor-table tr:nth-child(2) { animation-delay: .15s; }
+    .donor-table tr:nth-child(3) { animation-delay: .20s; }
+    .donor-table tr:nth-child(4) { animation-delay: .25s; }
+    .donor-table tr:nth-child(5) { animation-delay: .30s; }
+    .donor-table tr:nth-child(6) { animation-delay: .35s; }
+    .donor-table tr:nth-child(7) { animation-delay: .40s; }
+    .donor-table tr:nth-child(8) { animation-delay: .45s; }
+  </style>
+</head>
+<body>
+
+  <!-- ══ SIDEBAR ══ -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-mark">
+        <svg viewBox="0 0 18 18" fill="none">
+          <circle cx="9" cy="9" r="7.5" stroke="white" stroke-width="1.5"/>
+          <path d="M5.5 9.5C6.5 11.5 9 13 9 13s2.5-1.5 3.5-3.5S12 5 9 5 4.5 7.5 5.5 9.5z" fill="white" fill-opacity=".9"/>
+        </svg>
+      </div>
+      <div>
+        <div class="logo-name">GiveCentral</div>
+        <div class="logo-sub">Atlas CRM</div>
+      </div>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-label">Main</div>
+      <div class="nav-item">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><rect x="1.5" y="1.5" width="4" height="4" rx="1.2"/><rect x="8.5" y="1.5" width="4" height="4" rx="1.2"/><rect x="1.5" y="8.5" width="4" height="4" rx="1.2"/><rect x="8.5" y="8.5" width="4" height="4" rx="1.2"/></svg>
+        Dashboard
+      </div>
+      <div class="nav-item">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="6" cy="4.5" r="3"/><path d="M1 13c0-2.8 2.2-5 5-5h1c2.8 0 5 2.2 5 5"/></svg>
+        Donors
+        <span class="nav-badge">3,847</span>
+      </div>
+      <div class="nav-item">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M7 1.5v11M2 6.5h10"/></svg>
+        Gifts &amp; pledges
+      </div>
+      <div class="nav-item">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M1.5 8.5l2.5-2.5 2 2 2.5-2.5 2 2"/><rect x="1.5" y="1.5" width="11" height="11" rx="2"/></svg>
+        Campaigns
+      </div>
+      <div class="nav-item">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M1.5 3h11M1.5 7h7M1.5 11h5"/></svg>
+        Reports
+      </div>
+    </div>
+
+    <div class="nav-group" style="margin-top:8px">
+      <div class="nav-label">Fundraising</div>
+      <div class="nav-item">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="7" cy="7" r="5.5"/><path d="M7 4v4M7 10v.5"/></svg>
+        Prospect pipeline
+      </div>
+      <div class="nav-item">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><rect x="1.5" y="2.5" width="11" height="9" rx="1.5"/><path d="M1.5 6h11M5 2.5v2M9 2.5v2"/></svg>
+        Tasks &amp; reminders
+        <span class="nav-badge">7</span>
+      </div>
+    </div>
+
+    <div class="nav-group" style="margin-top:8px">
+      <div class="nav-label">Intelligence</div>
+      <div class="nav-item active">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="7" cy="5" r="3.5"/><path d="M5 10c0 2 4 2 4 0M4.5 8.5c-2 1-3 3.5-3 4.5M9.5 8.5c2 1 3 3.5 3 4.5"/></svg>
+        Guru AI
+      </div>
+      <div class="nav-item">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M2 11l3-3 2 2 3-3 2 2"/><rect x="2" y="2" width="10" height="10" rx="1.5"/></svg>
+        Analytics
+      </div>
+    </div>
+
+    <div class="sidebar-user">
+      <div class="user-avatar">SR</div>
+      <div>
+        <div class="user-name">Sarah Reynolds</div>
+        <div class="user-role">Development Director</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ══ MAIN ══ -->
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-icon">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><circle cx="7" cy="5" r="3.5"/><path d="M5 10c0 2 4 2 4 0M4.5 8.5c-2 1-3 3.5-3 4.5M9.5 8.5c2 1 3 3.5 3 4.5"/></svg>
+      </div>
+      <div>
+        <div class="topbar-title">Guru AI</div>
+      </div>
+      <div class="topbar-sub">Natural language donor intelligence</div>
+      <div class="topbar-right">
+        <button class="tb-btn">
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><circle cx="6" cy="6" r="4.5"/><path d="M6 4v3M6 9v.5"/></svg>
+          Query history
+        </button>
+        <button class="tb-btn">
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M2 3.5h8M2 6h5M2 8.5h6"/></svg>
+          Saved queries
+        </button>
+      </div>
+    </div>
+
+    <div class="guru-layout">
+
+      <!-- ══ LEFT: Chat interface ══ -->
+      <div class="chat-col">
+        <div class="chat-history" id="chat-history">
+
+          <!-- Suggestion chips (shown on empty state) -->
+          <div id="suggestions-wrap">
+            <div class="suggestions-header">Suggested queries</div>
+            <div class="suggestion-chips">
+              <div class="chip" onclick="runQuery(this, 'lybunt')">
+                <div class="chip-icon" style="background:var(--amber-light)">
+                  <svg viewBox="0 0 11 11" fill="none" stroke="#D97706" stroke-width="1.4" stroke-linecap="round"><circle cx="5.5" cy="5.5" r="4"/><path d="M5.5 3.5v2.5l1.5 1.5"/></svg>
+                </div>
+                <div class="chip-text">
+                  <span class="chip-cat">Retention</span>
+                  Donors who gave last year but not yet this year (LYBUNT)
+                </div>
+              </div>
+              <div class="chip" onclick="runQuery(this, 'upgrade')">
+                <div class="chip-icon" style="background:var(--purple-light)">
+                  <svg viewBox="0 0 11 11" fill="none" stroke="#7C3AED" stroke-width="1.4" stroke-linecap="round"><path d="M2 8l3-3 2 2 3-3"/></svg>
+                </div>
+                <div class="chip-text">
+                  <span class="chip-cat">Major gifts</span>
+                  Donors with high upgrade propensity giving under $1,000
+                </div>
+              </div>
+              <div class="chip" onclick="runQuery(this, 'recurring')">
+                <div class="chip-icon" style="background:var(--blue-light)">
+                  <svg viewBox="0 0 11 11" fill="none" stroke="#2563EB" stroke-width="1.4" stroke-linecap="round"><path d="M9 3.5C8.2 2.2 6.8 1.5 5.5 1.5a4 4 0 00-4 4M2 8.5C2.8 9.8 4.2 10.5 5.5 10.5a4 4 0 004-4"/><path d="M9 1v3H6M2 7v3h3"/></svg>
+                </div>
+                <div class="chip-text">
+                  <span class="chip-cat">Recurring</span>
+                  Monthly donors whose giving has stayed flat for 2+ years
+                </div>
+              </div>
+              <div class="chip" onclick="runQuery(this, 'parish')">
+                <div class="chip-icon" style="background:var(--teal-light)">
+                  <svg viewBox="0 0 11 11" fill="none" stroke="#0D9488" stroke-width="1.4" stroke-linecap="round"><path d="M5.5 1v9M2 4.5h7"/><path d="M2 9.5h7"/></svg>
+                </div>
+                <div class="chip-text">
+                  <span class="chip-cat">Parish</span>
+                  Top 10 donors by parish who haven't been contacted in 90 days
+                </div>
+              </div>
+              <div class="chip" onclick="runQuery(this, 'pledge')">
+                <div class="chip-icon" style="background:var(--rose-light)">
+                  <svg viewBox="0 0 11 11" fill="none" stroke="#BE185D" stroke-width="1.4" stroke-linecap="round"><rect x="1.5" y="2" width="8" height="7" rx="1.2"/><path d="M3.5 5l1.5 1.5L8 3.5"/></svg>
+                </div>
+                <div class="chip-text">
+                  <span class="chip-cat">Pledges</span>
+                  Donors who pledged over $500 last year but haven't given this year
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Active conversation -->
+          <div id="conversation" style="display:flex;flex-direction:column;gap:16px"></div>
+
+        </div>
+
+        <!-- Input bar -->
+        <div class="chat-input-wrap">
+          <div class="chat-input-bar">
+            <textarea id="query-input" rows="1" placeholder="Ask anything about your donors… e.g. 'Show donors who gave over $500 last year but not this year'" oninput="autoResize(this)" onkeydown="handleKey(event)"></textarea>
+            <button class="send-btn" onclick="submitQuery()">
+              <svg viewBox="0 0 13 13" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round"><path d="M2 6.5h9M7.5 3L11 6.5l-3.5 3.5"/></svg>
+            </button>
+          </div>
+          <div class="input-hint">
+            <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><rect x="1" y="1" width="8" height="8" rx="1.5"/><path d="M3 5h4M3 3h2M3 7h3"/></svg>
+            Press Enter to send · Shift+Enter for new line · Try natural language questions
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ RIGHT: Results panel ══ -->
+      <div class="results-col" id="results-col">
+
+        <!-- Empty state -->
+        <div id="empty-state" style="display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;padding:40px;text-align:center">
+          <div style="width:64px;height:64px;background:var(--purple-light);border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="#7C3AED" stroke-width="1.5" stroke-linecap="round">
+              <circle cx="14" cy="10" r="7"/>
+              <path d="M10 20c0 4 8 4 8 0M8 18c-4 2-6 6-6 9M20 18c4 2 6 6 6 9"/>
+            </svg>
+          </div>
+          <div style="font-family:'DM Serif Display',serif;font-size:20px;color:var(--text);margin-bottom:8px">Ask Guru AI</div>
+          <div style="font-size:13px;color:var(--text-3);max-width:320px;line-height:1.65">Type a question in plain English and Guru AI will query your entire donor database and return a filterable, exportable result set.</div>
+          <div style="margin-top:20px;display:flex;flex-wrap:wrap;gap:8px;justify-content:center">
+            <span style="font-size:11px;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:4px 12px;color:var(--text-3)">"Show LYBUNT donors this April"</span>
+            <span style="font-size:11px;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:4px 12px;color:var(--text-3)">"Who are my top 20 major gift prospects?"</span>
+            <span style="font-size:11px;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:4px 12px;color:var(--text-3)">"Donors with open pledges over $1,000"</span>
+          </div>
+        </div>
+
+        <!-- Results (shown after query) -->
+        <div id="results-panel" style="display:none;flex-direction:column;flex:1;min-height:0">
+
+          <div class="results-header">
+            <div class="results-query">
+              <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><circle cx="7" cy="5" r="3.5"/><path d="M5 10c0 2 4 2 4 0M4.5 8.5c-2 1-3 3.5-3 4.5M9.5 8.5c2 1 3 3.5 3 4.5"/></svg>
+              <span id="results-query-text">Donors who gave last year but not yet this year</span>
+            </div>
+            <span class="results-meta" id="results-count">47 donors found</span>
+            <div class="results-export">
+              <button class="export-btn">
+                <svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M5.5 1v7M2.5 5.5l3 3 3-3"/><path d="M1.5 9.5h8"/></svg>
+                CSV
+              </button>
+              <button class="export-btn">
+                <svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><rect x="1.5" y="1.5" width="8" height="8" rx="1.2"/><path d="M3.5 5.5h4M3.5 3.5h2M3.5 7.5h3"/></svg>
+                Report
+              </button>
+              <button class="export-btn primary">
+                <svg viewBox="0 0 11 11" fill="none" stroke="white" stroke-width="1.4" stroke-linecap="round"><path d="M2 3.5h7v7H2zM2 6h7M5 3.5v7"/></svg>
+                Create outreach list
+              </button>
+            </div>
+          </div>
+
+          <div class="results-summary" id="results-summary">
+            <!-- filled by JS -->
+          </div>
+
+          <div class="results-filters">
+            <span class="filter-label">Filter:</span>
+            <div class="filter-pills" id="filter-pills">
+              <!-- filled by JS -->
+            </div>
+            <span class="filter-count" id="filter-result-count">Showing all 47</span>
+          </div>
+
+          <div class="results-table-wrap">
+
+            <div class="nlp-explain" id="nlp-explain">
+              <div class="nlp-explain-icon">
+                <svg viewBox="0 0 11 11" fill="none" stroke="white" stroke-width="1.3" stroke-linecap="round"><circle cx="5.5" cy="5.5" r="4.5"/><path d="M5.5 3.5v2.5l1.5 1.5"/></svg>
+              </div>
+              <div>
+                <div class="nlp-explain-text" id="nlp-explain-text">
+                  <strong>How Guru AI interpreted your query:</strong> Finding all donors with at least one gift recorded in FY2025, who have zero gifts recorded in FY2026 to date (April 3, 2026), sorted by last gift amount descending.
+                </div>
+                <div class="nlp-explain-chips">
+                  <span class="nlp-chip">FY2025 donor = true</span>
+                  <span class="nlp-chip">FY2026 gifts = 0</span>
+                  <span class="nlp-chip">Sorted by last gift ↓</span>
+                  <span class="nlp-chip" onclick="refineQuery()" style="background:rgba(196,165,255,.2);color:#C4B5FD;border-color:rgba(124,58,237,.3)">Refine this query →</span>
+                </div>
+              </div>
+            </div>
+
+            <table class="donor-table" id="donor-table">
+              <thead>
+                <tr>
+                  <th><input type="checkbox" id="select-all" style="accent-color:var(--purple)"></th>
+                  <th class="sortable sorted">Donor <span class="sort-arrow">↓</span></th>
+                  <th class="sortable">Last gift <span class="sort-arrow"></span></th>
+                  <th class="sortable">Last gift amt <span class="sort-arrow"></span></th>
+                  <th class="sortable">FY2025 total <span class="sort-arrow"></span></th>
+                  <th>Segment</th>
+                  <th>AI score</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="table-body">
+                <!-- filled by JS -->
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    const QUERIES = {
+      lybunt: {
+        label: 'Donors who gave last year but not yet this year',
+        count: '47 donors found',
+        summary: [
+          { label: 'Donors found', value: '47', sub: 'LYBUNT this April', cls: '' },
+          { label: 'Last year total', value: '$62.4k', sub: 'Combined FY2025 giving', cls: 'green' },
+          { label: 'Avg last gift', value: '$1,327', sub: 'Per donor', cls: '' },
+          { label: 'Recovery potential', value: '73%', sub: 'Likely to respond', cls: 'purple' },
+        ],
+        filters: ['All (47)', 'Major donors (8)', 'Recurring lapsed (12)', 'Under $500 (27)'],
+        explain: '<strong>How Guru AI interpreted your query:</strong> Finding all donors with at least one gift recorded in FY2025, who have zero gifts recorded in FY2026 to date (April 3, 2026), sorted by last gift amount descending.',
+        chips: ['FY2025 donor = true', 'FY2026 gifts = 0', 'Sorted by last gift ↓'],
+        donors: [
+          { init:'MS', color:'#DBEAFE', tcolor:'#1D4ED8', name:'Margaret Sullivan', org:'St. Michael\'s Parish', last:'Mar 2025', amt:'$2,500', fy:'$10,500', tag:'major', tagLabel:'Major donor', score:92, scoreCls:'score-high', lastCls:'last-gift-amber' },
+          { init:'RH', color:'#FCE7F3', tcolor:'#BE185D', name:'Robert & Claire Hennessy', org:'St. Anthony\'s', last:'Apr 2025', amt:'$3,500', fy:'$8,200', tag:'lybunt', tagLabel:'LYBUNT', score:87, scoreCls:'score-high', lastCls:'last-gift-amber' },
+          { init:'TK', color:'#DCFCE7', tcolor:'#15803D', name:'Thomas & Lisa Kowalski', org:'Holy Cross Parish', last:'Feb 2025', amt:'$5,000', fy:'$14,000', tag:'major', tagLabel:'Major donor', score:81, scoreCls:'score-high', lastCls:'last-gift-rose' },
+          { init:'JO', color:'#EDE9FE', tcolor:'#7C3AED', name:'James & Patricia O\'Brien', org:'Cathedral Benefactor', last:'Dec 2025', amt:'$10,000', fy:'$22,500', tag:'major', tagLabel:'Major donor', score:95, scoreCls:'score-high', lastCls:'last-gift-green' },
+          { init:'MF', color:'#CCFBF1', tcolor:'#0D9488', name:'Maria & Eduardo Fernandez', org:'San Juan Diego Parish', last:'Jun 2025', amt:'$750', fy:'$2,100', tag:'recurring', tagLabel:'Recurring', score:68, scoreCls:'score-mid', lastCls:'last-gift-amber' },
+          { init:'DM', color:'#FEF3C7', tcolor:'#B45309', name:'David & Anne Morrison', org:'St. Peter\'s Parish', last:'Mar 2025', amt:'$500', fy:'$1,800', tag:'lybunt', tagLabel:'LYBUNT', score:61, scoreCls:'score-mid', lastCls:'last-gift-amber' },
+          { init:'CW', color:'#F3F4F6', tcolor:'#374151', name:'Catherine Walsh', org:'Diocese Board', last:'Jan 2025', amt:'$1,200', fy:'$4,500', tag:'major', tagLabel:'Major donor', score:74, scoreCls:'score-mid', lastCls:'last-gift-rose' },
+          { init:'EL', color:'#EDE9FE', tcolor:'#7C3AED', name:'Elena Ramirez-Lopez', org:'Holy Family Parish', last:'May 2025', amt:'$250', fy:'$900', tag:'new', tagLabel:'New donor', score:45, scoreCls:'score-low', lastCls:'last-gift-amber' },
+        ],
+      },
+      upgrade: {
+        label: 'Donors with high upgrade propensity giving under $1,000',
+        count: '23 donors found',
+        summary: [
+          { label: 'Donors found', value: '23', sub: 'High upgrade propensity', cls: '' },
+          { label: 'Current avg gift', value: '$412', sub: 'Per donor / year', cls: '' },
+          { label: 'Upgrade potential', value: '$8,200+', sub: 'If each increases 20×', cls: 'green' },
+          { label: 'Avg AI score', value: '84', sub: 'Out of 100', cls: 'purple' },
+        ],
+        filters: ['All (23)', 'Score 90+ (7)', 'Score 75-89 (11)', 'Score <75 (5)'],
+        explain: '<strong>How Guru AI interpreted your query:</strong> Donors with a Guru AI upgrade propensity score ≥ 75, whose total gifts in the trailing 12 months are under $1,000, ordered by score descending.',
+        chips: ['Upgrade score ≥ 75', 'TTM giving < $1,000', 'Sorted by score ↓'],
+        donors: [
+          { init:'JM', color:'#EDE9FE', tcolor:'#7C3AED', name:'John & Mary Martinez', org:'St. Michael\'s Parish', last:'Dec 2025', amt:'$500', fy:'$500', tag:'recurring', tagLabel:'Recurring', score:96, scoreCls:'score-high', lastCls:'last-gift-green' },
+          { init:'PK', color:'#DBEAFE', tcolor:'#1D4ED8', name:'Patricia Kim', org:'Holy Cross Parish', last:'Nov 2025', amt:'$250', fy:'$750', tag:'new', tagLabel:'New donor', score:91, scoreCls:'score-high', lastCls:'last-gift-green' },
+          { init:'GR', color:'#DCFCE7', tcolor:'#15803D', name:'George & Rita Romano', org:'St. Anthony\'s', last:'Feb 2026', amt:'$100', fy:'$300', tag:'recurring', tagLabel:'Recurring', score:88, scoreCls:'score-high', lastCls:'last-gift-green' },
+          { init:'AL', color:'#FEF3C7', tcolor:'#B45309', name:'Angela Liu', org:'Cathedral', last:'Jan 2026', amt:'$750', fy:'$750', tag:'lybunt', tagLabel:'LYBUNT', score:85, scoreCls:'score-high', lastCls:'last-gift-green' },
+          { init:'BN', color:'#FCE7F3', tcolor:'#BE185D', name:'Brian & Nora Quinn', org:'San Juan Diego', last:'Oct 2025', amt:'$200', fy:'$600', tag:'recurring', tagLabel:'Recurring', score:79, scoreCls:'score-mid', lastCls:'last-gift-amber' },
+          { init:'CM', color:'#CCFBF1', tcolor:'#0D9488', name:'Carlos Mendez', org:'Holy Family Parish', last:'Mar 2026', amt:'$350', fy:'$350', tag:'new', tagLabel:'New donor', score:76, scoreCls:'score-mid', lastCls:'last-gift-green' },
+          { init:'DT', color:'#F3F4F6', tcolor:'#374151', name:'Donna Thompson', org:'St. Peter\'s', last:'Sep 2025', amt:'$100', fy:'$400', tag:'lybunt', tagLabel:'LYBUNT', score:75, scoreCls:'score-mid', lastCls:'last-gift-amber' },
+          { init:'ES', color:'#DCFCE7', tcolor:'#15803D', name:'Edward & Susan Park', org:'St. Michael\'s', last:'Jan 2026', amt:'$500', fy:'$900', tag:'recurring', tagLabel:'Recurring', score:75, scoreCls:'score-mid', lastCls:'last-gift-green' },
+        ],
+      },
+      recurring: {
+        label: 'Monthly donors whose giving has stayed flat for 2+ years',
+        count: '31 donors found',
+        summary: [
+          { label: 'Flat recurring donors', value: '31', sub: '2+ years no increase', cls: '' },
+          { label: 'Monthly total', value: '$4,820', sub: 'Combined / month', cls: 'green' },
+          { label: 'Potential uplift', value: '+$2,100', sub: 'If 20% increase each', cls: 'purple' },
+          { label: 'Avg tenure', value: '4.2 yrs', sub: 'As recurring donors', cls: '' },
+        ],
+        filters: ['All (31)', '< $25/mo (12)', '$25–$100/mo (14)', '$100+/mo (5)'],
+        explain: '<strong>How Guru AI interpreted your query:</strong> Donors with active monthly recurring gifts whose monthly amount has not changed in 24+ months, sorted by tenure descending.',
+        chips: ['Recurring = monthly', 'Amount unchanged 24mo+', 'Sorted by tenure ↓'],
+        donors: [
+          { init:'BL', color:'#DBEAFE', tcolor:'#1D4ED8', name:'Barbara & Leo Costello', org:'St. Peter\'s Parish', last:'Apr 2026', amt:'$50/mo', fy:'$600', tag:'recurring', tagLabel:'6 years flat', score:82, scoreCls:'score-high', lastCls:'last-gift-green' },
+          { init:'FD', color:'#EDE9FE', tcolor:'#7C3AED', name:'Frank DiMaggio', org:'Holy Cross Parish', last:'Apr 2026', amt:'$25/mo', fy:'$300', tag:'recurring', tagLabel:'5 years flat', score:74, scoreCls:'score-mid', lastCls:'last-gift-green' },
+          { init:'GS', color:'#DCFCE7', tcolor:'#15803D', name:'Grace & Sam Nguyen', org:'Cathedral', last:'Apr 2026', amt:'$100/mo', fy:'$1,200', tag:'recurring', tagLabel:'4 years flat', score:88, scoreCls:'score-high', lastCls:'last-gift-green' },
+          { init:'HB', color:'#FCE7F3', tcolor:'#BE185D', name:'Helen Bronski', org:'Holy Family', last:'Apr 2026', amt:'$15/mo', fy:'$180', tag:'recurring', tagLabel:'4 years flat', score:55, scoreCls:'score-low', lastCls:'last-gift-green' },
+          { init:'IM', color:'#FEF3C7', tcolor:'#B45309', name:'Irene & Mark Castello', org:'St. Anthony\'s', last:'Apr 2026', amt:'$75/mo', fy:'$900', tag:'recurring', tagLabel:'3 years flat', score:79, scoreCls:'score-mid', lastCls:'last-gift-green' },
+          { init:'JR', color:'#CCFBF1', tcolor:'#0D9488', name:'Joseph Reyes', org:'San Juan Diego', last:'Apr 2026', amt:'$10/mo', fy:'$120', tag:'recurring', tagLabel:'3 years flat', score:48, scoreCls:'score-low', lastCls:'last-gift-green' },
+          { init:'KC', color:'#F3F4F6', tcolor:'#374151', name:'Karen & Chris Walton', org:'St. Michael\'s', last:'Apr 2026', amt:'$200/mo', fy:'$2,400', tag:'major', tagLabel:'3 years flat', score:91, scoreCls:'score-high', lastCls:'last-gift-green' },
+          { init:'LO', color:'#DBEAFE', tcolor:'#1D4ED8', name:'Laura O\'Hara', org:'Holy Cross', last:'Apr 2026', amt:'$30/mo', fy:'$360', tag:'recurring', tagLabel:'2 years flat', score:66, scoreCls:'score-mid', lastCls:'last-gift-green' },
+        ],
+      },
+      parish: {
+        label: 'Top donors per parish not contacted in 90+ days',
+        count: '18 donors found',
+        summary: [
+          { label: 'Donors found', value: '18', sub: 'No contact 90+ days', cls: '' },
+          { label: 'Combined giving', value: '$128k', sub: 'Lifetime total', cls: 'green' },
+          { label: 'Days since contact', value: '112', sub: 'Average across group', cls: 'amber' },
+          { label: 'Parishes', value: '6', sub: 'Represented', cls: '' },
+        ],
+        filters: ['All (18)', 'St. Michael\'s (4)', 'Holy Cross (3)', 'Cathedral (4)', 'Other (7)'],
+        explain: '<strong>How Guru AI interpreted your query:</strong> The highest lifetime-value donor from each parish with no logged activity (call, email, note) in the past 90 days, sorted by last contact date ascending.',
+        chips: ['Top donor per parish', 'No activity 90+ days', 'Sorted by last contact ↑'],
+        donors: [
+          { init:'MS', color:'#DBEAFE', tcolor:'#1D4ED8', name:'Margaret Sullivan', org:'St. Michael\'s Parish', last:'Jan 3, 2026', amt:'91 days', fy:'$84,250', tag:'major', tagLabel:'Major donor', score:92, scoreCls:'score-high', lastCls:'last-gift-rose' },
+          { init:'TK', color:'#DCFCE7', tcolor:'#15803D', name:'Thomas & Lisa Kowalski', org:'Holy Cross Parish', last:'Dec 18, 2025', amt:'106 days', fy:'$61,400', tag:'major', tagLabel:'Major donor', score:81, scoreCls:'score-high', lastCls:'last-gift-rose' },
+          { init:'JO', color:'#EDE9FE', tcolor:'#7C3AED', name:'James & Patricia O\'Brien', org:'Cathedral', last:'Dec 10, 2025', amt:'114 days', fy:'$95,000', tag:'major', tagLabel:'Major donor', score:95, scoreCls:'score-high', lastCls:'last-gift-rose' },
+          { init:'CW', color:'#F3F4F6', tcolor:'#374151', name:'Catherine Walsh', org:'Holy Family Parish', last:'Nov 22, 2025', amt:'132 days', fy:'$42,000', tag:'major', tagLabel:'Major donor', score:74, scoreCls:'score-mid', lastCls:'last-gift-rose' },
+          { init:'RH', color:'#FCE7F3', tcolor:'#BE185D', name:'Robert & Claire Hennessy', org:'St. Anthony\'s', last:'Nov 15, 2025', amt:'139 days', fy:'$28,600', tag:'lybunt', tagLabel:'LYBUNT', score:87, scoreCls:'score-high', lastCls:'last-gift-rose' },
+          { init:'MF', color:'#CCFBF1', tcolor:'#0D9488', name:'Maria & Eduardo Fernandez', org:'San Juan Diego', last:'Oct 30, 2025', amt:'155 days', fy:'$18,200', tag:'recurring', tagLabel:'Recurring', score:68, scoreCls:'score-mid', lastCls:'last-gift-rose' },
+        ],
+      },
+      pledge: {
+        label: 'Donors who pledged over $500 last year but haven\'t given this year',
+        count: '14 donors found',
+        summary: [
+          { label: 'Donors found', value: '14', sub: 'Open pledges', cls: '' },
+          { label: 'Total outstanding', value: '$43,800', sub: 'Uncollected pledges', cls: 'amber' },
+          { label: 'Avg pledge', value: '$3,129', sub: 'Per donor', cls: '' },
+          { label: 'Most overdue', value: '47 days', sub: 'Oldest past-due pledge', cls: 'amber' },
+        ],
+        filters: ['All (14)', 'Overdue (6)', 'Due this month (5)', 'Due next month (3)'],
+        explain: '<strong>How Guru AI interpreted your query:</strong> Donors with pledge records created in FY2025 with outstanding balance > $500, where no gift has been received against the pledge in FY2026, sorted by due date ascending.',
+        chips: ['Pledge balance > $500', 'No FY2026 payment', 'Sorted by due date ↑'],
+        donors: [
+          { init:'RH', color:'#FCE7F3', tcolor:'#BE185D', name:'Robert & Claire Hennessy', org:'CMA 2026 Pledge', last:'Feb 10, 2026', amt:'$3,500', fy:'$8,200', tag:'lybunt', tagLabel:'Overdue 47d', score:87, scoreCls:'score-high', lastCls:'last-gift-rose' },
+          { init:'MS', color:'#DBEAFE', tcolor:'#1D4ED8', name:'Margaret Sullivan', org:'CMA 2026 Pledge', last:'Apr 5, 2026', amt:'$1,900', fy:'$10,500', tag:'major', tagLabel:'Due Apr 5', score:92, scoreCls:'score-high', lastCls:'last-gift-amber' },
+          { init:'TK', color:'#DCFCE7', tcolor:'#15803D', name:'Thomas & Lisa Kowalski', org:'Blessed Trinity', last:'Apr 7, 2026', amt:'$5,000', fy:'$14,000', tag:'major', tagLabel:'Due Apr 7', score:81, scoreCls:'score-high', lastCls:'last-gift-amber' },
+          { init:'MF', color:'#CCFBF1', tcolor:'#0D9488', name:'Maria & Eduardo Fernandez', org:'Cathedral Fund', last:'Apr 8, 2026', amt:'$2,500', fy:'$2,100', tag:'recurring', tagLabel:'Due Apr 8', score:68, scoreCls:'score-mid', lastCls:'last-gift-amber' },
+          { init:'JO', color:'#EDE9FE', tcolor:'#7C3AED', name:'James & Patricia O\'Brien', org:'Capital Campaign', last:'May 1, 2026', amt:'$10,000', fy:'$22,500', tag:'major', tagLabel:'Due May 1', score:95, scoreCls:'score-high', lastCls:'last-gift-green' },
+          { init:'DM', color:'#FEF3C7', tcolor:'#B45309', name:'David Morrison', org:'CMA 2026 Pledge', last:'May 15, 2026', amt:'$750', fy:'$1,800', tag:'lybunt', tagLabel:'Due May 15', score:61, scoreCls:'score-mid', lastCls:'last-gift-green' },
+        ],
+      },
+    };
+
+    let activeQuery = null;
+    let activeFilter = 0;
+
+    function runQuery(chipEl, queryKey) {
+      // Hide suggestions, show conversation
+      const q = QUERIES[queryKey];
+      const conv = document.getElementById('conversation');
+      document.getElementById('suggestions-wrap').style.display = 'none';
+
+      // User message
+      const userMsg = document.createElement('div');
+      userMsg.className = 'msg';
+      userMsg.innerHTML = `<div class="msg-user">${q.label}</div>`;
+      conv.appendChild(userMsg);
+
+      // Thinking
+      const thinking = document.createElement('div');
+      thinking.className = 'msg';
+      thinking.innerHTML = `
+        <div class="msg-guru-header">
+          <div class="guru-avatar"><svg width="12" height="12" viewBox="0 0 13 13" fill="none" stroke="white" stroke-width="1.3" stroke-linecap="round"><circle cx="6.5" cy="4.5" r="3.5"/><path d="M4.5 9c0 2 4 2 4 0M3.5 8c-2 1-3 3.5-3 4.5M9.5 8c2 1 3 3.5 3 4.5"/></svg></div>
+          <span class="guru-name">Guru AI</span>
+          <span class="guru-time">Just now</span>
+        </div>
+        <div class="thinking"><div class="thinking-dots"><div class="thinking-dot"></div><div class="thinking-dot"></div><div class="thinking-dot"></div></div> Querying donor database…</div>`;
+      conv.appendChild(thinking);
+      scrollChat();
+
+      setTimeout(() => {
+        thinking.remove();
+        const guruMsg = document.createElement('div');
+        guruMsg.className = 'msg';
+        guruMsg.innerHTML = `
+          <div class="msg-guru-header">
+            <div class="guru-avatar"><svg width="12" height="12" viewBox="0 0 13 13" fill="none" stroke="white" stroke-width="1.3" stroke-linecap="round"><circle cx="6.5" cy="4.5" r="3.5"/><path d="M4.5 9c0 2 4 2 4 0M3.5 8c-2 1-3 3.5-3 4.5M9.5 8c2 1 3 3.5 3 4.5"/></svg></div>
+            <span class="guru-name">Guru AI</span>
+            <span class="guru-time">Just now</span>
+          </div>
+          <div class="msg-guru-bubble">Found <span class="highlight">${q.count}</span> matching your query. Results are sorted by last gift amount and shown on the right.<br><br>${q.donors.slice(0,3).map(d => `<strong>${d.name}</strong> — ${d.fy} FY2025`).join(' · ')}<span style="color:var(--text-3)"> and ${q.donors.length - 3} more.</span></div>
+          <div class="msg-actions">
+            <button class="msg-action-btn primary" onclick="createList('${queryKey}')">
+              <svg viewBox="0 0 10 10" fill="none" stroke="white" stroke-width="1.4" stroke-linecap="round"><path d="M5 1v8M1 5h8"/></svg>
+              Create outreach list
+            </button>
+            <button class="msg-action-btn" onclick="exportCSV('${queryKey}')">
+              <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M5 1v5.5M2.5 4.5L5 7l2.5-2.5"/><path d="M1.5 8.5h7"/></svg>
+              Export CSV
+            </button>
+            <button class="msg-action-btn" onclick="refineQuery()">Refine query</button>
+          </div>`;
+        conv.appendChild(guruMsg);
+        scrollChat();
+        renderResults(queryKey);
+      }, 1200);
+
+      activeQuery = queryKey;
+      document.getElementById('query-input').value = '';
+    }
+
+    function submitQuery() {
+      const input = document.getElementById('query-input');
+      const val = input.value.trim();
+      if (!val) return;
+
+      // Map typed queries to datasets
+      const lower = val.toLowerCase();
+      let key = 'lybunt';
+      if (lower.includes('pledg') || lower.includes('installment')) key = 'pledge';
+      else if (lower.includes('upgrade') || lower.includes('propensity')) key = 'upgrade';
+      else if (lower.includes('recurring') || lower.includes('monthly') || lower.includes('flat')) key = 'recurring';
+      else if (lower.includes('parish') || lower.includes('contact') || lower.includes('90')) key = 'parish';
+
+      const fakeChip = { onclick: null };
+      // Inject user msg manually
+      const conv = document.getElementById('conversation');
+      document.getElementById('suggestions-wrap').style.display = 'none';
+      const userMsg = document.createElement('div');
+      userMsg.className = 'msg';
+      userMsg.innerHTML = `<div class="msg-user">${val}</div>`;
+      conv.appendChild(userMsg);
+
+      const thinking = document.createElement('div');
+      thinking.className = 'msg';
+      thinking.innerHTML = `<div class="msg-guru-header"><div class="guru-avatar"><svg width="12" height="12" viewBox="0 0 13 13" fill="none" stroke="white" stroke-width="1.3" stroke-linecap="round"><circle cx="6.5" cy="4.5" r="3.5"/><path d="M4.5 9c0 2 4 2 4 0M3.5 8c-2 1-3 3.5-3 4.5M9.5 8c2 1 3 3.5 3 4.5"/></svg></div><span class="guru-name">Guru AI</span><span class="guru-time">Just now</span></div><div class="thinking"><div class="thinking-dots"><div class="thinking-dot"></div><div class="thinking-dot"></div><div class="thinking-dot"></div></div> Querying donor database…</div>`;
+      conv.appendChild(thinking);
+      input.value = '';
+      scrollChat();
+
+      setTimeout(() => {
+        thinking.remove();
+        const q = QUERIES[key];
+        const guruMsg = document.createElement('div');
+        guruMsg.className = 'msg';
+        guruMsg.innerHTML = `<div class="msg-guru-header"><div class="guru-avatar"><svg width="12" height="12" viewBox="0 0 13 13" fill="none" stroke="white" stroke-width="1.3" stroke-linecap="round"><circle cx="6.5" cy="4.5" r="3.5"/><path d="M4.5 9c0 2 4 2 4 0M3.5 8c-2 1-3 3.5-3 4.5M9.5 8c2 1 3 3.5 3 4.5"/></svg></div><span class="guru-name">Guru AI</span><span class="guru-time">Just now</span></div><div class="msg-guru-bubble">Found <span class="highlight">${q.count}</span> matching your query. Results displayed on the right.</div><div class="msg-actions"><button class="msg-action-btn primary">Create outreach list</button><button class="msg-action-btn">Export CSV</button></div>`;
+        conv.appendChild(guruMsg);
+        scrollChat();
+        renderResults(key);
+      }, 1200);
+
+      activeQuery = key;
+    }
+
+    function renderResults(key) {
+      const q = QUERIES[key];
+      document.getElementById('empty-state').style.display = 'none';
+      const rp = document.getElementById('results-panel');
+      rp.style.display = 'flex';
+
+      document.getElementById('results-query-text').textContent = q.label;
+      document.getElementById('results-count').textContent = q.count;
+      document.getElementById('nlp-explain-text').innerHTML = q.explain;
+
+      // Summary cards
+      const sc = document.getElementById('results-summary');
+      sc.innerHTML = q.summary.map(s => `
+        <div class="sum-card">
+          <div class="sum-label">${s.label}</div>
+          <div class="sum-value ${s.cls}">${s.value}</div>
+          <div class="sum-sub">${s.sub}</div>
+        </div>`).join('');
+
+      // Filter pills
+      const fp = document.getElementById('filter-pills');
+      fp.innerHTML = q.filters.map((f, i) => `
+        <div class="filter-pill ${i===0?'active':''}" onclick="selectFilter(this, ${i}, '${key}')">${f}</div>`).join('');
+
+      // NLP chips
+      const nc = document.getElementById('nlp-explain').querySelector('.nlp-explain-chips');
+      nc.innerHTML = q.chips.map(c => `<span class="nlp-chip">${c}</span>`).join('') +
+        `<span class="nlp-chip" onclick="refineQuery()" style="background:rgba(196,165,255,.2);color:#C4B5FD;border-color:rgba(124,58,237,.3)">Refine this query →</span>`;
+
+      renderTable(key, q.donors);
+    }
+
+    function renderTable(key, donors) {
+      const tbody = document.getElementById('table-body');
+      const q = QUERIES[key];
+      const isLastGift = key === 'parish';
+      tbody.innerHTML = donors.map((d, i) => `
+        <tr class="${i===0?'highlighted':''}">
+          <td><input type="checkbox" style="accent-color:var(--purple)"></td>
+          <td>
+            <div class="donor-name-cell">
+              <div class="d-avatar" style="background:${d.color};color:${d.tcolor}">${d.init}</div>
+              <div>
+                <div class="d-name d-link">${d.name}</div>
+                <div class="d-org">${d.org}</div>
+              </div>
+            </div>
+          </td>
+          <td class="${d.lastCls}">${d.last}</td>
+          <td style="font-weight:600;color:var(--text)">${d.amt}</td>
+          <td>${d.fy}</td>
+          <td><span class="tag-pill tag-${d.tag}">${d.tagLabel}</span></td>
+          <td><span class="score-pill ${d.scoreCls}">${d.score}</span></td>
+          <td>
+            <button class="row-action">
+              <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><rect x="1.5" y="2" width="7" height="6.5" rx="1.2"/><path d="M1.5 4.5h7"/></svg>
+              Contact
+            </button>
+          </td>
+        </tr>`).join('');
+
+      document.getElementById('filter-result-count').textContent = `Showing all ${donors.length}`;
+    }
+
+    function selectFilter(el, idx, key) {
+      document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+      el.classList.add('active');
+      const q = QUERIES[key];
+      const count = parseInt(q.filters[idx].match(/\d+/)[0]);
+      document.getElementById('filter-result-count').textContent = `Showing ${count} donors`;
+    }
+
+    function scrollChat() {
+      const h = document.getElementById('chat-history');
+      h.scrollTop = h.scrollHeight;
+    }
+
+    function autoResize(el) {
+      el.style.height = 'auto';
+      el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+    }
+
+    function handleKey(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        submitQuery();
+      }
+    }
+
+    function refineQuery() {
+      document.getElementById('query-input').focus();
+      document.getElementById('query-input').placeholder = 'Refine your query…';
+    }
+    function createList(key) {}
+    function exportCSV(key) {}
+
+    // Select all checkbox
+    document.addEventListener('change', e => {
+      if (e.target.id === 'select-all') {
+        document.querySelectorAll('#table-body input[type=checkbox]').forEach(cb => cb.checked = e.target.checked);
+      }
+    });
+  </script>
+</body>
+</html>

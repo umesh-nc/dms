@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GiveCentral Atlas — Fundraiser Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:        #0E1E35;
+      --navy-2:      #152844;
+      --navy-3:      #1E3A5F;
+      --blue:        #2563EB;
+      --blue-mid:    #3B82F6;
+      --blue-light:  #DBEAFE;
+      --blue-pale:   #EFF6FF;
+      --teal:        #0D9488;
+      --teal-light:  #CCFBF1;
+      --green:       #15803D;
+      --green-light: #DCFCE7;
+      --amber:       #D97706;
+      --amber-light: #FEF3C7;
+      --rose:        #BE185D;
+      --rose-light:  #FCE7F3;
+      --purple:      #7C3AED;
+      --purple-light:#EDE9FE;
+      --gold:        #B45309;
+      --gold-light:  #FEF3C7;
+      --text:        #0F172A;
+      --text-2:      #334155;
+      --text-3:      #64748B;
+      --border:      #E2E8F0;
+      --surface:     #F8FAFC;
+      --white:       #FFFFFF;
+      --sidebar-w:   220px;
+    }
+
+    html { font-size: 14px; -webkit-font-smoothing: antialiased; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--surface); color: var(--text); min-height: 100vh; display: flex; overflow-x: hidden; }
+
+    /* ══ SIDEBAR ══ */
+    .sidebar {
+      width: var(--sidebar-w); background: var(--navy);
+      min-height: 100vh; display: flex; flex-direction: column;
+      flex-shrink: 0; position: sticky; top: 0; height: 100vh; overflow-y: auto;
+    }
+    .sidebar-logo {
+      padding: 18px 18px 14px; display: flex; align-items: center; gap: 9px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+    }
+    .logo-mark {
+      width: 30px; height: 30px; background: var(--blue); border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .logo-mark svg { width: 15px; height: 15px; }
+    .logo-text-wrap { display: flex; flex-direction: column; }
+    .logo-name { font-family: 'DM Serif Display', serif; font-size: 15px; color: white; line-height: 1; }
+    .logo-sub  { font-size: 9px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.3); margin-top: 3px; }
+
+    .sidebar-search {
+      margin: 12px 12px 6px; background: rgba(255,255,255,.07);
+      border: 1px solid rgba(255,255,255,.1); border-radius: 8px;
+      display: flex; align-items: center; gap: 8px; padding: 8px 12px;
+    }
+    .sidebar-search svg { width: 13px; height: 13px; color: rgba(255,255,255,.3); flex-shrink: 0; }
+    .sidebar-search input {
+      background: none; border: none; outline: none; width: 100%;
+      font-size: 12px; color: rgba(255,255,255,.6); font-family: 'DM Sans', sans-serif;
+    }
+    .sidebar-search input::placeholder { color: rgba(255,255,255,.3); }
+
+    .nav-group { padding: 8px 8px 0; }
+    .nav-label { font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.28); padding: 0 10px; margin-bottom: 4px; }
+    .nav-item {
+      display: flex; align-items: center; gap: 9px; padding: 8px 10px;
+      border-radius: 7px; font-size: 12px; font-weight: 500;
+      color: rgba(255,255,255,.55); cursor: pointer; transition: all .15s; margin-bottom: 1px;
+    }
+    .nav-item:hover { background: rgba(255,255,255,.07); color: rgba(255,255,255,.85); }
+    .nav-item.active { background: var(--blue); color: white; }
+    .nav-item svg { width: 14px; height: 14px; flex-shrink: 0; }
+    .nav-badge {
+      margin-left: auto; background: rgba(255,255,255,.12); color: rgba(255,255,255,.6);
+      border-radius: 10px; padding: 1px 7px; font-size: 10px; font-weight: 600;
+    }
+    .nav-item.active .nav-badge { background: rgba(255,255,255,.2); color: white; }
+    .nav-badge.alert { background: #EF4444; color: white; }
+
+    .sidebar-user {
+      margin-top: auto; padding: 12px; border-top: 1px solid rgba(255,255,255,.08);
+      display: flex; align-items: center; gap: 9px;
+    }
+    .user-avatar {
+      width: 30px; height: 30px; border-radius: 50%; background: var(--blue);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700; color: white; flex-shrink: 0;
+    }
+    .user-name { font-size: 12px; font-weight: 500; color: rgba(255,255,255,.75); }
+    .user-role { font-size: 10px; color: rgba(255,255,255,.35); margin-top: 1px; }
+
+    /* ══ MAIN ══ */
+    .main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+
+    .topbar {
+      background: white; border-bottom: 1px solid var(--border);
+      padding: 0 24px; height: 52px;
+      display: flex; align-items: center; gap: 12px; flex-shrink: 0;
+    }
+    .topbar-title { font-size: 15px; font-weight: 600; color: var(--text); }
+    .topbar-date  { font-size: 12px; color: var(--text-3); margin-left: 6px; }
+    .topbar-right { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+    .tb-btn {
+      padding: 6px 14px; border-radius: 7px; font-size: 12px; font-weight: 500;
+      cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .15s;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .tb-btn svg { width: 12px; height: 12px; }
+    .tb-ghost   { background: none; border: 1px solid var(--border); color: var(--text-2); }
+    .tb-ghost:hover { background: var(--surface); border-color: #94A3B8; }
+    .tb-primary { background: var(--blue); border: none; color: white; box-shadow: 0 1px 4px rgba(37,99,235,.3); }
+    .tb-primary:hover { background: #1D4ED8; }
+    .tb-notif {
+      width: 34px; height: 34px; border-radius: 8px; border: 1px solid var(--border);
+      background: none; display: flex; align-items: center; justify-content: center;
+      cursor: pointer; position: relative; transition: background .15s;
+    }
+    .tb-notif:hover { background: var(--surface); }
+    .tb-notif svg { width: 15px; height: 15px; color: var(--text-2); }
+    .notif-dot {
+      position: absolute; top: 7px; right: 7px;
+      width: 7px; height: 7px; background: #EF4444; border-radius: 50%;
+      border: 2px solid white;
+    }
+
+    .dash { padding: 24px; overflow-y: auto; }
+
+    /* ══ Welcome banner ══ */
+    .welcome-banner {
+      background: var(--navy); border-radius: 14px; padding: 20px 24px;
+      display: flex; align-items: center; gap: 20px; margin-bottom: 22px;
+      position: relative; overflow: hidden;
+    }
+    .wb-bg {
+      position: absolute; inset: 0; pointer-events: none;
+      background: radial-gradient(circle at 90% 50%, rgba(37,99,235,.25) 0%, transparent 60%),
+                  radial-gradient(circle at 10% 80%, rgba(13,148,136,.12) 0%, transparent 50%);
+    }
+    .wb-left { position: relative; z-index: 1; flex: 1; }
+    .wb-greeting { font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: rgba(255,255,255,.4); margin-bottom: 5px; }
+    .wb-name { font-family: 'DM Serif Display', serif; font-size: 24px; color: white; letter-spacing: -.02em; margin-bottom: 8px; }
+    .wb-sub { font-size: 12px; color: rgba(255,255,255,.55); line-height: 1.6; }
+    .wb-pills { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+    .wb-pill {
+      display: flex; align-items: center; gap: 6px;
+      background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12);
+      border-radius: 20px; padding: 5px 12px;
+      font-size: 11px; font-weight: 500; color: rgba(255,255,255,.75);
+      cursor: pointer; transition: background .15s;
+    }
+    .wb-pill:hover { background: rgba(255,255,255,.14); color: white; }
+    .wb-pill svg { width: 11px; height: 11px; }
+    .wb-pill.highlight { background: var(--blue); border-color: var(--blue); color: white; }
+    .wb-right { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 10px; align-items: flex-end; }
+    .wb-stat { text-align: right; }
+    .wb-stat-num { font-family: 'DM Serif Display', serif; font-size: 28px; color: white; letter-spacing: -.02em; line-height: 1; }
+    .wb-stat-num.gold { color: #FCD34D; }
+    .wb-stat-lbl { font-size: 11px; color: rgba(255,255,255,.45); margin-top: 3px; }
+
+    /* ══ KPI row ══ */
+    .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 22px; }
+    .kpi-card {
+      background: white; border: 1px solid var(--border); border-radius: 12px;
+      padding: 16px 18px; cursor: pointer; transition: border-color .15s, transform .15s;
+    }
+    .kpi-card:hover { border-color: #94A3B8; transform: translateY(-1px); }
+    .kpi-label { font-size: 11px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--text-3); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+    .kpi-label svg { width: 13px; height: 13px; }
+    .kpi-value { font-family: 'DM Serif Display', serif; font-size: 26px; font-weight: 400; color: var(--text); letter-spacing: -.02em; line-height: 1; margin-bottom: 6px; }
+    .kpi-value.up   { color: var(--green); }
+    .kpi-value.warn { color: var(--amber); }
+    .kpi-trend { display: flex; align-items: center; gap: 5px; font-size: 11px; }
+    .trend-up   { color: var(--green); font-weight: 600; }
+    .trend-down { color: var(--rose);  font-weight: 600; }
+    .trend-sub  { color: var(--text-3); }
+    .kpi-mini-bar { height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; margin-top: 8px; }
+    .kpi-mini-fill { height: 100%; border-radius: 2px; }
+
+    /* ══ Main grid ══ */
+    .dash-grid { display: grid; grid-template-columns: 1fr 1fr 320px; gap: 16px; align-items: start; }
+
+    /* ══ Cards ══ */
+    .card {
+      background: white; border: 1px solid var(--border); border-radius: 12px; overflow: hidden;
+    }
+    .card-header {
+      padding: 14px 18px 0; display: flex; align-items: center; justify-content: space-between;
+    }
+    .card-title { font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--text-3); }
+    .card-action { font-size: 11px; font-weight: 500; color: var(--blue); cursor: pointer; display: flex; align-items: center; gap: 3px; }
+    .card-action:hover { color: #1D4ED8; }
+    .card-action svg { width: 10px; height: 10px; }
+    .card-body { padding: 14px 18px 18px; }
+
+    /* ══ Today's tasks ══ */
+    .task-list { display: flex; flex-direction: column; gap: 6px; }
+    .task-item {
+      display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px;
+      background: var(--surface); border: 1px solid var(--border); border-radius: 9px;
+      cursor: pointer; transition: border-color .15s;
+    }
+    .task-item:hover { border-color: #94A3B8; }
+    .task-item.overdue { border-color: rgba(190,24,93,.25); background: #FFF1F6; }
+    .task-item.due-today { border-color: rgba(217,119,6,.25); background: #FFFBF0; }
+    .task-check {
+      width: 18px; height: 18px; border: 1.5px solid var(--border);
+      border-radius: 5px; flex-shrink: 0; margin-top: 1px;
+      display: flex; align-items: center; justify-content: center;
+      transition: all .15s; cursor: pointer;
+    }
+    .task-check:hover { border-color: var(--blue); background: var(--blue-pale); }
+    .task-item.overdue .task-check { border-color: var(--rose); }
+    .task-item.due-today .task-check { border-color: var(--amber); }
+    .task-body { flex: 1; min-width: 0; }
+    .task-text { font-size: 12px; color: var(--text-2); line-height: 1.4; }
+    .task-item.overdue .task-text { color: var(--rose); font-weight: 500; }
+    .task-meta { display: flex; align-items: center; gap: 8px; margin-top: 4px; flex-wrap: wrap; }
+    .task-donor { font-size: 11px; color: var(--blue); font-weight: 500; cursor: pointer; }
+    .task-donor:hover { color: #1D4ED8; }
+    .task-due-label { font-size: 10px; font-weight: 600; padding: 1px 7px; border-radius: 10px; }
+    .due-overdue { background: var(--rose-light); color: var(--rose); }
+    .due-today   { background: var(--amber-light); color: var(--amber); }
+    .due-soon    { background: var(--blue-light); color: #1D4ED8; }
+
+    /* ══ Pledges due ══ */
+    .pledge-list { display: flex; flex-direction: column; gap: 8px; }
+    .pledge-item {
+      display: flex; align-items: center; gap: 12px; padding: 10px 12px;
+      background: var(--surface); border: 1px solid var(--border); border-radius: 9px;
+      cursor: pointer; transition: border-color .15s;
+    }
+    .pledge-item:hover { border-color: #94A3B8; }
+    .pledge-item.overdue { border-color: rgba(190,24,93,.2); }
+    .pledge-avatar {
+      width: 32px; height: 32px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700; flex-shrink: 0;
+    }
+    .pledge-name { font-size: 12px; font-weight: 500; color: var(--text); }
+    .pledge-campaign { font-size: 11px; color: var(--text-3); }
+    .pledge-right { margin-left: auto; text-align: right; flex-shrink: 0; }
+    .pledge-amt { font-size: 13px; font-weight: 600; color: var(--text); }
+    .pledge-due { font-size: 10px; font-weight: 600; padding: 1px 7px; border-radius: 10px; margin-top: 3px; display: inline-block; }
+
+    /* ══ Pipeline ══ */
+    .pipeline-col { grid-column: 1 / -1; }
+    .pipeline-stages { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+    .stage-col { display: flex; flex-direction: column; gap: 8px; }
+    .stage-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 8px 10px; border-radius: 8px; margin-bottom: 2px;
+    }
+    .stage-name { font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; }
+    .stage-count { font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 10px; }
+    .stage-id { background: var(--blue-pale); }
+    .stage-id .stage-name { color: #1D4ED8; }
+    .stage-id .stage-count { background: var(--blue-light); color: #1D4ED8; }
+    .stage-cul { background: #F0FDF4; }
+    .stage-cul .stage-name { color: var(--green); }
+    .stage-cul .stage-count { background: var(--green-light); color: var(--green); }
+    .stage-sol { background: var(--gold-light); }
+    .stage-sol .stage-name { color: var(--gold); }
+    .stage-sol .stage-count { background: #FDE68A; color: var(--gold); }
+    .stage-stew { background: var(--teal-light); }
+    .stage-stew .stage-name { color: var(--teal); }
+    .stage-stew .stage-count { background: #99F6E4; color: var(--teal); }
+    .stage-close { background: var(--green-light); }
+    .stage-close .stage-name { color: var(--green); }
+    .stage-close .stage-count { background: #BBF7D0; color: var(--green); }
+
+    .prospect-card {
+      background: white; border: 1px solid var(--border); border-radius: 9px;
+      padding: 10px 12px; cursor: pointer; transition: border-color .15s, transform .15s;
+    }
+    .prospect-card:hover { border-color: #94A3B8; transform: translateY(-1px); }
+    .prospect-name { font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+    .prospect-org  { font-size: 10px; color: var(--text-3); margin-bottom: 7px; }
+    .prospect-row  { display: flex; justify-content: space-between; align-items: center; }
+    .prospect-amt  { font-size: 12px; font-weight: 600; color: var(--text-2); }
+    .prospect-days { font-size: 10px; font-weight: 500; padding: 1px 6px; border-radius: 8px; }
+    .days-ok    { background: var(--green-light); color: var(--green); }
+    .days-warn  { background: var(--amber-light); color: var(--amber); }
+    .days-stale { background: var(--rose-light);  color: var(--rose); }
+
+    /* ══ Right column ══ */
+    .right-col { display: flex; flex-direction: column; gap: 16px; grid-row: 1 / 3; }
+
+    /* ══ Recent gifts feed ══ */
+    .gift-feed { display: flex; flex-direction: column; }
+    .gift-item {
+      display: flex; align-items: center; gap: 10px; padding: 10px 0;
+      border-bottom: .5px solid var(--border);
+    }
+    .gift-item:last-child { border-bottom: none; }
+    .gift-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .gift-body { flex: 1; min-width: 0; }
+    .gift-name { font-size: 12px; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .gift-campaign { font-size: 10px; color: var(--text-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .gift-right { text-align: right; flex-shrink: 0; }
+    .gift-amt  { font-size: 13px; font-weight: 600; color: var(--green); }
+    .gift-time { font-size: 10px; color: var(--text-3); margin-top: 2px; }
+
+    /* ══ Guru AI panel ══ */
+    .guru-panel { background: var(--navy); border-radius: 12px; overflow: hidden; }
+    .guru-header { padding: 14px 18px; border-bottom: 1px solid rgba(255,255,255,.08); display: flex; align-items: center; gap: 10px; }
+    .guru-icon { width: 28px; height: 28px; background: var(--blue); border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .guru-icon svg { width: 13px; height: 13px; }
+    .guru-title { font-size: 13px; font-weight: 600; color: white; }
+    .guru-sub   { font-size: 10px; color: rgba(255,255,255,.4); margin-top: 1px; }
+    .guru-body  { padding: 14px 16px; }
+    .guru-insight { padding: 10px 12px; background: rgba(255,255,255,.06); border-radius: 8px; margin-bottom: 8px; }
+    .guru-insight:last-of-type { margin-bottom: 14px; }
+    .guru-insight-text { font-size: 11px; color: rgba(255,255,255,.7); line-height: 1.55; }
+    .guru-insight-text strong { color: white; font-weight: 600; }
+    .guru-insight-action { font-size: 10px; color: #60A5FA; font-weight: 600; cursor: pointer; margin-top: 5px; display: block; }
+    .guru-query-wrap {
+      display: flex; align-items: center; gap: 8px;
+      background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12);
+      border-radius: 8px; padding: 9px 12px;
+    }
+    .guru-query-input {
+      flex: 1; background: none; border: none; outline: none;
+      font-size: 12px; color: rgba(255,255,255,.7); font-family: 'DM Sans', sans-serif;
+    }
+    .guru-query-input::placeholder { color: rgba(255,255,255,.3); }
+    .guru-send {
+      width: 24px; height: 24px; background: var(--blue); border-radius: 6px;
+      border: none; display: flex; align-items: center; justify-content: center;
+      cursor: pointer; flex-shrink: 0; transition: background .15s;
+    }
+    .guru-send:hover { background: #1D4ED8; }
+    .guru-send svg { width: 11px; height: 11px; }
+
+    /* ══ Campaign progress ══ */
+    .campaign-list { display: flex; flex-direction: column; gap: 12px; }
+    .campaign-item { }
+    .campaign-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+    .campaign-name { font-size: 12px; font-weight: 500; color: var(--text); }
+    .campaign-pct  { font-size: 12px; font-weight: 600; }
+    .campaign-bar  { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; margin-bottom: 4px; }
+    .campaign-fill { height: 100%; border-radius: 3px; transition: width .6s ease; }
+    .campaign-meta { display: flex; justify-content: space-between; font-size: 10px; color: var(--text-3); }
+
+    /* ══ LYBUNT alert ══ */
+    .lybunt-card {
+      background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+      border: 1px solid rgba(217,119,6,.25); border-radius: 12px; padding: 16px 18px;
+      display: flex; align-items: flex-start; gap: 12px;
+    }
+    .lybunt-icon { width: 34px; height: 34px; background: var(--amber); border-radius: 9px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .lybunt-icon svg { width: 16px; height: 16px; }
+    .lybunt-title { font-size: 13px; font-weight: 600; color: var(--gold); margin-bottom: 3px; }
+    .lybunt-text  { font-size: 12px; color: var(--gold); opacity: .8; line-height: 1.5; }
+    .lybunt-btn   { margin-top: 10px; display: inline-flex; align-items: center; gap: 6px; background: var(--amber); color: white; border: none; border-radius: 7px; padding: 7px 14px; font-size: 11px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background .15s; }
+    .lybunt-btn:hover { background: #B45309; }
+    .lybunt-btn svg { width: 11px; height: 11px; }
+
+    /* ══ Animations ══ */
+    @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+    .welcome-banner { animation: fadeUp .3s ease forwards; }
+    .kpi-card { animation: fadeUp .35s ease forwards; opacity: 0; }
+    .kpi-card:nth-child(1) { animation-delay: .04s; }
+    .kpi-card:nth-child(2) { animation-delay: .08s; }
+    .kpi-card:nth-child(3) { animation-delay: .12s; }
+    .kpi-card:nth-child(4) { animation-delay: .16s; }
+    .card, .lybunt-card, .guru-panel { animation: fadeUp .35s ease .1s forwards; opacity: 0; }
+  </style>
+</head>
+<body>
+
+  <!-- ══ SIDEBAR ══ -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-mark">
+        <svg viewBox="0 0 18 18" fill="none">
+          <circle cx="9" cy="9" r="7.5" stroke="white" stroke-width="1.5"/>
+          <path d="M5.5 9.5C6.5 11.5 9 13 9 13s2.5-1.5 3.5-3.5S12 5 9 5 4.5 7.5 5.5 9.5z" fill="white" fill-opacity=".9"/>
+        </svg>
+      </div>
+      <div class="logo-text-wrap">
+        <span class="logo-name">GiveCentral</span>
+        <span class="logo-sub">Atlas CRM</span>
+      </div>
+    </div>
+
+    <div class="sidebar-search">
+      <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="6" cy="6" r="4.5"/><path d="M9.5 9.5l2.5 2.5"/></svg>
+      <input type="text" placeholder="Search donors…">
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-label">Main</div>
+      <div class="nav-item active">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><rect x="1.5" y="1.5" width="4" height="4" rx="1.2"/><rect x="8.5" y="1.5" width="4" height="4" rx="1.2"/><rect x="1.5" y="8.5" width="4" height="4" rx="1.2"/><rect x="8.5" y="8.5" width="4" height="4" rx="1.2"/></svg>
+        Dashboard
+      </div>
+      <div class="nav-item">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="6" cy="4.5" r="3"/><path d="M1 13c0-2.8 2.2-5 5-5h1c2.8 0 5 2.2 5 5"/></svg>
+        Donors
+        <span class="nav-badge">3,847</span>
+      </div>
+      <div class="nav-item">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M7 1.5v11M2 6.5h10"/></svg>
+        Gifts &amp; pledges
+        <span class="nav-badge">142</span>
+      </div>
+      <div class="nav-item">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M1.5 8.5l2.5-2.5 2 2 2.5-2.5 2 2"/><rect x="1.5" y="1.5" width="11" height="11" rx="2"/></svg>
+        Campaigns
+      </div>
+      <div class="nav-item">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M1.5 3h11M1.5 7h7M1.5 11h5"/></svg>
+        Reports
+      </div>
+    </div>
+
+    <div class="nav-group" style="margin-top:8px">
+      <div class="nav-label">Fundraising</div>
+      <div class="nav-item">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="7" cy="7" r="5.5"/><path d="M7 4v4M7 10v.5"/></svg>
+        Prospect pipeline
+        <span class="nav-badge">28</span>
+      </div>
+      <div class="nav-item">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><rect x="1.5" y="2.5" width="11" height="9" rx="1.5"/><path d="M1.5 6h11M5 2.5v2M9 2.5v2"/></svg>
+        Tasks &amp; reminders
+        <span class="nav-badge alert">7</span>
+      </div>
+      <div class="nav-item">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M2 3.5h10v7H2zM2 6.5h10M5 3.5v3"/></svg>
+        Communications
+      </div>
+    </div>
+
+    <div class="nav-group" style="margin-top:8px">
+      <div class="nav-label">Intelligence</div>
+      <div class="nav-item">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="7" cy="5" r="3.5"/><path d="M5 10c0 2 4 2 4 0M4.5 8.5c-2 1-3 3.5-3 4.5M9.5 8.5c2 1 3 3.5 3 4.5"/></svg>
+        Guru AI
+      </div>
+      <div class="nav-item">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M2 11l3-3 2 2 3-3 2 2"/><rect x="2" y="2" width="10" height="10" rx="1.5"/></svg>
+        Analytics
+      </div>
+    </div>
+
+    <div class="sidebar-user">
+      <div class="user-avatar">SR</div>
+      <div>
+        <div class="user-name">Sarah Reynolds</div>
+        <div class="user-role">Development Director</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ══ MAIN ══ -->
+  <div class="main">
+    <div class="topbar">
+      <span class="topbar-title">Dashboard</span>
+      <span class="topbar-date">Friday, April 3, 2026</span>
+      <div class="topbar-right">
+        <button class="tb-btn tb-ghost">
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M2 6h8M2 3h8M2 9h5"/></svg>
+          Filter view
+        </button>
+        <button class="tb-btn tb-ghost">
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><rect x="1.5" y="2" width="9" height="8" rx="1.2"/><path d="M1.5 5h9M4.5 2v2M7.5 2v2"/></svg>
+          Schedule
+        </button>
+        <button class="tb-btn tb-primary">
+          <svg viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="1.4" stroke-linecap="round"><path d="M6 1v10M1 6h10"/></svg>
+          Record gift
+        </button>
+        <button class="tb-notif">
+          <svg viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M7.5 2a5 5 0 015 5v3l1 2H2l1-2V7a5 5 0 015-5zM6 13a1.5 1.5 0 003 0"/></svg>
+          <div class="notif-dot"></div>
+        </button>
+      </div>
+    </div>
+
+    <div class="dash">
+
+      <!-- Welcome banner -->
+      <div class="welcome-banner">
+        <div class="wb-bg"></div>
+        <div class="wb-left">
+          <div class="wb-greeting">Good morning</div>
+          <div class="wb-name">Sarah Reynolds</div>
+          <div class="wb-sub">You have <strong style="color:white">7 tasks due today</strong>, 3 overdue, and 2 pledges needing follow-up. Your pipeline has 28 active prospects.</div>
+          <div class="wb-pills">
+            <div class="wb-pill highlight">
+              <svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="1" y="2" width="9" height="7.5" rx="1.2"/><path d="M1 4.5h9M3.5 2v2M7.5 2v2"/></svg>
+              7 tasks today
+            </div>
+            <div class="wb-pill">
+              <svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M5.5 1v9M1 5.5h9"/></svg>
+              2 pledges due
+            </div>
+            <div class="wb-pill">
+              <svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M1.5 7.5l2-2 1.5 1.5 2-2 1.5 1.5"/></svg>
+              $47k raised this week
+            </div>
+          </div>
+        </div>
+        <div class="wb-right">
+          <div class="wb-stat">
+            <div class="wb-stat-num gold" id="ytd-num">$1.24M</div>
+            <div class="wb-stat-lbl">Raised year-to-date</div>
+          </div>
+          <div style="width:100%;height:1px;background:rgba(255,255,255,.08);margin:6px 0"></div>
+          <div class="wb-stat">
+            <div class="wb-stat-num">78%</div>
+            <div class="wb-stat-lbl">of $1.6M annual goal</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- KPI row -->
+      <div class="kpi-row">
+        <div class="kpi-card">
+          <div class="kpi-label">
+            <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M6.5 1v11M1.5 6.5h10"/></svg>
+            Gifts today
+          </div>
+          <div class="kpi-value up">$18,450</div>
+          <div class="kpi-trend"><span class="trend-up">↑ 23%</span><span class="trend-sub">vs. same day last year</span></div>
+          <div class="kpi-mini-bar"><div class="kpi-mini-fill" style="width:73%;background:var(--green)"></div></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">
+            <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><circle cx="6.5" cy="6.5" r="5"/><path d="M6.5 4.5v3l1.5 1.5"/></svg>
+            Pledges due (30d)
+          </div>
+          <div class="kpi-value warn">$86,200</div>
+          <div class="kpi-trend"><span class="trend-sub">14 installments · 3 overdue</span></div>
+          <div class="kpi-mini-bar"><div class="kpi-mini-fill" style="width:45%;background:var(--amber)"></div></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">
+            <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><circle cx="4.5" cy="4.5" r="3"/><path d="M1 12c0-2.5 2-3.5 3.5-3.5M12 12c0-2.5-2-3.5-3.5-3.5M7.5 8.5c1.5 0 3.5 1 3.5 3.5M8.5 2a3 3 0 010 5"/></svg>
+            Active donors (YTD)
+          </div>
+          <div class="kpi-value">3,847</div>
+          <div class="kpi-trend"><span class="trend-up">↑ 8%</span><span class="trend-sub">retention vs. last year</span></div>
+          <div class="kpi-mini-bar"><div class="kpi-mini-fill" style="width:68%;background:var(--blue)"></div></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">
+            <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M2 9.5l1.5-1.5 1.5 1.5 1.5-2 1.5 1.5 1.5-3 1.5 2 1.5-3"/></svg>
+            Pipeline value
+          </div>
+          <div class="kpi-value">$340k</div>
+          <div class="kpi-trend"><span class="trend-sub">28 prospects · 6 in solicitation</span></div>
+          <div class="kpi-mini-bar"><div class="kpi-mini-fill" style="width:55%;background:var(--purple)"></div></div>
+        </div>
+      </div>
+
+      <!-- Main dashboard grid -->
+      <div class="dash-grid">
+
+        <!-- Today's tasks -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Tasks due today</span>
+            <span class="card-action">All tasks <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 5h6M5.5 2.5L8 5l-2.5 2.5"/></svg></span>
+          </div>
+          <div class="card-body">
+            <div class="task-list">
+              <div class="task-item overdue">
+                <div class="task-check"></div>
+                <div class="task-body">
+                  <div class="task-text">Follow up on Cathedral campaign interest from Mar 16 call</div>
+                  <div class="task-meta">
+                    <span class="task-donor">Margaret Sullivan</span>
+                    <span class="task-due-label due-overdue">3 days overdue</span>
+                  </div>
+                </div>
+              </div>
+              <div class="task-item overdue">
+                <div class="task-check"></div>
+                <div class="task-body">
+                  <div class="task-text">Send pledge reminder — $3,500 installment past due</div>
+                  <div class="task-meta">
+                    <span class="task-donor">Robert &amp; Claire Hennessy</span>
+                    <span class="task-due-label due-overdue">1 day overdue</span>
+                  </div>
+                </div>
+              </div>
+              <div class="task-item due-today">
+                <div class="task-check"></div>
+                <div class="task-body">
+                  <div class="task-text">Major gift cultivation call — propose $25k ask for capital campaign</div>
+                  <div class="task-meta">
+                    <span class="task-donor">James &amp; Patricia O'Brien</span>
+                    <span class="task-due-label due-today">Due today · 2:00 PM</span>
+                  </div>
+                </div>
+              </div>
+              <div class="task-item">
+                <div class="task-check"></div>
+                <div class="task-body">
+                  <div class="task-text">Send thank you letter for $5,000 Marian Congress gift</div>
+                  <div class="task-meta">
+                    <span class="task-donor">Diocese of St. Petersburg</span>
+                    <span class="task-due-label due-soon">Due today</span>
+                  </div>
+                </div>
+              </div>
+              <div class="task-item">
+                <div class="task-check"></div>
+                <div class="task-body">
+                  <div class="task-text">Review and approve Q1 stewardship report before board meeting</div>
+                  <div class="task-meta">
+                    <span class="task-donor">Internal</span>
+                    <span class="task-due-label due-soon">Due today</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pledges due -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Pledges due this week</span>
+            <span class="card-action">All pledges <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 5h6M5.5 2.5L8 5l-2.5 2.5"/></svg></span>
+          </div>
+          <div class="card-body">
+            <div class="pledge-list">
+              <div class="pledge-item overdue">
+                <div class="pledge-avatar" style="background:#FCE7F3;color:#BE185D">RH</div>
+                <div>
+                  <div class="pledge-name">Robert &amp; Claire Hennessy</div>
+                  <div class="pledge-campaign">CMA 2026 · Installment 2 of 3</div>
+                </div>
+                <div class="pledge-right">
+                  <div class="pledge-amt">$3,500</div>
+                  <div class="pledge-due" style="background:var(--rose-light);color:var(--rose)">2 days overdue</div>
+                </div>
+              </div>
+              <div class="pledge-item">
+                <div class="pledge-avatar" style="background:#DBEAFE;color:#1D4ED8">MS</div>
+                <div>
+                  <div class="pledge-name">Margaret Sullivan</div>
+                  <div class="pledge-campaign">CMA 2026 · Installment 3 of 3</div>
+                </div>
+                <div class="pledge-right">
+                  <div class="pledge-amt">$1,900</div>
+                  <div class="pledge-due" style="background:var(--amber-light);color:var(--amber)">Due Apr 5</div>
+                </div>
+              </div>
+              <div class="pledge-item">
+                <div class="pledge-avatar" style="background:#DCFCE7;color:#15803D">TK</div>
+                <div>
+                  <div class="pledge-name">Thomas &amp; Lisa Kowalski</div>
+                  <div class="pledge-campaign">Blessed Trinity Campaign</div>
+                </div>
+                <div class="pledge-right">
+                  <div class="pledge-amt">$5,000</div>
+                  <div class="pledge-due" style="background:var(--blue-light);color:#1D4ED8">Due Apr 7</div>
+                </div>
+              </div>
+              <div class="pledge-item">
+                <div class="pledge-avatar" style="background:#EDE9FE;color:#7C3AED">MF</div>
+                <div>
+                  <div class="pledge-name">Maria &amp; Eduardo Fernandez</div>
+                  <div class="pledge-campaign">Cathedral Capital Fund</div>
+                </div>
+                <div class="pledge-right">
+                  <div class="pledge-amt">$2,500</div>
+                  <div class="pledge-due" style="background:var(--blue-light);color:#1D4ED8">Due Apr 8</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT COLUMN -->
+        <div class="right-col">
+
+          <!-- Guru AI -->
+          <div class="guru-panel">
+            <div class="guru-header">
+              <div class="guru-icon">
+                <svg viewBox="0 0 13 13" fill="none" stroke="white" stroke-width="1.3" stroke-linecap="round"><circle cx="6.5" cy="4.5" r="3.5"/><path d="M4.5 9c0 2 4 2 4 0M3.5 8c-2 1-3 3.5-3 4.5M9.5 8c2 1 3 3.5 3 4.5"/></svg>
+              </div>
+              <div>
+                <div class="guru-title">Guru AI</div>
+                <div class="guru-sub">3 insights for today</div>
+              </div>
+            </div>
+            <div class="guru-body">
+              <div class="guru-insight">
+                <div class="guru-insight-text"><strong>8 LYBUNT donors</strong> gave in April last year but haven't given yet this year. Consider a targeted ask before April 15.</div>
+                <span class="guru-insight-action">View these 8 donors →</span>
+              </div>
+              <div class="guru-insight">
+                <div class="guru-insight-text"><strong>James O'Brien's</strong> giving is up 40% this year. Strong timing for the $25k Cathedral ask on today's call.</div>
+                <span class="guru-insight-action">View donor profile →</span>
+              </div>
+              <div class="guru-insight">
+                <div class="guru-insight-text"><strong>$47k raised this week</strong> — 12% above forecast. CMA sustaining donors are driving the increase.</div>
+                <span class="guru-insight-action">See campaign breakdown →</span>
+              </div>
+              <div class="guru-query-wrap">
+                <input class="guru-query-input" type="text" placeholder="Ask Guru AI anything…">
+                <button class="guru-send">
+                  <svg viewBox="0 0 11 11" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round"><path d="M1 5.5h9M6.5 2.5L9.5 5.5l-3 3"/></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent gifts feed -->
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">Gifts today</span>
+              <span class="card-action">All gifts <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 5h6M5.5 2.5L8 5l-2.5 2.5"/></svg></span>
+            </div>
+            <div class="card-body" style="padding-bottom:14px">
+              <div class="gift-feed">
+                <div class="gift-item">
+                  <div class="gift-dot" style="background:var(--green)"></div>
+                  <div class="gift-body">
+                    <div class="gift-name">Patricia O'Brien</div>
+                    <div class="gift-campaign">Catholic Ministry Appeal</div>
+                  </div>
+                  <div class="gift-right">
+                    <div class="gift-amt">$5,000</div>
+                    <div class="gift-time">9:14 AM</div>
+                  </div>
+                </div>
+                <div class="gift-item">
+                  <div class="gift-dot" style="background:var(--blue)"></div>
+                  <div class="gift-body">
+                    <div class="gift-name">Anonymous</div>
+                    <div class="gift-campaign">Marian Congress 2026</div>
+                  </div>
+                  <div class="gift-right">
+                    <div class="gift-amt">$250</div>
+                    <div class="gift-time">8:52 AM</div>
+                  </div>
+                </div>
+                <div class="gift-item">
+                  <div class="gift-dot" style="background:var(--teal)"></div>
+                  <div class="gift-body">
+                    <div class="gift-name">David &amp; Anne Morrison</div>
+                    <div class="gift-campaign">CMA Sustaining · Monthly</div>
+                  </div>
+                  <div class="gift-right">
+                    <div class="gift-amt">$100</div>
+                    <div class="gift-time">8:30 AM</div>
+                  </div>
+                </div>
+                <div class="gift-item">
+                  <div class="gift-dot" style="background:var(--purple)"></div>
+                  <div class="gift-body">
+                    <div class="gift-name">St. Michael's Parish</div>
+                    <div class="gift-campaign">Blessed Trinity Campaign</div>
+                  </div>
+                  <div class="gift-right">
+                    <div class="gift-amt">$10,000</div>
+                    <div class="gift-time">8:05 AM</div>
+                  </div>
+                </div>
+                <div class="gift-item">
+                  <div class="gift-dot" style="background:var(--amber)"></div>
+                  <div class="gift-body">
+                    <div class="gift-name">Elena Ramirez</div>
+                    <div class="gift-campaign">Youth Ministry Retreat</div>
+                  </div>
+                  <div class="gift-right">
+                    <div class="gift-amt">$75</div>
+                    <div class="gift-time">7:48 AM</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /right-col -->
+
+        <!-- Campaign progress — full width -->
+        <div class="card" style="grid-column:1/3">
+          <div class="card-header">
+            <span class="card-title">Campaign progress</span>
+            <span class="card-action">All campaigns <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 5h6M5.5 2.5L8 5l-2.5 2.5"/></svg></span>
+          </div>
+          <div class="card-body">
+            <div class="campaign-list">
+              <div class="campaign-item">
+                <div class="campaign-top">
+                  <span class="campaign-name">Catholic Ministry Appeal 2026</span>
+                  <span class="campaign-pct" style="color:var(--blue)">78%</span>
+                </div>
+                <div class="campaign-bar"><div class="campaign-fill" style="width:78%;background:var(--blue)"></div></div>
+                <div class="campaign-meta"><span>$1,248,000 raised</span><span>Goal: $1,600,000</span></div>
+              </div>
+              <div class="campaign-item">
+                <div class="campaign-top">
+                  <span class="campaign-name">Cathedral Capital Fund</span>
+                  <span class="campaign-pct" style="color:var(--green)">43%</span>
+                </div>
+                <div class="campaign-bar"><div class="campaign-fill" style="width:43%;background:var(--green)"></div></div>
+                <div class="campaign-meta"><span>$430,000 raised</span><span>Goal: $1,000,000</span></div>
+              </div>
+              <div class="campaign-item">
+                <div class="campaign-top">
+                  <span class="campaign-name">Marian Congress 2026</span>
+                  <span class="campaign-pct" style="color:var(--teal)">91%</span>
+                </div>
+                <div class="campaign-bar"><div class="campaign-fill" style="width:91%;background:var(--teal)"></div></div>
+                <div class="campaign-meta"><span>$45,500 raised</span><span>Goal: $50,000</span></div>
+              </div>
+              <div class="campaign-item">
+                <div class="campaign-top">
+                  <span class="campaign-name">Youth Ministry Retreat</span>
+                  <span class="campaign-pct" style="color:var(--purple)">62%</span>
+                </div>
+                <div class="campaign-bar"><div class="campaign-fill" style="width:62%;background:var(--purple)"></div></div>
+                <div class="campaign-meta"><span>$31,000 raised</span><span>Goal: $50,000</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Prospect pipeline — full width -->
+        <div class="card pipeline-col">
+          <div class="card-header">
+            <span class="card-title">Major gift pipeline</span>
+            <span class="card-action">Full pipeline <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 5h6M5.5 2.5L8 5l-2.5 2.5"/></svg></span>
+          </div>
+          <div class="card-body">
+            <div class="pipeline-stages">
+
+              <div class="stage-col">
+                <div class="stage-header stage-id"><span class="stage-name">Identification</span><span class="stage-count">8</span></div>
+                <div class="prospect-card">
+                  <div class="prospect-name">William &amp; Anne Carter</div>
+                  <div class="prospect-org">St. Anthony's Parish</div>
+                  <div class="prospect-row"><span class="prospect-amt">$15k ask</span><span class="prospect-days days-ok">New</span></div>
+                </div>
+                <div class="prospect-card">
+                  <div class="prospect-name">Catherine Walsh</div>
+                  <div class="prospect-org">Diocese Board Member</div>
+                  <div class="prospect-row"><span class="prospect-amt">$50k ask</span><span class="prospect-days days-ok">4d ago</span></div>
+                </div>
+              </div>
+
+              <div class="stage-col">
+                <div class="stage-header stage-cul"><span class="stage-name">Cultivation</span><span class="stage-count">9</span></div>
+                <div class="prospect-card">
+                  <div class="prospect-name">Michael &amp; Susan Grant</div>
+                  <div class="prospect-org">Major donor since 2015</div>
+                  <div class="prospect-row"><span class="prospect-amt">$25k ask</span><span class="prospect-days days-ok">12d ago</span></div>
+                </div>
+                <div class="prospect-card">
+                  <div class="prospect-name">Elena &amp; Marco Russo</div>
+                  <div class="prospect-org">St. Michael's · Parishioner</div>
+                  <div class="prospect-row"><span class="prospect-amt">$10k ask</span><span class="prospect-days days-warn">18d ago</span></div>
+                </div>
+              </div>
+
+              <div class="stage-col">
+                <div class="stage-header stage-sol"><span class="stage-name">Solicitation</span><span class="stage-count">6</span></div>
+                <div class="prospect-card" style="border-color:rgba(217,119,6,.3)">
+                  <div class="prospect-name">James &amp; Patricia O'Brien</div>
+                  <div class="prospect-org">Cathedral benefactor</div>
+                  <div class="prospect-row"><span class="prospect-amt" style="color:var(--amber)">$25k ask</span><span class="prospect-days days-warn">Call today</span></div>
+                </div>
+                <div class="prospect-card">
+                  <div class="prospect-name">Dr. Thomas Nguyen</div>
+                  <div class="prospect-org">New major gift prospect</div>
+                  <div class="prospect-row"><span class="prospect-amt">$20k ask</span><span class="prospect-days days-ok">2d ago</span></div>
+                </div>
+              </div>
+
+              <div class="stage-col">
+                <div class="stage-header stage-stew"><span class="stage-name">Stewardship</span><span class="stage-count">4</span></div>
+                <div class="prospect-card">
+                  <div class="prospect-name">Margaret Sullivan</div>
+                  <div class="prospect-org">Lifetime: $84,250</div>
+                  <div class="prospect-row"><span class="prospect-amt">$10k upgrade</span><span class="prospect-days days-warn">22d ago</span></div>
+                </div>
+                <div class="prospect-card">
+                  <div class="prospect-name">The Kowalski Family</div>
+                  <div class="prospect-org">Blessed Trinity Campaign</div>
+                  <div class="prospect-row"><span class="prospect-amt">$50k pledge</span><span class="prospect-days days-ok">8d ago</span></div>
+                </div>
+              </div>
+
+              <div class="stage-col">
+                <div class="stage-header stage-close"><span class="stage-name">Closed / won</span><span class="stage-count">1</span></div>
+                <div class="prospect-card" style="border-color:rgba(21,128,61,.3)">
+                  <div class="prospect-name">The Morrison Foundation</div>
+                  <div class="prospect-org">Corporate matching gift</div>
+                  <div class="prospect-row"><span class="prospect-amt" style="color:var(--green)">$100k gift</span><span class="prospect-days days-ok" style="background:#BBF7D0;color:var(--green)">Closed!</span></div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- LYBUNT alert — full width bottom -->
+        <div class="lybunt-card" style="grid-column:1/4">
+          <div class="lybunt-icon">
+            <svg viewBox="0 0 16 16" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round">
+              <path d="M8 2v7M8 12v.5"/><circle cx="8" cy="8" r="6.5"/>
+            </svg>
+          </div>
+          <div>
+            <div class="lybunt-title">LYBUNT alert — 47 donors at risk</div>
+            <div class="lybunt-text">47 donors gave in the same period last year but haven't given yet in FY2026. Combined last-year value: $62,400. Guru AI recommends a personalized outreach campaign before April 30.</div>
+            <button class="lybunt-btn">
+              <svg viewBox="0 0 11 11" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round"><circle cx="5" cy="5" r="4"/><path d="M3.5 5l1.5 1.5L8 3"/></svg>
+              View 47 LYBUNT donors
+            </button>
+          </div>
+        </div>
+
+      </div><!-- /dash-grid -->
+    </div><!-- /dash -->
+  </div><!-- /main -->
+
+  <script>
+    /* Task check toggle */
+    document.querySelectorAll('.task-check').forEach(cb => {
+      cb.addEventListener('click', e => {
+        e.stopPropagation();
+        const done = cb.dataset.done === '1';
+        cb.dataset.done = done ? '' : '1';
+        cb.style.background  = done ? '' : 'var(--blue)';
+        cb.style.borderColor = done ? '' : 'var(--blue)';
+        cb.innerHTML = done ? '' : `<svg viewBox="0 0 10 10" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M2 5l2 2 4-4"/></svg>`;
+        if (!done) {
+          const item = cb.closest('.task-item');
+          setTimeout(() => { item.style.opacity = '.4'; item.style.pointerEvents = 'none'; }, 300);
+        }
+      });
+    });
+
+    /* Guru AI query */
+    document.querySelector('.guru-send').addEventListener('click', () => {
+      const input = document.querySelector('.guru-query-input');
+      if (input.value.trim()) {
+        const q = input.value.trim();
+        input.value = '';
+        input.placeholder = 'Thinking…';
+        setTimeout(() => { input.placeholder = 'Ask Guru AI anything…'; }, 1200);
+      }
+    });
+    document.querySelector('.guru-query-input').addEventListener('keydown', e => {
+      if (e.key === 'Enter') document.querySelector('.guru-send').click();
+    });
+  </script>
+
+</body>
+</html>

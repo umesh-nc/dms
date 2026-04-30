@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GiveCentral Atlas — Donor 360 Profile</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:       #0E1E35;
+      --navy-2:     #152844;
+      --navy-3:     #1E3A5F;
+      --blue:       #2563EB;
+      --blue-mid:   #3B82F6;
+      --blue-light: #DBEAFE;
+      --blue-pale:  #EFF6FF;
+      --gold:       #B45309;
+      --gold-light: #FEF3C7;
+      --teal:       #0D9488;
+      --teal-light: #CCFBF1;
+      --rose:       #BE185D;
+      --rose-light: #FCE7F3;
+      --green:      #15803D;
+      --green-light:#DCFCE7;
+      --amber:      #D97706;
+      --amber-light:#FEF3C7;
+      --text:       #0F172A;
+      --text-2:     #334155;
+      --text-3:     #64748B;
+      --border:     #E2E8F0;
+      --surface:    #F8FAFC;
+      --white:      #FFFFFF;
+      --sidebar-w:  220px;
+    }
+
+    html { font-size: 14px; -webkit-font-smoothing: antialiased; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--surface); color: var(--text); min-height: 100vh; display: flex; }
+
+    /* ── Sidebar nav ── */
+    .sidebar {
+      width: var(--sidebar-w);
+      background: var(--navy);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+    }
+
+    .sidebar-logo {
+      padding: 18px 18px 14px;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+    }
+    .sidebar-logo-mark {
+      width: 30px; height: 30px;
+      background: var(--blue);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .sidebar-logo-mark svg { width: 15px; height: 15px; }
+    .sidebar-logo-text { display: flex; flex-direction: column; }
+    .sidebar-logo-name { font-family: 'DM Serif Display', serif; font-size: 15px; color: white; line-height: 1; }
+    .sidebar-logo-sub { font-size: 9px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.35); margin-top: 3px; }
+
+    .sidebar-search {
+      margin: 12px 12px 6px;
+      background: rgba(255,255,255,.07);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 8px;
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 12px;
+    }
+    .sidebar-search svg { width: 13px; height: 13px; color: rgba(255,255,255,.35); flex-shrink: 0; }
+    .sidebar-search input {
+      background: none; border: none; outline: none;
+      font-size: 12px; color: rgba(255,255,255,.6);
+      font-family: 'DM Sans', sans-serif; width: 100%;
+    }
+    .sidebar-search input::placeholder { color: rgba(255,255,255,.3); }
+
+    .nav-group { padding: 8px 8px 0; }
+    .nav-group-label { font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.3); padding: 0 10px; margin-bottom: 4px; }
+    .nav-item {
+      display: flex; align-items: center; gap: 9px;
+      padding: 8px 10px; border-radius: 7px;
+      font-size: 12px; font-weight: 500; color: rgba(255,255,255,.55);
+      cursor: pointer; transition: all .15s; margin-bottom: 1px;
+    }
+    .nav-item:hover { background: rgba(255,255,255,.07); color: rgba(255,255,255,.85); }
+    .nav-item.active { background: var(--blue); color: white; }
+    .nav-item svg { width: 14px; height: 14px; flex-shrink: 0; }
+    .nav-badge {
+      margin-left: auto; background: rgba(255,255,255,.12);
+      color: rgba(255,255,255,.6); border-radius: 10px;
+      padding: 1px 7px; font-size: 10px; font-weight: 600;
+    }
+    .nav-item.active .nav-badge { background: rgba(255,255,255,.2); color: white; }
+
+    .sidebar-user {
+      margin-top: auto;
+      padding: 12px;
+      border-top: 1px solid rgba(255,255,255,.08);
+      display: flex; align-items: center; gap: 9px;
+    }
+    .sidebar-avatar {
+      width: 30px; height: 30px; border-radius: 50%;
+      background: var(--blue); display: flex; align-items: center;
+      justify-content: center; font-size: 11px; font-weight: 700;
+      color: white; flex-shrink: 0;
+    }
+    .sidebar-user-name { font-size: 12px; font-weight: 500; color: rgba(255,255,255,.75); }
+    .sidebar-user-role { font-size: 10px; color: rgba(255,255,255,.35); margin-top: 1px; }
+
+    /* ── Main content ── */
+    .main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+
+    /* Topbar */
+    .topbar {
+      background: white;
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+      height: 52px;
+      display: flex; align-items: center; gap: 12px;
+      flex-shrink: 0;
+    }
+    .breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 12px; }
+    .breadcrumb a { color: var(--text-3); transition: color .15s; text-decoration: none; }
+    .breadcrumb a:hover { color: var(--blue); }
+    .breadcrumb svg { width: 10px; height: 10px; color: #CBD5E1; }
+    .breadcrumb span { color: var(--text); font-weight: 500; }
+    .topbar-actions { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+    .tb-btn {
+      padding: 6px 14px; border-radius: 7px;
+      font-size: 12px; font-weight: 500; cursor: pointer;
+      font-family: 'DM Sans', sans-serif; transition: all .15s;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .tb-btn svg { width: 12px; height: 12px; }
+    .tb-ghost { background: none; border: 1px solid var(--border); color: var(--text-2); }
+    .tb-ghost:hover { border-color: #94A3B8; background: var(--surface); }
+    .tb-primary { background: var(--blue); border: none; color: white; box-shadow: 0 1px 4px rgba(37,99,235,.3); }
+    .tb-primary:hover { background: #1D4ED8; }
+
+    /* Profile layout */
+    .profile-wrap { flex: 1; display: grid; grid-template-columns: 1fr 300px; gap: 0; min-height: 0; }
+
+    /* Profile main */
+    .profile-main { padding: 24px; overflow-y: auto; }
+
+    /* Hero card */
+    .hero-card {
+      background: white; border: 1px solid var(--border);
+      border-radius: 14px; overflow: hidden; margin-bottom: 18px;
+    }
+    .hero-banner {
+      height: 72px;
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-3) 100%);
+      position: relative;
+    }
+    .hero-banner-pattern {
+      position: absolute; inset: 0; opacity: .15;
+      background-image: radial-gradient(circle at 20% 50%, rgba(255,255,255,.4) 0%, transparent 60%),
+                        radial-gradient(circle at 80% 20%, rgba(59,130,246,.6) 0%, transparent 50%);
+    }
+    .hero-body { padding: 0 22px 20px; }
+    .hero-identity { display: flex; align-items: flex-end; gap: 16px; margin-bottom: 16px; margin-top: -26px; }
+    .donor-avatar {
+      width: 60px; height: 60px; border-radius: 50%;
+      background: var(--blue); border: 3px solid white;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'DM Serif Display', serif; font-size: 22px; color: white;
+      flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,.15);
+    }
+    .hero-name-wrap { padding-bottom: 4px; }
+    .donor-name { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--text); letter-spacing: -.01em; }
+    .donor-sub { font-size: 12px; color: var(--text-3); margin-top: 2px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .donor-tag {
+      display: inline-flex; align-items: center; gap: 4px;
+      background: var(--blue-light); color: #1D4ED8;
+      border-radius: 20px; padding: 2px 9px;
+      font-size: 10px; font-weight: 700; letter-spacing: .04em;
+    }
+
+    .hero-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+    .hero-stat { background: var(--surface); padding: 12px 14px; }
+    .hero-stat-label { font-size: 10px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--text-3); margin-bottom: 4px; }
+    .hero-stat-value { font-size: 20px; font-weight: 600; color: var(--text); font-family: 'DM Serif Display', serif; letter-spacing: -.02em; }
+    .hero-stat-sub { font-size: 10px; color: var(--text-3); margin-top: 2px; }
+    .hero-stat-value.green { color: var(--green); }
+    .hero-stat-value.blue { color: var(--blue); }
+
+    /* Tabs */
+    .profile-tabs { display: flex; gap: 0; border-bottom: 1px solid var(--border); margin-bottom: 18px; }
+    .profile-tab {
+      padding: 10px 16px; font-size: 12px; font-weight: 500;
+      color: var(--text-3); cursor: pointer; border-bottom: 2px solid transparent;
+      transition: all .15s; white-space: nowrap; margin-bottom: -1px;
+    }
+    .profile-tab:hover { color: var(--text-2); }
+    .profile-tab.active { color: var(--blue); border-bottom-color: var(--blue); font-weight: 600; }
+
+    /* Section */
+    .section { margin-bottom: 18px; }
+    .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .section-title { font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--text-3); }
+    .section-action { font-size: 11px; font-weight: 500; color: var(--blue); cursor: pointer; display: flex; align-items: center; gap: 4px; }
+    .section-action:hover { color: #1D4ED8; }
+    .section-action svg { width: 11px; height: 11px; }
+
+    /* Giving chart */
+    .chart-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+    .chart-bars { display: flex; align-items: flex-end; gap: 4px; height: 80px; margin-bottom: 6px; }
+    .chart-bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+    .chart-bar { width: 100%; border-radius: 3px 3px 0 0; min-height: 3px; transition: opacity .15s; cursor: pointer; }
+    .chart-bar:hover { opacity: .75; }
+    .chart-bar.current { background: var(--blue); }
+    .chart-bar.past { background: var(--blue-light); }
+    .chart-bar.zero { background: #F1F5F9; min-height: 6px; border-radius: 3px; }
+    .chart-label { font-size: 10px; color: var(--text-3); }
+    .chart-legend { display: flex; gap: 14px; font-size: 10px; color: var(--text-3); margin-top: 4px; }
+    .chart-legend-item { display: flex; align-items: center; gap: 5px; }
+    .chart-legend-dot { width: 8px; height: 8px; border-radius: 2px; }
+
+    /* Gift table */
+    .gift-table { width: 100%; border-collapse: collapse; }
+    .gift-table th { font-size: 10px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--text-3); padding: 6px 12px; text-align: left; background: var(--surface); border-bottom: 1px solid var(--border); }
+    .gift-table th:first-child { border-radius: 8px 0 0 0; }
+    .gift-table th:last-child { border-radius: 0 8px 0 0; }
+    .gift-table td { padding: 10px 12px; font-size: 12px; border-bottom: .5px solid var(--border); color: var(--text-2); vertical-align: middle; }
+    .gift-table tr:last-child td { border-bottom: none; }
+    .gift-table tr:hover td { background: var(--blue-pale); }
+    .gift-status { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 20px; font-size: 10px; font-weight: 600; }
+    .status-received { background: var(--green-light); color: var(--green); }
+    .status-pledge   { background: var(--amber-light); color: var(--amber); }
+    .status-recurring{ background: var(--blue-light); color: #1D4ED8; }
+    .status-dot { width: 5px; height: 5px; border-radius: 50%; }
+
+    /* Activity feed */
+    .activity-feed { display: flex; flex-direction: column; gap: 0; }
+    .activity-item {
+      display: flex; gap: 12px; padding: 10px 0;
+      border-bottom: .5px solid var(--border);
+    }
+    .activity-item:last-child { border-bottom: none; }
+    .activity-icon {
+      width: 28px; height: 28px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; margin-top: 1px;
+    }
+    .activity-icon svg { width: 13px; height: 13px; }
+    .ai-gift   { background: var(--green-light); color: var(--green); }
+    .ai-email  { background: var(--blue-light);  color: #1D4ED8; }
+    .ai-note   { background: var(--amber-light); color: var(--amber); }
+    .ai-task   { background: var(--teal-light);  color: var(--teal); }
+    .ai-pledge { background: var(--rose-light);  color: var(--rose); }
+    .activity-body { flex: 1; min-width: 0; }
+    .activity-text { font-size: 12px; color: var(--text-2); line-height: 1.5; }
+    .activity-text strong { color: var(--text); font-weight: 600; }
+    .activity-meta { font-size: 10px; color: var(--text-3); margin-top: 3px; }
+    .activity-amount { font-size: 13px; font-weight: 600; color: var(--green); flex-shrink: 0; align-self: flex-start; margin-top: 3px; }
+
+    /* Pledge progress */
+    .pledge-row { display: flex; flex-direction: column; gap: 6px; padding: 12px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 8px; }
+    .pledge-header { display: flex; justify-content: space-between; align-items: center; }
+    .pledge-name { font-size: 12px; font-weight: 500; color: var(--text); }
+    .pledge-meta { font-size: 11px; color: var(--text-3); }
+    .pledge-progress { height: 5px; background: #E2E8F0; border-radius: 3px; overflow: hidden; }
+    .pledge-fill { height: 100%; border-radius: 3px; background: var(--blue); }
+    .pledge-footer { display: flex; justify-content: space-between; font-size: 10px; color: var(--text-3); }
+
+    /* ── Right panel ── */
+    .profile-side {
+      background: white;
+      border-left: 1px solid var(--border);
+      padding: 20px;
+      overflow-y: auto;
+      display: flex; flex-direction: column; gap: 20px;
+    }
+
+    .side-section-title { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--text-3); margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; }
+    .side-edit { font-size: 10px; color: var(--blue); cursor: pointer; font-weight: 500; letter-spacing: 0; text-transform: none; }
+
+    /* Contact details */
+    .contact-list { display: flex; flex-direction: column; gap: 8px; }
+    .contact-item { display: flex; align-items: flex-start; gap: 9px; font-size: 12px; }
+    .contact-icon { width: 26px; height: 26px; background: var(--surface); border: 1px solid var(--border); border-radius: 7px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .contact-icon svg { width: 12px; height: 12px; color: var(--text-3); }
+    .contact-label { font-size: 10px; color: var(--text-3); }
+    .contact-value { color: var(--text-2); font-weight: 500; }
+    .contact-preferred { font-size: 9px; color: var(--teal); font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
+
+    /* Tags */
+    .tags-wrap { display: flex; flex-wrap: wrap; gap: 6px; }
+    .tag-pill {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 500;
+      border: 1px solid var(--border); color: var(--text-2); cursor: pointer;
+      transition: all .15s;
+    }
+    .tag-pill:hover { border-color: var(--blue-mid); color: var(--blue); background: var(--blue-pale); }
+    .tag-pill.major { background: var(--gold-light); color: var(--gold); border-color: rgba(180,83,9,.2); }
+    .tag-pill.recurring { background: var(--blue-light); color: #1D4ED8; border-color: rgba(37,99,235,.2); }
+    .tag-pill.faith { background: var(--teal-light); color: var(--teal); border-color: rgba(13,148,136,.2); }
+
+    /* Score card */
+    .score-card { background: var(--navy); border-radius: 10px; padding: 14px; }
+    .score-title { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: rgba(255,255,255,.45); margin-bottom: 12px; }
+    .score-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+    .score-row:last-child { margin-bottom: 0; }
+    .score-label { font-size: 11px; color: rgba(255,255,255,.6); flex: 1; }
+    .score-bar-wrap { flex: 2; height: 5px; background: rgba(255,255,255,.1); border-radius: 3px; overflow: hidden; }
+    .score-fill { height: 100%; border-radius: 3px; }
+    .sf-high { background: #34D399; }
+    .sf-mid  { background: #60A5FA; }
+    .sf-low  { background: #F59E0B; }
+    .score-num { font-size: 11px; font-weight: 700; color: white; min-width: 28px; text-align: right; }
+
+    /* Relationships */
+    .rel-list { display: flex; flex-direction: column; gap: 8px; }
+    .rel-item { display: flex; align-items: center; gap: 10px; padding: 8px 10px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; cursor: pointer; transition: border-color .15s; }
+    .rel-item:hover { border-color: var(--blue-mid); }
+    .rel-avatar { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+    .rel-name { font-size: 12px; font-weight: 500; color: var(--text); }
+    .rel-type { font-size: 10px; color: var(--text-3); }
+
+    /* Next actions */
+    .tasks-list { display: flex; flex-direction: column; gap: 6px; }
+    .task-item { display: flex; align-items: flex-start; gap: 9px; padding: 9px 11px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+    .task-check { width: 16px; height: 16px; border: 1.5px solid var(--border); border-radius: 4px; flex-shrink: 0; margin-top: 1px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .15s; }
+    .task-check:hover { border-color: var(--blue); }
+    .task-text { font-size: 12px; color: var(--text-2); line-height: 1.4; flex: 1; }
+    .task-due { font-size: 10px; margin-top: 3px; font-weight: 500; }
+    .due-soon { color: var(--amber); }
+    .due-ok   { color: var(--text-3); }
+    .task-overdue .task-text { color: var(--rose); }
+    .task-overdue .task-check { border-color: var(--rose); }
+
+    /* AI insight banner */
+    .ai-banner {
+      background: var(--navy); border-radius: 10px; padding: 13px 14px;
+      display: flex; gap: 10px;
+    }
+    .ai-icon {
+      width: 28px; height: 28px; background: var(--blue); border-radius: 8px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .ai-icon svg { width: 13px; height: 13px; }
+    .ai-title { font-size: 11px; font-weight: 600; color: white; margin-bottom: 3px; }
+    .ai-text { font-size: 11px; color: rgba(255,255,255,.6); line-height: 1.5; }
+    .ai-action { font-size: 10px; color: #60A5FA; font-weight: 600; cursor: pointer; margin-top: 6px; display: inline-block; }
+
+    /* Animations */
+    @keyframes fadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+    .hero-card  { animation: fadeUp .35s ease forwards; }
+    .section    { animation: fadeUp .35s ease .05s forwards; opacity: 0; }
+    .section:nth-child(3) { animation-delay: .1s; }
+    .section:nth-child(4) { animation-delay: .15s; }
+    .section:nth-child(5) { animation-delay: .2s; }
+    .profile-side > * { animation: fadeUp .3s ease .08s forwards; opacity: 0; }
+    .profile-side > *:nth-child(2) { animation-delay: .12s; }
+    .profile-side > *:nth-child(3) { animation-delay: .16s; }
+    .profile-side > *:nth-child(4) { animation-delay: .2s; }
+    .profile-side > *:nth-child(5) { animation-delay: .24s; }
+    .profile-side > *:nth-child(6) { animation-delay: .28s; }
+
+    /* Panel tabs */
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+  </style>
+</head>
+<body>
+
+  <!-- ══════════════ SIDEBAR ══════════════ -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-mark">
+        <svg viewBox="0 0 18 18" fill="none">
+          <circle cx="9" cy="9" r="7.5" stroke="white" stroke-width="1.5"/>
+          <path d="M5.5 9.5C6.5 11.5 9 13 9 13s2.5-1.5 3.5-3.5S12 5 9 5 4.5 7.5 5.5 9.5z" fill="white" fill-opacity=".9"/>
+        </svg>
+      </div>
+      <div class="sidebar-logo-text">
+        <span class="sidebar-logo-name">GiveCentral</span>
+        <span class="sidebar-logo-sub">Atlas CRM</span>
+      </div>
+    </div>
+
+    <div class="sidebar-search">
+      <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+        <circle cx="6" cy="6" r="4.5"/><path d="M9.5 9.5l2.5 2.5"/>
+      </svg>
+      <input type="text" placeholder="Search donors…">
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-label">Main</div>
+      <div class="nav-item">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+          <rect x="1.5" y="1.5" width="4" height="4" rx="1.2"/><rect x="8.5" y="1.5" width="4" height="4" rx="1.2"/>
+          <rect x="1.5" y="8.5" width="4" height="4" rx="1.2"/><rect x="8.5" y="8.5" width="4" height="4" rx="1.2"/>
+        </svg>
+        Dashboard
+      </div>
+      <div class="nav-item active">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+          <circle cx="6" cy="4.5" r="3"/><path d="M1 13c0-2.8 2.2-5 5-5h1c2.8 0 5 2.2 5 5"/>
+        </svg>
+        Donors
+        <span class="nav-badge">3.8k</span>
+      </div>
+      <div class="nav-item">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+          <path d="M7 1.5v11M2 6.5h10"/>
+        </svg>
+        Gifts &amp; pledges
+        <span class="nav-badge">142</span>
+      </div>
+      <div class="nav-item">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+          <path d="M1.5 8.5l2.5-2.5 2 2 2.5-2.5 2 2"/>
+          <rect x="1.5" y="1.5" width="11" height="11" rx="2"/>
+        </svg>
+        Campaigns
+      </div>
+      <div class="nav-item">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+          <path d="M1.5 3h11M1.5 7h7M1.5 11h5"/>
+        </svg>
+        Reports
+      </div>
+    </div>
+
+    <div class="nav-group" style="margin-top:8px">
+      <div class="nav-group-label">Fundraising</div>
+      <div class="nav-item">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+          <circle cx="7" cy="7" r="5.5"/><path d="M7 4v4M7 10v.5"/>
+        </svg>
+        Prospect pipeline
+        <span class="nav-badge">28</span>
+      </div>
+      <div class="nav-item">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+          <rect x="1.5" y="2.5" width="11" height="9" rx="1.5"/>
+          <path d="M1.5 6h11M5 2.5v2M9 2.5v2"/>
+        </svg>
+        Tasks &amp; reminders
+        <span class="nav-badge">7</span>
+      </div>
+      <div class="nav-item">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+          <path d="M2 3.5h10v7H2zM2 6.5h10M5 3.5v3"/>
+        </svg>
+        Communications
+      </div>
+    </div>
+
+    <div class="nav-group" style="margin-top:8px">
+      <div class="nav-group-label">Intelligence</div>
+      <div class="nav-item">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+          <circle cx="7" cy="5" r="3.5"/>
+          <path d="M5 10c0 2 4 2 4 0M4.5 8.5c-2 1-3 3.5-3 4.5M9.5 8.5c2 1 3 3.5 3 4.5"/>
+        </svg>
+        Guru AI
+      </div>
+    </div>
+
+    <div class="sidebar-user">
+      <div class="sidebar-avatar">SR</div>
+      <div>
+        <div class="sidebar-user-name">Sarah Reynolds</div>
+        <div class="sidebar-user-role">Development Director</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ══════════════ MAIN ══════════════ -->
+  <div class="main">
+
+    <!-- Topbar -->
+    <div class="topbar">
+      <div class="breadcrumb">
+        <a href="#">Donors</a>
+        <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 2l4 3-4 3"/></svg>
+        <span>Margaret T. Sullivan</span>
+      </div>
+      <div class="topbar-actions">
+        <button class="tb-btn tb-ghost">
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M2 3.5h8M2 6h5M2 8.5h6"/></svg>
+          Log activity
+        </button>
+        <button class="tb-btn tb-ghost">
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><rect x="1.5" y="2.5" width="9" height="7" rx="1.2"/><path d="M1.5 5h9"/></svg>
+          Add task
+        </button>
+        <button class="tb-btn tb-ghost">
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><rect x="1.5" y="2" width="9" height="8" rx="1.2"/><path d="M1.5 5h9M4.5 2v2M7.5 2v2"/></svg>
+          Schedule
+        </button>
+        <button class="tb-btn tb-primary">
+          <svg viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="1.4" stroke-linecap="round"><path d="M6 1v10M1 6h10"/></svg>
+          Record gift
+        </button>
+      </div>
+    </div>
+
+    <!-- Profile grid -->
+    <div class="profile-wrap">
+
+      <!-- ── MAIN COLUMN ── -->
+      <div class="profile-main">
+
+        <!-- Hero card -->
+        <div class="hero-card">
+          <div class="hero-banner"><div class="hero-banner-pattern"></div></div>
+          <div class="hero-body">
+            <div class="hero-identity">
+              <div class="donor-avatar">MS</div>
+              <div class="hero-name-wrap">
+                <div class="donor-name">Margaret T. Sullivan</div>
+                <div class="donor-sub">
+                  <span class="donor-tag">Major Donor</span>
+                  <span>St. Michael's Parish · Tampa, FL</span>
+                  <span>·</span>
+                  <span>Donor since 2011</span>
+                </div>
+              </div>
+            </div>
+            <div class="hero-stats">
+              <div class="hero-stat">
+                <div class="hero-stat-label">Lifetime giving</div>
+                <div class="hero-stat-value green">$84,250</div>
+                <div class="hero-stat-sub">Since 2011</div>
+              </div>
+              <div class="hero-stat">
+                <div class="hero-stat-label">This fiscal year</div>
+                <div class="hero-stat-value blue">$12,500</div>
+                <div class="hero-stat-sub">3 gifts · on track</div>
+              </div>
+              <div class="hero-stat">
+                <div class="hero-stat-label">Open pledge</div>
+                <div class="hero-stat-value">$5,000</div>
+                <div class="hero-stat-sub">CMA 2026 · 62% paid</div>
+              </div>
+              <div class="hero-stat">
+                <div class="hero-stat-label">Last gift</div>
+                <div class="hero-stat-value">$2,500</div>
+                <div class="hero-stat-sub">Mar 15, 2026</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Profile tabs -->
+        <div class="profile-tabs">
+          <div class="profile-tab active" onclick="switchTab('overview',this)">Overview</div>
+          <div class="profile-tab" onclick="switchTab('gifts',this)">Gifts &amp; pledges</div>
+          <div class="profile-tab" onclick="switchTab('comms',this)">Communications</div>
+          <div class="profile-tab" onclick="switchTab('relationships',this)">Relationships</div>
+        </div>
+
+        <!-- OVERVIEW TAB -->
+        <div class="tab-content active" id="tab-overview">
+
+          <!-- Giving history chart -->
+          <div class="section">
+            <div class="section-header">
+              <span class="section-title">Giving history</span>
+              <span class="section-action">View all gifts <svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 5.5h7M6 2.5l3 3-3 3"/></svg></span>
+            </div>
+            <div class="chart-wrap">
+              <div class="chart-bars" id="giving-chart">
+                <!-- JS fills this -->
+              </div>
+              <div class="chart-legend">
+                <div class="chart-legend-item"><div class="chart-legend-dot" style="background:var(--blue)"></div>This year</div>
+                <div class="chart-legend-item"><div class="chart-legend-dot" style="background:var(--blue-light)"></div>Prior years</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent gifts -->
+          <div class="section">
+            <div class="section-header">
+              <span class="section-title">Recent gifts</span>
+              <span class="section-action">All gifts <svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 5.5h7M6 2.5l3 3-3 3"/></svg></span>
+            </div>
+            <table class="gift-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Campaign / fund</th>
+                  <th>Type</th>
+                  <th>Amount</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Mar 15, 2026</td>
+                  <td>Catholic Ministry Appeal</td>
+                  <td>Online gift</td>
+                  <td style="font-weight:600;color:var(--text)">$2,500.00</td>
+                  <td><span class="gift-status status-received"><span class="status-dot" style="background:var(--green)"></span>Received</span></td>
+                </tr>
+                <tr>
+                  <td>Jan 3, 2026</td>
+                  <td>CMA 2026 Pledge — installment 2</td>
+                  <td>Pledge payment</td>
+                  <td style="font-weight:600;color:var(--text)">$1,000.00</td>
+                  <td><span class="gift-status status-received"><span class="status-dot" style="background:var(--green)"></span>Received</span></td>
+                </tr>
+                <tr>
+                  <td>Nov 28, 2025</td>
+                  <td>Giving Tuesday · St. Michael's</td>
+                  <td>Online gift</td>
+                  <td style="font-weight:600;color:var(--text)">$500.00</td>
+                  <td><span class="gift-status status-received"><span class="status-dot" style="background:var(--green)"></span>Received</span></td>
+                </tr>
+                <tr>
+                  <td>Sep 10, 2025</td>
+                  <td>CMA 2026 Pledge — installment 1</td>
+                  <td>Pledge payment</td>
+                  <td style="font-weight:600;color:var(--text)">$2,100.00</td>
+                  <td><span class="gift-status status-received"><span class="status-dot" style="background:var(--green)"></span>Received</span></td>
+                </tr>
+                <tr>
+                  <td>Jun 15, 2026</td>
+                  <td>CMA 2026 Pledge — installment 3</td>
+                  <td>Pledge</td>
+                  <td style="font-weight:600;color:var(--amber)">$1,900.00</td>
+                  <td><span class="gift-status status-pledge"><span class="status-dot" style="background:var(--amber)"></span>Pending</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Open pledge -->
+          <div class="section">
+            <div class="section-header">
+              <span class="section-title">Open pledges</span>
+              <span class="section-action">Manage pledges <svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 5.5h7M6 2.5l3 3-3 3"/></svg></span>
+            </div>
+            <div class="pledge-row">
+              <div class="pledge-header">
+                <div class="pledge-name">Catholic Ministry Appeal 2026</div>
+                <div style="font-size:12px;font-weight:600;color:var(--text)">$3,100 / $5,000</div>
+              </div>
+              <div class="pledge-progress"><div class="pledge-fill" style="width:62%"></div></div>
+              <div class="pledge-footer">
+                <span>62% paid · 2 installments remaining</span>
+                <span style="color:var(--amber);font-weight:500">Next: $1,900 due Jun 15</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Activity timeline -->
+          <div class="section">
+            <div class="section-header">
+              <span class="section-title">Activity timeline</span>
+              <span class="section-action">All activity <svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 5.5h7M6 2.5l3 3-3 3"/></svg></span>
+            </div>
+            <div class="activity-feed">
+              <div class="activity-item">
+                <div class="activity-icon ai-gift">
+                  <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M6.5 1v11M1.5 6.5h10"/></svg>
+                </div>
+                <div class="activity-body">
+                  <div class="activity-text"><strong>Gift received</strong> — $2,500 to Catholic Ministry Appeal via GiveCentral online</div>
+                  <div class="activity-meta">Mar 15, 2026 · Auto-synced from GiveCentral</div>
+                </div>
+                <div class="activity-amount">+$2,500</div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-icon ai-note">
+                  <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M2 2.5h9v8H2z"/><path d="M4 5h5M4 7.5h3"/></svg>
+                </div>
+                <div class="activity-body">
+                  <div class="activity-text"><strong>Note added</strong> — Called to thank for gift. Margaret mentioned interest in the new capital campaign for the Cathedral. Follow up in Q3.</div>
+                  <div class="activity-meta">Mar 16, 2026 · Added by Sarah Reynolds</div>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-icon ai-email">
+                  <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><rect x="1.5" y="3" width="10" height="7.5" rx="1.2"/><path d="M1.5 5l5 3.5 5-3.5"/></svg>
+                </div>
+                <div class="activity-body">
+                  <div class="activity-text"><strong>Email sent</strong> — Thank you letter + 2025 tax summary delivered to margaret.sullivan@gmail.com</div>
+                  <div class="activity-meta">Jan 12, 2026 · Auto-generated</div>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-icon ai-task">
+                  <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="6.5" cy="6.5" r="5"/><path d="M4.5 6.5l1.5 1.5 3-3"/></svg>
+                </div>
+                <div class="activity-body">
+                  <div class="activity-text"><strong>Task completed</strong> — Year-end stewardship call completed. Discussed diocesan programs she supports.</div>
+                  <div class="activity-meta">Dec 18, 2025 · Completed by Sarah Reynolds</div>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-icon ai-pledge">
+                  <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M2 10.5l2.5-2.5 2 2 2.5-2.5 2 2"/><rect x="2" y="2.5" width="9" height="8" rx="1.2"/></svg>
+                </div>
+                <div class="activity-body">
+                  <div class="activity-text"><strong>Pledge created</strong> — $5,000 pledge to CMA 2026, 3 annual installments. Signed pledge card received.</div>
+                  <div class="activity-meta">Aug 22, 2025 · Added by Sarah Reynolds</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /tab-overview -->
+
+        <!-- GIFTS TAB (stub) -->
+        <div class="tab-content" id="tab-gifts">
+          <div style="padding:20px;text-align:center;color:var(--text-3);font-size:13px">Full gift & pledge ledger — click Overview to see the preview</div>
+        </div>
+        <div class="tab-content" id="tab-comms">
+          <div style="padding:20px;text-align:center;color:var(--text-3);font-size:13px">Full communication history — click Overview to see the preview</div>
+        </div>
+        <div class="tab-content" id="tab-relationships">
+          <div style="padding:20px;text-align:center;color:var(--text-3);font-size:13px">Full relationship map — click Overview to see the preview</div>
+        </div>
+
+      </div><!-- /profile-main -->
+
+      <!-- ── RIGHT PANEL ── -->
+      <div class="profile-side">
+
+        <!-- AI Insight -->
+        <div>
+          <div class="ai-banner">
+            <div class="ai-icon">
+              <svg viewBox="0 0 13 13" fill="none" stroke="white" stroke-width="1.3" stroke-linecap="round">
+                <circle cx="6.5" cy="4.5" r="3.5"/>
+                <path d="M4.5 9c0 2 4 2 4 0M3.5 8c-2 1-3 3.5-3 4.5M9.5 8c2 1 3 3.5 3 4.5"/>
+              </svg>
+            </div>
+            <div>
+              <div class="ai-title">Guru AI insight</div>
+              <div class="ai-text">Margaret's giving is up 18% vs. last year and she mentioned Cathedral interest. Strong upgrade candidate for a $10k ask in Q3 before the capital campaign launch.</div>
+              <span class="ai-action">Ask Guru AI about Margaret →</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contact -->
+        <div>
+          <div class="side-section-title">Contact <span class="side-edit">Edit</span></div>
+          <div class="contact-list">
+            <div class="contact-item">
+              <div class="contact-icon"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><rect x="1.5" y="2" width="9" height="8" rx="1.2"/><path d="M1.5 5l4.5 3 4.5-3"/></svg></div>
+              <div>
+                <div class="contact-label">Email <span class="contact-preferred">preferred</span></div>
+                <div class="contact-value">margaret.sullivan@gmail.com</div>
+              </div>
+            </div>
+            <div class="contact-item">
+              <div class="contact-icon"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M2 2.5s1.2-.8 2 .8l.8 1.6s.4.8-.4 1.6l-.4.4s1.6 2.4 4 3.6l.4-.4s.8-.8 1.6-.4l1.6.8s1.6.8.8 2c0 0-1.2 2-4 .8S1.6 10 .8 7.6 2 2.5 2 2.5z"/></svg></div>
+              <div>
+                <div class="contact-label">Mobile</div>
+                <div class="contact-value">(727) 555-0142</div>
+              </div>
+            </div>
+            <div class="contact-item">
+              <div class="contact-icon"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M6 1C4 1 2.5 2.5 2.5 4.5c0 2.7 3.5 6.5 3.5 6.5s3.5-3.8 3.5-6.5C9.5 2.5 8 1 6 1z"/><circle cx="6" cy="4.5" r="1.2"/></svg></div>
+              <div>
+                <div class="contact-label">Address</div>
+                <div class="contact-value">14 Bayshore Blvd, Tampa FL 33606</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tags / segments -->
+        <div>
+          <div class="side-section-title">Segments &amp; tags <span class="side-edit">Manage</span></div>
+          <div class="tags-wrap">
+            <span class="tag-pill major">Major donor</span>
+            <span class="tag-pill recurring">Recurring</span>
+            <span class="tag-pill faith">Faith leader</span>
+            <span class="tag-pill">Capital campaign</span>
+            <span class="tag-pill">Education</span>
+            <span class="tag-pill">LYBUNT</span>
+          </div>
+        </div>
+
+        <!-- Donor scores -->
+        <div>
+          <div class="score-card">
+            <div class="score-title">Donor intelligence · Guru AI</div>
+            <div class="score-row">
+              <span class="score-label">Retention likelihood</span>
+              <div class="score-bar-wrap"><div class="score-fill sf-high" style="width:92%"></div></div>
+              <span class="score-num">92</span>
+            </div>
+            <div class="score-row">
+              <span class="score-label">Upgrade propensity</span>
+              <div class="score-bar-wrap"><div class="score-fill sf-mid" style="width:78%"></div></div>
+              <span class="score-num">78</span>
+            </div>
+            <div class="score-row">
+              <span class="score-label">Wealth capacity</span>
+              <div class="score-bar-wrap"><div class="score-fill sf-mid" style="width:70%"></div></div>
+              <span class="score-num">70</span>
+            </div>
+            <div class="score-row">
+              <span class="score-label">Engagement score</span>
+              <div class="score-bar-wrap"><div class="score-fill sf-low" style="width:55%"></div></div>
+              <span class="score-num">55</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Relationships -->
+        <div>
+          <div class="side-section-title">Relationships <span class="side-edit">Add</span></div>
+          <div class="rel-list">
+            <div class="rel-item">
+              <div class="rel-avatar" style="background:#DBEAFE;color:#1D4ED8">TS</div>
+              <div>
+                <div class="rel-name">Thomas Sullivan</div>
+                <div class="rel-type">Spouse · $31,200 lifetime</div>
+              </div>
+            </div>
+            <div class="rel-item">
+              <div class="rel-avatar" style="background:#DCFCE7;color:#15803D">St</div>
+              <div>
+                <div class="rel-name">St. Michael's Parish</div>
+                <div class="rel-type">Parish · 14 year member</div>
+              </div>
+            </div>
+            <div class="rel-item">
+              <div class="rel-avatar" style="background:#FEF3C7;color:#B45309">JS</div>
+              <div>
+                <div class="rel-name">Jennifer Sullivan</div>
+                <div class="rel-type">Daughter · Soft-credited</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Upcoming tasks -->
+        <div>
+          <div class="side-section-title">Tasks <span class="side-edit">Add</span></div>
+          <div class="tasks-list">
+            <div class="task-item task-overdue">
+              <div class="task-check">
+                <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" style="display:none"><path d="M2 5l2 2 4-4"/></svg>
+              </div>
+              <div>
+                <div class="task-text">Follow up on Cathedral campaign interest — mentioned in Mar 16 call note</div>
+                <div class="task-due due-soon">Due Apr 1 · Overdue</div>
+              </div>
+            </div>
+            <div class="task-item">
+              <div class="task-check"></div>
+              <div>
+                <div class="task-text">Send pledge reminder for Jun 15 installment ($1,900)</div>
+                <div class="task-due due-ok">Due May 28</div>
+              </div>
+            </div>
+            <div class="task-item">
+              <div class="task-check"></div>
+              <div>
+                <div class="task-text">Q3 major gift cultivation call — propose $10k Cathedral ask</div>
+                <div class="task-due due-ok">Due Jul 15</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /profile-side -->
+
+    </div><!-- /profile-wrap -->
+  </div><!-- /main -->
+
+  <script>
+    /* ── Giving history chart ── */
+    const years = ['2017','2018','2019','2020','2021','2022','2023','2024','2025','2026'];
+    const amounts = [3200, 4500, 5000, 2800, 6500, 7200, 9000, 11200, 10500, 12500];
+    const maxAmt = Math.max(...amounts);
+    const chartEl = document.getElementById('giving-chart');
+
+    years.forEach((yr, i) => {
+      const pct = (amounts[i] / maxAmt) * 100;
+      const isCurrent = i === years.length - 1;
+      const wrap = document.createElement('div');
+      wrap.className = 'chart-bar-wrap';
+      wrap.title = `${yr}: $${amounts[i].toLocaleString()}`;
+      const bar = document.createElement('div');
+      bar.className = 'chart-bar ' + (pct < 5 ? 'zero' : isCurrent ? 'current' : 'past');
+      bar.style.height = Math.max(pct, 4) + '%';
+      const lbl = document.createElement('div');
+      lbl.className = 'chart-label';
+      lbl.textContent = yr.slice(2);
+      wrap.appendChild(bar);
+      wrap.appendChild(lbl);
+      chartEl.appendChild(wrap);
+    });
+
+    /* ── Tab switcher ── */
+    function switchTab(id, el) {
+      document.querySelectorAll('.profile-tab').forEach(t => t.classList.remove('active'));
+      el.classList.add('active');
+      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+      document.getElementById('tab-' + id).classList.add('active');
+    }
+
+    /* ── Task check toggle ── */
+    document.querySelectorAll('.task-check').forEach(cb => {
+      cb.addEventListener('click', () => {
+        cb.style.background = cb.style.background ? '' : 'var(--blue)';
+        cb.style.borderColor = cb.style.borderColor === 'var(--blue)' ? 'var(--border)' : 'var(--blue)';
+      });
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GiveCentral Atlas — Batch Gift Entry</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:        #0E1E35;
+      --blue:        #2563EB;
+      --blue-mid:    #3B82F6;
+      --blue-light:  #DBEAFE;
+      --blue-pale:   #EFF6FF;
+      --green:       #15803D;
+      --green-light: #DCFCE7;
+      --amber:       #D97706;
+      --amber-light: #FEF3C7;
+      --rose:        #BE185D;
+      --rose-light:  #FCE7F3;
+      --teal:        #0D9488;
+      --teal-light:  #CCFBF1;
+      --text:        #0F172A;
+      --text-2:      #334155;
+      --text-3:      #64748B;
+      --border:      #E2E8F0;
+      --surface:     #F8FAFC;
+      --white:       #FFFFFF;
+    }
+
+    html { font-size: 14px; -webkit-font-smoothing: antialiased; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--surface); color: var(--text); min-height: 100vh; display: flex; }
+
+    /* ══ SIDEBAR ══ */
+    .sidebar {
+      width: 220px; background: var(--navy); min-height: 100vh;
+      display: flex; flex-direction: column; flex-shrink: 0;
+      position: sticky; top: 0; height: 100vh; overflow-y: auto;
+    }
+    .sidebar-logo {
+      padding: 18px 18px 14px; display: flex; align-items: center; gap: 9px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+    }
+    .logo-mark { width: 30px; height: 30px; background: var(--blue); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+    .logo-mark svg { width: 15px; height: 15px; }
+    .logo-name { font-family: 'DM Serif Display', serif; font-size: 15px; color: white; line-height: 1; }
+    .logo-sub  { font-size: 9px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.3); margin-top: 3px; }
+
+    .nav-group { padding: 10px 8px 0; }
+    .nav-label { font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.28); padding: 0 10px; margin-bottom: 4px; }
+    .nav-item  { display: flex; align-items: center; gap: 9px; padding: 8px 10px; border-radius: 7px; font-size: 12px; font-weight: 500; color: rgba(255,255,255,.55); cursor: pointer; transition: all .15s; margin-bottom: 1px; }
+    .nav-item:hover  { background: rgba(255,255,255,.07); color: rgba(255,255,255,.85); }
+    .nav-item.active { background: var(--blue); color: white; }
+    .nav-item svg    { width: 14px; height: 14px; flex-shrink: 0; }
+    .nav-badge { margin-left: auto; background: rgba(255,255,255,.1); color: rgba(255,255,255,.5); border-radius: 10px; padding: 1px 7px; font-size: 10px; font-weight: 600; }
+
+    .sidebar-user { margin-top: auto; padding: 12px; border-top: 1px solid rgba(255,255,255,.08); display: flex; align-items: center; gap: 9px; }
+    .user-avatar { width: 30px; height: 30px; border-radius: 50%; background: var(--blue); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: white; flex-shrink: 0; }
+    .user-name { font-size: 12px; font-weight: 500; color: rgba(255,255,255,.75); }
+    .user-role { font-size: 10px; color: rgba(255,255,255,.35); margin-top: 1px; }
+
+    /* ══ MAIN ══ */
+    .main { flex: 1; min-width: 0; display: flex; flex-direction: column; overflow: hidden; }
+
+    .topbar {
+      background: white; border-bottom: 1px solid var(--border);
+      padding: 0 24px; height: 52px;
+      display: flex; align-items: center; gap: 12px; flex-shrink: 0;
+    }
+    .topbar-back {
+      width: 30px; height: 30px; border: 1px solid var(--border); border-radius: 7px;
+      display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background .15s;
+    }
+    .topbar-back:hover { background: var(--surface); }
+    .topbar-back svg { width: 13px; height: 13px; color: var(--text-2); }
+    .breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-3); }
+    .breadcrumb a { color: var(--text-3); transition: color .15s; cursor: pointer; }
+    .breadcrumb a:hover { color: var(--blue); }
+    .breadcrumb svg { width: 10px; height: 10px; color: #CBD5E1; }
+    .breadcrumb span { color: var(--text); font-weight: 500; }
+    .topbar-right { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+    .tb-btn { padding: 6px 14px; border-radius: 7px; font-size: 12px; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .15s; display: flex; align-items: center; gap: 6px; }
+    .tb-btn svg { width: 12px; height: 12px; }
+    .tb-ghost   { background: none; border: 1px solid var(--border); color: var(--text-2); }
+    .tb-ghost:hover { background: var(--surface); border-color: #94A3B8; }
+    .tb-blue    { background: var(--blue); border: none; color: white; box-shadow: 0 1px 4px rgba(37,99,235,.3); }
+    .tb-blue:hover { background: #1D4ED8; }
+    .tb-green   { background: var(--green); border: none; color: white; box-shadow: 0 1px 4px rgba(21,128,61,.25); }
+    .tb-green:hover { background: #166534; }
+
+    /* ══ CONTENT ══ */
+    .content { flex: 1; display: grid; grid-template-columns: 1fr 280px; min-height: 0; overflow: hidden; }
+
+    /* ══ BATCH TABLE AREA ══ */
+    .table-area { display: flex; flex-direction: column; overflow: hidden; min-height: 0; }
+
+    /* Batch header bar */
+    .batch-header {
+      background: white; border-bottom: 1px solid var(--border);
+      padding: 12px 20px; display: flex; align-items: center; gap: 14px; flex-shrink: 0; flex-wrap: wrap;
+    }
+    .batch-name-wrap { display: flex; align-items: center; gap: 8px; }
+    .batch-name-input {
+      font-size: 14px; font-weight: 600; color: var(--text);
+      border: none; outline: none; background: none;
+      font-family: 'DM Sans', sans-serif; width: 220px;
+      border-bottom: 1.5px dashed var(--border);
+      padding-bottom: 1px; transition: border-color .15s;
+    }
+    .batch-name-input:focus { border-bottom-color: var(--blue); }
+    .batch-date-input {
+      font-size: 12px; color: var(--text-3); border: 1px solid var(--border);
+      border-radius: 7px; padding: 5px 10px; outline: none; background: var(--surface);
+      font-family: 'DM Sans', sans-serif; cursor: pointer; transition: border-color .15s;
+    }
+    .batch-date-input:focus { border-color: var(--blue); }
+    .batch-fund-select {
+      font-size: 12px; color: var(--text-2); border: 1px solid var(--border);
+      border-radius: 7px; padding: 5px 28px 5px 10px; outline: none; background: var(--surface);
+      font-family: 'DM Sans', sans-serif; cursor: pointer; transition: border-color .15s;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath d='M2 3.5l3 3 3-3' stroke='%2364748B' stroke-width='1.3' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 9px center;
+    }
+    .batch-fund-select:focus { border-color: var(--blue); }
+
+    .batch-separator { width: 1px; height: 24px; background: var(--border); }
+
+    .batch-stat { display: flex; flex-direction: column; align-items: center; }
+    .batch-stat-val { font-size: 15px; font-weight: 700; color: var(--text); font-family: 'DM Serif Display', serif; line-height: 1; }
+    .batch-stat-lbl { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--text-3); margin-top: 2px; }
+    .batch-stat-val.green { color: var(--green); }
+    .batch-stat-val.amber { color: var(--amber); }
+
+    /* Keyboard shortcuts hint */
+    .shortcuts-bar {
+      background: #F1F5F9; border-bottom: 1px solid var(--border);
+      padding: 5px 20px; display: flex; align-items: center; gap: 16px;
+      font-size: 10px; color: var(--text-3); flex-shrink: 0; flex-wrap: wrap;
+    }
+    .shortcut { display: flex; align-items: center; gap: 5px; }
+    .kbd { background: white; border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px; font-size: 10px; font-family: monospace; color: var(--text-2); box-shadow: 0 1px 0 var(--border); }
+
+    /* Table scroll */
+    .table-scroll { flex: 1; overflow: auto; }
+
+    /* Batch entry table */
+    .batch-table { width: 100%; border-collapse: collapse; }
+    .batch-table thead tr { position: sticky; top: 0; z-index: 10; }
+    .batch-table th {
+      font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+      color: var(--text-3); padding: 8px 10px; text-align: left;
+      background: #F8FAFC; border-bottom: 1px solid var(--border); white-space: nowrap;
+    }
+    .batch-table th.num { text-align: right; }
+    .col-row   { width: 36px; }
+    .col-donor { min-width: 200px; }
+    .col-date  { width: 120px; }
+    .col-fund  { min-width: 160px; }
+    .col-type  { width: 120px; }
+    .col-amt   { width: 110px; }
+    .col-method{ width: 120px; }
+    .col-check { width: 100px; }
+    .col-note  { min-width: 140px; }
+    .col-status{ width: 80px; }
+
+    /* Table rows */
+    .batch-table tbody tr { transition: background .1s; }
+    .batch-table tbody tr:hover .row-num { opacity: 1; }
+    .batch-table tbody tr.row-valid   { background: white; }
+    .batch-table tbody tr.row-warning { background: #FFFBF0; }
+    .batch-table tbody tr.row-error   { background: #FFF1F6; }
+    .batch-table tbody tr.row-saved   { background: #F0FDF4; }
+    .batch-table tbody tr.row-active  { background: var(--blue-pale); outline: 1.5px solid var(--blue); outline-offset: -1px; }
+
+    .batch-table td { padding: 0; border-bottom: .5px solid var(--border); vertical-align: middle; }
+    .batch-table td:first-child { padding: 0 4px 0 12px; }
+
+    .row-num { width: 24px; height: 24px; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 600; color: var(--text-3); user-select: none; opacity: .7; }
+    .row-error-num   { background: var(--rose-light);   color: var(--rose); border-color: rgba(190,24,93,.2); }
+    .row-warning-num { background: var(--amber-light); color: var(--amber); border-color: rgba(217,119,6,.2); }
+    .row-saved-num   { background: var(--green-light); color: var(--green); border-color: rgba(21,128,61,.2); }
+
+    /* Cell inputs */
+    .cell-input {
+      width: 100%; border: none; background: transparent; outline: none;
+      font-size: 12px; font-family: 'DM Sans', sans-serif; color: var(--text);
+      padding: 9px 10px; line-height: 1.4;
+    }
+    .cell-input::placeholder { color: #94A3B8; }
+    .cell-input:focus { background: white; box-shadow: inset 0 0 0 1.5px var(--blue); }
+    .cell-input.amt { text-align: right; font-weight: 600; }
+    .cell-input.amt:focus { background: white; }
+
+    /* Donor autocomplete cell */
+    .donor-cell { position: relative; }
+    .donor-match {
+      display: flex; align-items: center; gap: 8px; padding: 8px 10px; cursor: text;
+      width: 100%;
+    }
+    .donor-match-avatar { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; flex-shrink: 0; }
+    .donor-match-name { font-size: 12px; font-weight: 500; color: var(--text); }
+    .donor-match-org  { font-size: 10px; color: var(--text-3); }
+    .donor-unmatched  { font-size: 12px; color: var(--rose); font-style: italic; padding: 9px 10px; }
+    .donor-new        { font-size: 12px; color: var(--teal); padding: 9px 10px; display: flex; align-items: center; gap: 5px; }
+    .donor-new svg    { width: 11px; height: 11px; }
+
+    /* Autocomplete dropdown */
+    .autocomplete {
+      position: absolute; top: 100%; left: 0; right: 0; z-index: 100;
+      background: white; border: 1px solid var(--border); border-radius: 8px;
+      box-shadow: 0 4px 16px rgba(0,0,0,.1); overflow: hidden; display: none;
+    }
+    .autocomplete.show { display: block; }
+    .ac-item { display: flex; align-items: center; gap: 9px; padding: 9px 12px; cursor: pointer; transition: background .1s; }
+    .ac-item:hover { background: var(--blue-pale); }
+    .ac-avatar { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; flex-shrink: 0; }
+    .ac-name { font-size: 12px; font-weight: 500; color: var(--text); }
+    .ac-meta { font-size: 10px; color: var(--text-3); }
+    .ac-lifetime { margin-left: auto; font-size: 11px; font-weight: 600; color: var(--green); white-space: nowrap; }
+    .ac-new { color: var(--teal); font-weight: 600; display: flex; align-items: center; gap: 6px; font-size: 12px; padding: 9px 12px; cursor: pointer; border-top: .5px solid var(--border); }
+    .ac-new:hover { background: var(--teal-light); }
+    .ac-new svg { width: 13px; height: 13px; }
+
+    /* Fund select cell */
+    .cell-select {
+      width: 100%; border: none; background: transparent; outline: none;
+      font-size: 12px; font-family: 'DM Sans', sans-serif; color: var(--text);
+      padding: 9px 10px; cursor: pointer;
+      -webkit-appearance: none; appearance: none;
+    }
+    .cell-select:focus { background: white; box-shadow: inset 0 0 0 1.5px var(--blue); }
+
+    /* Status badges */
+    .status-badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 20px; font-size: 10px; font-weight: 700; white-space: nowrap; }
+    .status-ok      { background: var(--green-light); color: var(--green); }
+    .status-warn    { background: var(--amber-light); color: var(--amber); }
+    .status-err     { background: var(--rose-light);  color: var(--rose); }
+    .status-saved   { background: var(--blue-light);  color: #1D4ED8; }
+    .status-dot     { width: 5px; height: 5px; border-radius: 50%; }
+
+    /* Duplicate warning inline */
+    .dup-warning { font-size: 10px; color: var(--amber); display: flex; align-items: center; gap: 4px; padding: 2px 10px; background: var(--amber-light); border-top: .5px dashed rgba(217,119,6,.3); }
+    .dup-warning svg { width: 10px; height: 10px; flex-shrink: 0; }
+
+    /* Add row button */
+    .add-row-btn {
+      display: flex; align-items: center; gap: 8px; padding: 10px 20px;
+      color: var(--text-3); font-size: 12px; font-weight: 500;
+      cursor: pointer; border-bottom: .5px solid var(--border);
+      transition: background .12s, color .12s; background: white;
+    }
+    .add-row-btn:hover { background: var(--blue-pale); color: var(--blue); }
+    .add-row-btn svg { width: 14px; height: 14px; }
+
+    /* ══ RIGHT PANEL ══ */
+    .right-panel {
+      background: white; border-left: 1px solid var(--border);
+      display: flex; flex-direction: column; overflow-y: auto;
+    }
+
+    .rp-section { padding: 16px 18px; border-bottom: 1px solid var(--border); }
+    .rp-title { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--text-3); margin-bottom: 12px; }
+
+    /* Batch totals */
+    .totals-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .total-item { background: var(--surface); border-radius: 8px; padding: 10px 12px; }
+    .total-label { font-size: 10px; color: var(--text-3); margin-bottom: 3px; }
+    .total-value { font-size: 18px; font-weight: 600; color: var(--text); font-family: 'DM Serif Display', serif; letter-spacing: -.02em; }
+    .total-value.green { color: var(--green); }
+    .total-value.amber { color: var(--amber); }
+    .total-sub { font-size: 10px; color: var(--text-3); margin-top: 2px; }
+
+    /* Control total */
+    .control-total-wrap { margin-top: 10px; }
+    .ct-label { font-size: 11px; font-weight: 500; color: var(--text-2); margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
+    .ct-sublabel { font-size: 10px; color: var(--text-3); }
+    .ct-row { display: flex; align-items: center; gap: 8px; }
+    .ct-input {
+      flex: 1; border: 1.5px solid var(--border); border-radius: 8px; padding: 8px 12px;
+      font-size: 14px; font-weight: 600; text-align: right; outline: none;
+      font-family: 'DM Sans', sans-serif; color: var(--text); transition: border-color .15s;
+    }
+    .ct-input:focus { border-color: var(--blue); }
+    .ct-match { display: flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; margin-top: 6px; }
+    .ct-match.ok   { color: var(--green); }
+    .ct-match.diff { color: var(--amber); }
+    .ct-match svg  { width: 12px; height: 12px; }
+
+    /* Fund breakdown */
+    .fund-list { display: flex; flex-direction: column; gap: 6px; }
+    .fund-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; background: var(--surface); border-radius: 8px; }
+    .fund-name  { font-size: 12px; font-weight: 500; color: var(--text); }
+    .fund-count { font-size: 10px; color: var(--text-3); }
+    .fund-amt   { font-size: 12px; font-weight: 600; color: var(--text); }
+    .fund-bar-wrap { height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; margin-top: 4px; }
+    .fund-bar { height: 100%; border-radius: 2px; }
+
+    /* Validation summary */
+    .validation-list { display: flex; flex-direction: column; gap: 6px; }
+    .val-item { display: flex; align-items: flex-start; gap: 8px; padding: 8px 10px; border-radius: 8px; font-size: 11px; line-height: 1.5; cursor: pointer; transition: background .12s; }
+    .val-item:hover { background: var(--surface); }
+    .val-item.err  { border-left: 3px solid var(--rose);  border-radius: 0 8px 8px 0; }
+    .val-item.warn { border-left: 3px solid var(--amber); border-radius: 0 8px 8px 0; }
+    .val-item.ok   { border-left: 3px solid var(--green); border-radius: 0 8px 8px 0; }
+    .val-icon { width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+    .val-icon svg { width: 9px; height: 9px; }
+    .val-icon.err  { background: var(--rose-light);   color: var(--rose); }
+    .val-icon.warn { background: var(--amber-light); color: var(--amber); }
+    .val-icon.ok   { background: var(--green-light); color: var(--green); }
+    .val-text { color: var(--text-2); }
+    .val-text strong { color: var(--text); }
+    .val-row-ref { font-size: 10px; color: var(--text-3); margin-top: 2px; }
+
+    /* Import options */
+    .import-opts { display: flex; gap: 8px; }
+    .import-btn {
+      flex: 1; padding: 9px 10px; border-radius: 8px; border: 1px solid var(--border);
+      background: var(--surface); font-size: 11px; font-weight: 500; color: var(--text-2);
+      cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;
+      font-family: 'DM Sans', sans-serif; transition: all .15s;
+    }
+    .import-btn:hover { border-color: var(--blue-mid); background: var(--blue-pale); color: var(--blue); }
+    .import-btn svg { width: 13px; height: 13px; }
+
+    /* Post button */
+    .post-btn-wrap { padding: 16px 18px; border-top: 1px solid var(--border); margin-top: auto; flex-shrink: 0; }
+    .post-btn {
+      width: 100%; background: var(--green); color: white; border: none; border-radius: 10px;
+      padding: 13px; font-size: 14px; font-weight: 600; font-family: 'DM Sans', sans-serif;
+      cursor: pointer; transition: background .15s; display: flex; align-items: center;
+      justify-content: center; gap: 8px; box-shadow: 0 2px 6px rgba(21,128,61,.25);
+    }
+    .post-btn:hover { background: #166534; }
+    .post-btn svg { width: 14px; height: 14px; }
+    .post-btn:disabled { background: #9CA3AF; cursor: not-allowed; box-shadow: none; }
+    .post-note { font-size: 10px; color: var(--text-3); text-align: center; margin-top: 7px; line-height: 1.5; }
+
+    /* Animations */
+    @keyframes fadeUp { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+    .batch-table tbody tr { animation: fadeUp .2s ease forwards; opacity: 0; }
+    .batch-table tbody tr:nth-child(1)  { animation-delay: .04s; }
+    .batch-table tbody tr:nth-child(2)  { animation-delay: .07s; }
+    .batch-table tbody tr:nth-child(3)  { animation-delay: .10s; }
+    .batch-table tbody tr:nth-child(4)  { animation-delay: .13s; }
+    .batch-table tbody tr:nth-child(5)  { animation-delay: .16s; }
+    .batch-table tbody tr:nth-child(6)  { animation-delay: .19s; }
+    .batch-table tbody tr:nth-child(7)  { animation-delay: .22s; }
+    .batch-table tbody tr:nth-child(8)  { animation-delay: .25s; }
+    .batch-table tbody tr:nth-child(9)  { animation-delay: .28s; }
+    .batch-table tbody tr:nth-child(10) { animation-delay: .31s; }
+  </style>
+</head>
+<body>
+
+  <!-- ══ SIDEBAR ══ -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-mark">
+        <svg viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7.5" stroke="white" stroke-width="1.5"/><path d="M5.5 9.5C6.5 11.5 9 13 9 13s2.5-1.5 3.5-3.5S12 5 9 5 4.5 7.5 5.5 9.5z" fill="white" fill-opacity=".9"/></svg>
+      </div>
+      <div><div class="logo-name">GiveCentral</div><div class="logo-sub">Atlas CRM</div></div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-label">Main</div>
+      <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><rect x="1.5" y="1.5" width="4" height="4" rx="1.2"/><rect x="8.5" y="1.5" width="4" height="4" rx="1.2"/><rect x="1.5" y="8.5" width="4" height="4" rx="1.2"/><rect x="8.5" y="8.5" width="4" height="4" rx="1.2"/></svg>Dashboard</div>
+      <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="6" cy="4.5" r="3"/><path d="M1 13c0-2.8 2.2-5 5-5h1c2.8 0 5 2.2 5 5"/></svg>Donors<span class="nav-badge">3,847</span></div>
+      <div class="nav-item active"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M7 1.5v11M2 6.5h10"/></svg>Gifts &amp; pledges<span class="nav-badge">142</span></div>
+      <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M1.5 8.5l2.5-2.5 2 2 2.5-2.5 2 2"/><rect x="1.5" y="1.5" width="11" height="11" rx="2"/></svg>Campaigns</div>
+      <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M1.5 3h11M1.5 7h7M1.5 11h5"/></svg>Reports</div>
+    </div>
+    <div class="nav-group" style="margin-top:8px">
+      <div class="nav-label">Fundraising</div>
+      <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="7" cy="7" r="5.5"/><path d="M7 4v4M7 10v.5"/></svg>Prospect pipeline</div>
+      <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><rect x="1.5" y="2.5" width="11" height="9" rx="1.5"/><path d="M1.5 6h11M5 2.5v2M9 2.5v2"/></svg>Tasks &amp; reminders<span class="nav-badge">7</span></div>
+    </div>
+    <div class="nav-group" style="margin-top:8px">
+      <div class="nav-label">Intelligence</div>
+      <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="7" cy="5" r="3.5"/><path d="M5 10c0 2 4 2 4 0M4.5 8.5c-2 1-3 3.5-3 4.5M9.5 8.5c2 1 3 3.5 3 4.5"/></svg>Guru AI</div>
+    </div>
+    <div class="sidebar-user">
+      <div class="user-avatar">SR</div>
+      <div><div class="user-name">Sarah Reynolds</div><div class="user-role">Development Director</div></div>
+    </div>
+  </aside>
+
+  <!-- ══ MAIN ══ -->
+  <div class="main">
+
+    <!-- Topbar -->
+    <div class="topbar">
+      <div class="topbar-back"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M8.5 2L4 6.5l4.5 4.5"/></svg></div>
+      <div class="breadcrumb">
+        <a>Gifts &amp; pledges</a>
+        <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 2l4 3-4 3"/></svg>
+        <span>Batch gift entry</span>
+      </div>
+      <div class="topbar-right">
+        <button class="tb-btn tb-ghost">
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M6 1.5v7M3 5.5l3 3 3-3"/><path d="M1.5 10.5h9"/></svg>
+          Import CSV
+        </button>
+        <button class="tb-btn tb-ghost">
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M2 9.5V4l4-2.5L10 4v5.5"/><path d="M4.5 9.5V7h3v2.5"/></svg>
+          Save draft
+        </button>
+        <button class="tb-btn tb-green" id="post-btn" onclick="postBatch()">
+          <svg viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="1.4" stroke-linecap="round"><circle cx="6" cy="6" r="5"/><path d="M3.5 6l2 2 3-3"/></svg>
+          Post batch (10 gifts)
+        </button>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- ══ TABLE AREA ══ -->
+      <div class="table-area">
+
+        <!-- Batch config bar -->
+        <div class="batch-header">
+          <div class="batch-name-wrap">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#64748B" stroke-width="1.3" stroke-linecap="round"><path d="M2 2.5h10v9H2z"/><path d="M5 5.5h4M5 7.5h4M5 9.5h2"/></svg>
+            <input class="batch-name-input" value="April 2026 Sunday Envelopes" type="text">
+          </div>
+          <input class="batch-date-input" type="date" value="2026-04-03">
+          <select class="batch-fund-select">
+            <option>Catholic Ministry Appeal</option>
+            <option>Cathedral Capital Fund</option>
+            <option>Marian Congress 2026</option>
+            <option>General Fund</option>
+            <option>Multiple funds</option>
+          </select>
+
+          <div class="batch-separator"></div>
+          <div class="batch-stat"><div class="batch-stat-val green" id="stat-total">$14,975</div><div class="batch-stat-lbl">Batch total</div></div>
+          <div class="batch-separator"></div>
+          <div class="batch-stat"><div class="batch-stat-val" id="stat-count">10</div><div class="batch-stat-lbl">Gifts</div></div>
+          <div class="batch-separator"></div>
+          <div class="batch-stat"><div class="batch-stat-val amber" id="stat-issues">2</div><div class="batch-stat-lbl">Issues</div></div>
+          <div class="batch-separator"></div>
+          <div class="batch-stat"><div class="batch-stat-val">$1,497</div><div class="batch-stat-lbl">Avg gift</div></div>
+        </div>
+
+        <!-- Keyboard shortcuts -->
+        <div class="shortcuts-bar">
+          <div class="shortcut"><kbd class="kbd">Tab</kbd> next cell</div>
+          <div class="shortcut"><kbd class="kbd">Enter</kbd> new row</div>
+          <div class="shortcut"><kbd class="kbd">↑↓</kbd> navigate rows</div>
+          <div class="shortcut"><kbd class="kbd">Ctrl+D</kbd> duplicate row</div>
+          <div class="shortcut"><kbd class="kbd">Del</kbd> clear row</div>
+          <div class="shortcut"><kbd class="kbd">Ctrl+Z</kbd> undo</div>
+          <div style="margin-left:auto;display:flex;align-items:center;gap:5px;font-size:10px;color:var(--green);font-weight:600">
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="5" cy="5" r="4"/><path d="M3 5l1.5 1.5L7 3"/></svg>
+            Auto-saving
+          </div>
+        </div>
+
+        <!-- Table scroll -->
+        <div class="table-scroll">
+          <table class="batch-table">
+            <thead>
+              <tr>
+                <th class="col-row">#</th>
+                <th class="col-donor">Donor</th>
+                <th class="col-date">Gift date</th>
+                <th class="col-fund">Fund / campaign</th>
+                <th class="col-type">Gift type</th>
+                <th class="col-amt num">Amount</th>
+                <th class="col-method">Payment method</th>
+                <th class="col-check">Check / ref #</th>
+                <th class="col-note">Note</th>
+                <th class="col-status">Status</th>
+              </tr>
+            </thead>
+            <tbody id="tbody">
+              <!-- Rows injected by JS -->
+            </tbody>
+          </table>
+
+          <!-- Add row button -->
+          <div class="add-row-btn" onclick="addRow()">
+            <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M7 2v10M2 7h10"/></svg>
+            Add row <span style="color:#94A3B8;font-weight:400;margin-left:4px">or press Enter on last row</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ RIGHT PANEL ══ -->
+      <div class="right-panel">
+
+        <!-- Totals -->
+        <div class="rp-section">
+          <div class="rp-title">Batch totals</div>
+          <div class="totals-grid">
+            <div class="total-item">
+              <div class="total-label">Total entered</div>
+              <div class="total-value green">$14,975</div>
+              <div class="total-sub">10 gifts</div>
+            </div>
+            <div class="total-item">
+              <div class="total-label">Control total</div>
+              <div class="total-value">$15,000</div>
+              <div class="total-sub">Expected</div>
+            </div>
+          </div>
+          <div class="control-total-wrap">
+            <div class="ct-label">
+              Expected total
+              <span class="ct-sublabel">Enter for reconciliation</span>
+            </div>
+            <div class="ct-row">
+              <input class="ct-input" type="text" value="$15,000.00" id="control-total">
+            </div>
+            <div class="ct-match diff" id="ct-match">
+              <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="6" cy="6" r="4.5"/><path d="M6 4v2.5M6 8.5v.5"/></svg>
+              $25.00 short of expected
+            </div>
+          </div>
+        </div>
+
+        <!-- Fund breakdown -->
+        <div class="rp-section">
+          <div class="rp-title">By fund</div>
+          <div class="fund-list">
+            <div>
+              <div class="fund-item">
+                <div><div class="fund-name">Catholic Ministry Appeal</div><div class="fund-count">7 gifts</div></div>
+                <div class="fund-amt">$11,475</div>
+              </div>
+              <div class="fund-bar-wrap"><div class="fund-bar" style="width:77%;background:var(--blue)"></div></div>
+            </div>
+            <div>
+              <div class="fund-item">
+                <div><div class="fund-name">Marian Congress 2026</div><div class="fund-count">2 gifts</div></div>
+                <div class="fund-amt">$2,500</div>
+              </div>
+              <div class="fund-bar-wrap"><div class="fund-bar" style="width:17%;background:var(--teal)"></div></div>
+            </div>
+            <div>
+              <div class="fund-item">
+                <div><div class="fund-name">General Fund</div><div class="fund-count">1 gift</div></div>
+                <div class="fund-amt">$1,000</div>
+              </div>
+              <div class="fund-bar-wrap"><div class="fund-bar" style="width:7%;background:var(--amber)"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Validation -->
+        <div class="rp-section">
+          <div class="rp-title">Validation</div>
+          <div class="validation-list">
+            <div class="val-item err">
+              <div class="val-icon err"><svg viewBox="0 0 9 9" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M4.5 2v2.5M4.5 7v.5"/></svg></div>
+              <div>
+                <div class="val-text"><strong>Donor not found</strong> — "Hennessy, R" doesn't match any record</div>
+                <div class="val-row-ref">Row 4 · Click to fix</div>
+              </div>
+            </div>
+            <div class="val-item warn">
+              <div class="val-icon warn"><svg viewBox="0 0 9 9" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M4.5 3v2M4.5 7v.5"/><path d="M1 8L4.5 1 8 8H1z"/></svg></div>
+              <div>
+                <div class="val-text"><strong>Possible duplicate</strong> — Margaret Sullivan gave $2,500 on Mar 15 (19 days ago)</div>
+                <div class="val-row-ref">Row 2 · Review or confirm</div>
+              </div>
+            </div>
+            <div class="val-item ok">
+              <div class="val-icon ok"><svg viewBox="0 0 9 9" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M1.5 4.5l2 2 4-4"/></svg></div>
+              <div>
+                <div class="val-text">8 gifts validated and ready to post</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Import -->
+        <div class="rp-section">
+          <div class="rp-title">Import from</div>
+          <div class="import-opts">
+            <button class="import-btn">
+              <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><rect x="1.5" y="1.5" width="10" height="10" rx="1.5"/><path d="M4.5 6.5h4M6.5 4.5v4"/></svg>
+              CSV file
+            </button>
+            <button class="import-btn">
+              <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><rect x="1.5" y="1.5" width="10" height="10" rx="1.5"/><path d="M4.5 5h4M4.5 8h4M4.5 6.5h2"/></svg>
+              Excel
+            </button>
+            <button class="import-btn">
+              <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M3.5 1.5h6v10h-6zM5 4h3M5 6h3M5 8h2"/></svg>
+              PDF scan
+            </button>
+          </div>
+        </div>
+
+        <!-- Post button -->
+        <div class="post-btn-wrap">
+          <button class="post-btn" id="main-post-btn" onclick="postBatch()">
+            <svg viewBox="0 0 14 14" fill="none" stroke="white" stroke-width="1.6" stroke-linecap="round"><circle cx="7" cy="7" r="5.5"/><path d="M4.5 7l2 2 3-3"/></svg>
+            Post 8 valid gifts
+          </button>
+          <div class="post-note">2 gifts have issues and will be skipped. Resolve errors to post all 10.</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const ROWS = [
+      { num:1,  donor:'Margaret Sullivan',        dAvatar:'MS', dColor:'#DBEAFE', dTColor:'#1D4ED8', org:'St. Michael\'s',   date:'04/03/2026', fund:'Catholic Ministry Appeal',  type:'Check',    amt:'2,500.00', method:'Check',          ref:'5502',  note:'',             status:'warn',  rowCls:'row-warning' },
+      { num:2,  donor:'James & Patricia O\'Brien', dAvatar:'JO', dColor:'#EDE9FE', dTColor:'#7C3AED', org:'Cathedral',        date:'04/03/2026', fund:'Catholic Ministry Appeal',  type:'Online',   amt:'5,000.00', method:'Credit card',    ref:'GC-9981',note:'',            status:'ok',    rowCls:'row-valid' },
+      { num:3,  donor:'Thomas & Lisa Kowalski',    dAvatar:'TK', dColor:'#DCFCE7', dTColor:'#15803D', org:'Holy Cross',       date:'04/03/2026', fund:'Marian Congress 2026',       type:'Check',    amt:'1,500.00', method:'Check',          ref:'7741',  note:'',             status:'ok',    rowCls:'row-valid' },
+      { num:4,  donor:'Hennessy, R',               dAvatar:'?',  dColor:'#FCE7F3', dTColor:'#BE185D', org:'',                 date:'04/03/2026', fund:'Catholic Ministry Appeal',  type:'Check',    amt:'3,500.00', method:'Check',          ref:'4491',  note:'',             status:'err',   rowCls:'row-error' },
+      { num:5,  donor:'Catherine Walsh',           dAvatar:'CW', dColor:'#F3F4F6', dTColor:'#374151', org:'Holy Family',      date:'04/03/2026', fund:'Catholic Ministry Appeal',  type:'Cash',     amt:'500.00',   method:'Cash',           ref:'',      note:'Sunday offering',status:'ok',    rowCls:'row-valid' },
+      { num:6,  donor:'David & Anne Morrison',     dAvatar:'DM', dColor:'#FEF3C7', dTColor:'#B45309', org:'St. Peter\'s',     date:'04/03/2026', fund:'General Fund',              type:'Check',    amt:'1,000.00', method:'Check',          ref:'3367',  note:'',             status:'ok',    rowCls:'row-valid' },
+      { num:7,  donor:'Maria & Eduardo Fernandez', dAvatar:'MF', dColor:'#CCFBF1', dTColor:'#0D9488', org:'San Juan Diego',   date:'04/03/2026', fund:'Catholic Ministry Appeal',  type:'Online',   amt:'250.00',   method:'Digital wallet', ref:'GC-1124',note:'Apple Pay',   status:'ok',    rowCls:'row-valid' },
+      { num:8,  donor:'Elena Ramirez-Lopez',       dAvatar:'EL', dColor:'#DBEAFE', dTColor:'#1D4ED8', org:'Holy Family',      date:'04/03/2026', fund:'Marian Congress 2026',       type:'Check',    amt:'1,000.00', method:'Check',          ref:'2289',  note:'',             status:'ok',    rowCls:'row-valid' },
+      { num:9,  donor:'Dr. Thomas Nguyen',         dAvatar:'TN', dColor:'#EDE9FE', dTColor:'#7C3AED', org:'Cathedral',        date:'04/03/2026', fund:'Catholic Ministry Appeal',  type:'Online',   amt:'500.00',   method:'ACH',            ref:'ACH-0044',note:'',          status:'ok',    rowCls:'row-valid' },
+      { num:10, donor:'Barbara & Leo Costello',    dAvatar:'BL', dColor:'#DCFCE7', dTColor:'#15803D', org:'St. Peter\'s',     date:'04/03/2026', fund:'Catholic Ministry Appeal',  type:'Check',    amt:'225.00',   method:'Check',          ref:'8801',  note:'',             status:'ok',    rowCls:'row-valid' },
+    ];
+
+    const STATUS_MAP = {
+      ok:   { cls:'status-ok',   dot:'var(--green)', label:'Valid' },
+      warn: { cls:'status-warn', dot:'var(--amber)', label:'Review' },
+      err:  { cls:'status-err',  dot:'var(--rose)',  label:'Error' },
+      saved:{ cls:'status-saved',dot:'var(--blue)',  label:'Posted' },
+    };
+
+    function renderRows(rows) {
+      const tbody = document.getElementById('tbody');
+      tbody.innerHTML = rows.map(r => {
+        const s = STATUS_MAP[r.status];
+        const isDonorUnmatched = r.dAvatar === '?';
+        const donorCell = isDonorUnmatched
+          ? `<td class="donor-cell"><div class="donor-unmatched">${r.donor} — no match</div></td>`
+          : `<td class="donor-cell">
+              <div class="donor-match">
+                <div class="donor-match-avatar" style="background:${r.dColor};color:${r.dTColor}">${r.dAvatar}</div>
+                <div><div class="donor-match-name">${r.donor}</div><div class="donor-match-org">${r.org}</div></div>
+              </div>
+              ${r.status === 'warn' ? `<div class="dup-warning"><svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M5 2v2.5M5 7v.5"/><path d="M1 9L5 1l4 8H1z"/></svg>Possible dup: $2,500 on Mar 15</div>` : ''}
+            </td>`;
+
+        return `<tr class="${r.rowCls}" data-row="${r.num}">
+          <td><div class="row-num ${r.status === 'err' ? 'row-error-num' : r.status === 'warn' ? 'row-warning-num' : r.status === 'saved' ? 'row-saved-num' : ''}">${r.num}</div></td>
+          ${donorCell}
+          <td><input class="cell-input" value="${r.date}" placeholder="MM/DD/YYYY"></td>
+          <td>
+            <select class="cell-select">
+              <option ${r.fund === 'Catholic Ministry Appeal' ? 'selected' : ''}>Catholic Ministry Appeal</option>
+              <option ${r.fund === 'Marian Congress 2026' ? 'selected' : ''}>Marian Congress 2026</option>
+              <option ${r.fund === 'Cathedral Capital Fund' ? 'selected' : ''}>Cathedral Capital Fund</option>
+              <option ${r.fund === 'General Fund' ? 'selected' : ''}>General Fund</option>
+            </select>
+          </td>
+          <td>
+            <select class="cell-select">
+              <option ${r.type === 'Check' ? 'selected' : ''}>Check</option>
+              <option ${r.type === 'Online' ? 'selected' : ''}>Online</option>
+              <option ${r.type === 'Cash' ? 'selected' : ''}>Cash</option>
+              <option ${r.type === 'Pledge' ? 'selected' : ''}>Pledge</option>
+              <option ${r.type === 'In-kind' ? 'selected' : ''}>In-kind</option>
+            </select>
+          </td>
+          <td><input class="cell-input amt" value="${r.amt}" placeholder="0.00"></td>
+          <td>
+            <select class="cell-select">
+              <option ${r.method === 'Check' ? 'selected' : ''}>Check</option>
+              <option ${r.method === 'Cash' ? 'selected' : ''}>Cash</option>
+              <option ${r.method === 'Credit card' ? 'selected' : ''}>Credit card</option>
+              <option ${r.method === 'ACH' ? 'selected' : ''}>ACH</option>
+              <option ${r.method === 'Digital wallet' ? 'selected' : ''}>Digital wallet</option>
+            </select>
+          </td>
+          <td><input class="cell-input" value="${r.ref}" placeholder="Optional"></td>
+          <td><input class="cell-input" value="${r.note}" placeholder="Optional"></td>
+          <td><span class="status-badge ${s.cls}"><span class="status-dot" style="background:${s.dot}"></span>${s.label}</span></td>
+        </tr>`;
+      }).join('');
+    }
+
+    let rowCount = 10;
+
+    function addRow() {
+      rowCount++;
+      const newRow = {
+        num: rowCount, donor: '', dAvatar: '', dColor: '#F1F5F9', dTColor: '#64748B', org: '',
+        date: '04/03/2026', fund: 'Catholic Ministry Appeal', type: 'Check',
+        amt: '', method: 'Check', ref: '', note: '', status: 'ok', rowCls: 'row-valid'
+      };
+      ROWS.push(newRow);
+      renderRows(ROWS);
+      // Focus the last row's donor cell
+      setTimeout(() => {
+        const inputs = document.querySelectorAll('#tbody tr:last-child .cell-input');
+        if (inputs[0]) inputs[0].focus();
+      }, 50);
+    }
+
+    function postBatch() {
+      // Mark valid rows as saved
+      ROWS.forEach(r => { if (r.status === 'ok') r.status = 'saved'; });
+      renderRows(ROWS);
+      document.getElementById('stat-issues').textContent = '2';
+      document.getElementById('main-post-btn').textContent = '✓ 8 gifts posted';
+      document.getElementById('main-post-btn').style.background = '#166534';
+    }
+
+    // Initial render
+    renderRows(ROWS);
+
+    // Tab / Enter navigation
+    document.addEventListener('keydown', e => {
+      const active = document.activeElement;
+      if (!active || (!active.classList.contains('cell-input') && active.tagName !== 'SELECT')) return;
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        const row = active.closest('tr');
+        const allRows = [...document.querySelectorAll('#tbody tr')];
+        const idx = allRows.indexOf(row);
+        if (idx === allRows.length - 1) addRow();
+        else {
+          const nextRow = allRows[idx + 1];
+          const firstInput = nextRow.querySelector('.cell-input, select');
+          if (firstInput) firstInput.focus();
+        }
+      }
+    });
+  </script>
+
+</body>
+</html>

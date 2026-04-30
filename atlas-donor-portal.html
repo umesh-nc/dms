@@ -1,0 +1,1199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GiveCentral — My Giving</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:       #0E1E35;
+      --navy-2:     #152844;
+      --blue:       #2563EB;
+      --blue-mid:   #3B82F6;
+      --blue-light: #DBEAFE;
+      --blue-pale:  #EFF6FF;
+      --green:      #15803D;
+      --green-light:#DCFCE7;
+      --amber:      #D97706;
+      --amber-light:#FEF3C7;
+      --rose:       #BE185D;
+      --rose-light: #FCE7F3;
+      --teal:       #0D9488;
+      --teal-light: #CCFBF1;
+      --gold:       #C4973A;
+      --gold-light: #FBF4E8;
+      --text:       #0F172A;
+      --text-2:     #334155;
+      --text-3:     #64748B;
+      --border:     #E2E8F0;
+      --surface:    #F8FAFC;
+      --white:      #FFFFFF;
+    }
+
+    html { font-size: 14px; -webkit-font-smoothing: antialiased; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--surface); color: var(--text); min-height: 100vh; }
+
+    /* ══ HEADER ══ */
+    .header {
+      background: var(--navy);
+      height: 56px;
+      display: flex; align-items: center;
+      padding: 0 28px;
+      position: sticky; top: 0; z-index: 100;
+    }
+    .header-logo { display: flex; align-items: center; gap: 9px; }
+    .logo-mark { width: 28px; height: 28px; background: var(--blue); border-radius: 7px; display: flex; align-items: center; justify-content: center; }
+    .logo-mark svg { width: 14px; height: 14px; }
+    .logo-name { font-family: 'Lora', serif; font-size: 15px; color: white; font-weight: 500; }
+    .logo-sep { width: 1px; height: 18px; background: rgba(255,255,255,.15); margin: 0 14px; }
+    .portal-label { font-size: 12px; color: rgba(255,255,255,.5); }
+    .header-right { margin-left: auto; display: flex; align-items: center; gap: 14px; }
+    .header-notif {
+      width: 30px; height: 30px; background: rgba(255,255,255,.08);
+      border-radius: 8px; display: flex; align-items: center; justify-content: center;
+      cursor: pointer; position: relative; transition: background .15s;
+    }
+    .header-notif:hover { background: rgba(255,255,255,.14); }
+    .header-notif svg { width: 14px; height: 14px; color: rgba(255,255,255,.7); }
+    .notif-dot { position: absolute; top: 6px; right: 6px; width: 6px; height: 6px; background: #EF4444; border-radius: 50%; border: 1.5px solid var(--navy); }
+    .header-user { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+    .header-avatar {
+      width: 30px; height: 30px; border-radius: 50%; background: var(--blue);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700; color: white;
+    }
+    .header-user-name { font-size: 12px; color: rgba(255,255,255,.75); }
+
+    /* ══ NAV TABS ══ */
+    .nav-tabs {
+      background: white; border-bottom: 1px solid var(--border);
+      padding: 0 28px; display: flex; gap: 0;
+    }
+    .nav-tab {
+      padding: 13px 18px; font-size: 13px; font-weight: 500;
+      color: var(--text-3); cursor: pointer; border-bottom: 2px solid transparent;
+      transition: all .15s; white-space: nowrap; margin-bottom: -1px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .nav-tab svg { width: 14px; height: 14px; }
+    .nav-tab:hover { color: var(--text-2); }
+    .nav-tab.active { color: var(--blue); border-bottom-color: var(--blue); font-weight: 600; }
+    .nav-tab .tab-badge {
+      font-size: 9px; font-weight: 700; padding: 1px 6px; border-radius: 10px;
+      background: var(--blue-light); color: var(--blue);
+    }
+
+    /* ══ PAGE ══ */
+    .page { display: none; }
+    .page.active { display: block; }
+    .page-inner { max-width: 1080px; margin: 0 auto; padding: 28px 28px 80px; }
+
+    /* ══ OVERVIEW PAGE ══ */
+
+    /* Donor hero */
+    .donor-hero {
+      background: var(--navy-2); border-radius: 16px;
+      overflow: hidden; margin-bottom: 22px; position: relative;
+    }
+    .dh-bg {
+      position: absolute; inset: 0;
+      background: radial-gradient(circle at 85% 50%, rgba(37,99,235,.2) 0%, transparent 55%),
+                  radial-gradient(circle at 10% 80%, rgba(13,148,136,.1) 0%, transparent 50%);
+    }
+    .dh-inner { position: relative; z-index: 1; padding: 28px 32px; display: flex; align-items: center; gap: 22px; }
+    .dh-avatar {
+      width: 68px; height: 68px; border-radius: 50%; border: 3px solid rgba(255,255,255,.15);
+      background: var(--blue); display: flex; align-items: center; justify-content: center;
+      font-family: 'Lora', serif; font-size: 26px; color: white; flex-shrink: 0;
+    }
+    .dh-info { flex: 1; }
+    .dh-name { font-family: 'Lora', serif; font-size: 24px; color: white; letter-spacing: -.01em; margin-bottom: 4px; }
+    .dh-meta { font-size: 12px; color: rgba(255,255,255,.55); display: flex; gap: 16px; flex-wrap: wrap; }
+    .dh-meta-item { display: flex; align-items: center; gap: 5px; }
+    .dh-meta-item svg { width: 12px; height: 12px; }
+    .dh-stats { display: flex; gap: 0; border-left: 1px solid rgba(255,255,255,.1); padding-left: 28px; }
+    .dh-stat { text-align: center; padding: 0 18px; border-right: 1px solid rgba(255,255,255,.1); }
+    .dh-stat:last-child { border-right: none; }
+    .dh-stat-val { font-family: 'Lora', serif; font-size: 24px; color: white; letter-spacing: -.02em; line-height: 1; margin-bottom: 4px; }
+    .dh-stat-val.gold { color: #FCD34D; }
+    .dh-stat-lbl { font-size: 10px; color: rgba(255,255,255,.45); font-weight: 600; letter-spacing: .05em; text-transform: uppercase; }
+
+    /* Impact banner */
+    .impact-strip {
+      background: white; border: 1px solid var(--border); border-radius: 12px;
+      padding: 16px 20px; margin-bottom: 22px;
+      display: flex; align-items: center; gap: 14px;
+    }
+    .impact-icon { width: 40px; height: 40px; background: var(--blue-light); border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .impact-icon svg { width: 18px; height: 18px; color: var(--blue); }
+    .impact-text { flex: 1; font-size: 13px; color: var(--text-2); line-height: 1.6; }
+    .impact-text strong { color: var(--text); font-weight: 600; }
+    .impact-cta {
+      padding: 8px 16px; background: var(--blue); color: white; border: none;
+      border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer;
+      font-family: 'DM Sans', sans-serif; transition: background .15s; white-space: nowrap;
+    }
+    .impact-cta:hover { background: #1D4ED8; }
+
+    /* Grid */
+    .overview-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 22px; }
+    .wide-col { grid-column: 1 / 3; }
+
+    /* Card */
+    .card { background: white; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    .card-head { padding: 14px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .card-title { font-size: 11px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--text-3); }
+    .card-action { font-size: 11px; font-weight: 500; color: var(--blue); cursor: pointer; display: flex; align-items: center; gap: 3px; }
+    .card-action:hover { color: #1D4ED8; }
+    .card-action svg { width: 10px; height: 10px; }
+    .card-body { padding: 16px 18px; }
+
+    /* Giving bars */
+    .year-bars { display: flex; align-items: flex-end; gap: 6px; height: 90px; margin-bottom: 10px; }
+    .year-bar-grp { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .year-bar { width: 100%; border-radius: 4px 4px 0 0; min-height: 4px; cursor: pointer; transition: opacity .15s; }
+    .year-bar:hover { opacity: .75; }
+    .year-bar.current { background: var(--blue); }
+    .year-bar.past { background: var(--blue-light); }
+    .year-lbl { font-size: 10px; color: var(--text-3); }
+    .year-amt { font-size: 9px; color: var(--text-3); font-weight: 500; }
+
+    /* Cause cards */
+    .causes-list { display: flex; flex-direction: column; gap: 9px; }
+    .cause-item {
+      display: flex; align-items: center; gap: 12px; padding: 10px 12px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 9px; cursor: pointer; transition: border-color .15s, background .15s;
+    }
+    .cause-item:hover { border-color: #94A3B8; background: white; }
+    .cause-icon { width: 34px; height: 34px; border-radius: 9px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .cause-icon svg { width: 16px; height: 16px; }
+    .cause-name { font-size: 12px; font-weight: 500; color: var(--text); flex: 1; line-height: 1.3; }
+    .cause-org { font-size: 10px; color: var(--text-3); }
+    .cause-right { text-align: right; flex-shrink: 0; }
+    .cause-amt { font-size: 13px; font-weight: 600; color: var(--text); }
+    .cause-type { font-size: 10px; color: var(--text-3); }
+
+    /* Quick actions */
+    .quick-actions { display: flex; flex-direction: column; gap: 8px; }
+    .qa-btn {
+      display: flex; align-items: center; gap: 10px; padding: 11px 13px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 9px; cursor: pointer; transition: all .15s; font-size: 12px; font-weight: 500; color: var(--text-2);
+    }
+    .qa-btn:hover { border-color: var(--blue-mid); background: var(--blue-pale); color: var(--blue); }
+    .qa-btn:hover .qa-icon { background: var(--blue); }
+    .qa-btn:hover .qa-icon svg { color: white; }
+    .qa-icon { width: 30px; height: 30px; border-radius: 8px; background: var(--blue-light); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background .15s; }
+    .qa-icon svg { width: 14px; height: 14px; color: var(--blue); transition: color .15s; }
+    .qa-arrow { margin-left: auto; font-size: 14px; color: var(--text-3); }
+
+    /* Upcoming / pledges */
+    .upcoming-list { display: flex; flex-direction: column; gap: 8px; }
+    .upcoming-item { display: flex; align-items: center; gap: 11px; padding: 10px 0; border-bottom: .5px solid var(--border); }
+    .upcoming-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .up-icon { width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .up-icon svg { width: 13px; height: 13px; }
+    .up-info { flex: 1; min-width: 0; }
+    .up-name { font-size: 12px; font-weight: 500; color: var(--text); }
+    .up-date { font-size: 10px; color: var(--text-3); margin-top: 2px; }
+    .up-amt { font-size: 13px; font-weight: 600; color: var(--text); flex-shrink: 0; }
+    .up-status { font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 10px; }
+    .us-ok   { background: var(--green-light); color: var(--green); }
+    .us-warn { background: var(--amber-light); color: var(--amber); }
+
+    /* ══ GIVING HISTORY PAGE ══ */
+    .filter-row { display: flex; gap: 10px; margin-bottom: 18px; flex-wrap: wrap; align-items: center; }
+    .filter-select {
+      border: 1.5px solid var(--border); border-radius: 8px; padding: 7px 28px 7px 11px;
+      font-size: 12px; color: var(--text-2); font-family: 'DM Sans', sans-serif;
+      outline: none; background: white; cursor: pointer;
+      -webkit-appearance: none; appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath d='M2 3.5l3 3 3-3' stroke='%2364748B' stroke-width='1.3' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 9px center;
+      transition: border-color .15s;
+    }
+    .filter-select:focus { border-color: var(--blue); }
+    .filter-count { margin-left: auto; font-size: 12px; color: var(--text-3); }
+    .download-btn {
+      display: flex; align-items: center; gap: 5px; padding: 7px 14px;
+      border: 1.5px solid var(--border); border-radius: 8px; background: none;
+      font-size: 12px; font-weight: 500; color: var(--text-2); cursor: pointer;
+      font-family: 'DM Sans', sans-serif; transition: all .15s;
+    }
+    .download-btn:hover { border-color: var(--blue-mid); color: var(--blue); background: var(--blue-pale); }
+    .download-btn svg { width: 12px; height: 12px; }
+
+    /* Gift history table */
+    .gift-table { width: 100%; border-collapse: collapse; }
+    .gift-table th { font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--text-3); padding: 8px 14px; text-align: left; background: var(--surface); border-bottom: 1px solid var(--border); white-space: nowrap; }
+    .gift-table td { padding: 12px 14px; font-size: 12px; border-bottom: .5px solid var(--border); color: var(--text-2); vertical-align: middle; }
+    .gift-table tr:last-child td { border-bottom: none; }
+    .gift-table tr:hover td { background: var(--blue-pale); }
+    .gift-org-icon { width: 26px; height: 26px; border-radius: 7px; display: inline-flex; align-items: center; justify-content: center; margin-right: 8px; vertical-align: middle; flex-shrink: 0; }
+    .gift-org-icon svg { width: 13px; height: 13px; }
+    .gift-name-cell { display: flex; align-items: center; }
+    .gift-name { font-weight: 500; color: var(--text); }
+    .gift-fund { font-size: 10px; color: var(--text-3); margin-top: 2px; }
+    .gift-amt-cell { font-weight: 600; color: var(--green); }
+    .gift-type-pill { display: inline-flex; align-items: center; gap: 3px; padding: 2px 8px; border-radius: 20px; font-size: 10px; font-weight: 600; }
+    .gt-online   { background: var(--blue-light); color: #1D4ED8; }
+    .gt-check    { background: var(--surface); color: var(--text-3); border: 1px solid var(--border); }
+    .gt-recurring{ background: var(--teal-light); color: var(--teal); }
+    .gt-pledge   { background: var(--amber-light); color: var(--amber); }
+    .receipt-btn {
+      padding: 4px 10px; border: 1px solid var(--border); border-radius: 6px;
+      background: none; font-size: 10px; font-weight: 600; color: var(--text-3);
+      cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .15s;
+      display: inline-flex; align-items: center; gap: 4px;
+    }
+    .receipt-btn:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-pale); }
+    .receipt-btn svg { width: 10px; height: 10px; }
+
+    /* Year summary bar */
+    .year-summary-bar {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+      padding: 14px 18px; margin-bottom: 14px;
+      display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
+    }
+    .ysb-item { display: flex; flex-direction: column; }
+    .ysb-val { font-size: 20px; font-weight: 600; color: var(--text); font-family: 'Lora', serif; }
+    .ysb-val.green { color: var(--green); }
+    .ysb-lbl { font-size: 10px; color: var(--text-3); margin-top: 2px; }
+    .ysb-div { width: 1px; height: 32px; background: var(--border); }
+
+    /* ══ RECURRING PAGE ══ */
+    .recurring-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 22px; }
+    .recurring-card {
+      background: white; border: 1px solid var(--border); border-radius: 12px;
+      padding: 18px 20px; position: relative; transition: border-color .15s, box-shadow .15s;
+    }
+    .recurring-card:hover { border-color: #94A3B8; box-shadow: 0 4px 14px rgba(0,0,0,.06); }
+    .rc-header { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 14px; }
+    .rc-icon { width: 42px; height: 42px; border-radius: 11px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .rc-icon svg { width: 19px; height: 19px; }
+    .rc-title { font-size: 14px; font-weight: 500; color: var(--text); line-height: 1.3; margin-bottom: 3px; font-family: 'Lora', serif; }
+    .rc-org { font-size: 11px; color: var(--text-3); }
+    .rc-status { margin-left: auto; }
+    .rc-active { display: inline-flex; align-items: center; gap: 4px; background: var(--green-light); color: var(--green); padding: 3px 9px; border-radius: 20px; font-size: 10px; font-weight: 700; }
+    .rc-paused { display: inline-flex; align-items: center; gap: 4px; background: var(--amber-light); color: var(--amber); padding: 3px 9px; border-radius: 20px; font-size: 10px; font-weight: 700; }
+    .rc-active-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+    .rc-details { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+    .rc-detail { background: var(--surface); border-radius: 8px; padding: 8px 10px; }
+    .rc-detail-lbl { font-size: 10px; color: var(--text-3); margin-bottom: 3px; }
+    .rc-detail-val { font-size: 14px; font-weight: 600; color: var(--text); }
+    .rc-detail-val.blue { color: var(--blue); }
+    .rc-actions { display: flex; gap: 8px; }
+    .rc-btn {
+      flex: 1; padding: 8px; border-radius: 8px; font-size: 11px; font-weight: 600;
+      font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all .15s;
+      display: flex; align-items: center; justify-content: center; gap: 5px;
+    }
+    .rc-btn svg { width: 11px; height: 11px; }
+    .rc-edit   { background: var(--blue-light); color: var(--blue); border: none; }
+    .rc-edit:hover   { background: var(--blue); color: white; }
+    .rc-pause  { background: var(--surface); color: var(--text-3); border: 1px solid var(--border); }
+    .rc-pause:hover  { background: var(--amber-light); color: var(--amber); border-color: var(--amber); }
+    .rc-cancel { background: var(--surface); color: var(--text-3); border: 1px solid var(--border); }
+    .rc-cancel:hover { background: var(--rose-light); color: var(--rose); border-color: var(--rose); }
+
+    /* ══ PLEDGES PAGE ══ */
+    .pledge-cards { display: flex; flex-direction: column; gap: 14px; }
+    .pledge-card { background: white; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    .pledge-card-header { padding: 16px 20px; display: flex; align-items: center; gap: 14px; border-bottom: 1px solid var(--border); }
+    .pledge-org-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .pledge-org-icon svg { width: 18px; height: 18px; }
+    .pledge-name { font-family: 'Lora', serif; font-size: 15px; font-weight: 500; color: var(--text); }
+    .pledge-org  { font-size: 11px; color: var(--text-3); margin-top: 2px; }
+    .pledge-header-right { margin-left: auto; text-align: right; }
+    .pledge-total { font-size: 18px; font-weight: 600; color: var(--text); font-family: 'Lora', serif; }
+    .pledge-bal { font-size: 11px; color: var(--text-3); margin-top: 2px; }
+    .pledge-body { padding: 16px 20px; }
+    .pledge-progress-wrap { margin-bottom: 14px; }
+    .pledge-prog-row { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 7px; }
+    .pledge-prog-paid { font-weight: 600; color: var(--green); }
+    .pledge-prog-rem  { color: var(--text-3); }
+    .pledge-bar { height: 7px; background: var(--border); border-radius: 4px; overflow: hidden; }
+    .pledge-fill { height: 100%; background: var(--blue); border-radius: 4px; transition: width .6s; }
+    .installment-list { display: flex; flex-direction: column; gap: 0; }
+    .installment-row { display: flex; align-items: center; gap: 12px; padding: 9px 0; border-bottom: .5px solid var(--border); }
+    .installment-row:last-child { border-bottom: none; }
+    .inst-num { width: 22px; height: 22px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; flex-shrink: 0; }
+    .inst-paid { background: var(--green-light); color: var(--green); }
+    .inst-due  { background: var(--amber-light); color: var(--amber); }
+    .inst-upcoming { background: var(--surface); color: var(--text-3); border: 1px solid var(--border); }
+    .inst-info { flex: 1; }
+    .inst-label { font-size: 12px; font-weight: 500; color: var(--text); }
+    .inst-date  { font-size: 10px; color: var(--text-3); margin-top: 1px; }
+    .inst-amt { font-size: 13px; font-weight: 600; }
+    .inst-amt.paid { color: var(--green); }
+    .inst-amt.due  { color: var(--amber); }
+    .inst-amt.upcoming { color: var(--text-3); }
+    .pay-now-btn {
+      padding: 5px 12px; background: var(--blue); color: white; border: none;
+      border-radius: 7px; font-size: 11px; font-weight: 600;
+      font-family: 'DM Sans', sans-serif; cursor: pointer; transition: background .15s;
+    }
+    .pay-now-btn:hover { background: #1D4ED8; }
+
+    /* ══ ORGANIZATIONS PAGE ══ */
+    .org-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .org-card {
+      background: white; border: 1px solid var(--border); border-radius: 12px;
+      overflow: hidden; cursor: pointer; transition: border-color .2s, transform .2s, box-shadow .2s;
+    }
+    .org-card:hover { border-color: rgba(37,99,235,.25); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(15,35,64,.08); }
+    .org-card-banner { height: 80px; position: relative; overflow: hidden; }
+    .org-card-banner-inner { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+    .org-card-banner svg { width: 36px; height: 36px; opacity: .25; }
+    .org-card-body { padding: 16px 18px; }
+    .org-card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+    .org-logo { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: -28px; border: 2px solid white; box-shadow: 0 2px 8px rgba(0,0,0,.12); }
+    .org-logo svg { width: 19px; height: 19px; }
+    .org-name { font-family: 'Lora', serif; font-size: 14px; font-weight: 500; color: var(--text); line-height: 1.3; }
+    .org-location { font-size: 11px; color: var(--text-3); margin-top: 2px; }
+    .org-stats { display: flex; gap: 12px; margin-bottom: 12px; }
+    .org-stat { flex: 1; background: var(--surface); border-radius: 8px; padding: 8px 10px; text-align: center; }
+    .org-stat-val { font-size: 16px; font-weight: 600; color: var(--text); font-family: 'Lora', serif; }
+    .org-stat-lbl { font-size: 9px; color: var(--text-3); margin-top: 2px; }
+    .org-campaigns { font-size: 11px; color: var(--text-3); margin-bottom: 12px; }
+    .org-campaign-tag { display: inline-flex; padding: 2px 8px; background: var(--blue-light); color: #1D4ED8; border-radius: 20px; font-size: 10px; font-weight: 500; margin-right: 5px; margin-bottom: 4px; }
+    .org-follow-btn {
+      width: 100%; padding: 9px; background: var(--surface); color: var(--text-2);
+      border: 1px solid var(--border); border-radius: 8px; font-size: 12px; font-weight: 600;
+      font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all .15s;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .org-follow-btn svg { width: 12px; height: 12px; }
+    .org-follow-btn.following { background: var(--blue); color: white; border-color: var(--blue); }
+    .org-follow-btn:not(.following):hover { background: var(--blue-light); color: var(--blue); border-color: var(--blue-mid); }
+
+    /* ══ TAX PAGE ══ */
+    .tax-year-section { margin-bottom: 22px; }
+    .tax-year-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .tax-year-title { font-family: 'Lora', serif; font-size: 18px; font-weight: 500; color: var(--text); }
+    .tax-download {
+      display: flex; align-items: center; gap: 6px; padding: 7px 14px;
+      background: var(--blue); color: white; border: none; border-radius: 8px;
+      font-size: 12px; font-weight: 600; font-family: 'DM Sans', sans-serif; cursor: pointer;
+      transition: background .15s;
+    }
+    .tax-download:hover { background: #1D4ED8; }
+    .tax-download svg { width: 12px; height: 12px; }
+    .tax-summary-card {
+      background: white; border: 1px solid var(--border); border-radius: 12px;
+      padding: 20px 22px; margin-bottom: 12px;
+    }
+    .tax-summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 14px; }
+    .tax-stat { }
+    .tax-stat-val { font-size: 22px; font-weight: 600; color: var(--text); font-family: 'Lora', serif; }
+    .tax-stat-val.green { color: var(--green); }
+    .tax-stat-lbl { font-size: 11px; color: var(--text-3); margin-top: 3px; }
+    .tax-note { font-size: 11px; color: var(--text-3); line-height: 1.6; padding-top: 14px; border-top: 1px solid var(--border); display: flex; align-items: flex-start; gap: 7px; }
+    .tax-note svg { width: 14px; height: 14px; flex-shrink: 0; margin-top: 1px; color: var(--blue); }
+    .tax-gifts-table { background: white; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+
+    /* ══ SETTINGS PAGE ══ */
+    .settings-sections { display: flex; flex-direction: column; gap: 18px; }
+    .settings-card { background: white; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    .settings-card-header { padding: 14px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .settings-card-title { font-size: 14px; font-weight: 600; color: var(--text); }
+    .settings-card-body { padding: 18px 20px; }
+    .settings-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: .5px solid var(--border); gap: 16px; }
+    .settings-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .settings-row-label { font-size: 13px; font-weight: 500; color: var(--text); }
+    .settings-row-sub { font-size: 11px; color: var(--text-3); margin-top: 2px; }
+    .settings-input {
+      border: 1.5px solid var(--border); border-radius: 8px; padding: 8px 12px;
+      font-size: 13px; font-family: 'DM Sans', sans-serif; color: var(--text); outline: none;
+      background: var(--surface); min-width: 200px; transition: border-color .15s;
+    }
+    .settings-input:focus { border-color: var(--blue); background: white; }
+    .toggle-wrap { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+    .toggle-track {
+      width: 36px; height: 20px; border-radius: 10px; background: #CBD5E1;
+      position: relative; transition: background .2s; cursor: pointer;
+    }
+    .toggle-track.on { background: var(--blue); }
+    .toggle-thumb {
+      position: absolute; top: 2px; left: 2px; width: 16px; height: 16px;
+      border-radius: 50%; background: white; transition: transform .2s;
+      box-shadow: 0 1px 3px rgba(0,0,0,.2);
+    }
+    .toggle-track.on .toggle-thumb { transform: translateX(16px); }
+    .toggle-label { font-size: 12px; color: var(--text-3); }
+    .wallet-methods { display: flex; gap: 8px; flex-wrap: wrap; }
+    .wallet-method {
+      padding: 6px 14px; border: 1.5px solid var(--border); border-radius: 8px;
+      font-size: 12px; font-weight: 500; color: var(--text-2); cursor: pointer;
+      transition: all .15s;
+    }
+    .wallet-method.saved { border-color: var(--green); background: var(--green-light); color: var(--green); }
+    .wallet-method:not(.saved):hover { border-color: var(--blue-mid); color: var(--blue); }
+    .save-settings-btn {
+      padding: 9px 22px; background: var(--blue); color: white; border: none;
+      border-radius: 9px; font-size: 13px; font-weight: 600;
+      font-family: 'DM Sans', sans-serif; cursor: pointer; transition: background .15s;
+    }
+    .save-settings-btn:hover { background: #1D4ED8; }
+
+    /* Animations */
+    @keyframes fadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+    .page.active .donor-hero, .page.active .impact-strip { animation: fadeUp .3s ease forwards; }
+    .page.active .card, .page.active .recurring-card, .page.active .pledge-card,
+    .page.active .org-card, .page.active .tax-summary-card, .page.active .settings-card {
+      animation: fadeUp .35s ease forwards; opacity: 0;
+    }
+    .page.active .card:nth-child(1), .page.active .recurring-card:nth-child(1) { animation-delay: .04s; }
+    .page.active .card:nth-child(2), .page.active .recurring-card:nth-child(2) { animation-delay: .08s; }
+    .page.active .card:nth-child(3) { animation-delay: .12s; }
+    .page.active .org-card:nth-child(1) { animation-delay: .04s; }
+    .page.active .org-card:nth-child(2) { animation-delay: .08s; }
+    .page.active .org-card:nth-child(3) { animation-delay: .12s; }
+    .page.active .org-card:nth-child(4) { animation-delay: .16s; }
+    .page.active .pledge-card:nth-child(1) { animation-delay: .04s; }
+    .page.active .pledge-card:nth-child(2) { animation-delay: .1s; }
+    .page.active .settings-card:nth-child(1) { animation-delay: .04s; }
+    .page.active .settings-card:nth-child(2) { animation-delay: .08s; }
+    .page.active .settings-card:nth-child(3) { animation-delay: .12s; }
+
+    @media (max-width:700px) {
+      .overview-grid { grid-template-columns: 1fr; }
+      .wide-col { grid-column: 1; }
+      .recurring-grid, .org-grid { grid-template-columns: 1fr; }
+      .tax-summary-grid { grid-template-columns: 1fr 1fr; }
+      .dh-stats { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ══ HEADER ══ -->
+  <header class="header">
+    <div class="header-logo">
+      <div class="logo-mark">
+        <svg viewBox="0 0 18 18" fill="none">
+          <circle cx="9" cy="9" r="7.5" stroke="white" stroke-width="1.5"/>
+          <path d="M5.5 9.5C6.5 11.5 9 13 9 13s2.5-1.5 3.5-3.5S12 5 9 5 4.5 7.5 5.5 9.5z" fill="white" fill-opacity=".9"/>
+        </svg>
+      </div>
+      <span class="logo-name">GiveCentral</span>
+    </div>
+    <div class="logo-sep"></div>
+    <span class="portal-label">My Giving</span>
+    <div class="header-right">
+      <div class="header-notif">
+        <svg viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M7.5 2a5 5 0 015 5v3l1 2H2l1-2V7a5 5 0 015-5zM6 13a1.5 1.5 0 003 0"/></svg>
+        <div class="notif-dot"></div>
+      </div>
+      <div class="header-user">
+        <div class="header-avatar">MS</div>
+        <span class="header-user-name">Margaret Sullivan</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ══ NAV TABS ══ -->
+  <nav class="nav-tabs">
+    <div class="nav-tab active" onclick="showPage('overview',this)">
+      <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><rect x="1.5" y="1.5" width="4" height="4" rx="1.2"/><rect x="8.5" y="1.5" width="4" height="4" rx="1.2"/><rect x="1.5" y="8.5" width="4" height="4" rx="1.2"/><rect x="8.5" y="8.5" width="4" height="4" rx="1.2"/></svg>
+      Overview
+    </div>
+    <div class="nav-tab" onclick="showPage('history',this)">
+      <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M7 1.5v11M2 6.5h10"/></svg>
+      Giving history
+    </div>
+    <div class="nav-tab" onclick="showPage('recurring',this)">
+      <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M9 3C8 2 6.7 1.5 5 1.5a4 4 0 00-4 4M5 8.5C6 9.5 7.3 10 9 10a4 4 0 004-4"/><path d="M9 1v3H6M5 7v3H2"/></svg>
+      Recurring gifts
+      <span class="tab-badge">3</span>
+    </div>
+    <div class="nav-tab" onclick="showPage('pledges',this)">
+      <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M2 8.5l2.5-2.5 2 2 2.5-2.5 2 2"/><rect x="2" y="2" width="10" height="10" rx="1.5"/></svg>
+      Pledges
+      <span class="tab-badge">2</span>
+    </div>
+    <div class="nav-tab" onclick="showPage('orgs',this)">
+      <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M7 1v12M3 5h8"/><path d="M2.5 11.5h9"/></svg>
+      Organizations
+    </div>
+    <div class="nav-tab" onclick="showPage('tax',this)">
+      <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M3 2h8v10H3z"/><path d="M5 5.5h4M5 7.5h4M5 9.5h2"/></svg>
+      Tax receipts
+    </div>
+    <div class="nav-tab" onclick="showPage('settings',this)">
+      <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="7" cy="7" r="2.5"/><path d="M7 1.5v1M7 11.5v1M1.5 7h1M11.5 7h1M3.4 3.4l.7.7M9.9 9.9l.7.7M3.4 10.6l.7-.7M9.9 4.1l.7-.7"/></svg>
+      Settings
+    </div>
+  </nav>
+
+  <!-- ══════════════════════════
+       PAGE: OVERVIEW
+  ══════════════════════════ -->
+  <div class="page active" id="page-overview">
+    <div class="page-inner">
+
+      <!-- Donor hero -->
+      <div class="donor-hero">
+        <div class="dh-bg"></div>
+        <div class="dh-inner">
+          <div class="dh-avatar">MS</div>
+          <div class="dh-info">
+            <div class="dh-name">Margaret T. Sullivan</div>
+            <div class="dh-meta">
+              <div class="dh-meta-item">
+                <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M6 1C4.3 1 3 2.3 3 4c0 2.5 3 6.5 3 6.5s3-4 3-6.5C9 2.3 7.7 1 6 1z"/><circle cx="6" cy="4" r="1.2"/></svg>
+                St. Michael's Parish · Tampa, FL
+              </div>
+              <div class="dh-meta-item">
+                <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><circle cx="6" cy="6" r="4.5"/><path d="M6 3.5v3l1.5 1.5"/></svg>
+                Donor since 2011 · 15 years
+              </div>
+              <div class="dh-meta-item">
+                <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M1 5.5l2.5-2.5 2 2 2.5-2.5 2 2"/></svg>
+                3 active recurring gifts
+              </div>
+            </div>
+          </div>
+          <div class="dh-stats">
+            <div class="dh-stat">
+              <div class="dh-stat-val gold">$84,250</div>
+              <div class="dh-stat-lbl">Lifetime given</div>
+            </div>
+            <div class="dh-stat">
+              <div class="dh-stat-val">$12,500</div>
+              <div class="dh-stat-lbl">This year</div>
+            </div>
+            <div class="dh-stat">
+              <div class="dh-stat-val">47</div>
+              <div class="dh-stat-lbl">Total gifts</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Impact strip -->
+      <div class="impact-strip">
+        <div class="impact-icon">
+          <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M9 2v14M4 7l5-5 5 5"/><path d="M3 14h12"/></svg>
+        </div>
+        <div class="impact-text">
+          <strong>Your giving this year has supported 4 organizations</strong> — funding faith formation programs, community meals, youth retreats, and Catholic school education across the Diocese of St. Petersburg.
+        </div>
+        <button class="impact-cta" onclick="showPage('orgs', document.querySelectorAll('.nav-tab')[4])">See your impact</button>
+      </div>
+
+      <div class="overview-grid">
+
+        <!-- Giving history chart -->
+        <div class="card wide-col">
+          <div class="card-head">
+            <span class="card-title">Giving history</span>
+            <span class="card-action" onclick="showPage('history', document.querySelectorAll('.nav-tab')[1])">Full history <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 5h6M5.5 2.5L8 5l-2.5 2.5"/></svg></span>
+          </div>
+          <div class="card-body">
+            <div class="year-bars" id="overview-bars"></div>
+            <div style="display:flex;gap:12px;font-size:10px;color:var(--text-3);margin-top:4px">
+              <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:var(--blue);display:inline-block"></span>This year</span>
+              <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:var(--blue-light);display:inline-block"></span>Prior years</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick actions -->
+        <div class="card">
+          <div class="card-head"><span class="card-title">Quick actions</span></div>
+          <div class="card-body">
+            <div class="quick-actions">
+              <div class="qa-btn" onclick="showPage('orgs', document.querySelectorAll('.nav-tab')[4])">
+                <div class="qa-icon"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M7 1v12M3 5h8"/></svg></div>
+                Make a new gift
+                <span class="qa-arrow">›</span>
+              </div>
+              <div class="qa-btn" onclick="showPage('tax', document.querySelectorAll('.nav-tab')[5])">
+                <div class="qa-icon"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M3 2h8v10H3z"/><path d="M5 5.5h4M5 7.5h4"/></svg></div>
+                Download 2025 tax summary
+                <span class="qa-arrow">›</span>
+              </div>
+              <div class="qa-btn" onclick="showPage('recurring', document.querySelectorAll('.nav-tab')[2])">
+                <div class="qa-icon"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M9 3C8 2 6.7 1.5 5 1.5a4 4 0 00-4 4"/><path d="M9 1v3H6"/></svg></div>
+                Manage recurring gifts
+                <span class="qa-arrow">›</span>
+              </div>
+              <div class="qa-btn" onclick="showPage('pledges', document.querySelectorAll('.nav-tab')[3])">
+                <div class="qa-icon"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M2 8.5l2.5-2.5 2 2 2.5-2.5 2 2"/></svg></div>
+                View open pledges
+                <span class="qa-arrow">›</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Upcoming payments -->
+        <div class="card wide-col">
+          <div class="card-head">
+            <span class="card-title">Upcoming payments</span>
+            <span class="card-action" onclick="showPage('pledges', document.querySelectorAll('.nav-tab')[3])">All pledges <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 5h6M5.5 2.5L8 5l-2.5 2.5"/></svg></span>
+          </div>
+          <div class="card-body">
+            <div class="upcoming-list">
+              <div class="upcoming-item">
+                <div class="up-icon" style="background:var(--blue-light)"><svg viewBox="0 0 13 13" fill="none" stroke="#2563EB" stroke-width="1.4" stroke-linecap="round"><path d="M6.5 1v11M1.5 6.5h10"/></svg></div>
+                <div class="up-info">
+                  <div class="up-name">CMA Sustaining — Monthly</div>
+                  <div class="up-date">Auto-charges May 3, 2026 · Credit card ····4521</div>
+                </div>
+                <div class="up-amt">$50.00</div>
+                <span class="up-status us-ok">Auto</span>
+              </div>
+              <div class="upcoming-item">
+                <div class="up-icon" style="background:var(--amber-light)"><svg viewBox="0 0 13 13" fill="none" stroke="#D97706" stroke-width="1.4" stroke-linecap="round"><path d="M2 8l2.5-2.5 2 2 2.5-2.5 2 2"/></svg></div>
+                <div class="up-info">
+                  <div class="up-name">CMA 2026 Pledge — Installment 3</div>
+                  <div class="up-date">Due Jun 15, 2026 · Manual payment</div>
+                </div>
+                <div class="up-amt">$1,900.00</div>
+                <span class="up-status us-warn">Due</span>
+              </div>
+              <div class="upcoming-item">
+                <div class="up-icon" style="background:var(--teal-light)"><svg viewBox="0 0 13 13" fill="none" stroke="#0D9488" stroke-width="1.4" stroke-linecap="round"><path d="M6.5 1v11M1.5 6.5h10"/></svg></div>
+                <div class="up-info">
+                  <div class="up-name">Youth Ministry — Monthly</div>
+                  <div class="up-date">Auto-charges May 3, 2026 · Apple Pay</div>
+                </div>
+                <div class="up-amt">$25.00</div>
+                <span class="up-status us-ok">Auto</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Causes you support -->
+        <div class="card">
+          <div class="card-head">
+            <span class="card-title">Causes you support</span>
+            <span class="card-action">Explore more <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 5h6M5.5 2.5L8 5l-2.5 2.5"/></svg></span>
+          </div>
+          <div class="card-body">
+            <div class="causes-list">
+              <div class="cause-item">
+                <div class="cause-icon" style="background:#E8F0FB"><svg viewBox="0 0 14 14" fill="none" stroke="#2563EB" stroke-width="1.4" stroke-linecap="round"><path d="M7 1v12M3 5h8"/></svg></div>
+                <div>
+                  <div class="cause-name">Catholic Ministry Appeal</div>
+                  <div class="cause-org">Diocese of St. Petersburg</div>
+                </div>
+                <div class="cause-right">
+                  <div class="cause-amt">$5,100</div>
+                  <div class="cause-type">This year</div>
+                </div>
+              </div>
+              <div class="cause-item">
+                <div class="cause-icon" style="background:#EDE9FE"><svg viewBox="0 0 14 14" fill="none" stroke="#7C3AED" stroke-width="1.4" stroke-linecap="round"><path d="M7 1v12M3 5h8"/></svg></div>
+                <div>
+                  <div class="cause-name">Marian Congress 2026</div>
+                  <div class="cause-org">Diocese of St. Petersburg</div>
+                </div>
+                <div class="cause-right">
+                  <div class="cause-amt">$1,000</div>
+                  <div class="cause-type">One-time</div>
+                </div>
+              </div>
+              <div class="cause-item">
+                <div class="cause-icon" style="background:#DCFCE7"><svg viewBox="0 0 14 14" fill="none" stroke="#15803D" stroke-width="1.4" stroke-linecap="round"><path d="M7 1v12M3 5h8"/></svg></div>
+                <div>
+                  <div class="cause-name">Youth Ministry</div>
+                  <div class="cause-org">St. Michael's Parish</div>
+                </div>
+                <div class="cause-right">
+                  <div class="cause-amt">$300</div>
+                  <div class="cause-type">$25/mo recurring</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════
+       PAGE: GIVING HISTORY
+  ══════════════════════════ -->
+  <div class="page" id="page-history">
+    <div class="page-inner">
+      <div class="year-summary-bar">
+        <div class="ysb-item"><div class="ysb-val green">$12,500</div><div class="ysb-lbl">2026 total (YTD)</div></div>
+        <div class="ysb-div"></div>
+        <div class="ysb-item"><div class="ysb-val">$11,450</div><div class="ysb-lbl">2025 total</div></div>
+        <div class="ysb-div"></div>
+        <div class="ysb-item"><div class="ysb-val">$9,000</div><div class="ysb-lbl">2024 total</div></div>
+        <div class="ysb-div"></div>
+        <div class="ysb-item"><div class="ysb-val">$84,250</div><div class="ysb-lbl">Lifetime total</div></div>
+        <div class="ysb-div"></div>
+        <div class="ysb-item"><div class="ysb-val">47</div><div class="ysb-lbl">Total gifts</div></div>
+      </div>
+      <div class="filter-row">
+        <select class="filter-select"><option>All years</option><option selected>2026</option><option>2025</option><option>2024</option><option>2023</option></select>
+        <select class="filter-select"><option>All organizations</option><option>Diocese of St. Petersburg</option><option>St. Michael's Parish</option></select>
+        <select class="filter-select"><option>All types</option><option>Online</option><option>Check</option><option>Recurring</option><option>Pledge</option></select>
+        <span class="filter-count">Showing 8 gifts</span>
+        <button class="download-btn">
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M6 1v7M3 5.5l3 3 3-3"/><path d="M1.5 10.5h9"/></svg>
+          Export CSV
+        </button>
+        <button class="download-btn">
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M3 2h6v8H3z"/><path d="M4.5 5h3M4.5 7h2"/></svg>
+          All receipts PDF
+        </button>
+      </div>
+      <div class="card">
+        <table class="gift-table">
+          <thead><tr>
+            <th>Date</th><th>Organization / Campaign</th><th>Type</th><th>Amount</th><th>Method</th><th>Receipt</th>
+          </tr></thead>
+          <tbody id="history-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════
+       PAGE: RECURRING GIFTS
+  ══════════════════════════ -->
+  <div class="page" id="page-recurring">
+    <div class="page-inner">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+        <div>
+          <div style="font-family:'Lora',serif;font-size:18px;font-weight:500;color:var(--text)">Recurring gifts</div>
+          <div style="font-size:12px;color:var(--text-3);margin-top:3px">3 active · $150 / month total</div>
+        </div>
+        <button style="padding:9px 18px;background:var(--blue);color:white;border:none;border-radius:9px;font-size:13px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;display:flex;align-items:center;gap:7px">
+          <svg viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="1.4" stroke-linecap="round" width="12" height="12"><path d="M6 1v10M1 6h10"/></svg>
+          Set up new recurring gift
+        </button>
+      </div>
+      <div class="recurring-grid" id="recurring-grid"></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════
+       PAGE: PLEDGES
+  ══════════════════════════ -->
+  <div class="page" id="page-pledges">
+    <div class="page-inner">
+      <div style="margin-bottom:18px">
+        <div style="font-family:'Lora',serif;font-size:18px;font-weight:500;color:var(--text)">My pledges</div>
+        <div style="font-size:12px;color:var(--text-3);margin-top:3px">2 active pledges · $7,000 remaining</div>
+      </div>
+      <div class="pledge-cards" id="pledge-cards"></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════
+       PAGE: ORGANIZATIONS
+  ══════════════════════════ -->
+  <div class="page" id="page-orgs">
+    <div class="page-inner">
+      <div style="margin-bottom:18px">
+        <div style="font-family:'Lora',serif;font-size:18px;font-weight:500;color:var(--text)">Organizations you support</div>
+        <div style="font-size:12px;color:var(--text-3);margin-top:3px">4 organizations · Diocese of St. Petersburg</div>
+      </div>
+      <div class="org-grid" id="org-grid"></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════
+       PAGE: TAX RECEIPTS
+  ══════════════════════════ -->
+  <div class="page" id="page-tax">
+    <div class="page-inner">
+
+      <div class="tax-year-section">
+        <div class="tax-year-header">
+          <div class="tax-year-title">Tax Year 2025</div>
+          <button class="tax-download">
+            <svg viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="1.4" stroke-linecap="round"><path d="M6 1v7M3 5.5l3 3 3-3"/><path d="M1.5 10.5h9"/></svg>
+            Download 2025 summary PDF
+          </button>
+        </div>
+        <div class="tax-summary-card">
+          <div class="tax-summary-grid">
+            <div class="tax-stat"><div class="tax-stat-val green">$11,450</div><div class="tax-stat-lbl">Total deductible giving</div></div>
+            <div class="tax-stat"><div class="tax-stat-val">12</div><div class="tax-stat-lbl">Individual gifts</div></div>
+            <div class="tax-stat"><div class="tax-stat-val">4</div><div class="tax-stat-lbl">Organizations</div></div>
+            <div class="tax-stat"><div class="tax-stat-val">$0</div><div class="tax-stat-lbl">Non-deductible portion</div></div>
+          </div>
+          <div class="tax-note">
+            <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><circle cx="7" cy="7" r="5.5"/><path d="M7 5v3M7 10v.5"/></svg>
+            All gifts made to GiveCentral-verified 501(c)(3) organizations are potentially tax-deductible. Consult your tax advisor to confirm eligibility. This summary is provided for your records — an official acknowledgment letter was emailed to margaret.sullivan@gmail.com after each qualifying gift.
+          </div>
+        </div>
+        <div class="tax-gifts-table">
+          <table class="gift-table">
+            <thead><tr>
+              <th>Date</th><th>Organization</th><th>Amount</th><th>Type</th><th>Receipt</th>
+            </tr></thead>
+            <tbody id="tax-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="tax-year-section">
+        <div class="tax-year-header">
+          <div class="tax-year-title">Tax Year 2024</div>
+          <button class="tax-download">
+            <svg viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="1.4" stroke-linecap="round"><path d="M6 1v7M3 5.5l3 3 3-3"/><path d="M1.5 10.5h9"/></svg>
+            Download 2024 summary PDF
+          </button>
+        </div>
+        <div class="tax-summary-card">
+          <div class="tax-summary-grid">
+            <div class="tax-stat"><div class="tax-stat-val green">$9,000</div><div class="tax-stat-lbl">Total deductible giving</div></div>
+            <div class="tax-stat"><div class="tax-stat-val">9</div><div class="tax-stat-lbl">Individual gifts</div></div>
+            <div class="tax-stat"><div class="tax-stat-val">3</div><div class="tax-stat-lbl">Organizations</div></div>
+            <div class="tax-stat"><div class="tax-stat-val">$0</div><div class="tax-stat-lbl">Non-deductible portion</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════
+       PAGE: SETTINGS
+  ══════════════════════════ -->
+  <div class="page" id="page-settings">
+    <div class="page-inner">
+      <div class="settings-sections">
+
+        <div class="settings-card">
+          <div class="settings-card-header">
+            <div class="settings-card-title">Personal information</div>
+            <button class="save-settings-btn">Save changes</button>
+          </div>
+          <div class="settings-card-body">
+            <div class="settings-row">
+              <div><div class="settings-row-label">Full name</div></div>
+              <input class="settings-input" value="Margaret T. Sullivan">
+            </div>
+            <div class="settings-row">
+              <div><div class="settings-row-label">Email address</div><div class="settings-row-sub">Tax receipts sent here</div></div>
+              <input class="settings-input" value="margaret.sullivan@gmail.com" type="email">
+            </div>
+            <div class="settings-row">
+              <div><div class="settings-row-label">Phone</div></div>
+              <input class="settings-input" value="(727) 555-0142" type="tel">
+            </div>
+            <div class="settings-row">
+              <div><div class="settings-row-label">Mailing address</div><div class="settings-row-sub">For mailed acknowledgment letters</div></div>
+              <input class="settings-input" value="14 Bayshore Blvd, Tampa FL 33606">
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-card">
+          <div class="settings-card-header"><div class="settings-card-title">Payment methods</div></div>
+          <div class="settings-card-body">
+            <div class="settings-row">
+              <div><div class="settings-row-label">Saved methods</div><div class="settings-row-sub">Used for recurring gifts and pledge payments</div></div>
+              <div class="wallet-methods">
+                <div class="wallet-method saved">Visa ····4521</div>
+                <div class="wallet-method saved">Apple Pay</div>
+                <div class="wallet-method">+ Add method</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-card">
+          <div class="settings-card-header"><div class="settings-card-title">Notifications &amp; communication</div></div>
+          <div class="settings-card-body">
+            <div class="settings-row">
+              <div><div class="settings-row-label">Gift receipts</div><div class="settings-row-sub">Emailed after each gift is processed</div></div>
+              <div class="toggle-wrap" onclick="toggleSwitch(this)">
+                <div class="toggle-track on"><div class="toggle-thumb"></div></div>
+                <span class="toggle-label">On</span>
+              </div>
+            </div>
+            <div class="settings-row">
+              <div><div class="settings-row-label">Pledge reminders</div><div class="settings-row-sub">Emailed 7 days before installment due</div></div>
+              <div class="toggle-wrap" onclick="toggleSwitch(this)">
+                <div class="toggle-track on"><div class="toggle-thumb"></div></div>
+                <span class="toggle-label">On</span>
+              </div>
+            </div>
+            <div class="settings-row">
+              <div><div class="settings-row-label">Campaign updates</div><div class="settings-row-sub">News from organizations you support</div></div>
+              <div class="toggle-wrap" onclick="toggleSwitch(this)">
+                <div class="toggle-track"><div class="toggle-thumb"></div></div>
+                <span class="toggle-label">Off</span>
+              </div>
+            </div>
+            <div class="settings-row">
+              <div><div class="settings-row-label">Year-end tax summary</div><div class="settings-row-sub">Sent automatically each January</div></div>
+              <div class="toggle-wrap" onclick="toggleSwitch(this)">
+                <div class="toggle-track on"><div class="toggle-thumb"></div></div>
+                <span class="toggle-label">On</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ══ NAVIGATION ══ */
+    function showPage(id, tabEl) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+      document.getElementById('page-' + id).classList.add('active');
+      if (tabEl) tabEl.classList.add('active');
+    }
+
+    /* ══ OVERVIEW BARS ══ */
+    const years = ['17','18','19','20','21','22','23','24','25','26'];
+    const data  = [3200,4500,5000,2800,6500,7200,9000,9000,11450,12500];
+    const maxD  = Math.max(...data);
+    const bc    = document.getElementById('overview-bars');
+    years.forEach((y,i) => {
+      const pct = (data[i]/maxD)*100;
+      const grp = document.createElement('div'); grp.className='year-bar-grp';
+      grp.innerHTML = `
+        <div class="year-amt">${data[i]>=1000?'$'+(data[i]/1000).toFixed(0)+'k':'$'+data[i]}</div>
+        <div class="year-bar ${i===years.length-1?'current':'past'}" style="height:${Math.max(pct,4)}%" title="${y}: $${data[i].toLocaleString()}"></div>
+        <div class="year-lbl">${y}</div>`;
+      bc.appendChild(grp);
+    });
+
+    /* ══ HISTORY TABLE ══ */
+    const gifts = [
+      { date:'Mar 15, 2026', org:'Catholic Ministry Appeal', org2:'Diocese of St. Petersburg', type:'gt-online',    typeLabel:'Online',    amt:'$2,500.00', method:'Credit card' },
+      { date:'Mar 3, 2026',  org:'CMA Sustaining',           org2:'Diocese of St. Petersburg', type:'gt-recurring', typeLabel:'Recurring', amt:'$50.00',    method:'Credit card ····4521' },
+      { date:'Feb 3, 2026',  org:'Youth Ministry',           org2:"St. Michael's Parish",      type:'gt-recurring', typeLabel:'Recurring', amt:'$25.00',    method:'Apple Pay' },
+      { date:'Feb 3, 2026',  org:'CMA Sustaining',           org2:'Diocese of St. Petersburg', type:'gt-recurring', typeLabel:'Recurring', amt:'$50.00',    method:'Credit card ····4521' },
+      { date:'Jan 12, 2026', org:'CMA 2026 Pledge — Inst 2', org2:'Diocese of St. Petersburg', type:'gt-pledge',    typeLabel:'Pledge',    amt:'$1,000.00', method:'Check #5502' },
+      { date:'Jan 3, 2026',  org:'Marian Congress 2026',     org2:'Diocese of St. Petersburg', type:'gt-online',    typeLabel:'Online',    amt:'$1,000.00', method:'Apple Pay' },
+      { date:'Jan 3, 2026',  org:'Youth Ministry',           org2:"St. Michael's Parish",      type:'gt-recurring', typeLabel:'Recurring', amt:'$25.00',    method:'Apple Pay' },
+      { date:'Jan 3, 2026',  org:'CMA Sustaining',           org2:'Diocese of St. Petersburg', type:'gt-recurring', typeLabel:'Recurring', amt:'$50.00',    method:'Credit card ····4521' },
+    ];
+    const colors = ['#E8F0FB','#EDE9FE','#DCFCE7','#CCFBF1','#FEF3C7','#FCE7F3'];
+    const strokes= ['#2563EB','#7C3AED','#15803D','#0D9488','#D97706','#BE185D'];
+    document.getElementById('history-tbody').innerHTML = gifts.map((g,i) => `
+      <tr>
+        <td style="color:var(--text-3);white-space:nowrap">${g.date}</td>
+        <td>
+          <div class="gift-name-cell">
+            <div class="gift-org-icon" style="background:${colors[i%colors.length]}">
+              <svg viewBox="0 0 14 14" fill="none" stroke="${strokes[i%strokes.length]}" stroke-width="1.4" stroke-linecap="round"><path d="M7 1v12M3 5h8"/></svg>
+            </div>
+            <div>
+              <div class="gift-name">${g.org}</div>
+              <div class="gift-fund">${g.org2}</div>
+            </div>
+          </div>
+        </td>
+        <td><span class="gift-type-pill ${g.type}">${g.typeLabel}</span></td>
+        <td class="gift-amt-cell">${g.amt}</td>
+        <td style="color:var(--text-3)">${g.method}</td>
+        <td>
+          <button class="receipt-btn">
+            <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M5 1v5.5M2.5 4.5L5 7l2.5-2.5"/><path d="M1.5 8.5h7"/></svg>
+            Receipt
+          </button>
+        </td>
+      </tr>`).join('');
+
+    /* ══ TAX TABLE ══ */
+    document.getElementById('tax-tbody').innerHTML = [
+      { date:'Dec 28, 2025', org:'Catholic Ministry Appeal', amt:'$2,500' },
+      { date:'Nov 28, 2025', org:'Giving Tuesday — CMA',    amt:'$500'   },
+      { date:'Sep 10, 2025', org:'CMA 2026 Pledge Inst 1',  amt:'$2,100' },
+      { date:'Monthly ×12',  org:'CMA Sustaining',          amt:'$600'   },
+      { date:'Monthly ×12',  org:'Youth Ministry',          amt:'$300'   },
+      { date:'Jun 5, 2025',  org:'School Fundraising',      amt:'$2,000' },
+      { date:'Mar 15, 2025', org:'Capital Campaign',        amt:'$2,500' },
+      { date:'Jan 5, 2025',  org:'Marian Devotion Fund',    amt:'$450'   },
+    ].map(r => `
+      <tr>
+        <td style="color:var(--text-3)">${r.date}</td>
+        <td style="font-weight:500">${r.org}</td>
+        <td class="gift-amt-cell">${r.amt}</td>
+        <td><span class="gift-type-pill gt-online">Deductible</span></td>
+        <td><button class="receipt-btn"><svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" width="10" height="10"><path d="M5 1v5.5M2.5 4.5L5 7l2.5-2.5"/><path d="M1.5 8.5h7"/></svg>Receipt</button></td>
+      </tr>`).join('');
+
+    /* ══ RECURRING CARDS ══ */
+    const recurringData = [
+      { title:'Catholic Ministry Appeal Sustaining', org:'Diocese of St. Petersburg', amt:'$50', freq:'Monthly', next:'May 3, 2026', method:'Visa ····4521', total:'$600/yr', color:'#E8F0FB', stroke:'#2563EB', active:true },
+      { title:'Youth Ministry Fund',                 org:"St. Michael's Parish",      amt:'$25', freq:'Monthly', next:'May 3, 2026', method:'Apple Pay',    total:'$300/yr', color:'#DCFCE7', stroke:'#15803D', active:true },
+      { title:'School Fundraising',                  org:"St. Michael's Academy",     amt:'$75', freq:'Monthly', next:'Paused',      method:'Visa ····4521', total:'$900/yr', color:'#FEF3C7', stroke:'#D97706', active:false },
+    ];
+    document.getElementById('recurring-grid').innerHTML = recurringData.map(r => `
+      <div class="recurring-card">
+        <div class="rc-header">
+          <div class="rc-icon" style="background:${r.color}">
+            <svg viewBox="0 0 14 14" fill="none" stroke="${r.stroke}" stroke-width="1.5" stroke-linecap="round"><path d="M7 1v12M3 5h8"/></svg>
+          </div>
+          <div style="flex:1;min-width:0">
+            <div class="rc-title">${r.title}</div>
+            <div class="rc-org">${r.org}</div>
+          </div>
+          <div class="rc-status">
+            ${r.active
+              ? `<div class="rc-active"><div class="rc-active-dot"></div>Active</div>`
+              : `<div class="rc-paused">Paused</div>`}
+          </div>
+        </div>
+        <div class="rc-details">
+          <div class="rc-detail"><div class="rc-detail-lbl">Amount</div><div class="rc-detail-val blue">${r.amt} / mo</div></div>
+          <div class="rc-detail"><div class="rc-detail-lbl">Frequency</div><div class="rc-detail-val">${r.freq}</div></div>
+          <div class="rc-detail"><div class="rc-detail-lbl">Next charge</div><div class="rc-detail-val">${r.next}</div></div>
+          <div class="rc-detail"><div class="rc-detail-lbl">Method</div><div class="rc-detail-val">${r.method}</div></div>
+        </div>
+        <div class="rc-actions">
+          <button class="rc-btn rc-edit">
+            <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M7 1.5l1.5 1.5-5.5 5.5H1.5V7L7 1.5z"/></svg>
+            Edit amount
+          </button>
+          <button class="rc-btn rc-pause">
+            ${r.active
+              ? `<svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" width="10" height="10"><rect x="2" y="2" width="2" height="6" rx=".5"/><rect x="6" y="2" width="2" height="6" rx=".5"/></svg>Pause`
+              : `<svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" width="10" height="10"><path d="M2.5 2l5 3-5 3z"/></svg>Resume`}
+          </button>
+          <button class="rc-btn rc-cancel">
+            <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M2 2l6 6M8 2l-6 6"/></svg>
+            Cancel
+          </button>
+        </div>
+      </div>`).join('');
+
+    /* ══ PLEDGE CARDS ══ */
+    document.getElementById('pledge-cards').innerHTML = [
+      {
+        title:'Catholic Ministry Appeal 2026', org:'Diocese of St. Petersburg',
+        total:'$5,000', paid:'$3,100', bal:'$1,900', pct:62,
+        color:'#E8F0FB', stroke:'#2563EB',
+        installs:[
+          { n:1, label:'Installment 1', date:'Sep 10, 2025', amt:'$2,100', state:'paid' },
+          { n:2, label:'Installment 2', date:'Jan 3, 2026',  amt:'$1,000', state:'paid' },
+          { n:3, label:'Installment 3', date:'Jun 15, 2026', amt:'$1,900', state:'due'  },
+        ]
+      },
+      {
+        title:'Cathedral Capital Fund', org:'Diocese of St. Petersburg',
+        total:'$10,000', paid:'$5,000', bal:'$5,000', pct:50,
+        color:'#EDE9FE', stroke:'#7C3AED',
+        installs:[
+          { n:1, label:'Installment 1', date:'Jan 15, 2026', amt:'$2,500', state:'paid' },
+          { n:2, label:'Installment 2', date:'Apr 15, 2026', amt:'$2,500', state:'paid' },
+          { n:3, label:'Installment 3', date:'Jul 15, 2026', amt:'$2,500', state:'upcoming' },
+          { n:4, label:'Installment 4', date:'Oct 15, 2026', amt:'$2,500', state:'upcoming' },
+        ]
+      },
+    ].map(p => `
+      <div class="pledge-card">
+        <div class="pledge-card-header">
+          <div class="pledge-org-icon" style="background:${p.color}">
+            <svg viewBox="0 0 14 14" fill="none" stroke="${p.stroke}" stroke-width="1.5" stroke-linecap="round"><path d="M7 1v12M3 5h8"/></svg>
+          </div>
+          <div>
+            <div class="pledge-name">${p.title}</div>
+            <div class="pledge-org">${p.org}</div>
+          </div>
+          <div class="pledge-header-right">
+            <div class="pledge-total">${p.total}</div>
+            <div class="pledge-bal">$${p.bal} remaining</div>
+          </div>
+        </div>
+        <div class="pledge-body">
+          <div class="pledge-progress-wrap">
+            <div class="pledge-prog-row">
+              <span class="pledge-prog-paid">${p.paid} paid</span>
+              <span class="pledge-prog-rem">${p.pct}% complete</span>
+            </div>
+            <div class="pledge-bar"><div class="pledge-fill" style="width:${p.pct}%"></div></div>
+          </div>
+          <div class="installment-list">
+            ${p.installs.map(inst => `
+              <div class="installment-row">
+                <div class="inst-num ${inst.state==='paid'?'inst-paid':inst.state==='due'?'inst-due':'inst-upcoming'}">${inst.n}</div>
+                <div class="inst-info">
+                  <div class="inst-label">${inst.label}</div>
+                  <div class="inst-date">${inst.state==='paid'?'Paid':'Due'} ${inst.date}</div>
+                </div>
+                <div class="inst-amt ${inst.state}">${inst.amt}</div>
+                ${inst.state==='due' ? `<button class="pay-now-btn">Pay now</button>` : ''}
+              </div>`).join('')}
+          </div>
+        </div>
+      </div>`).join('');
+
+    /* ══ ORG CARDS ══ */
+    document.getElementById('org-grid').innerHTML = [
+      { name:'Diocese of St. Petersburg', loc:'St. Petersburg, FL', given:'$12,000', gifts:'8', campaigns:['CMA 2026','Marian Congress','Cathedral Fund'], color:'#E8F0FB', stroke:'#2563EB', bg:'#1E3A5F', following:true },
+      { name:"St. Michael's Parish",       loc:'Tampa, FL',           given:'$900',    gifts:'12',campaigns:['Youth Ministry','School Fund'],                  color:'#DCFCE7', stroke:'#15803D', bg:'#14532D', following:true },
+      { name:"St. Michael's Academy",      loc:'Tampa, FL',           given:'$2,000',  gifts:'3', campaigns:['School Fundraising 2025'],                       color:'#FEF3C7', stroke:'#D97706', bg:'#78350F', following:false },
+      { name:'Holy Cross Parish',          loc:'Brandon, FL',         given:'$300',    gifts:'2', campaigns:['Annual Appeal','Christmas Campaign'],             color:'#EDE9FE', stroke:'#7C3AED', bg:'#3B0764', following:false },
+    ].map(o => `
+      <div class="org-card">
+        <div class="org-card-banner" style="background:${o.bg}">
+          <div class="org-card-banner-inner">
+            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.2" stroke-linecap="round"><path d="M12 2v20M3 10h18"/></svg>
+          </div>
+        </div>
+        <div class="org-card-body">
+          <div class="org-card-header">
+            <div class="org-logo" style="background:${o.color}">
+              <svg viewBox="0 0 14 14" fill="none" stroke="${o.stroke}" stroke-width="1.5" stroke-linecap="round"><path d="M7 1v12M3 5h8"/></svg>
+            </div>
+            <div style="margin-top:8px">
+              <div class="org-name">${o.name}</div>
+              <div class="org-location">${o.loc}</div>
+            </div>
+          </div>
+          <div class="org-stats">
+            <div class="org-stat"><div class="org-stat-val" style="color:var(--green)">${o.given}</div><div class="org-stat-lbl">Given</div></div>
+            <div class="org-stat"><div class="org-stat-val">${o.gifts}</div><div class="org-stat-lbl">Gifts</div></div>
+          </div>
+          <div class="org-campaigns">
+            ${o.campaigns.map(c => `<span class="org-campaign-tag">${c}</span>`).join('')}
+          </div>
+          <button class="org-follow-btn ${o.following?'following':''}" onclick="toggleFollow(this)">
+            <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" width="12" height="12">
+              ${o.following ? '<path d="M2 6l2.5 2.5 5.5-5"/>' : '<path d="M6 1v10M1 6h10"/>'}
+            </svg>
+            ${o.following ? 'Following' : 'Follow organization'}
+          </button>
+        </div>
+      </div>`).join('');
+
+    /* ══ TOGGLE HELPERS ══ */
+    function toggleSwitch(el) {
+      const track = el.querySelector('.toggle-track');
+      const label = el.querySelector('.toggle-label');
+      track.classList.toggle('on');
+      label.textContent = track.classList.contains('on') ? 'On' : 'Off';
+    }
+
+    function toggleFollow(btn) {
+      const isFollowing = btn.classList.contains('following');
+      btn.classList.toggle('following', !isFollowing);
+      btn.innerHTML = !isFollowing
+        ? `<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" width="12" height="12"><path d="M2 6l2.5 2.5 5.5-5"/></svg>Following`
+        : `<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" width="12" height="12"><path d="M6 1v10M1 6h10"/></svg>Follow organization`;
+    }
+  </script>
+
+</body>
+</html>

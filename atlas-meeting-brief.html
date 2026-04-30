@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GiveCentral Atlas — Guru AI Meeting Brief</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:        #0E1E35;
+      --navy-2:      #152844;
+      --navy-3:      #1E3A5F;
+      --blue:        #2563EB;
+      --blue-mid:    #3B82F6;
+      --blue-light:  #DBEAFE;
+      --blue-pale:   #EFF6FF;
+      --green:       #15803D;
+      --green-light: #DCFCE7;
+      --amber:       #D97706;
+      --amber-light: #FEF3C7;
+      --rose:        #BE185D;
+      --rose-light:  #FCE7F3;
+      --teal:        #0D9488;
+      --teal-light:  #CCFBF1;
+      --purple:      #7C3AED;
+      --purple-light:#EDE9FE;
+      --gold:        #B45309;
+      --gold-light:  #FEF3C7;
+      --text:        #0F172A;
+      --text-2:      #334155;
+      --text-3:      #64748B;
+      --border:      #E2E8F0;
+      --surface:     #F8FAFC;
+      --white:       #FFFFFF;
+    }
+
+    html { font-size: 14px; -webkit-font-smoothing: antialiased; }
+    body { font-family: 'DM Sans', sans-serif; background: #F0F4F8; color: var(--text); min-height: 100vh; display: flex; }
+
+    /* ══ SIDEBAR ══ */
+    .sidebar {
+      width: 220px; background: var(--navy); height: 100vh;
+      display: flex; flex-direction: column; flex-shrink: 0;
+      position: sticky; top: 0; overflow-y: auto;
+    }
+    .sidebar-logo { padding: 18px 18px 14px; display: flex; align-items: center; gap: 9px; border-bottom: 1px solid rgba(255,255,255,.08); }
+    .logo-mark { width: 30px; height: 30px; background: var(--blue); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+    .logo-mark svg { width: 15px; height: 15px; }
+    .logo-name { font-family: 'DM Serif Display', serif; font-size: 15px; color: white; line-height: 1; }
+    .logo-sub  { font-size: 9px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.3); margin-top: 3px; }
+    .nav-group { padding: 10px 8px 0; }
+    .nav-label { font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.28); padding: 0 10px; margin-bottom: 4px; }
+    .nav-item  { display: flex; align-items: center; gap: 9px; padding: 8px 10px; border-radius: 7px; font-size: 12px; font-weight: 500; color: rgba(255,255,255,.55); cursor: pointer; transition: all .15s; margin-bottom: 1px; }
+    .nav-item:hover  { background: rgba(255,255,255,.07); color: rgba(255,255,255,.85); }
+    .nav-item.active { background: rgba(124,58,237,.35); color: #C4B5FD; border: 1px solid rgba(124,58,237,.4); }
+    .nav-item svg    { width: 14px; height: 14px; flex-shrink: 0; }
+    .nav-badge { margin-left: auto; background: rgba(255,255,255,.1); color: rgba(255,255,255,.5); border-radius: 10px; padding: 1px 7px; font-size: 10px; font-weight: 600; }
+    .sidebar-user { margin-top: auto; padding: 12px; border-top: 1px solid rgba(255,255,255,.08); display: flex; align-items: center; gap: 9px; }
+    .user-avatar { width: 30px; height: 30px; border-radius: 50%; background: var(--blue); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: white; flex-shrink: 0; }
+    .user-name { font-size: 12px; font-weight: 500; color: rgba(255,255,255,.75); }
+    .user-role { font-size: 10px; color: rgba(255,255,255,.35); margin-top: 1px; }
+
+    /* ══ MAIN ══ */
+    .main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+
+    .topbar {
+      background: white; border-bottom: 1px solid var(--border);
+      padding: 0 28px; height: 52px;
+      display: flex; align-items: center; gap: 12px; flex-shrink: 0;
+    }
+    .topbar-icon { width: 28px; height: 28px; background: var(--purple-light); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+    .topbar-icon svg { width: 14px; height: 14px; color: var(--purple); }
+    .topbar-title { font-size: 15px; font-weight: 600; color: var(--text); }
+    .topbar-sep { width: 1px; height: 18px; background: var(--border); }
+    .topbar-sub { font-size: 12px; color: var(--text-3); }
+    .topbar-right { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+    .tb-btn { padding: 6px 14px; border-radius: 7px; font-size: 12px; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .15s; display: flex; align-items: center; gap: 6px; border: 1px solid var(--border); background: none; color: var(--text-2); }
+    .tb-btn:hover { background: var(--surface); border-color: #94A3B8; }
+    .tb-btn svg { width: 12px; height: 12px; }
+
+    /* ══ CONTENT LAYOUT ══ */
+    .content { flex: 1; display: grid; grid-template-columns: 340px 1fr; min-height: 0; overflow: hidden; }
+
+    /* ══ LEFT: SCHEDULING PANEL ══ */
+    .schedule-panel {
+      background: white; border-right: 1px solid var(--border);
+      display: flex; flex-direction: column; overflow-y: auto;
+    }
+
+    .sp-section { padding: 18px 20px; border-bottom: 1px solid var(--border); }
+    .sp-label { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--text-3); margin-bottom: 12px; }
+
+    /* Calendar mini */
+    .mini-cal { }
+    .cal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+    .cal-month { font-size: 13px; font-weight: 600; color: var(--text); }
+    .cal-nav { width: 24px; height: 24px; border: 1px solid var(--border); border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background .15s; }
+    .cal-nav:hover { background: var(--surface); }
+    .cal-nav svg { width: 10px; height: 10px; color: var(--text-3); }
+    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; }
+    .cal-dow { font-size: 9px; font-weight: 700; text-transform: uppercase; color: var(--text-3); text-align: center; padding: 4px 0; }
+    .cal-day {
+      font-size: 11px; text-align: center; padding: 5px 2px; border-radius: 6px;
+      cursor: pointer; color: var(--text-2); transition: background .15s;
+    }
+    .cal-day:hover { background: var(--surface); }
+    .cal-day.other { color: #CBD5E1; }
+    .cal-day.today { background: var(--blue); color: white; font-weight: 600; }
+    .cal-day.has-meeting { position: relative; font-weight: 600; color: var(--text); }
+    .cal-day.has-meeting::after { content:''; position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%); width: 4px; height: 4px; border-radius: 50%; background: var(--purple); }
+    .cal-day.selected { background: var(--purple-light); color: var(--purple); font-weight: 600; }
+
+    /* Meeting list */
+    .meeting-list { display: flex; flex-direction: column; gap: 8px; }
+    .meeting-item {
+      display: flex; gap: 11px; padding: 11px 13px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; cursor: pointer; transition: all .15s;
+    }
+    .meeting-item:hover { border-color: #94A3B8; background: white; }
+    .meeting-item.active { border-color: rgba(124,58,237,.4); background: var(--purple-light); }
+    .meeting-time { font-size: 11px; font-weight: 700; color: var(--text-3); min-width: 40px; padding-top: 2px; }
+    .meeting-item.active .meeting-time { color: var(--purple); }
+    .meeting-avatar { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+    .meeting-info { flex: 1; min-width: 0; }
+    .meeting-name { font-size: 12px; font-weight: 600; color: var(--text); }
+    .meeting-item.active .meeting-name { color: var(--purple); }
+    .meeting-type { font-size: 10px; color: var(--text-3); margin-top: 2px; }
+    .meeting-item.active .meeting-type { color: #6D28D9; }
+    .brief-ready { font-size: 9px; font-weight: 700; padding: 1px 6px; border-radius: 10px; background: var(--green-light); color: var(--green); margin-top: 4px; display: inline-block; }
+    .brief-pending { font-size: 9px; font-weight: 700; padding: 1px 6px; border-radius: 10px; background: var(--surface); color: var(--text-3); border: 1px solid var(--border); margin-top: 4px; display: inline-block; }
+    .meeting-ask { font-size: 12px; font-weight: 700; color: var(--green); flex-shrink: 0; align-self: flex-start; margin-top: 2px; }
+
+    /* Generate button */
+    .gen-section { padding: 18px 20px; }
+    .gen-btn {
+      width: 100%; padding: 13px; background: var(--purple); color: white; border: none;
+      border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer;
+      font-family: 'DM Sans', sans-serif; transition: background .15s;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      box-shadow: 0 2px 8px rgba(124,58,237,.3);
+    }
+    .gen-btn:hover { background: #6D28D9; }
+    .gen-btn svg { width: 14px; height: 14px; }
+    .gen-btn.generating { background: #6D28D9; cursor: not-allowed; }
+    .gen-opts { display: flex; gap: 8px; margin-top: 8px; }
+    .gen-opt {
+      flex: 1; padding: 7px 10px; border: 1px solid var(--border); border-radius: 8px;
+      background: var(--surface); font-size: 11px; font-weight: 500; color: var(--text-3);
+      cursor: pointer; text-align: center; transition: all .15s;
+    }
+    .gen-opt:hover { border-color: var(--purple-light); color: var(--purple); background: var(--purple-light); }
+    .gen-opt.active { border-color: rgba(124,58,237,.4); color: var(--purple); background: var(--purple-light); font-weight: 600; }
+
+    /* ══ RIGHT: BRIEF PANEL ══ */
+    .brief-panel { overflow-y: auto; padding: 24px 28px; }
+
+    /* Generating state */
+    .generating-state { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 400px; gap: 16px; }
+    .gen-orb {
+      width: 72px; height: 72px; background: var(--navy); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      animation: orb-pulse 1.5s ease-in-out infinite;
+    }
+    .gen-orb svg { width: 30px; height: 30px; }
+    @keyframes orb-pulse { 0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(124,58,237,.3)} 50%{transform:scale(1.06);box-shadow:0 0 0 12px rgba(124,58,237,.0)} }
+    .gen-steps { display: flex; flex-direction: column; gap: 8px; width: 260px; }
+    .gen-step { display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--text-3); }
+    .gen-step.done { color: var(--green); }
+    .gen-step.active { color: var(--purple); font-weight: 500; }
+    .gen-step-icon { width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .gen-step.done .gen-step-icon { background: var(--green-light); }
+    .gen-step.active .gen-step-icon { background: var(--purple-light); }
+    .gen-step.waiting .gen-step-icon { background: var(--surface); border: 1px solid var(--border); }
+    .gen-step svg { width: 10px; height: 10px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spin { animation: spin .8s linear infinite; }
+
+    /* Brief header */
+    .brief-header {
+      background: var(--navy); border-radius: 14px; padding: 22px 26px; margin-bottom: 20px;
+      position: relative; overflow: hidden;
+    }
+    .brief-bg { position: absolute; inset: 0; background: radial-gradient(circle at 90% 50%, rgba(124,58,237,.2) 0%, transparent 60%), radial-gradient(circle at 10% 80%, rgba(37,99,235,.1) 0%, transparent 50%); }
+    .brief-eyebrow { font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.4); margin-bottom: 10px; position: relative; z-index: 1; display: flex; align-items: center; gap: 8px; }
+    .guru-pill { display: inline-flex; align-items: center; gap: 5px; background: var(--purple); border-radius: 20px; padding: 2px 9px; font-size: 9px; font-weight: 700; color: white; }
+    .guru-pill svg { width: 10px; height: 10px; }
+    .brief-donor-row { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; position: relative; z-index: 1; }
+    .brief-avatar {
+      width: 54px; height: 54px; border-radius: 50%; border: 2.5px solid rgba(255,255,255,.15);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'DM Serif Display', serif; font-size: 20px; color: white; flex-shrink: 0;
+    }
+    .brief-name { font-family: 'DM Serif Display', serif; font-size: 22px; color: white; letter-spacing: -.01em; }
+    .brief-org { font-size: 12px; color: rgba(255,255,255,.55); margin-top: 4px; }
+    .brief-meeting-info { margin-left: auto; text-align: right; }
+    .bmi-time { font-family: 'DM Serif Display', serif; font-size: 20px; color: white; }
+    .bmi-label { font-size: 11px; color: rgba(255,255,255,.45); margin-top: 3px; }
+    .brief-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: rgba(255,255,255,.08); border-radius: 10px; overflow: hidden; position: relative; z-index: 1; }
+    .bstat { background: rgba(255,255,255,.06); padding: 11px 14px; }
+    .bstat-val { font-family: 'DM Serif Display', serif; font-size: 18px; color: white; letter-spacing: -.02em; line-height: 1; }
+    .bstat-val.gold { color: #FCD34D; }
+    .bstat-val.up   { color: #34D399; }
+    .bstat-lbl { font-size: 9px; color: rgba(255,255,255,.4); margin-top: 4px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
+
+    /* Brief sections */
+    .brief-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+    .brief-full  { margin-bottom: 14px; }
+
+    .brief-card { background: white; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    .bc-head { padding: 12px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
+    .bc-icon { width: 26px; height: 26px; border-radius: 7px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .bc-icon svg { width: 12px; height: 12px; }
+    .bc-title { font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--text-3); }
+    .bc-body { padding: 14px 16px; }
+
+    /* Giving chart mini */
+    .giving-mini { display: flex; align-items: flex-end; gap: 4px; height: 60px; margin-bottom: 10px; }
+    .gm-bar { flex: 1; border-radius: 3px 3px 0 0; min-height: 3px; cursor: pointer; transition: opacity .15s; }
+    .gm-bar:hover { opacity: .7; }
+    .gm-bar.current { background: var(--blue); }
+    .gm-bar.past { background: var(--blue-light); }
+    .gm-labels { display: flex; justify-content: space-between; font-size: 10px; color: var(--text-3); }
+
+    /* Key facts */
+    .key-facts { display: flex; flex-direction: column; gap: 8px; }
+    .kf-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 8px 0; border-bottom: .5px solid var(--border); }
+    .kf-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .kf-label { font-size: 11px; color: var(--text-3); }
+    .kf-value { font-size: 11px; font-weight: 600; color: var(--text); text-align: right; max-width: 55%; }
+    .kf-value.green { color: var(--green); }
+    .kf-value.amber { color: var(--amber); }
+    .kf-value.blue  { color: var(--blue); }
+
+    /* AI recommendation — the crown jewel */
+    .ai-rec-card {
+      background: var(--navy); border-radius: 12px; overflow: hidden;
+      margin-bottom: 14px;
+    }
+    .ai-rec-head { padding: 14px 18px; border-bottom: 1px solid rgba(255,255,255,.08); display: flex; align-items: center; gap: 10px; }
+    .ai-rec-icon { width: 30px; height: 30px; background: var(--purple); border-radius: 9px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .ai-rec-icon svg { width: 14px; height: 14px; }
+    .ai-rec-title { font-size: 13px; font-weight: 600; color: white; }
+    .ai-rec-sub   { font-size: 10px; color: rgba(255,255,255,.4); margin-top: 2px; }
+    .ai-rec-body  { padding: 16px 18px; display: flex; flex-direction: column; gap: 12px; }
+
+    .rec-row { display: flex; gap: 12px; }
+    .rec-num { width: 24px; height: 24px; background: var(--purple); border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: white; flex-shrink: 0; margin-top: 1px; }
+    .rec-content { flex: 1; }
+    .rec-label { font-size: 12px; font-weight: 600; color: white; margin-bottom: 3px; }
+    .rec-text  { font-size: 11px; color: rgba(255,255,255,.65); line-height: 1.6; }
+    .rec-text .highlight { color: #C4B5FD; font-weight: 600; }
+
+    /* Ask score */
+    .ask-score-wrap { display: flex; gap: 12px; align-items: center; padding: 14px 16px; background: rgba(255,255,255,.05); border-radius: 10px; margin-top: 4px; }
+    .ask-score-bar-wrap { flex: 1; }
+    .ask-score-bar { height: 8px; background: rgba(255,255,255,.1); border-radius: 4px; overflow: hidden; }
+    .ask-score-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, #7C3AED, #C4B5FD); transition: width 1.5s ease; }
+    .ask-score-labels { display: flex; justify-content: space-between; font-size: 9px; color: rgba(255,255,255,.35); margin-top: 4px; }
+    .ask-score-num { font-family: 'DM Serif Display', serif; font-size: 28px; color: #C4B5FD; flex-shrink: 0; letter-spacing: -.02em; line-height: 1; }
+    .ask-score-lbl { font-size: 10px; color: rgba(255,255,255,.45); margin-top: 3px; }
+
+    /* Caution flags */
+    .caution-list { display: flex; flex-direction: column; gap: 7px; }
+    .caution-item { display: flex; gap: 10px; padding: 10px 12px; background: var(--amber-light); border-radius: 9px; border-left: 3px solid var(--amber); }
+    .caution-icon { width: 18px; height: 18px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; margin-top: 1px; }
+    .caution-icon svg { width: 14px; height: 14px; color: var(--amber); }
+    .caution-text  { font-size: 12px; color: #78350F; line-height: 1.55; }
+    .caution-text strong { font-weight: 600; }
+
+    /* Relationship map */
+    .rel-list { display: flex; flex-direction: column; gap: 7px; }
+    .rel-item { display: flex; align-items: center; gap: 10px; padding: 8px 10px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+    .rel-avatar { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; flex-shrink: 0; }
+    .rel-name  { font-size: 12px; font-weight: 500; color: var(--text); flex: 1; }
+    .rel-type  { font-size: 10px; color: var(--text-3); }
+    .rel-amt   { font-size: 11px; font-weight: 600; color: var(--green); }
+
+    /* Talking points */
+    .tp-list { display: flex; flex-direction: column; gap: 8px; }
+    .tp-item { display: flex; gap: 10px; padding: 11px 13px; background: var(--surface); border: 1px solid var(--border); border-radius: 9px; }
+    .tp-icon { width: 22px; height: 22px; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+    .tp-icon svg { width: 11px; height: 11px; }
+    .tp-text { font-size: 12px; color: var(--text-2); line-height: 1.55; flex: 1; }
+    .tp-text strong { color: var(--text); font-weight: 600; }
+
+    /* Actions footer */
+    .brief-actions {
+      display: flex; gap: 10px; padding: 18px 0 0; border-top: 1px solid var(--border);
+      margin-top: 4px; flex-wrap: wrap;
+    }
+    .ba-btn {
+      display: flex; align-items: center; gap: 6px; padding: 9px 18px;
+      border-radius: 9px; font-size: 12px; font-weight: 600;
+      cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .15s;
+    }
+    .ba-btn svg { width: 13px; height: 13px; }
+    .ba-primary { background: var(--purple); color: white; border: none; box-shadow: 0 2px 6px rgba(124,58,237,.25); }
+    .ba-primary:hover { background: #6D28D9; }
+    .ba-ghost { background: none; border: 1px solid var(--border); color: var(--text-2); }
+    .ba-ghost:hover { background: var(--surface); border-color: #94A3B8; }
+    .ba-warn { background: none; border: 1px solid rgba(217,119,6,.3); color: var(--amber); }
+    .ba-warn:hover { background: var(--amber-light); }
+
+    /* Empty / welcome state */
+    .empty-state {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      min-height: 500px; text-align: center; padding: 40px;
+    }
+    .empty-icon { width: 64px; height: 64px; background: var(--purple-light); border-radius: 16px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; }
+    .empty-icon svg { width: 28px; height: 28px; color: var(--purple); }
+    .empty-title { font-family: 'DM Serif Display', serif; font-size: 20px; color: var(--text); margin-bottom: 8px; }
+    .empty-sub { font-size: 13px; color: var(--text-3); max-width: 320px; line-height: 1.65; }
+
+    /* Animations */
+    @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+    .brief-header { animation: fadeUp .35s ease forwards; }
+    .brief-card, .ai-rec-card { animation: fadeUp .35s ease forwards; opacity: 0; }
+    .brief-full .brief-card { animation-delay: .05s; }
+    .brief-grid .brief-card:nth-child(1) { animation-delay: .10s; }
+    .brief-grid .brief-card:nth-child(2) { animation-delay: .14s; }
+    .ai-rec-card { animation-delay: .18s; }
+  </style>
+</head>
+<body>
+
+  <!-- ══ SIDEBAR ══ -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-mark">
+        <svg viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7.5" stroke="white" stroke-width="1.5"/><path d="M5.5 9.5C6.5 11.5 9 13 9 13s2.5-1.5 3.5-3.5S12 5 9 5 4.5 7.5 5.5 9.5z" fill="white" fill-opacity=".9"/></svg>
+      </div>
+      <div><div class="logo-name">GiveCentral</div><div class="logo-sub">Atlas CRM</div></div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-label">Main</div>
+      <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><rect x="1.5" y="1.5" width="4" height="4" rx="1.2"/><rect x="8.5" y="1.5" width="4" height="4" rx="1.2"/><rect x="1.5" y="8.5" width="4" height="4" rx="1.2"/><rect x="8.5" y="8.5" width="4" height="4" rx="1.2"/></svg>Dashboard</div>
+      <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="6" cy="4.5" r="3"/><path d="M1 13c0-2.8 2.2-5 5-5h1c2.8 0 5 2.2 5 5"/></svg>Donors<span class="nav-badge">3,847</span></div>
+      <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M7 1.5v11M2 6.5h10"/></svg>Gifts &amp; pledges</div>
+      <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M1.5 8.5l2.5-2.5 2 2 2.5-2.5 2 2"/><rect x="1.5" y="1.5" width="11" height="11" rx="2"/></svg>Campaigns</div>
+    </div>
+    <div class="nav-group" style="margin-top:8px">
+      <div class="nav-label">Fundraising</div>
+      <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="7" cy="7" r="5.5"/><path d="M7 4v4M7 10v.5"/></svg>Prospect pipeline<span class="nav-badge">28</span></div>
+      <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><rect x="1.5" y="2.5" width="11" height="9" rx="1.5"/><path d="M1.5 6h11M5 2.5v2M9 2.5v2"/></svg>Tasks &amp; reminders<span class="nav-badge">7</span></div>
+    </div>
+    <div class="nav-group" style="margin-top:8px">
+      <div class="nav-label">Intelligence</div>
+      <div class="nav-item active"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="7" cy="5" r="3.5"/><path d="M5 10c0 2 4 2 4 0M4.5 8.5c-2 1-3 3.5-3 4.5M9.5 8.5c2 1 3 3.5 3 4.5"/></svg>Guru AI<span class="nav-badge">3</span></div>
+      <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M2 11l3-3 2 2 3-3 2 2"/><rect x="2" y="2" width="10" height="10" rx="1.5"/></svg>Analytics</div>
+    </div>
+    <div class="sidebar-user">
+      <div class="user-avatar">SR</div>
+      <div><div class="user-name">Sarah Reynolds</div><div class="user-role">Development Director</div></div>
+    </div>
+  </aside>
+
+  <!-- ══ MAIN ══ -->
+  <div class="main">
+
+    <!-- Topbar -->
+    <div class="topbar">
+      <div class="topbar-icon">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><rect x="1.5" y="2.5" width="11" height="9" rx="1.5"/><path d="M1.5 6h11M5 2.5v2M9 2.5v2"/></svg>
+      </div>
+      <span class="topbar-title">Guru AI</span>
+      <div class="topbar-sep"></div>
+      <span class="topbar-sub">Pre-meeting donor briefs</span>
+      <div class="topbar-right">
+        <button class="tb-btn">
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><circle cx="6" cy="6" r="4.5"/><path d="M6 4v3M6 9v.5"/></svg>
+          Brief history
+        </button>
+        <button class="tb-btn">
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M6 1v7M3 5.5l3 3 3-3"/><path d="M1.5 10.5h9"/></svg>
+          Export all
+        </button>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- ══ SCHEDULE PANEL ══ -->
+      <div class="schedule-panel">
+
+        <!-- Calendar -->
+        <div class="sp-section">
+          <div class="sp-label">Select meeting date</div>
+          <div class="mini-cal">
+            <div class="cal-header">
+              <div class="cal-nav" onclick="prevMonth()"><svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M6.5 2L3.5 5l3 3"/></svg></div>
+              <div class="cal-month" id="cal-month-label">April 2026</div>
+              <div class="cal-nav" onclick="nextMonth()"><svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3.5 2L6.5 5l-3 3"/></svg></div>
+            </div>
+            <div class="cal-grid" id="cal-grid"></div>
+          </div>
+        </div>
+
+        <!-- Meetings for selected date -->
+        <div class="sp-section" style="flex:1">
+          <div class="sp-label">Meetings — <span id="meeting-date-label">April 5, 2026</span></div>
+          <div class="meeting-list" id="meeting-list"></div>
+        </div>
+
+        <!-- Brief type + generate -->
+        <div class="gen-section">
+          <div class="sp-label" style="margin-bottom:8px">Brief depth</div>
+          <div class="gen-opts" style="margin-bottom:12px">
+            <div class="gen-opt active" onclick="setDepth(this,'quick')">Quick (2 min)</div>
+            <div class="gen-opt" onclick="setDepth(this,'full')">Full (5 min)</div>
+            <div class="gen-opt" onclick="setDepth(this,'strategy')">Strategy</div>
+          </div>
+          <button class="gen-btn" id="gen-btn" onclick="generateBrief()">
+            <svg viewBox="0 0 14 14" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round"><circle cx="7" cy="5" r="3.5"/><path d="M5 10c0 2 4 2 4 0M4.5 8.5c-2 1-3 3.5-3 4.5M9.5 8.5c2 1 3 3.5 3 4.5"/></svg>
+            Generate brief for O'Brien
+          </button>
+        </div>
+
+      </div>
+
+      <!-- ══ BRIEF PANEL ══ -->
+      <div class="brief-panel" id="brief-panel">
+        <div class="empty-state" id="empty-state">
+          <div class="empty-icon">
+            <svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+              <circle cx="14" cy="10" r="7"/>
+              <path d="M7 24c0-3.9 3.1-7 7-7s7 3.1 7 7"/>
+              <path d="M21 5l2 2M23 3l-2 2M19 3l2 2"/>
+            </svg>
+          </div>
+          <div class="empty-title">Select a meeting to generate a brief</div>
+          <div class="empty-sub">Choose a donor from today's schedule and Guru AI will prepare a complete pre-meeting brief — giving history, risk flags, ask strategy, and talking points.</div>
+        </div>
+
+        <div id="generating-state" style="display:none">
+          <div class="generating-state">
+            <div class="gen-orb">
+              <svg viewBox="0 0 30 30" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round">
+                <circle cx="15" cy="10.5" r="7"/>
+                <path d="M10 21.5c0 4 10 4 10 0M8 19.5c-4 2-6 6-6 9M22 19.5c4 2 6 6 6 9"/>
+              </svg>
+            </div>
+            <div style="font-family:'DM Serif Display',serif;font-size:16px;color:var(--text);text-align:center">Guru AI is preparing your brief…</div>
+            <div class="gen-steps" id="gen-steps"></div>
+          </div>
+        </div>
+
+        <div id="brief-content" style="display:none">
+          <!-- Filled dynamically -->
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+<script>
+  /* ══ CALENDAR ══ */
+  const MEETINGS = {
+    '2026-04-05': [
+      { time:'10:00 AM', name:"Margaret Sullivan",         initials:'MS', color:'#DBEAFE', tcolor:'#1D4ED8', type:'Major donor · stewardship call', ask:'$10k', score:92, ready:false },
+      { time:'2:00 PM',  name:"James & Patricia O'Brien", initials:'JO', color:'#EDE9FE', tcolor:'#7C3AED', type:'Cathedral ask · major gift call',  ask:'$25k', score:95, ready:true  },
+      { time:'4:30 PM',  name:"Dr. Thomas Nguyen",        initials:'TN', color:'#CCFBF1', tcolor:'#0D9488', type:'New prospect · cultivation',       ask:'$20k', score:74, ready:false },
+    ],
+    '2026-04-07': [
+      { time:'11:00 AM', name:"Michael & Susan Grant",    initials:'MG', color:'#DBEAFE', tcolor:'#1D4ED8', type:'Lunch cultivation · Cathedral',    ask:'$25k', score:81, ready:false },
+    ],
+    '2026-04-12': [
+      { time:'9:00 AM',  name:"Catherine Walsh",          initials:'CW', color:'#F3F4F6', tcolor:'#374151', type:'Diocese board meeting brief',     ask:'$50k', score:74, ready:false },
+      { time:'2:30 PM',  name:"The Kowalski Family",      initials:'TK', color:'#DCFCE7', tcolor:'#15803D', type:'Pledge stewardship · $50k pledge', ask:'',    score:81, ready:true  },
+    ],
+  };
+
+  let year = 2026, month = 3, selectedDate = '2026-04-05', selectedMeeting = 1;
+
+  const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const DAYS_SHORT = ['Su','Mo','Tu','We','Th','Fr','Sa'];
+
+  function renderCal() {
+    document.getElementById('cal-month-label').textContent = MONTHS[month] + ' ' + year;
+    const grid = document.getElementById('cal-grid');
+    grid.innerHTML = DAYS_SHORT.map(d => `<div class="cal-dow">${d}</div>`).join('');
+    const first = new Date(year, month, 1).getDay();
+    const days  = new Date(year, month+1, 0).getDate();
+    const today = '2026-04-05';
+    for (let i = 0; i < first; i++) {
+      const prev = new Date(year, month, 0 - (first - 1 - i)).getDate();
+      grid.innerHTML += `<div class="cal-day other">${prev - (first - 1 - i)}</div>`;
+    }
+    for (let d = 1; d <= days; d++) {
+      const key = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      const cls = [
+        'cal-day',
+        key === today ? 'today' : '',
+        key === selectedDate && key !== today ? 'selected' : '',
+        MEETINGS[key] ? 'has-meeting' : '',
+      ].filter(Boolean).join(' ');
+      grid.innerHTML += `<div class="${cls}" onclick="selectDate('${key}',${d})">${d}</div>`;
+    }
+  }
+
+  function selectDate(key, d) {
+    selectedDate = key;
+    selectedMeeting = 0;
+    const label = `${MONTHS[month]} ${d}, ${year}`;
+    document.getElementById('meeting-date-label').textContent = label;
+    renderCal();
+    renderMeetings();
+    resetBrief();
+  }
+
+  function prevMonth() { month--; if (month < 0) { month = 11; year--; } renderCal(); }
+  function nextMonth() { month++; if (month > 11) { month = 0; year++; } renderCal(); }
+
+  function renderMeetings() {
+    const list = document.getElementById('meeting-list');
+    const meetings = MEETINGS[selectedDate] || [];
+    if (!meetings.length) {
+      list.innerHTML = `<div style="font-size:12px;color:var(--text-3);text-align:center;padding:20px 0">No meetings scheduled</div>`;
+      return;
+    }
+    list.innerHTML = meetings.map((m, i) => `
+      <div class="meeting-item ${i === selectedMeeting ? 'active' : ''}" onclick="selectMeeting(${i})">
+        <div class="meeting-time">${m.time}</div>
+        <div class="meeting-avatar" style="background:${m.color};color:${m.tcolor}">${m.initials}</div>
+        <div class="meeting-info">
+          <div class="meeting-name">${m.name}</div>
+          <div class="meeting-type">${m.type}</div>
+          <div class="${m.ready ? 'brief-ready' : 'brief-pending'}">${m.ready ? '✓ Brief ready' : 'Brief not yet generated'}</div>
+        </div>
+        ${m.ask ? `<div class="meeting-ask">${m.ask}</div>` : ''}
+      </div>`).join('');
+  }
+
+  function selectMeeting(i) {
+    selectedMeeting = i;
+    const meetings = MEETINGS[selectedDate] || [];
+    const m = meetings[i];
+    renderMeetings();
+    resetBrief();
+    document.getElementById('gen-btn').innerHTML = `
+      <svg viewBox="0 0 14 14" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" width="14" height="14"><circle cx="7" cy="5" r="3.5"/><path d="M5 10c0 2 4 2 4 0M4.5 8.5c-2 1-3 3.5-3 4.5M9.5 8.5c2 1 3 3.5 3 4.5"/></svg>
+      Generate brief for ${m.name.split(' ')[0]}${m.name.includes('&') ? ' & Patricia' : ''}
+    `;
+    if (m.ready) {
+      // Auto-show existing brief
+      setTimeout(() => generateBrief(true), 200);
+    }
+  }
+
+  function setDepth(el, val) {
+    document.querySelectorAll('.gen-opt').forEach(o => o.classList.remove('active'));
+    el.classList.add('active');
+  }
+
+  function resetBrief() {
+    document.getElementById('empty-state').style.display = 'flex';
+    document.getElementById('generating-state').style.display = 'none';
+    document.getElementById('brief-content').style.display = 'none';
+    document.getElementById('brief-content').innerHTML = '';
+  }
+
+  /* ══ GENERATE BRIEF ══ */
+  function generateBrief(instant = false) {
+    const meetings = MEETINGS[selectedDate] || [];
+    const m = meetings[selectedMeeting];
+    if (!m) return;
+
+    document.getElementById('empty-state').style.display = 'none';
+    document.getElementById('brief-content').style.display = 'none';
+
+    if (instant) {
+      renderBrief(m);
+      return;
+    }
+
+    document.getElementById('generating-state').style.display = 'flex';
+    const steps = [
+      { label: 'Loading giving history (FY2011–2026)', delay: 0 },
+      { label: 'Fetching open pledges & pledge risk scores', delay: 700 },
+      { label: 'Analyzing upgrade propensity signals', delay: 1300 },
+      { label: 'Reviewing last 6 contact history notes', delay: 1900 },
+      { label: 'Generating ask strategy & talking points', delay: 2500 },
+      { label: 'Brief ready', delay: 3000 },
+    ];
+
+    const stepsEl = document.getElementById('gen-steps');
+    stepsEl.innerHTML = steps.map((s, i) => `
+      <div class="gen-step waiting" id="step-${i}">
+        <div class="gen-step-icon" id="step-icon-${i}">
+          <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" width="10" height="10"><circle cx="5" cy="5" r="3.5"/></svg>
+        </div>
+        ${s.label}
+      </div>`).join('');
+
+    steps.forEach((s, i) => {
+      setTimeout(() => {
+        // Mark previous as done
+        if (i > 0) {
+          const prev = document.getElementById(`step-${i-1}`);
+          if (prev) {
+            prev.className = 'gen-step done';
+            document.getElementById(`step-icon-${i-1}`).innerHTML = `<svg viewBox="0 0 10 10" fill="none" stroke="#15803D" stroke-width="1.8" stroke-linecap="round" width="10" height="10"><path d="M2 5l2 2 4-4"/></svg>`;
+          }
+        }
+        const curr = document.getElementById(`step-${i}`);
+        if (curr) {
+          curr.className = 'gen-step active';
+          document.getElementById(`step-icon-${i}`).innerHTML = `<svg viewBox="0 0 10 10" fill="none" stroke="#7C3AED" stroke-width="1.6" stroke-linecap="round" class="spin" width="10" height="10"><path d="M5 1.5A3.5 3.5 0 0 1 8.5 5"/></svg>`;
+        }
+      }, s.delay);
+    });
+
+    setTimeout(() => {
+      document.getElementById('generating-state').style.display = 'none';
+      renderBrief(m);
+    }, 3400);
+  }
+
+  function renderBrief(m) {
+    document.getElementById('brief-content').style.display = 'block';
+
+    const isObrien = m.name.includes("O'Brien");
+    const isSullivan = m.name.includes("Sullivan");
+
+    const data = isObrien ? {
+      avatar: 'JO', avatarBg: '#7C3AED', avatarText: 'JO',
+      name: "James & Patricia O'Brien",
+      org: "Cathedral benefactor · St. Petersburg, FL",
+      time: "2:00 PM", date: "Today, April 5",
+      type: "Major gift ask — Cathedral Capital Fund",
+      stats: [
+        { val:'$95,000', lbl:'Lifetime giving', cls:'gold' },
+        { val:'$22,500', lbl:'This year', cls:'up' },
+        { val:'95',      lbl:'Guru AI score', cls:'' },
+        { val:'↑ 40%',  lbl:'YoY growth', cls:'up' },
+      ],
+      chartData: [4500, 6200, 7000, 8500, 9800, 10200, 12000, 14500, 16000, 22500],
+      chartYears: ['17','18','19','20','21','22','23','24','25','26'],
+      facts: [
+        { label:'Last gift', value:'$10,000 — Dec 28, 2025', cls:'green' },
+        { label:'Open pledge', value:'$12,500 remaining · Cathedral', cls:'amber' },
+        { label:'Pledge status', value:'On track · 3 installments left', cls:'' },
+        { label:'Contact history', value:'3 touchpoints in last 90 days', cls:'' },
+        { label:'Last contact', value:'Call Mar 28 · Cultivation', cls:'' },
+        { label:'Preferred channel', value:'Phone · Morning preferred', cls:'' },
+      ],
+      rels: [
+        { initials:'PO', color:'#EDE9FE', tcolor:'#7C3AED', name:'Patricia O\'Brien', type:'Spouse', amt:'$95k combined' },
+        { initials:'FC', color:'#E8F0FB', tcolor:'#1D4ED8', name:'First Catholic Bank', type:'Employer (James)', amt:'' },
+        { initials:'BP', color:'#DCFCE7', tcolor:'#15803D', name:'Bishop Peter Callahan', type:'Relationship', amt:'Introduced Feb 2024' },
+      ],
+      cautions: [
+        { text: '<strong>Overdue pledge installment:</strong> $12,500 installment 2 was due March 15 — now 21 days overdue. Raise diplomatically, or hold for a follow-up call. Do not open the meeting with this.' },
+        { text: '<strong>Patricia\'s health:</strong> Note from Dec call — Patricia mentioned she had minor surgery. Ask how she\'s feeling before getting to business.' },
+      ],
+      recs: [
+        { label:'Lead ask: $25,000 to Cathedral Capital Fund', text:'Giving is up 40% this year and Patricia mentioned legacy giving in March. Guru AI rates this the <span class="highlight">highest-probability major ask in your entire pipeline</span> for Q2. Propose naming the Cathedral narthex — estimated ask range $25k–$50k.' },
+        { label:'Secondary ask: DAF gift for $5k pledge installment', text:'Suggest clearing the overdue pledge installment via a DAF contribution — removes friction, provides immediate tax benefit, and maintains the relationship positively.' },
+        { label:'Plant the legacy conversation', text:'Patricia\'s mention of legacy giving was unprompted. Leave a GiveCentral planned giving brochure. This could be a six-figure future gift. Do not push — acknowledge and leave the door open.' },
+      ],
+      score: 95,
+      talkingPoints: [
+        { icon:'💬', color:'#E8F0FB', scolor:'#1D4ED8', text:'<strong>Open with the Cathedral vision.</strong> James attended the groundbreaking — reference the moment. "When you were there in October, we had 400 families…"' },
+        { icon:'🏛', color:'#EDE9FE', scolor:'#7C3AED', text:'<strong>Naming opportunity.</strong> The narthex naming is $25k–$50k. Architect renderings are available — offer to email them before the call ends.' },
+        { icon:'📅', color:'#DCFCE7', scolor:'#15803D', text:'<strong>Gala follow-up.</strong> They attended the Leadership Circle Gala in January and sat at Bishop Callahan\'s table. Ask if they enjoyed it — warm anchor.' },
+        { icon:'❤️', color:'#CCFBF1', scolor:'#0D9488', text:'<strong>Ask about Patricia.</strong> Minor surgery mentioned Dec 18. Leads with genuine care, sets collaborative tone.' },
+      ],
+    } : isSullivan ? {
+      avatar: 'MS', avatarBg: '#2563EB', avatarText: 'MS',
+      name: "Margaret T. Sullivan",
+      org: "St. Michael's Parish · Tampa, FL",
+      time: "10:00 AM", date: "Today, April 5",
+      type: "Stewardship call — upgrade to Cathedral campaign",
+      stats: [
+        { val:'$84,250', lbl:'Lifetime giving', cls:'gold' },
+        { val:'$12,500', lbl:'This year', cls:'up' },
+        { val:'92',      lbl:'Guru AI score', cls:'' },
+        { val:'↑ 18%',  lbl:'YoY growth', cls:'up' },
+      ],
+      chartData: [3200, 4500, 5000, 2800, 6500, 7200, 9000, 9000, 11450, 12500],
+      chartYears: ['17','18','19','20','21','22','23','24','25','26'],
+      facts: [
+        { label:'Last gift', value:'$2,500 — Mar 15, 2026', cls:'green' },
+        { label:'Open pledge', value:'$1,900 remaining · CMA 2026', cls:'amber' },
+        { label:'Recurring gifts', value:'$50/mo sustaining · 6 years', cls:'' },
+        { label:'Contact history', value:'2 touchpoints this year', cls:'' },
+        { label:'Last contact', value:'Thank-you call Mar 16', cls:'' },
+        { label:'Preferred channel', value:'Email + phone · Daytime', cls:'' },
+      ],
+      rels: [
+        { initials:'TS', color:'#DBEAFE', tcolor:'#1D4ED8', name:'Thomas Sullivan', type:'Spouse', amt:'$31,200 lifetime' },
+        { initials:'St', color:'#DCFCE7', tcolor:'#15803D', name:"St. Michael's Parish", type:'Home parish', amt:'14 yr member' },
+        { initials:'JS', color:'#FEF3C7', tcolor:'#B45309', name:'Jennifer Sullivan', type:'Daughter', amt:'Soft-credited' },
+      ],
+      cautions: [
+        { text: '<strong>Upgrade call — not yet in solicitation stage.</strong> This is stewardship. The goal is to deepen the relationship and plant the Cathedral idea. Do not make a hard ask on this call.' },
+        { text: '<strong>Pledge installment due June 15.</strong> $1,900 remaining. Send a reminder 30 days before. Don\'t raise on this call.' },
+      ],
+      recs: [
+        { label:'Purpose: stewardship + Cathedral seed', text:'Margaret mentioned Cathedral interest on March 16 unprompted. <span class="highlight">This is a cultivation call, not a solicitation.</span> The goal is to deepen connection, share the Cathedral vision, and schedule an in-person tour for Q3 before a $10k ask.' },
+        { label:'Plant the Cathedral upgrade for Q3', text:'Giving up 18% year-over-year. Upgrade propensity score 92. A $10k Cathedral ask in Q3 is the Guru AI recommendation — today\'s call sets the table for it. Share the impact story, not the dollar figure yet.' },
+        { label:'Recognize her 15-year loyalty', text:'Margaret has given every single year since 2011. Call this out explicitly — it\'s extraordinary. Consider whether she\'s a candidate for the Parish Leadership Circle recognition.' },
+      ],
+      score: 92,
+      talkingPoints: [
+        { icon:'🙏', color:'#E8F0FB', scolor:'#1D4ED8', text:'<strong>Acknowledge the 15 years.</strong> "You\'ve been one of our most faithful supporters since 2011. That means everything to this community."' },
+        { icon:'🏛', color:'#EDE9FE', scolor:'#7C3AED', text:'<strong>Cathedral vision — share the story.</strong> Describe what the Cathedral renovation means for the diocese. Ask if she\'d like to visit the construction site in May.' },
+        { icon:'💚', color:'#DCFCE7', scolor:'#15803D', text:'<strong>Sustaining gift acknowledgment.</strong> Her $50/mo has run for 6 years — that\'s $3,600 she likely never thinks about. Name it and thank her for it.' },
+        { icon:'👩', color:'#FEF3C7', scolor:'#B45309', text:'<strong>Ask about Jennifer.</strong> Daughter was soft-credited on a 2023 gift — an opportunity to welcome the next generation into the giving relationship.' },
+      ],
+    } : {
+      avatar: 'TN', avatarBg: '#0D9488', avatarText: 'TN',
+      name: "Dr. Thomas Nguyen",
+      org: "New major gift prospect · Cathedral, St. Petersburg",
+      time: "4:30 PM", date: "Today, April 5",
+      type: "New prospect cultivation — first meeting",
+      stats: [
+        { val:'$1,200', lbl:'Total giving', cls:'' },
+        { val:'74',     lbl:'Guru AI score', cls:'' },
+        { val:'New',    lbl:'Prospect stage', cls:'' },
+        { val:'$20k',   lbl:'Estimated capacity', cls:'up' },
+      ],
+      chartData: [0, 0, 0, 0, 0, 0, 0, 0, 0, 1200],
+      chartYears: ['17','18','19','20','21','22','23','24','25','26'],
+      facts: [
+        { label:'First gift', value:'$500 online — Jan 3, 2026', cls:'green' },
+        { label:'Second gift', value:'$250 Youth Ministry — Mar 3', cls:'green' },
+        { label:'Referred by', value:'Fr. Robert Malloy', cls:'' },
+        { label:'Profession', value:'Physician · St. Joseph\'s Hospital', cls:'' },
+        { label:'Parish', value:'Cathedral of St. Jude', cls:'' },
+        { label:'Est. capacity', value:'$20,000–$30,000 (Guru AI)', cls:'blue' },
+      ],
+      rels: [
+        { initials:'FR', color:'#DCFCE7', tcolor:'#15803D', name:"Fr. Robert Malloy", type:'Referral source', amt:'Cathedral pastor' },
+        { initials:'SJ', color:'#CCFBF1', tcolor:'#0D9488', name:"St. Joseph's Hospital", type:'Employer', amt:'' },
+      ],
+      cautions: [
+        { text: '<strong>First meeting — build rapport, not revenue.</strong> Thomas has given twice, both under $500. He is in Identification stage. The goal today is to learn his interests, not make an ask.' },
+        { text: '<strong>Do not mention a specific dollar amount.</strong> Guru AI estimates $20k–$30k capacity, but this is a cultivation meeting. A premature ask will close the door.' },
+      ],
+      recs: [
+        { label:'Goal: identify his giving passions', text:'Thomas gave to Youth Ministry without being asked — that\'s a signal. Ask open questions about which ministries he finds meaningful. <span class="highlight">Listen more than you talk.</span> Your job today is discovery.' },
+        { label:'Establish the relationship with Fr. Malloy at the center', text:'Fr. Malloy\'s referral is gold — it gives you credibility and a shared connection. Ask how he and Fr. Malloy know each other. It builds trust and gives you context.' },
+        { label:'Schedule the follow-up before you leave', text:'End the call by proposing a Cathedral tour with Fr. Malloy. This moves Thomas from Identification to Cultivation organically without any financial conversation.' },
+      ],
+      score: 74,
+      talkingPoints: [
+        { icon:'👋', color:'#CCFBF1', scolor:'#0D9488', text:'<strong>Acknowledge Fr. Malloy\'s connection.</strong> "Father Malloy speaks very highly of you — I\'m grateful he connected us." Sets a warm, trusted tone.' },
+        { icon:'❓', color:'#E8F0FB', scolor:'#1D4ED8', text:'<strong>Open discovery question.</strong> "What first connected you to the Cathedral community?" Let him lead — your job is to listen and take notes.' },
+        { icon:'🩺', color:'#DCFCE7', scolor:'#15803D', text:'<strong>St. Joseph\'s Hospital.</strong> The diocese has a healthcare ministry relationship with St. Joseph\'s. Ask if he\'s aware of it — a potential connection point.' },
+        { icon:'🏛', color:'#EDE9FE', scolor:'#7C3AED', text:'<strong>Invite the Cathedral tour.</strong> Close with: "Would you like to see the renovation in person? Fr. Malloy and I would love to show you the vision." Low pressure, high value.' },
+      ],
+    };
+
+    const maxChart = Math.max(...data.chartData);
+    const bars = data.chartData.map((v, i) => {
+      const pct = maxChart > 0 ? (v / maxChart * 100) : 0;
+      const isCurrent = i === data.chartData.length - 1;
+      return `<div class="gm-bar ${isCurrent ? 'current' : 'past'}" style="height:${Math.max(pct, isCurrent && v > 0 ? 6 : 3)}%" title="${data.chartYears[i]}: $${v.toLocaleString()}"></div>`;
+    }).join('');
+
+    document.getElementById('brief-content').innerHTML = `
+
+      <!-- HEADER -->
+      <div class="brief-header">
+        <div class="brief-bg"></div>
+        <div class="brief-eyebrow">
+          <span class="guru-pill">
+            <svg viewBox="0 0 10 10" fill="none" stroke="white" stroke-width="1.3" stroke-linecap="round" width="10" height="10"><circle cx="5" cy="3.5" r="2.5"/><path d="M3 7c0 1.5 4 1.5 4 0M2.5 6.2c-1.5.7-2.5 2.5-2.5 3.3M7.5 6.2c1.5.7 2.5 2.5 2.5 3.3"/></svg>
+            Guru AI brief
+          </span>
+          Generated ${new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})} · ${data.type}
+        </div>
+        <div class="brief-donor-row">
+          <div class="brief-avatar" style="background:${data.avatarBg}">${data.avatarText}</div>
+          <div>
+            <div class="brief-name">${data.name}</div>
+            <div class="brief-org">${data.org}</div>
+          </div>
+          <div class="brief-meeting-info">
+            <div class="bmi-time">${data.time}</div>
+            <div class="bmi-label">${data.date}</div>
+          </div>
+        </div>
+        <div class="brief-stats">
+          ${data.stats.map(s => `<div class="bstat"><div class="bstat-val ${s.cls}">${s.val}</div><div class="bstat-lbl">${s.lbl}</div></div>`).join('')}
+        </div>
+      </div>
+
+      <!-- AI RECOMMENDATION -->
+      <div class="ai-rec-card brief-full">
+        <div class="ai-rec-head">
+          <div class="ai-rec-icon">
+            <svg viewBox="0 0 14 14" fill="none" stroke="white" stroke-width="1.3" stroke-linecap="round"><circle cx="7" cy="5" r="3.5"/><path d="M5 10c0 2 4 2 4 0M4.5 8.5c-2 1-3 3.5-3 4.5M9.5 8.5c2 1 3 3.5 3 4.5"/></svg>
+          </div>
+          <div>
+            <div class="ai-rec-title">Guru AI strategy recommendation</div>
+            <div class="ai-rec-sub">Confidence-weighted ask analysis · Updated as of today</div>
+          </div>
+        </div>
+        <div class="ai-rec-body">
+          ${data.recs.map((r, i) => `
+          <div class="rec-row">
+            <div class="rec-num">${i+1}</div>
+            <div class="rec-content">
+              <div class="rec-label">${r.label}</div>
+              <div class="rec-text">${r.text}</div>
+            </div>
+          </div>`).join('')}
+          <div class="ask-score-wrap">
+            <div class="ask-score-bar-wrap">
+              <div class="ask-score-bar"><div class="ask-score-fill" id="score-fill" style="width:0%"></div></div>
+              <div class="ask-score-labels"><span>Low propensity</span><span>High propensity</span></div>
+            </div>
+            <div>
+              <div class="ask-score-num" id="score-num">0</div>
+              <div class="ask-score-lbl">Propensity score</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TWO COL -->
+      <div class="brief-grid">
+        <div class="brief-card">
+          <div class="bc-head">
+            <div class="bc-icon" style="background:#E8F0FB"><svg viewBox="0 0 12 12" fill="none" stroke="#2563EB" stroke-width="1.3" stroke-linecap="round"><path d="M6 1v10M1 5.5h10"/></svg></div>
+            <span class="bc-title">Giving history</span>
+          </div>
+          <div class="bc-body">
+            <div class="giving-mini">${bars}</div>
+            <div class="gm-labels">${data.chartYears.filter((_,i)=>i%2===0).map(y=>`<span>${y}</span>`).join('')}</div>
+            <div class="key-facts" style="margin-top:12px">
+              ${data.facts.map(f => `<div class="kf-row"><span class="kf-label">${f.label}</span><span class="kf-value ${f.cls}">${f.value}</span></div>`).join('')}
+            </div>
+          </div>
+        </div>
+
+        <div class="brief-card">
+          <div class="bc-head">
+            <div class="bc-icon" style="background:#EDE9FE"><svg viewBox="0 0 12 12" fill="none" stroke="#7C3AED" stroke-width="1.3" stroke-linecap="round"><circle cx="5" cy="3.5" r="2"/><path d="M1 10.5c0-2.2 1.8-4 4-4M8.5 5.5c.8 0 1.5.7 1.5 1.5s-.7 1.5-1.5 1.5M8.5 8.5c1 0 2 .4 2.5 1.5"/></svg></div>
+            <span class="bc-title">Relationships</span>
+          </div>
+          <div class="bc-body">
+            <div class="rel-list">
+              ${data.rels.map(r => `
+              <div class="rel-item">
+                <div class="rel-avatar" style="background:${r.color};color:${r.tcolor}">${r.initials}</div>
+                <div class="rel-name">${r.name}</div>
+                <div class="rel-type">${r.type}</div>
+                ${r.amt ? `<div class="rel-amt">${r.amt}</div>` : ''}
+              </div>`).join('')}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CAUTIONS -->
+      <div class="brief-card brief-full">
+        <div class="bc-head">
+          <div class="bc-icon" style="background:#FEF3C7"><svg viewBox="0 0 12 12" fill="none" stroke="#D97706" stroke-width="1.3" stroke-linecap="round"><path d="M6 1.5v4.5M6 9v.5"/><path d="M1 11L6 1l5 10H1z"/></svg></div>
+          <span class="bc-title">Caution flags — read before the call</span>
+        </div>
+        <div class="bc-body">
+          <div class="caution-list">
+            ${data.cautions.map(c => `<div class="caution-item"><div class="caution-icon"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M7 2v5.5M7 10v.5"/><path d="M1.5 12.5L7 1l5.5 11.5H1.5z"/></svg></div><div class="caution-text">${c.text}</div></div>`).join('')}
+          </div>
+        </div>
+      </div>
+
+      <!-- TALKING POINTS -->
+      <div class="brief-card brief-full">
+        <div class="bc-head">
+          <div class="bc-icon" style="background:#CCFBF1"><svg viewBox="0 0 12 12" fill="none" stroke="#0D9488" stroke-width="1.3" stroke-linecap="round"><path d="M1.5 2.5h9v6.5l-2 2H1.5z"/><path d="M4 5.5h4M4 7.5h2"/></svg></div>
+          <span class="bc-title">Talking points</span>
+        </div>
+        <div class="bc-body">
+          <div class="tp-list">
+            ${data.talkingPoints.map(tp => `
+            <div class="tp-item">
+              <div class="tp-icon" style="background:${tp.color}"><svg viewBox="0 0 11 11" fill="none" stroke="${tp.scolor}" stroke-width="1.3" stroke-linecap="round"><circle cx="5.5" cy="5.5" r="4"/><path d="M3.5 5.5l1.5 1.5 3-3"/></svg></div>
+              <div class="tp-text">${tp.text}</div>
+            </div>`).join('')}
+          </div>
+        </div>
+      </div>
+
+      <!-- ACTIONS -->
+      <div class="brief-actions">
+        <button class="ba-btn ba-primary">
+          <svg viewBox="0 0 13 13" fill="none" stroke="white" stroke-width="1.4" stroke-linecap="round"><path d="M1.5 2.5h10v7H1.5zM1.5 5.5h10M4.5 2.5v3"/></svg>
+          Log a note after the call
+        </button>
+        <button class="ba-btn ba-ghost">
+          <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M6.5 1v8M3 5.5l3.5 3.5 3.5-3.5"/><path d="M1.5 11h11"/></svg>
+          Export PDF brief
+        </button>
+        <button class="ba-btn ba-ghost">
+          <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><rect x="1.5" y="2.5" width="10" height="8" rx="1.5"/><path d="M1.5 5.5h10"/><path d="M4.5 2.5v3M8.5 2.5v3"/></svg>
+          Schedule follow-up
+        </button>
+        <button class="ba-btn ba-ghost">
+          <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M1.5 2.5h10v7H1.5zM4 5.5h5M4 7h3"/></svg>
+          View full donor profile
+        </button>
+        <button class="ba-btn ba-warn">
+          <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M6.5 2v5.5M6.5 10v.5"/><path d="M1 12L6.5 1 12 12H1z"/></svg>
+          Flag an issue with this brief
+        </button>
+      </div>
+    `;
+
+    // Animate score counter
+    const target = data.score;
+    const fill = document.getElementById('score-fill');
+    const num  = document.getElementById('score-num');
+    let current = 0;
+    const interval = setInterval(() => {
+      current = Math.min(current + 2, target);
+      if (fill) fill.style.width = current + '%';
+      if (num)  num.textContent = current;
+      if (current >= target) clearInterval(interval);
+    }, 20);
+  }
+
+  /* ══ INIT ══ */
+  renderCal();
+  renderMeetings();
+
+  // Auto-select the O'Brien meeting and generate
+  setTimeout(() => {
+    selectMeeting(1);
+  }, 400);
+</script>
+
+</body>
+</html>

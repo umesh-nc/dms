@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GiveCentral Atlas — Moves Management Pipeline</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:        #0E1E35;
+      --blue:        #2563EB;
+      --blue-mid:    #3B82F6;
+      --blue-light:  #DBEAFE;
+      --blue-pale:   #EFF6FF;
+      --green:       #15803D;
+      --green-light: #DCFCE7;
+      --amber:       #D97706;
+      --amber-light: #FEF3C7;
+      --rose:        #BE185D;
+      --rose-light:  #FCE7F3;
+      --teal:        #0D9488;
+      --teal-light:  #CCFBF1;
+      --purple:      #7C3AED;
+      --purple-light:#EDE9FE;
+      --gold:        #B45309;
+      --gold-light:  #FEF3C7;
+      --text:        #0F172A;
+      --text-2:      #334155;
+      --text-3:      #64748B;
+      --border:      #E2E8F0;
+      --surface:     #F8FAFC;
+      --white:       #FFFFFF;
+
+      /* Stage colors */
+      --id-bg:    #EFF6FF; --id-accent:   #2563EB; --id-text:   #1D4ED8;
+      --cul-bg:   #ECFDF5; --cul-accent:  #059669; --cul-text:  #065F46;
+      --sol-bg:   #FFFBEB; --sol-accent:  #D97706; --sol-text:  #92400E;
+      --stew-bg:  #F0FDF4; --stew-accent: #15803D; --stew-text: #14532D;
+      --close-bg: #F0FDF4; --close-accent:#15803D; --close-text:#14532D;
+    }
+
+    html { font-size: 14px; -webkit-font-smoothing: antialiased; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--surface); color: var(--text); min-height: 100vh; display: flex; overflow: hidden; }
+
+    /* ══ SIDEBAR ══ */
+    .sidebar {
+      width: 220px; background: var(--navy); height: 100vh;
+      display: flex; flex-direction: column; flex-shrink: 0; overflow-y: auto;
+    }
+    .sidebar-logo { padding: 18px 18px 14px; display: flex; align-items: center; gap: 9px; border-bottom: 1px solid rgba(255,255,255,.08); }
+    .logo-mark { width: 30px; height: 30px; background: var(--blue); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+    .logo-mark svg { width: 15px; height: 15px; }
+    .logo-name { font-family: 'DM Serif Display', serif; font-size: 15px; color: white; line-height: 1; }
+    .logo-sub  { font-size: 9px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.3); margin-top: 3px; }
+    .nav-group { padding: 10px 8px 0; }
+    .nav-label { font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.28); padding: 0 10px; margin-bottom: 4px; }
+    .nav-item  { display: flex; align-items: center; gap: 9px; padding: 8px 10px; border-radius: 7px; font-size: 12px; font-weight: 500; color: rgba(255,255,255,.55); cursor: pointer; transition: all .15s; margin-bottom: 1px; }
+    .nav-item:hover  { background: rgba(255,255,255,.07); color: rgba(255,255,255,.85); }
+    .nav-item.active { background: var(--purple); color: white; }
+    .nav-item svg    { width: 14px; height: 14px; flex-shrink: 0; }
+    .nav-badge { margin-left: auto; background: rgba(255,255,255,.1); color: rgba(255,255,255,.5); border-radius: 10px; padding: 1px 7px; font-size: 10px; font-weight: 600; }
+    .nav-item.active .nav-badge { background: rgba(255,255,255,.2); color: white; }
+    .sidebar-user { margin-top: auto; padding: 12px; border-top: 1px solid rgba(255,255,255,.08); display: flex; align-items: center; gap: 9px; }
+    .user-avatar { width: 30px; height: 30px; border-radius: 50%; background: var(--blue); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: white; flex-shrink: 0; }
+    .user-name { font-size: 12px; font-weight: 500; color: rgba(255,255,255,.75); }
+    .user-role { font-size: 10px; color: rgba(255,255,255,.35); margin-top: 1px; }
+
+    /* ══ MAIN ══ */
+    .main { flex: 1; min-width: 0; display: flex; flex-direction: column; overflow: hidden; height: 100vh; }
+
+    /* Topbar */
+    .topbar {
+      background: white; border-bottom: 1px solid var(--border); padding: 0 24px; height: 52px;
+      display: flex; align-items: center; gap: 12px; flex-shrink: 0;
+    }
+    .topbar-icon { width: 28px; height: 28px; background: var(--purple-light); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+    .topbar-icon svg { width: 14px; height: 14px; color: var(--purple); }
+    .topbar-title { font-size: 15px; font-weight: 600; color: var(--text); }
+    .topbar-right { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+    .view-toggle { display: flex; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+    .vt-btn { padding: 6px 12px; font-size: 12px; font-weight: 500; color: var(--text-3); cursor: pointer; border: none; background: none; font-family: 'DM Sans', sans-serif; transition: all .15s; display: flex; align-items: center; gap: 5px; }
+    .vt-btn svg { width: 12px; height: 12px; }
+    .vt-btn.active { background: white; color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+    .tb-btn { padding: 6px 14px; border-radius: 7px; font-size: 12px; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .15s; display: flex; align-items: center; gap: 6px; }
+    .tb-btn svg { width: 12px; height: 12px; }
+    .tb-ghost  { background: none; border: 1px solid var(--border); color: var(--text-2); }
+    .tb-ghost:hover { background: var(--surface); border-color: #94A3B8; }
+    .tb-purple { background: var(--purple); border: none; color: white; box-shadow: 0 1px 4px rgba(124,58,237,.3); }
+    .tb-purple:hover { background: #6D28D9; }
+
+    /* Pipeline summary strip */
+    .pipeline-strip {
+      background: white; border-bottom: 1px solid var(--border); padding: 10px 24px;
+      display: flex; align-items: center; gap: 0; flex-shrink: 0;
+    }
+    .ps-item {
+      display: flex; flex-direction: column; align-items: center; gap: 2px;
+      padding: 0 20px; border-right: 1px solid var(--border); cursor: pointer;
+      transition: background .15s; border-radius: 8px;
+    }
+    .ps-item:first-child { padding-left: 0; }
+    .ps-item:last-child { border-right: none; }
+    .ps-item:hover { background: var(--surface); }
+    .ps-value { font-family: 'DM Serif Display', serif; font-size: 20px; color: var(--text); letter-spacing: -.02em; line-height: 1; }
+    .ps-label { font-size: 10px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--text-3); }
+    .ps-sub   { font-size: 10px; color: var(--text-3); }
+    .ps-divider { flex: 1; }
+    .ps-filter-wrap { display: flex; gap: 8px; align-items: center; margin-left: auto; }
+    .ps-filter-label { font-size: 11px; color: var(--text-3); }
+    .ps-filter-select {
+      border: 1px solid var(--border); border-radius: 7px; padding: 5px 28px 5px 10px;
+      font-size: 12px; color: var(--text-2); outline: none; background: var(--surface);
+      font-family: 'DM Sans', sans-serif; cursor: pointer;
+      -webkit-appearance: none; appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath d='M2 3.5l3 3 3-3' stroke='%2364748B' stroke-width='1.3' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 9px center;
+    }
+
+    /* ══ KANBAN BOARD ══ */
+    .board-wrap { flex: 1; overflow-x: auto; overflow-y: hidden; padding: 20px 24px 24px; display: flex; gap: 14px; align-items: flex-start; }
+
+    /* Stage column */
+    .stage-col {
+      width: 260px; flex-shrink: 0; display: flex; flex-direction: column; gap: 0;
+      background: #F1F5F9; border-radius: 12px; overflow: hidden; max-height: calc(100vh - 200px);
+    }
+    .stage-header {
+      padding: 12px 14px; display: flex; align-items: center; gap: 8px; flex-shrink: 0;
+    }
+    .stage-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .stage-name { font-size: 12px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; flex: 1; }
+    .stage-count { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 10px; }
+    .stage-value { font-size: 10px; font-weight: 600; margin-left: auto; padding: 2px 8px; border-radius: 10px; }
+
+    /* Stage color themes */
+    .col-id    .stage-header { background: var(--id-bg);    }
+    .col-id    .stage-name   { color: var(--id-text);  }
+    .col-id    .stage-dot    { background: var(--id-accent); }
+    .col-id    .stage-count  { background: var(--blue-light); color: var(--id-text); }
+    .col-id    .stage-value  { background: var(--blue-light); color: var(--id-text); }
+
+    .col-cul   .stage-header { background: var(--cul-bg);   }
+    .col-cul   .stage-name   { color: var(--cul-text); }
+    .col-cul   .stage-dot    { background: var(--cul-accent);}
+    .col-cul   .stage-count  { background: #A7F3D0; color: var(--cul-text); }
+    .col-cul   .stage-value  { background: #A7F3D0; color: var(--cul-text); }
+
+    .col-sol   .stage-header { background: var(--sol-bg);   }
+    .col-sol   .stage-name   { color: var(--sol-text); }
+    .col-sol   .stage-dot    { background: var(--sol-accent);}
+    .col-sol   .stage-count  { background: #FDE68A; color: var(--sol-text); }
+    .col-sol   .stage-value  { background: #FDE68A; color: var(--sol-text); }
+
+    .col-stew  .stage-header { background: var(--stew-bg);  }
+    .col-stew  .stage-name   { color: var(--stew-text);}
+    .col-stew  .stage-dot    { background: var(--stew-accent); }
+    .col-stew  .stage-count  { background: #BBF7D0; color: var(--stew-text); }
+    .col-stew  .stage-value  { background: #BBF7D0; color: var(--stew-text); }
+
+    .col-close .stage-header { background: #F0FDF4; }
+    .col-close .stage-name   { color: #14532D; }
+    .col-close .stage-dot    { background: #22C55E; }
+    .col-close .stage-count  { background: #86EFAC; color: #14532D; }
+    .col-close .stage-value  { background: #86EFAC; color: #14532D; }
+
+    /* Cards area */
+    .cards-area { flex: 1; overflow-y: auto; padding: 8px; display: flex; flex-direction: column; gap: 8px; }
+    .cards-area::-webkit-scrollbar { width: 4px; }
+    .cards-area::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 2px; }
+
+    /* Prospect card */
+    .prospect-card {
+      background: white; border-radius: 10px; border: 1px solid var(--border);
+      padding: 13px 14px; cursor: pointer;
+      transition: border-color .15s, transform .15s, box-shadow .15s;
+      position: relative;
+    }
+    .prospect-card:hover { border-color: #94A3B8; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,.08); }
+    .prospect-card.priority { border-left: 3px solid var(--purple); }
+    .prospect-card.overdue  { border-left: 3px solid var(--rose); }
+    .prospect-card.hot      { border-left: 3px solid var(--amber); }
+    .prospect-card.won      { border-left: 3px solid var(--green); }
+
+    .pc-top { display: flex; align-items: flex-start; gap: 9px; margin-bottom: 9px; }
+    .pc-avatar {
+      width: 32px; height: 32px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700; flex-shrink: 0;
+    }
+    .pc-info { flex: 1; min-width: 0; }
+    .pc-name { font-size: 13px; font-weight: 600; color: var(--text); line-height: 1.3; }
+    .pc-org  { font-size: 11px; color: var(--text-3); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .pc-ask  { font-size: 14px; font-weight: 700; color: var(--text); font-family: 'DM Serif Display', serif; flex-shrink: 0; letter-spacing: -.01em; }
+
+    .pc-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 9px; }
+    .pc-tag  { display: inline-flex; align-items: center; gap: 3px; padding: 2px 7px; border-radius: 20px; font-size: 10px; font-weight: 600; }
+    .tag-major    { background: var(--purple-light); color: var(--purple); }
+    .tag-parish   { background: var(--teal-light);   color: var(--teal); }
+    .tag-recurring{ background: var(--blue-light);   color: #1D4ED8; }
+    .tag-hot      { background: var(--amber-light);  color: var(--amber); }
+    .tag-lybunt   { background: var(--rose-light);   color: var(--rose); }
+    .tag-new      { background: var(--green-light);  color: var(--green); }
+    .tag-board    { background: #F3E8FF; color: #6D28D9; }
+
+    .pc-meta { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .pc-meta-item { display: flex; align-items: center; gap: 3px; font-size: 10px; color: var(--text-3); }
+    .pc-meta-item svg { width: 10px; height: 10px; flex-shrink: 0; }
+    .pc-meta-item.overdue { color: var(--rose); font-weight: 600; }
+    .pc-meta-item.due-today { color: var(--amber); font-weight: 600; }
+
+    .pc-footer { margin-top: 9px; padding-top: 9px; border-top: .5px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .pc-officer { display: flex; align-items: center; gap: 5px; font-size: 10px; color: var(--text-3); }
+    .pc-officer-avatar { width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 8px; font-weight: 700; color: white; flex-shrink: 0; }
+    .pc-days { font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 10px; }
+    .days-ok    { background: var(--green-light); color: var(--green); }
+    .days-warn  { background: var(--amber-light); color: var(--amber); }
+    .days-late  { background: var(--rose-light);  color: var(--rose); }
+    .days-fresh { background: var(--blue-light);  color: #1D4ED8; }
+    .days-won   { background: var(--green-light); color: var(--green); }
+
+    .pc-note { font-size: 11px; color: var(--text-3); line-height: 1.5; margin-top: 7px; padding: 7px 9px; background: var(--surface); border-radius: 7px; border-left: 2px solid var(--border); font-style: italic; }
+
+    /* Guru AI insight on card */
+    .pc-ai { margin-top: 8px; padding: 7px 9px; background: #F5F3FF; border-radius: 7px; border-left: 2px solid var(--purple); }
+    .pc-ai-text { font-size: 11px; color: #5B21B6; line-height: 1.5; }
+    .pc-ai-text strong { font-weight: 600; }
+
+    /* Add card button */
+    .add-card-btn {
+      display: flex; align-items: center; gap: 7px; padding: 9px 14px;
+      color: var(--text-3); font-size: 12px; font-weight: 500; cursor: pointer;
+      border: 1.5px dashed #CBD5E1; border-radius: 9px; background: none;
+      transition: all .15s; font-family: 'DM Sans', sans-serif; width: 100%;
+      justify-content: center; flex-shrink: 0; margin: 0 8px 8px; width: calc(100% - 16px);
+    }
+    .add-card-btn:hover { border-color: var(--purple); color: var(--purple); background: var(--purple-light); }
+    .add-card-btn svg { width: 13px; height: 13px; }
+
+    /* ══ DETAIL DRAWER ══ */
+    .detail-drawer {
+      width: 340px; flex-shrink: 0; background: white; border-left: 1px solid var(--border);
+      display: flex; flex-direction: column; overflow-y: auto; height: calc(100vh - 52px - 44px);
+      transition: transform .25s ease, opacity .25s;
+    }
+    .detail-drawer.hidden { transform: translateX(100%); opacity: 0; pointer-events: none; }
+    .drawer-header { padding: 16px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+    .drawer-close { width: 26px; height: 26px; border: 1px solid var(--border); border-radius: 7px; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-left: auto; transition: background .15s; }
+    .drawer-close:hover { background: var(--surface); }
+    .drawer-close svg { width: 11px; height: 11px; }
+    .drawer-avatar { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; flex-shrink: 0; }
+    .drawer-name { font-size: 14px; font-weight: 600; color: var(--text); }
+    .drawer-org  { font-size: 11px; color: var(--text-3); margin-top: 2px; }
+
+    .drawer-section { padding: 14px 18px; border-bottom: 1px solid var(--border); }
+    .drawer-sec-title { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--text-3); margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; }
+    .drawer-edit { font-size: 10px; color: var(--blue); cursor: pointer; text-transform: none; letter-spacing: 0; }
+
+    .stage-selector { display: flex; flex-direction: column; gap: 6px; }
+    .stage-option {
+      display: flex; align-items: center; gap: 9px; padding: 8px 10px; border-radius: 8px;
+      border: 1px solid var(--border); cursor: pointer; transition: all .15s;
+    }
+    .stage-option:hover { border-color: #94A3B8; background: var(--surface); }
+    .stage-option.current { background: var(--purple-light); border-color: rgba(124,58,237,.3); }
+    .stage-opt-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .stage-opt-name { font-size: 12px; font-weight: 500; color: var(--text); flex: 1; }
+    .stage-option.current .stage-opt-name { color: var(--purple); font-weight: 600; }
+    .stage-opt-check { font-size: 14px; color: var(--purple); }
+
+    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .info-item { background: var(--surface); border-radius: 8px; padding: 9px 11px; }
+    .info-label { font-size: 10px; color: var(--text-3); margin-bottom: 3px; }
+    .info-value { font-size: 13px; font-weight: 600; color: var(--text); }
+    .info-value.green { color: var(--green); }
+    .info-value.purple { color: var(--purple); }
+
+    .contact-list { display: flex; flex-direction: column; gap: 7px; }
+    .contact-row { display: flex; align-items: center; gap: 9px; font-size: 12px; }
+    .contact-icon { width: 24px; height: 24px; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .contact-icon svg { width: 11px; height: 11px; color: var(--text-3); }
+    .contact-val { color: var(--text-2); }
+
+    .timeline { display: flex; flex-direction: column; gap: 0; }
+    .tl-item { display: flex; gap: 10px; padding: 8px 0; position: relative; }
+    .tl-item:not(:last-child)::before { content: ''; position: absolute; left: 11px; top: 28px; bottom: 0; width: 1px; background: var(--border); }
+    .tl-dot { width: 22px; height: 22px; border-radius: 7px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; z-index: 1; }
+    .tl-dot svg { width: 10px; height: 10px; }
+    .tl-call  { background: var(--blue-light); color: #1D4ED8; }
+    .tl-email { background: var(--teal-light); color: var(--teal); }
+    .tl-note  { background: var(--amber-light);color: var(--amber); }
+    .tl-gift  { background: var(--green-light);color: var(--green); }
+    .tl-body { flex: 1; }
+    .tl-text { font-size: 12px; color: var(--text-2); line-height: 1.45; }
+    .tl-text strong { color: var(--text); font-weight: 600; }
+    .tl-date { font-size: 10px; color: var(--text-3); margin-top: 3px; }
+
+    .next-action-wrap { }
+    .na-field {
+      width: 100%; border: 1.5px solid var(--border); border-radius: 9px; padding: 9px 12px;
+      font-size: 12px; font-family: 'DM Sans', sans-serif; color: var(--text); outline: none;
+      resize: none; transition: border-color .15s;
+    }
+    .na-field:focus { border-color: var(--purple); box-shadow: 0 0 0 3px rgba(124,58,237,.1); }
+    .na-row { display: flex; gap: 8px; margin-top: 8px; }
+    .na-date { flex: 1; border: 1.5px solid var(--border); border-radius: 9px; padding: 8px 10px; font-size: 12px; font-family: 'DM Sans', sans-serif; color: var(--text); outline: none; transition: border-color .15s; }
+    .na-date:focus { border-color: var(--purple); }
+    .na-save { padding: 8px 16px; background: var(--purple); color: white; border: none; border-radius: 8px; font-size: 12px; font-weight: 600; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: background .15s; }
+    .na-save:hover { background: #6D28D9; }
+
+    /* Animations */
+    @keyframes fadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes slideIn { from{opacity:0;transform:translateX(16px)} to{opacity:1;transform:translateX(0)} }
+    .stage-col { animation: fadeUp .3s ease forwards; opacity: 0; }
+    .stage-col:nth-child(1) { animation-delay: .04s; }
+    .stage-col:nth-child(2) { animation-delay: .08s; }
+    .stage-col:nth-child(3) { animation-delay: .12s; }
+    .stage-col:nth-child(4) { animation-delay: .16s; }
+    .stage-col:nth-child(5) { animation-delay: .20s; }
+    .detail-drawer:not(.hidden) { animation: slideIn .25s ease forwards; }
+    .prospect-card { animation: fadeUp .2s ease forwards; opacity: 0; }
+  </style>
+</head>
+<body>
+
+  <!-- ══ SIDEBAR ══ -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-mark">
+        <svg viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7.5" stroke="white" stroke-width="1.5"/><path d="M5.5 9.5C6.5 11.5 9 13 9 13s2.5-1.5 3.5-3.5S12 5 9 5 4.5 7.5 5.5 9.5z" fill="white" fill-opacity=".9"/></svg>
+      </div>
+      <div><div class="logo-name">GiveCentral</div><div class="logo-sub">Atlas CRM</div></div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-label">Main</div>
+      <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><rect x="1.5" y="1.5" width="4" height="4" rx="1.2"/><rect x="8.5" y="1.5" width="4" height="4" rx="1.2"/><rect x="1.5" y="8.5" width="4" height="4" rx="1.2"/><rect x="8.5" y="8.5" width="4" height="4" rx="1.2"/></svg>Dashboard</div>
+      <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="6" cy="4.5" r="3"/><path d="M1 13c0-2.8 2.2-5 5-5h1c2.8 0 5 2.2 5 5"/></svg>Donors<span class="nav-badge">3,847</span></div>
+      <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M7 1.5v11M2 6.5h10"/></svg>Gifts &amp; pledges</div>
+      <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M1.5 8.5l2.5-2.5 2 2 2.5-2.5 2 2"/><rect x="1.5" y="1.5" width="11" height="11" rx="2"/></svg>Campaigns</div>
+    </div>
+    <div class="nav-group" style="margin-top:8px">
+      <div class="nav-label">Fundraising</div>
+      <div class="nav-item active"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="7" cy="7" r="5.5"/><path d="M7 4v4M7 10v.5"/></svg>Prospect pipeline<span class="nav-badge">28</span></div>
+      <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><rect x="1.5" y="2.5" width="11" height="9" rx="1.5"/><path d="M1.5 6h11M5 2.5v2M9 2.5v2"/></svg>Tasks &amp; reminders<span class="nav-badge">7</span></div>
+      <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M2 3.5h10v7H2zM2 6.5h10"/></svg>Communications</div>
+    </div>
+    <div class="nav-group" style="margin-top:8px">
+      <div class="nav-label">Intelligence</div>
+      <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="7" cy="5" r="3.5"/><path d="M5 10c0 2 4 2 4 0M4.5 8.5c-2 1-3 3.5-3 4.5M9.5 8.5c2 1 3 3.5 3 4.5"/></svg>Guru AI</div>
+    </div>
+    <div class="sidebar-user">
+      <div class="user-avatar">SR</div>
+      <div><div class="user-name">Sarah Reynolds</div><div class="user-role">Development Director</div></div>
+    </div>
+  </aside>
+
+  <!-- ══ MAIN ══ -->
+  <div class="main">
+
+    <!-- Topbar -->
+    <div class="topbar">
+      <div class="topbar-icon">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><circle cx="7" cy="7" r="5.5"/><path d="M7 4v4M7 10v.5"/></svg>
+      </div>
+      <span class="topbar-title">Prospect pipeline</span>
+      <div class="topbar-right">
+        <div class="view-toggle">
+          <button class="vt-btn active">
+            <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><rect x="1" y="1.5" width="3" height="9" rx="1"/><rect x="4.5" y="1.5" width="3" height="9" rx="1"/><rect x="8" y="1.5" width="3" height="9" rx="1"/></svg>
+            Kanban
+          </button>
+          <button class="vt-btn">
+            <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M1.5 3h9M1.5 6h9M1.5 9h9"/></svg>
+            List
+          </button>
+        </div>
+        <button class="tb-btn tb-ghost">
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><circle cx="6" cy="3.5" r="1.5"/><path d="M6 5v4"/><circle cx="3" cy="8.5" r="1.5"/><circle cx="9" cy="8.5" r="1.5"/></svg>
+          Filter
+        </button>
+        <button class="tb-btn tb-ghost">
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M1.5 3h9M1.5 6h6M1.5 9h4"/></svg>
+          Sort
+        </button>
+        <button class="tb-btn tb-purple" onclick="openDrawer('new')">
+          <svg viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="1.4" stroke-linecap="round"><path d="M6 1v10M1 6h10"/></svg>
+          Add prospect
+        </button>
+      </div>
+    </div>
+
+    <!-- Pipeline summary strip -->
+    <div class="pipeline-strip">
+      <div class="ps-item"><div class="ps-value">28</div><div class="ps-label">Prospects</div></div>
+      <div class="ps-item"><div class="ps-value" style="color:var(--purple)">$1.84M</div><div class="ps-label">Pipeline value</div></div>
+      <div class="ps-item"><div class="ps-value" style="color:var(--green)">$200k</div><div class="ps-label">Won this year</div></div>
+      <div class="ps-item"><div class="ps-value" style="color:var(--amber)">6</div><div class="ps-label">Due this week</div></div>
+      <div class="ps-item"><div class="ps-value" style="color:var(--rose)">3</div><div class="ps-label">Overdue</div></div>
+      <div class="ps-filter-wrap">
+        <span class="ps-filter-label">Officer:</span>
+        <select class="ps-filter-select"><option>All officers</option><option>Sarah Reynolds</option><option>Mark Collins</option></select>
+        <span class="ps-filter-label">Campaign:</span>
+        <select class="ps-filter-select"><option>All campaigns</option><option>CMA 2026</option><option>Cathedral Capital</option></select>
+      </div>
+    </div>
+
+    <!-- ══ BOARD + DRAWER ══ -->
+    <div style="display:flex;flex:1;overflow:hidden">
+
+      <!-- Kanban board -->
+      <div class="board-wrap" id="board">
+
+        <!-- IDENTIFICATION -->
+        <div class="stage-col col-id">
+          <div class="stage-header">
+            <div class="stage-dot"></div>
+            <div class="stage-name">Identification</div>
+            <div class="stage-count">8</div>
+            <div class="stage-value">$275k</div>
+          </div>
+          <div class="cards-area">
+
+            <div class="prospect-card priority" style="animation-delay:.05s" onclick="openDrawer('obrien')">
+              <div class="pc-top">
+                <div class="pc-avatar" style="background:#EDE9FE;color:#7C3AED">WC</div>
+                <div class="pc-info">
+                  <div class="pc-name">William & Anne Carter</div>
+                  <div class="pc-org">St. Anthony's Parish</div>
+                </div>
+                <div class="pc-ask">$15k</div>
+              </div>
+              <div class="pc-tags">
+                <span class="pc-tag tag-major">Major prospect</span>
+                <span class="pc-tag tag-parish">Parish leader</span>
+              </div>
+              <div class="pc-meta">
+                <span class="pc-meta-item">
+                  <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><circle cx="5" cy="5" r="3.5"/><path d="M5 3v2.5l1.5 1.5"/></svg>
+                  Added 4 days ago
+                </span>
+                <span class="pc-meta-item">
+                  <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><circle cx="4" cy="3" r="2"/><path d="M1 9c0-1.7 1.3-3 3-3"/><path d="M9 6v3M7.5 7.5h3"/></svg>
+                  Referred by Fr. Malloy
+                </span>
+              </div>
+              <div class="pc-footer">
+                <div class="pc-officer">
+                  <div class="pc-officer-avatar" style="background:var(--blue)">SR</div>
+                  Sarah Reynolds
+                </div>
+                <div class="pc-days days-fresh">New</div>
+              </div>
+            </div>
+
+            <div class="prospect-card" style="animation-delay:.08s" onclick="openDrawer('walsh')">
+              <div class="pc-top">
+                <div class="pc-avatar" style="background:#F3F4F6;color:#374151">CW</div>
+                <div class="pc-info">
+                  <div class="pc-name">Catherine Walsh</div>
+                  <div class="pc-org">Diocese Board Member</div>
+                </div>
+                <div class="pc-ask">$50k</div>
+              </div>
+              <div class="pc-tags">
+                <span class="pc-tag tag-board">Board member</span>
+                <span class="pc-tag tag-major">Major prospect</span>
+              </div>
+              <div class="pc-meta">
+                <span class="pc-meta-item due-today">
+                  <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><circle cx="5" cy="5" r="3.5"/><path d="M5 3v2.5l1.5 1.5"/></svg>
+                  Research due today
+                </span>
+              </div>
+              <div class="pc-ai">
+                <div class="pc-ai-text">Guru AI: <strong>Wealth score 82.</strong> Gave $42k lifetime. No contact in 132 days — high urgency to re-engage.</div>
+              </div>
+              <div class="pc-footer">
+                <div class="pc-officer">
+                  <div class="pc-officer-avatar" style="background:#7C3AED">MC</div>
+                  Mark Collins
+                </div>
+                <div class="pc-days days-warn">4d in stage</div>
+              </div>
+            </div>
+
+            <div class="prospect-card" style="animation-delay:.11s">
+              <div class="pc-top">
+                <div class="pc-avatar" style="background:#CCFBF1;color:#0D9488">PH</div>
+                <div class="pc-info">
+                  <div class="pc-name">Peter & Helen Stafford</div>
+                  <div class="pc-org">Holy Family Parish</div>
+                </div>
+                <div class="pc-ask">$10k</div>
+              </div>
+              <div class="pc-tags">
+                <span class="pc-tag tag-new">New prospect</span>
+              </div>
+              <div class="pc-meta">
+                <span class="pc-meta-item">
+                  <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><circle cx="5" cy="5" r="3.5"/><path d="M5 3v2.5l1.5 1.5"/></svg>
+                  Added today
+                </span>
+              </div>
+              <div class="pc-footer">
+                <div class="pc-officer"><div class="pc-officer-avatar" style="background:var(--blue)">SR</div>Sarah Reynolds</div>
+                <div class="pc-days days-fresh">New</div>
+              </div>
+            </div>
+
+          </div>
+          <button class="add-card-btn">
+            <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M6.5 2v9M2 6.5h9"/></svg>
+            Add prospect
+          </button>
+        </div>
+
+        <!-- CULTIVATION -->
+        <div class="stage-col col-cul">
+          <div class="stage-header">
+            <div class="stage-dot"></div>
+            <div class="stage-name">Cultivation</div>
+            <div class="stage-count">9</div>
+            <div class="stage-value">$510k</div>
+          </div>
+          <div class="cards-area">
+
+            <div class="prospect-card hot" style="animation-delay:.06s" onclick="openDrawer('grant')">
+              <div class="pc-top">
+                <div class="pc-avatar" style="background:#DBEAFE;color:#1D4ED8">MG</div>
+                <div class="pc-info">
+                  <div class="pc-name">Michael & Susan Grant</div>
+                  <div class="pc-org">Major donor since 2015</div>
+                </div>
+                <div class="pc-ask">$25k</div>
+              </div>
+              <div class="pc-tags">
+                <span class="pc-tag tag-hot">Hot prospect</span>
+                <span class="pc-tag tag-recurring">Recurring giver</span>
+              </div>
+              <div class="pc-meta">
+                <span class="pc-meta-item">
+                  <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><rect x="1" y="1.5" width="8" height="7" rx="1.2"/><path d="M1 4h8"/><path d="M3 1.5v2M7 1.5v2"/></svg>
+                  Lunch meeting Apr 12
+                </span>
+              </div>
+              <div class="pc-note">"Mentioned Cathedral project at Mass last week — seemed genuinely interested." — SR, Apr 1</div>
+              <div class="pc-footer">
+                <div class="pc-officer"><div class="pc-officer-avatar" style="background:var(--blue)">SR</div>Sarah Reynolds</div>
+                <div class="pc-days days-ok">12d in stage</div>
+              </div>
+            </div>
+
+            <div class="prospect-card overdue" style="animation-delay:.09s">
+              <div class="pc-top">
+                <div class="pc-avatar" style="background:#FEF3C7;color:#B45309">ER</div>
+                <div class="pc-info">
+                  <div class="pc-name">Elena & Marco Russo</div>
+                  <div class="pc-org">St. Michael's · Parishioner</div>
+                </div>
+                <div class="pc-ask">$10k</div>
+              </div>
+              <div class="pc-tags">
+                <span class="pc-tag tag-parish">Parish leader</span>
+              </div>
+              <div class="pc-meta">
+                <span class="pc-meta-item overdue">
+                  <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><circle cx="5" cy="5" r="3.5"/><path d="M5 3v2.5l1.5 1.5"/></svg>
+                  Follow-up 5 days overdue
+                </span>
+              </div>
+              <div class="pc-footer">
+                <div class="pc-officer"><div class="pc-officer-avatar" style="background:#7C3AED">MC</div>Mark Collins</div>
+                <div class="pc-days days-late">18d in stage</div>
+              </div>
+            </div>
+
+            <div class="prospect-card" style="animation-delay:.12s">
+              <div class="pc-top">
+                <div class="pc-avatar" style="background:#F0FDF4;color:#15803D">LF</div>
+                <div class="pc-info">
+                  <div class="pc-name">Laura & Frank DiNapoli</div>
+                  <div class="pc-org">Cathedral benefactor family</div>
+                </div>
+                <div class="pc-ask">$75k</div>
+              </div>
+              <div class="pc-tags">
+                <span class="pc-tag tag-major">Major prospect</span>
+                <span class="pc-tag tag-board">Board adjacent</span>
+              </div>
+              <div class="pc-meta">
+                <span class="pc-meta-item">
+                  <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><rect x="1" y="1.5" width="8" height="7" rx="1.2"/><path d="M1 4h8"/></svg>
+                  Site visit scheduled May 5
+                </span>
+              </div>
+              <div class="pc-ai">
+                <div class="pc-ai-text">Guru AI: <strong>Upgrade propensity 91.</strong> Last gift was $15k — capacity suggests $75k+ is achievable.</div>
+              </div>
+              <div class="pc-footer">
+                <div class="pc-officer"><div class="pc-officer-avatar" style="background:var(--blue)">SR</div>Sarah Reynolds</div>
+                <div class="pc-days days-ok">8d in stage</div>
+              </div>
+            </div>
+
+          </div>
+          <button class="add-card-btn">
+            <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M6.5 2v9M2 6.5h9"/></svg>
+            Add prospect
+          </button>
+        </div>
+
+        <!-- SOLICITATION -->
+        <div class="stage-col col-sol">
+          <div class="stage-header">
+            <div class="stage-dot"></div>
+            <div class="stage-name">Solicitation</div>
+            <div class="stage-count">6</div>
+            <div class="stage-value">$340k</div>
+          </div>
+          <div class="cards-area">
+
+            <div class="prospect-card hot" style="animation-delay:.07s" onclick="openDrawer('obrien')">
+              <div class="pc-top">
+                <div class="pc-avatar" style="background:#EDE9FE;color:#7C3AED">JO</div>
+                <div class="pc-info">
+                  <div class="pc-name">James & Patricia O'Brien</div>
+                  <div class="pc-org">Cathedral benefactor</div>
+                </div>
+                <div class="pc-ask" style="color:var(--amber)">$25k</div>
+              </div>
+              <div class="pc-tags">
+                <span class="pc-tag tag-hot">Ask today</span>
+                <span class="pc-tag tag-major">Major donor</span>
+              </div>
+              <div class="pc-meta">
+                <span class="pc-meta-item due-today">
+                  <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><circle cx="5" cy="5" r="3.5"/><path d="M5 3v2.5l1.5 1.5"/></svg>
+                  Call scheduled 2:00 PM today
+                </span>
+              </div>
+              <div class="pc-note">"Giving up 40% this year — Guru AI flags as strong upgrade candidate." — SR</div>
+              <div class="pc-ai">
+                <div class="pc-ai-text">Guru AI: <strong>Propensity score 95.</strong> Best ask window: Q2 before capital campaign launch. Recommend $25k Cathedral ask.</div>
+              </div>
+              <div class="pc-footer">
+                <div class="pc-officer"><div class="pc-officer-avatar" style="background:var(--blue)">SR</div>Sarah Reynolds</div>
+                <div class="pc-days days-warn">2d in stage</div>
+              </div>
+            </div>
+
+            <div class="prospect-card" style="animation-delay:.10s">
+              <div class="pc-top">
+                <div class="pc-avatar" style="background:#CCFBF1;color:#0D9488">TN</div>
+                <div class="pc-info">
+                  <div class="pc-name">Dr. Thomas Nguyen</div>
+                  <div class="pc-org">New major gift prospect</div>
+                </div>
+                <div class="pc-ask">$20k</div>
+              </div>
+              <div class="pc-tags">
+                <span class="pc-tag tag-new">New major</span>
+              </div>
+              <div class="pc-meta">
+                <span class="pc-meta-item">
+                  <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M1.5 2h7v6.5H1.5z"/><path d="M1.5 4.5h7"/><path d="M4 2v2.5M7 2v2.5"/></svg>
+                  Proposal sent Apr 1
+                </span>
+              </div>
+              <div class="pc-footer">
+                <div class="pc-officer"><div class="pc-officer-avatar" style="background:var(--blue)">SR</div>Sarah Reynolds</div>
+                <div class="pc-days days-ok">2d in stage</div>
+              </div>
+            </div>
+
+            <div class="prospect-card" style="animation-delay:.13s">
+              <div class="pc-top">
+                <div class="pc-avatar" style="background:#FCE7F3;color:#BE185D">VM</div>
+                <div class="pc-info">
+                  <div class="pc-name">Victor & Maria Montoya</div>
+                  <div class="pc-org">Holy Cross Parish</div>
+                </div>
+                <div class="pc-ask">$30k</div>
+              </div>
+              <div class="pc-tags">
+                <span class="pc-tag tag-major">Major prospect</span>
+              </div>
+              <div class="pc-meta">
+                <span class="pc-meta-item overdue">
+                  <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><circle cx="5" cy="5" r="3.5"/><path d="M5 3v2.5l1.5 1.5"/></svg>
+                  Follow-up overdue 2 days
+                </span>
+              </div>
+              <div class="pc-footer">
+                <div class="pc-officer"><div class="pc-officer-avatar" style="background:#7C3AED">MC</div>Mark Collins</div>
+                <div class="pc-days days-late">14d in stage</div>
+              </div>
+            </div>
+
+          </div>
+          <button class="add-card-btn">
+            <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M6.5 2v9M2 6.5h9"/></svg>
+            Add prospect
+          </button>
+        </div>
+
+        <!-- STEWARDSHIP -->
+        <div class="stage-col col-stew">
+          <div class="stage-header">
+            <div class="stage-dot"></div>
+            <div class="stage-name">Stewardship</div>
+            <div class="stage-count">4</div>
+            <div class="stage-value">$218k</div>
+          </div>
+          <div class="cards-area">
+
+            <div class="prospect-card priority" style="animation-delay:.08s" onclick="openDrawer('sullivan')">
+              <div class="pc-top">
+                <div class="pc-avatar" style="background:#DBEAFE;color:#1D4ED8">MS</div>
+                <div class="pc-info">
+                  <div class="pc-name">Margaret Sullivan</div>
+                  <div class="pc-org">St. Michael's · $84k lifetime</div>
+                </div>
+                <div class="pc-ask">$10k</div>
+              </div>
+              <div class="pc-tags">
+                <span class="pc-tag tag-major">Major donor</span>
+                <span class="pc-tag tag-recurring">Recurring</span>
+              </div>
+              <div class="pc-meta">
+                <span class="pc-meta-item overdue">
+                  <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><circle cx="5" cy="5" r="3.5"/><path d="M5 3v2.5l1.5 1.5"/></svg>
+                  Upgrade follow-up overdue
+                </span>
+              </div>
+              <div class="pc-ai">
+                <div class="pc-ai-text">Guru AI: Cathedral interest noted Mar 16. <strong>Q3 upgrade ask timing optimal.</strong></div>
+              </div>
+              <div class="pc-footer">
+                <div class="pc-officer"><div class="pc-officer-avatar" style="background:var(--blue)">SR</div>Sarah Reynolds</div>
+                <div class="pc-days days-late">22d in stage</div>
+              </div>
+            </div>
+
+            <div class="prospect-card" style="animation-delay:.11s">
+              <div class="pc-top">
+                <div class="pc-avatar" style="background:#DCFCE7;color:#15803D">TK</div>
+                <div class="pc-info">
+                  <div class="pc-name">The Kowalski Family</div>
+                  <div class="pc-org">Blessed Trinity Campaign</div>
+                </div>
+                <div class="pc-ask">$50k</div>
+              </div>
+              <div class="pc-tags">
+                <span class="pc-tag tag-major">Pledge active</span>
+              </div>
+              <div class="pc-meta">
+                <span class="pc-meta-item">
+                  <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M1.5 8l2-2 1.5 1.5 2-2 1.5 1.5"/></svg>
+                  $50k pledge · 2 installments left
+                </span>
+              </div>
+              <div class="pc-footer">
+                <div class="pc-officer"><div class="pc-officer-avatar" style="background:var(--blue)">SR</div>Sarah Reynolds</div>
+                <div class="pc-days days-ok">8d in stage</div>
+              </div>
+            </div>
+
+          </div>
+          <button class="add-card-btn">
+            <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M6.5 2v9M2 6.5h9"/></svg>
+            Move prospect here
+          </button>
+        </div>
+
+        <!-- CLOSED / WON -->
+        <div class="stage-col col-close">
+          <div class="stage-header">
+            <div class="stage-dot"></div>
+            <div class="stage-name">Closed · Won</div>
+            <div class="stage-count">1</div>
+            <div class="stage-value">$100k</div>
+          </div>
+          <div class="cards-area">
+
+            <div class="prospect-card won" style="animation-delay:.09s">
+              <div class="pc-top">
+                <div class="pc-avatar" style="background:#DCFCE7;color:#15803D">MF</div>
+                <div class="pc-info">
+                  <div class="pc-name">The Morrison Foundation</div>
+                  <div class="pc-org">Corporate matching gift</div>
+                </div>
+                <div class="pc-ask" style="color:var(--green)">$100k</div>
+              </div>
+              <div class="pc-tags">
+                <span class="pc-tag" style="background:var(--green-light);color:var(--green)">Gift received ✓</span>
+              </div>
+              <div class="pc-meta">
+                <span class="pc-meta-item">
+                  <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><circle cx="5" cy="5" r="3.5"/><path d="M3 5l1.5 1.5L7.5 3"/></svg>
+                  Closed Mar 28, 2026
+                </span>
+              </div>
+              <div class="pc-note">"First corporate major gift in 5 years. Thank you sent, recognition plaque ordered." — SR</div>
+              <div class="pc-footer">
+                <div class="pc-officer"><div class="pc-officer-avatar" style="background:var(--blue)">SR</div>Sarah Reynolds</div>
+                <div class="pc-days days-won">Won ✓</div>
+              </div>
+            </div>
+
+          </div>
+          <button class="add-card-btn">
+            <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M6.5 2v9M2 6.5h9"/></svg>
+            Record a win
+          </button>
+        </div>
+
+      </div><!-- /board-wrap -->
+
+      <!-- ══ DETAIL DRAWER ══ -->
+      <div class="detail-drawer hidden" id="drawer">
+        <div class="drawer-header">
+          <div class="drawer-avatar" id="d-avatar" style="background:#EDE9FE;color:#7C3AED">JO</div>
+          <div>
+            <div class="drawer-name" id="d-name">James & Patricia O'Brien</div>
+            <div class="drawer-org" id="d-org">Cathedral benefactor · $95k lifetime</div>
+          </div>
+          <div class="drawer-close" onclick="closeDrawer()">
+            <svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 2l7 7M9 2l-7 7"/></svg>
+          </div>
+        </div>
+
+        <!-- Move stage -->
+        <div class="drawer-section">
+          <div class="drawer-sec-title">Pipeline stage</div>
+          <div class="stage-selector">
+            <div class="stage-option" onclick="selectStage(this)">
+              <div class="stage-opt-dot" style="background:#2563EB"></div>
+              <span class="stage-opt-name">Identification</span>
+            </div>
+            <div class="stage-option" onclick="selectStage(this)">
+              <div class="stage-opt-dot" style="background:#059669"></div>
+              <span class="stage-opt-name">Cultivation</span>
+            </div>
+            <div class="stage-option current" onclick="selectStage(this)">
+              <div class="stage-opt-dot" style="background:#D97706"></div>
+              <span class="stage-opt-name">Solicitation</span>
+              <span class="stage-opt-check">✓</span>
+            </div>
+            <div class="stage-option" onclick="selectStage(this)">
+              <div class="stage-opt-dot" style="background:#15803D"></div>
+              <span class="stage-opt-name">Stewardship</span>
+            </div>
+            <div class="stage-option" onclick="selectStage(this)">
+              <div class="stage-opt-dot" style="background:#22C55E"></div>
+              <span class="stage-opt-name">Closed / Won</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Key info -->
+        <div class="drawer-section">
+          <div class="drawer-sec-title">Key metrics <span class="drawer-edit">Edit</span></div>
+          <div class="info-grid">
+            <div class="info-item"><div class="info-label">Ask amount</div><div class="info-value purple">$25,000</div></div>
+            <div class="info-item"><div class="info-label">Lifetime giving</div><div class="info-value green">$95,000</div></div>
+            <div class="info-item"><div class="info-label">AI score</div><div class="info-value purple">95 / 100</div></div>
+            <div class="info-item"><div class="info-label">Days in stage</div><div class="info-value">2</div></div>
+          </div>
+        </div>
+
+        <!-- Contact -->
+        <div class="drawer-section">
+          <div class="drawer-sec-title">Contact</div>
+          <div class="contact-list">
+            <div class="contact-row">
+              <div class="contact-icon"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><rect x="1.5" y="2" width="9" height="8" rx="1.2"/><path d="M1.5 5l4.5 3 4.5-3"/></svg></div>
+              <span class="contact-val">james.obrien@cathedral.org</span>
+            </div>
+            <div class="contact-row">
+              <div class="contact-icon"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M2 2.5s1.2-.8 2 .8l.8 1.6s.4.8-.4 1.6l-.4.4s1.6 2.4 4 3.6l.4-.4s.8-.8 1.6-.4l1.6.8s1.6.8.8 2c0 0-1.2 2-4 .8S1.6 10 .8 7.6 2 2.5 2 2.5z"/></svg></div>
+              <span class="contact-val">(727) 555-0218</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Activity timeline -->
+        <div class="drawer-section">
+          <div class="drawer-sec-title">Contact history</div>
+          <div class="timeline">
+            <div class="tl-item">
+              <div class="tl-dot tl-call"><svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M2 2.5s1-.7 1.7.7l.7 1.4s.3.7-.3 1.3l-.4.4s1.4 2 3.4 3l.3-.3s.7-.7 1.3-.4l1.4.7s1.3.7.7 1.7c0 0-1 1.7-3.4.7S1.4 8.6.7 6.6 2 2.5 2 2.5z"/></svg></div>
+              <div class="tl-body">
+                <div class="tl-text"><strong>Cultivation call</strong> — Discussed Cathedral campaign interest. Patricia mentioned legacy giving possibilities.</div>
+                <div class="tl-date">Mar 28, 2026 · Sarah Reynolds</div>
+              </div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-dot tl-email"><svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><rect x="1" y="2" width="8" height="6" rx="1"/><path d="M1 3.5l4 2.5 4-2.5"/></svg></div>
+              <div class="tl-body">
+                <div class="tl-text"><strong>Proposal email sent</strong> — Cathedral Capital Fund case for support with $25k ask letter attached.</div>
+                <div class="tl-date">Apr 1, 2026 · Sarah Reynolds</div>
+              </div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-dot tl-note"><svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M2 2h6v6H2z"/><path d="M3 4.5h4M3 6h2"/></svg></div>
+              <div class="tl-body">
+                <div class="tl-text"><strong>Call scheduled</strong> — 2:00 PM today to follow up on proposal.</div>
+                <div class="tl-date">Apr 3, 2026 · Today</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Next action -->
+        <div class="drawer-section">
+          <div class="drawer-sec-title">Next action</div>
+          <div class="next-action-wrap">
+            <textarea class="na-field" rows="2" placeholder="What's the next step?">Follow up after 2PM call — confirm pledge or schedule in-person meeting with Bishop</textarea>
+            <div class="na-row">
+              <input class="na-date" type="date" value="2026-04-07">
+              <button class="na-save">Save action</button>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /drawer -->
+
+    </div>
+  </div>
+
+  <script>
+    const DONORS = {
+      obrien: {
+        avatar: 'JO', bg: '#EDE9FE', tc: '#7C3AED',
+        name: "James & Patricia O'Brien", org: "Cathedral benefactor · $95k lifetime",
+        stage: 2, ask: '$25,000', lifetime: '$95,000', score: '95', days: '2',
+        email: 'james.obrien@cathedral.org', phone: '(727) 555-0218',
+        history: [
+          { type:'call',  text:'<strong>Cultivation call</strong> — Discussed Cathedral campaign. Patricia mentioned legacy giving.', date:'Mar 28, 2026' },
+          { type:'email', text:'<strong>Proposal sent</strong> — Cathedral Capital Fund $25k ask letter.', date:'Apr 1, 2026' },
+          { type:'note',  text:'<strong>Call scheduled</strong> — 2:00 PM today.', date:'Apr 3, 2026' },
+        ],
+        next: "Follow up after 2PM call — confirm pledge or schedule in-person meeting",
+        nextDate: '2026-04-07'
+      },
+      sullivan: {
+        avatar: 'MS', bg: '#DBEAFE', tc: '#1D4ED8',
+        name: "Margaret Sullivan", org: "St. Michael's Parish · $84k lifetime",
+        stage: 3, ask: '$10,000', lifetime: '$84,250', score: '92', days: '22',
+        email: 'margaret.sullivan@gmail.com', phone: '(727) 555-0142',
+        history: [
+          { type:'gift',  text:'<strong>Gift received</strong> — $2,500 to Catholic Ministry Appeal.', date:'Mar 15, 2026' },
+          { type:'call',  text:'<strong>Stewardship call</strong> — Thanked for gift. Mentioned Cathedral interest.', date:'Mar 16, 2026' },
+          { type:'note',  text:'<strong>Note added</strong> — Cathedral upgrade ask planned for Q3.', date:'Mar 16, 2026' },
+        ],
+        next: "Q3 major gift cultivation call — propose $10k Cathedral upgrade",
+        nextDate: '2026-07-15'
+      },
+      grant: {
+        avatar: 'MG', bg: '#DBEAFE', tc: '#1D4ED8',
+        name: "Michael & Susan Grant", org: "Major donor since 2015",
+        stage: 1, ask: '$25,000', lifetime: '$68,000', score: '81', days: '12',
+        email: 'mgrant@grantfamily.com', phone: '(813) 555-0334',
+        history: [
+          { type:'call',  text:'<strong>Cultivation lunch</strong> — Discussed parish capital needs. Seemed engaged.', date:'Mar 22, 2026' },
+          { type:'note',  text:'<strong>Note</strong> — Mentioned Cathedral project at Mass. Very positive reaction.', date:'Apr 1, 2026' },
+        ],
+        next: "Lunch meeting April 12 — bring impact report and naming opportunity details",
+        nextDate: '2026-04-12'
+      }
+    };
+
+    const TL_ICONS = {
+      call:  { cls:'tl-call',  svg:'<path d="M2 2.5s1-.7 1.7.7l.7 1.4s.3.7-.3 1.3l-.4.4s1.4 2 3.4 3l.3-.3s.7-.7 1.3-.4l1.4.7s1.3.7.7 1.7c0 0-1 1.7-3.4.7S1.4 8.6.7 6.6 2 2.5 2 2.5z"/>' },
+      email: { cls:'tl-email', svg:'<rect x="1" y="2" width="8" height="6" rx="1"/><path d="M1 3.5l4 2.5 4-2.5"/>' },
+      note:  { cls:'tl-note',  svg:'<path d="M2 2h6v6H2z"/><path d="M3 4.5h4M3 6h2"/>' },
+      gift:  { cls:'tl-gift',  svg:'<path d="M5 1v8M1.5 4.5h7M2.5 4.5C2.5 3 3.5 1 5 1s2.5 2 2.5 3.5"/>' },
+    };
+
+    const STAGE_NAMES = ['Identification','Cultivation','Solicitation','Stewardship','Closed / Won'];
+
+    let currentDrawerKey = null;
+
+    function openDrawer(key) {
+      const d = DONORS[key] || DONORS.obrien;
+      currentDrawerKey = key;
+
+      document.getElementById('d-avatar').textContent = d.avatar;
+      document.getElementById('d-avatar').style.background = d.bg;
+      document.getElementById('d-avatar').style.color = d.tc;
+      document.getElementById('d-name').textContent = d.name;
+      document.getElementById('d-org').textContent = d.org;
+
+      // Stage options
+      document.querySelectorAll('.stage-option').forEach((el, i) => {
+        el.classList.toggle('current', i === d.stage);
+        el.innerHTML = el.innerHTML.replace(/✓/g, '');
+        if (i === d.stage) el.innerHTML += '<span class="stage-opt-check">✓</span>';
+      });
+
+      // Info grid
+      document.querySelector('.info-grid').innerHTML = `
+        <div class="info-item"><div class="info-label">Ask amount</div><div class="info-value purple">${d.ask}</div></div>
+        <div class="info-item"><div class="info-label">Lifetime giving</div><div class="info-value green">${d.lifetime}</div></div>
+        <div class="info-item"><div class="info-label">AI score</div><div class="info-value purple">${d.score} / 100</div></div>
+        <div class="info-item"><div class="info-label">Days in stage</div><div class="info-value">${d.days}</div></div>`;
+
+      // Contact
+      document.querySelector('.contact-list').innerHTML = `
+        <div class="contact-row"><div class="contact-icon"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><rect x="1.5" y="2" width="9" height="8" rx="1.2"/><path d="M1.5 5l4.5 3 4.5-3"/></svg></div><span class="contact-val">${d.email}</span></div>
+        <div class="contact-row"><div class="contact-icon"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M2 2.5s1.2-.8 2 .8l.8 1.6s.4.8-.4 1.6l-.4.4s1.6 2.4 4 3.6l.4-.4s.8-.8 1.6-.4l1.6.8s1.6.8.8 2c0 0-1.2 2-4 .8S1.6 10 .8 7.6 2 2.5 2 2.5z"/></svg></div><span class="contact-val">${d.phone}</span></div>`;
+
+      // Timeline
+      document.querySelector('.timeline').innerHTML = d.history.map(h => {
+        const ic = TL_ICONS[h.type];
+        return `<div class="tl-item">
+          <div class="tl-dot ${ic.cls}"><svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round">${ic.svg}</svg></div>
+          <div class="tl-body"><div class="tl-text">${h.text}</div><div class="tl-date">${h.date}</div></div>
+        </div>`;
+      }).join('');
+
+      // Next action
+      document.querySelector('.na-field').value = d.next;
+      document.querySelector('.na-date').value = d.nextDate;
+
+      const drawer = document.getElementById('drawer');
+      drawer.classList.remove('hidden');
+    }
+
+    function closeDrawer() {
+      document.getElementById('drawer').classList.add('hidden');
+    }
+
+    function selectStage(el) {
+      document.querySelectorAll('.stage-option').forEach(o => {
+        o.classList.remove('current');
+        o.querySelectorAll('.stage-opt-check').forEach(c => c.remove());
+      });
+      el.classList.add('current');
+      const check = document.createElement('span');
+      check.className = 'stage-opt-check';
+      check.textContent = '✓';
+      el.appendChild(check);
+    }
+  </script>
+
+</body>
+</html>
