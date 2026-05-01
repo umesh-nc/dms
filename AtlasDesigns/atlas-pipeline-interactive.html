@@ -1,0 +1,2037 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GiveCentral Atlas — Moves Management Pipeline</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:        #0E1E35;
+      --blue:        #0756a5;
+      --blue-mid:    #0E65B8;
+      --blue-light:  #D4E7F8;
+      --blue-pale:   #E8F0F7;
+      --green:       #15803D;
+      --green-light: #DCFCE7;
+      --amber:       #D97706;
+      --amber-light: #FEF3C7;
+      --rose:        #BE185D;
+      --rose-light:  #FCE7F3;
+      --teal:        #0D9488;
+      --teal-light:  #CCFBF1;
+      --purple:      #7C3AED;
+      --purple-light:#EDE9FE;
+      --gold:        #B45309;
+      --gold-light:  #FEF3C7;
+      --text:        #0F172A;
+      --text-2:      #334155;
+      --text-3:      #64748B;
+      --border:      #E2E8F0;
+      --surface:     #F8FAFC;
+      --white:       #FFFFFF;
+
+      /* Stage colors */
+      --id-bg:    #EFF6FF; --id-accent:   #0756a5; --id-text:   #0756a5;
+      --cul-bg:   #ECFDF5; --cul-accent:  #059669; --cul-text:  #065F46;
+      --sol-bg:   #FFFBEB; --sol-accent:  #D97706; --sol-text:  #92400E;
+      --stew-bg:  #F0FDF4; --stew-accent: #15803D; --stew-text: #14532D;
+      --close-bg: #F0FDF4; --close-accent:#15803D; --close-text:#14532D;
+    }
+
+    html { font-size: 14px; -webkit-font-smoothing: antialiased; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--surface); color: var(--text); min-height: 100vh; display: flex; overflow: hidden; }
+
+    /* ══ SIDEBAR ══ */
+    .sidebar {
+      width: 220px; background: var(--navy); height: 100vh;
+      display: flex; flex-direction: column; flex-shrink: 0; overflow-y: auto;
+    }
+    .sidebar-logo { padding: 18px 18px 14px; display: flex; align-items: center; gap: 9px; border-bottom: 1px solid rgba(255,255,255,.08); }
+    .logo-mark { width: 30px; height: 30px; background: var(--blue); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+    .logo-mark svg { width: 15px; height: 15px; }
+    .logo-name { font-family: 'DM Serif Display', serif; font-size: 15px; color: white; line-height: 1; }
+    .logo-sub  { font-size: 9px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.3); margin-top: 3px; }
+    .nav-group { padding: 10px 8px 0; }
+    .nav-label { font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.28); padding: 0 10px; margin-bottom: 4px; }
+    .nav-item  { display: flex; align-items: center; gap: 9px; padding: 8px 10px; border-radius: 7px; font-size: 12px; font-weight: 500; color: rgba(255,255,255,.55); cursor: pointer; transition: all .15s; margin-bottom: 1px; }
+    .nav-item:hover  { background: rgba(255,255,255,.07); color: rgba(255,255,255,.85); }
+    .nav-item.active { background: var(--purple); color: white; }
+    .nav-item svg    { width: 14px; height: 14px; flex-shrink: 0; }
+    .nav-badge { margin-left: auto; background: rgba(255,255,255,.1); color: rgba(255,255,255,.5); border-radius: 10px; padding: 1px 7px; font-size: 10px; font-weight: 600; }
+    .nav-item.active .nav-badge { background: rgba(255,255,255,.2); color: white; }
+    .sidebar-user { margin-top: auto; padding: 12px; border-top: 1px solid rgba(255,255,255,.08); display: flex; align-items: center; gap: 9px; }
+    .user-avatar { width: 30px; height: 30px; border-radius: 50%; background: var(--blue); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: white; flex-shrink: 0; }
+    .user-name { font-size: 12px; font-weight: 500; color: rgba(255,255,255,.75); }
+    .user-role { font-size: 10px; color: rgba(255,255,255,.35); margin-top: 1px; }
+
+    /* ══ MAIN ══ */
+    .main { flex: 1; min-width: 0; display: flex; flex-direction: column; overflow: hidden; height: 100vh; }
+
+    /* Topbar */
+    .topbar {
+      background: white; border-bottom: 1px solid var(--border); padding: 0 24px; height: 52px;
+      display: flex; align-items: center; gap: 12px; flex-shrink: 0;
+    }
+    .topbar-icon { width: 28px; height: 28px; background: var(--purple-light); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+    .topbar-icon svg { width: 14px; height: 14px; color: var(--purple); }
+    .topbar-title { font-size: 15px; font-weight: 600; color: var(--text); }
+    .topbar-right { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+    .view-toggle { display: flex; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+    .vt-btn { padding: 6px 12px; font-size: 12px; font-weight: 500; color: var(--text-3); cursor: pointer; border: none; background: none; font-family: 'DM Sans', sans-serif; transition: all .15s; display: flex; align-items: center; gap: 5px; }
+    .vt-btn svg { width: 12px; height: 12px; }
+    .vt-btn.active { background: white; color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+    .tb-btn { padding: 6px 14px; border-radius: 7px; font-size: 12px; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .15s; display: flex; align-items: center; gap: 6px; }
+    .tb-btn svg { width: 12px; height: 12px; }
+    .tb-ghost  { background: none; border: 1px solid var(--border); color: var(--text-2); }
+    .tb-ghost:hover { background: var(--surface); border-color: #94A3B8; }
+    .tb-purple { background: var(--purple); border: none; color: white; box-shadow: 0 1px 4px rgba(124,58,237,.3); }
+    .tb-purple:hover { background: #6D28D9; }
+
+    /* Pipeline summary strip */
+    .pipeline-strip {
+      background: white; border-bottom: 1px solid var(--border); padding: 10px 24px;
+      display: flex; align-items: center; gap: 0; flex-shrink: 0;
+    }
+    .ps-item {
+      display: flex; flex-direction: column; align-items: center; gap: 2px;
+      padding: 0 20px; border-right: 1px solid var(--border); cursor: pointer;
+      transition: background .15s; border-radius: 8px;
+    }
+    .ps-item:first-child { padding-left: 0; }
+    .ps-item:last-child { border-right: none; }
+    .ps-item:hover { background: var(--surface); }
+    .ps-value { font-family: 'DM Serif Display', serif; font-size: 20px; color: var(--text); letter-spacing: -.02em; line-height: 1; }
+    .ps-label { font-size: 10px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--text-3); }
+    .ps-sub   { font-size: 10px; color: var(--text-3); }
+    .ps-divider { flex: 1; }
+    .ps-filter-wrap { display: flex; gap: 8px; align-items: center; margin-left: auto; }
+    .ps-filter-label { font-size: 11px; color: var(--text-3); }
+    .ps-filter-select {
+      border: 1px solid var(--border); border-radius: 7px; padding: 5px 28px 5px 10px;
+      font-size: 12px; color: var(--text-2); outline: none; background: var(--surface);
+      font-family: 'DM Sans', sans-serif; cursor: pointer;
+      -webkit-appearance: none; appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath d='M2 3.5l3 3 3-3' stroke='%2364748B' stroke-width='1.3' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 9px center;
+    }
+
+    /* ══ KANBAN BOARD ══ */
+    .board-wrap { flex: 1; overflow-x: auto; overflow-y: hidden; padding: 20px 24px 24px; display: flex; gap: 14px; align-items: flex-start; }
+
+    /* Stage column */
+    .stage-col {
+      width: 260px; flex-shrink: 0; display: flex; flex-direction: column; gap: 0;
+      background: #F1F5F9; border-radius: 12px; overflow: hidden; max-height: calc(100vh - 200px);
+    }
+    .stage-col.drag-over { background: #E0E7FF; }
+    .stage-header {
+      padding: 12px 14px; display: flex; align-items: center; gap: 8px; flex-shrink: 0;
+    }
+    .stage-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .stage-name { font-size: 12px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; flex: 1; }
+    .stage-count { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 10px; }
+    .stage-value { font-size: 10px; font-weight: 600; margin-left: auto; padding: 2px 8px; border-radius: 10px; }
+
+    /* Stage color themes */
+    .col-id    .stage-header { background: var(--id-bg);    }
+    .col-id    .stage-name   { color: var(--id-text);  }
+    .col-id    .stage-dot    { background: var(--id-accent); }
+    .col-id    .stage-count  { background: var(--blue-light); color: var(--id-text); }
+    .col-id    .stage-value  { background: var(--blue-light); color: var(--id-text); }
+
+    .col-cul   .stage-header { background: var(--cul-bg);   }
+    .col-cul   .stage-name   { color: var(--cul-text); }
+    .col-cul   .stage-dot    { background: var(--cul-accent);}
+    .col-cul   .stage-count  { background: #A7F3D0; color: var(--cul-text); }
+    .col-cul   .stage-value  { background: #A7F3D0; color: var(--cul-text); }
+
+    .col-sol   .stage-header { background: var(--sol-bg);   }
+    .col-sol   .stage-name   { color: var(--sol-text); }
+    .col-sol   .stage-dot    { background: var(--sol-accent);}
+    .col-sol   .stage-count  { background: #FDE68A; color: var(--sol-text); }
+    .col-sol   .stage-value  { background: #FDE68A; color: var(--sol-text); }
+
+    .col-stew  .stage-header { background: var(--stew-bg);  }
+    .col-stew  .stage-name   { color: var(--stew-text);}
+    .col-stew  .stage-dot    { background: var(--stew-accent); }
+    .col-stew  .stage-count  { background: #BBF7D0; color: var(--stew-text); }
+    .col-stew  .stage-value  { background: #BBF7D0; color: var(--stew-text); }
+
+    .col-close .stage-header { background: #F0FDF4; }
+    .col-close .stage-name   { color: #14532D; }
+    .col-close .stage-dot    { background: #22C55E; }
+    .col-close .stage-count  { background: #86EFAC; color: #14532D; }
+    .col-close .stage-value  { background: #86EFAC; color: #14532D; }
+
+    /* Cards area */
+    .cards-area { flex: 1; overflow-y: auto; padding: 8px; display: flex; flex-direction: column; gap: 8px; }
+    .cards-area::-webkit-scrollbar { width: 4px; }
+    .cards-area::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 2px; }
+
+    /* Prospect card */
+    .prospect-card {
+      background: white; border-radius: 10px; border: 1px solid var(--border);
+      padding: 13px 14px; cursor: move;
+      transition: border-color .15s, transform .15s, box-shadow .15s;
+      position: relative; user-select: none;
+    }
+    .prospect-card:hover { border-color: #94A3B8; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,.08); }
+    .prospect-card.dragging { opacity: 0.5; transform: rotate(2deg); }
+    .prospect-card.priority { border-left: 3px solid var(--purple); }
+    .prospect-card.overdue  { border-left: 3px solid var(--rose); }
+    .prospect-card.hot      { border-left: 3px solid var(--amber); }
+    .prospect-card.won      { border-left: 3px solid var(--green); }
+
+    .pc-top { display: flex; align-items: flex-start; gap: 9px; margin-bottom: 9px; }
+    .pc-avatar {
+      width: 32px; height: 32px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700; flex-shrink: 0;
+    }
+    .pc-info { flex: 1; min-width: 0; }
+    .pc-name { font-size: 13px; font-weight: 600; color: var(--text); line-height: 1.3; }
+    .pc-org  { font-size: 11px; color: var(--text-3); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .pc-ask  { font-size: 14px; font-weight: 700; color: var(--text); font-family: 'DM Serif Display', serif; flex-shrink: 0; letter-spacing: -.01em; }
+
+    .pc-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 9px; }
+    .pc-tag  { display: inline-flex; align-items: center; gap: 3px; padding: 2px 7px; border-radius: 20px; font-size: 10px; font-weight: 600; }
+    .tag-major    { background: var(--purple-light); color: var(--purple); }
+    .tag-parish   { background: var(--teal-light);   color: var(--teal); }
+    .tag-recurring{ background: var(--blue-light);   color: var(--blue); }
+    .tag-hot      { background: var(--amber-light);  color: var(--amber); }
+    .tag-lybunt   { background: var(--rose-light);   color: var(--rose); }
+    .tag-new      { background: var(--green-light);  color: var(--green); }
+    .tag-board    { background: #F3E8FF; color: #6D28D9; }
+
+    .pc-meta { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .pc-meta-item { display: flex; align-items: center; gap: 3px; font-size: 10px; color: var(--text-3); }
+    .pc-meta-item svg { width: 10px; height: 10px; flex-shrink: 0; }
+    .pc-meta-item.overdue { color: var(--rose); font-weight: 600; }
+    .pc-meta-item.due-today { color: var(--amber); font-weight: 600; }
+
+    .pc-footer { margin-top: 9px; padding-top: 9px; border-top: .5px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .pc-officer { display: flex; align-items: center; gap: 5px; font-size: 10px; color: var(--text-3); }
+    .pc-officer-avatar { width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 8px; font-weight: 700; color: white; flex-shrink: 0; }
+    .pc-days { font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 10px; }
+    .days-ok    { background: var(--green-light); color: var(--green); }
+    .days-warn  { background: var(--amber-light); color: var(--amber); }
+    .days-late  { background: var(--rose-light);  color: var(--rose); }
+    .days-fresh { background: var(--blue-light);  color: var(--blue); }
+    .days-won   { background: var(--green-light); color: var(--green); }
+
+    .pc-note { font-size: 11px; color: var(--text-3); line-height: 1.5; margin-top: 7px; padding: 7px 9px; background: var(--surface); border-radius: 7px; border-left: 2px solid var(--border); font-style: italic; }
+
+    /* Guru AI insight on card */
+    .pc-ai { margin-top: 8px; padding: 7px 9px; background: #F5F3FF; border-radius: 7px; border-left: 2px solid var(--purple); }
+    .pc-ai-text { font-size: 11px; color: #5B21B6; line-height: 1.5; }
+    .pc-ai-text strong { font-weight: 600; }
+
+    /* Add card button */
+    .add-card-btn {
+      display: flex; align-items: center; gap: 7px; padding: 9px 14px;
+      color: var(--text-3); font-size: 12px; font-weight: 500; cursor: pointer;
+      border: 1.5px dashed #CBD5E1; border-radius: 9px; background: none;
+      transition: all .15s; font-family: 'DM Sans', sans-serif; width: 100%;
+      justify-content: center; flex-shrink: 0; margin: 0 8px 8px; width: calc(100% - 16px);
+    }
+    .add-card-btn:hover { border-color: var(--purple); color: var(--purple); background: var(--purple-light); }
+    .add-card-btn svg { width: 13px; height: 13px; }
+
+    /* ══ DETAIL DRAWER ══ */
+    .detail-drawer {
+      width: 340px; flex-shrink: 0; background: white; border-left: 1px solid var(--border);
+      display: flex; flex-direction: column; overflow-y: auto; height: calc(100vh - 52px - 44px);
+      transition: transform .25s ease, opacity .25s;
+    }
+    .detail-drawer.hidden { display: none; }
+    .drawer-header { padding: 16px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+    .drawer-close { width: 26px; height: 26px; border: 1px solid var(--border); border-radius: 7px; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-left: auto; transition: background .15s; }
+    .drawer-close:hover { background: var(--surface); }
+    .drawer-close svg { width: 11px; height: 11px; }
+    .drawer-avatar { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; flex-shrink: 0; }
+    .drawer-name { font-size: 14px; font-weight: 600; color: var(--text); }
+    .drawer-org  { font-size: 11px; color: var(--text-3); margin-top: 2px; }
+
+    .drawer-section { padding: 14px 18px; border-bottom: 1px solid var(--border); }
+    .drawer-sec-title { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--text-3); margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; }
+    .drawer-edit { font-size: 10px; color: var(--blue); cursor: pointer; text-transform: none; letter-spacing: 0; }
+
+    .stage-selector { display: flex; flex-direction: column; gap: 6px; }
+    .stage-option {
+      display: flex; align-items: center; gap: 9px; padding: 8px 10px; border-radius: 8px;
+      border: 1px solid var(--border); cursor: pointer; transition: all .15s;
+    }
+    .stage-option:hover { border-color: #94A3B8; background: var(--surface); }
+    .stage-option.current { background: var(--purple-light); border-color: rgba(124,58,237,.3); }
+    .stage-opt-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .stage-opt-name { font-size: 12px; font-weight: 500; color: var(--text); flex: 1; }
+    .stage-option.current .stage-opt-name { color: var(--purple); font-weight: 600; }
+    .stage-opt-check { font-size: 14px; color: var(--purple); }
+
+    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .info-item { background: var(--surface); border-radius: 8px; padding: 9px 11px; }
+    .info-label { font-size: 10px; color: var(--text-3); margin-bottom: 3px; }
+    .info-value { font-size: 13px; font-weight: 600; color: var(--text); }
+    .info-value.green { color: var(--green); }
+    .info-value.purple { color: var(--purple); }
+    .info-input { width: 100%; border: 1px solid var(--border); border-radius: 6px; padding: 6px 8px; font-size: 12px; font-family: 'DM Sans', sans-serif; outline: none; }
+    .info-input:focus { border-color: var(--blue); box-shadow: 0 0 0 2px var(--blue-pale); }
+
+    .contact-list { display: flex; flex-direction: column; gap: 7px; }
+    .contact-row { display: flex; align-items: center; gap: 9px; font-size: 12px; }
+    .contact-icon { width: 24px; height: 24px; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .contact-icon svg { width: 11px; height: 11px; color: var(--text-3); }
+    .contact-val { color: var(--text-2); }
+
+    .timeline { display: flex; flex-direction: column; gap: 0; max-height: 200px; overflow-y: auto; }
+    .tl-item { display: flex; gap: 10px; padding: 8px 0; position: relative; }
+    .tl-item:not(:last-child)::before { content: ''; position: absolute; left: 11px; top: 28px; bottom: 0; width: 1px; background: var(--border); }
+    .tl-dot { width: 22px; height: 22px; border-radius: 7px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; z-index: 1; }
+    .tl-dot svg { width: 10px; height: 10px; }
+    .tl-call  { background: var(--blue-light); color: var(--blue); }
+    .tl-email { background: var(--teal-light); color: var(--teal); }
+    .tl-note  { background: var(--amber-light);color: var(--amber); }
+    .tl-gift  { background: var(--green-light);color: var(--green); }
+    .tl-body { flex: 1; }
+    .tl-text { font-size: 12px; color: var(--text-2); line-height: 1.45; }
+    .tl-text strong { color: var(--text); font-weight: 600; }
+    .tl-date { font-size: 10px; color: var(--text-3); margin-top: 3px; }
+
+    .next-action-wrap { }
+    .na-field {
+      width: 100%; border: 1.5px solid var(--border); border-radius: 9px; padding: 9px 12px;
+      font-size: 12px; font-family: 'DM Sans', sans-serif; color: var(--text); outline: none;
+      resize: none; transition: border-color .15s;
+    }
+    .na-field:focus { border-color: var(--purple); box-shadow: 0 0 0 3px rgba(124,58,237,.1); }
+    .na-row { display: flex; gap: 8px; margin-top: 8px; }
+    .na-date { flex: 1; border: 1.5px solid var(--border); border-radius: 9px; padding: 8px 10px; font-size: 12px; font-family: 'DM Sans', sans-serif; color: var(--text); outline: none; transition: border-color .15s; }
+    .na-date:focus { border-color: var(--purple); }
+    .na-save { padding: 8px 16px; background: var(--purple); color: white; border: none; border-radius: 8px; font-size: 12px; font-weight: 600; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: background .15s; }
+    .na-save:hover { background: #6D28D9; }
+
+    /* ══ MODALS ══ */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 2000; align-items: center; justify-content: center; }
+    .modal-overlay.active { display: flex; }
+    .modal-box { background: white; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,.2); max-width: 460px; width: 90%; max-height: 90vh; overflow-y: auto; }
+    .modal-header { padding: 20px 24px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .modal-title { font-size: 16px; font-weight: 600; color: var(--text); }
+    .modal-close { width: 28px; height: 28px; border: none; background: none; color: var(--text-3); cursor: pointer; font-size: 20px; }
+    .modal-body { padding: 24px; }
+    .form-group { margin-bottom: 18px; }
+    .form-label { display: block; font-size: 12px; font-weight: 600; color: var(--text-2); margin-bottom: 6px; }
+    .form-input, .form-select { width: 100%; border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; font-size: 13px; font-family: 'DM Sans', sans-serif; outline: none; }
+    .form-input:focus, .form-select:focus { border-color: var(--blue); box-shadow: 0 0 0 3px var(--blue-pale); }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .modal-footer { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; gap: 8px; justify-content: flex-end; }
+    .btn-primary { padding: 10px 20px; background: var(--purple); color: white; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: background .15s; }
+    .btn-primary:hover { background: #6D28D9; }
+    .btn-secondary { padding: 10px 20px; background: none; color: var(--text-2); border: 1px solid var(--border); border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all .15s; }
+    .btn-secondary:hover { background: var(--surface); border-color: #94A3B8; }
+
+    /* Animations */
+    @keyframes fadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes slideIn { from{opacity:0;transform:translateX(16px)} to{opacity:1;transform:translateX(0)} }
+    @keyframes slideOut { from{opacity:1;transform:translateX(0)} to{opacity:0;transform:translateX(300px)} }
+    @keyframes pulseGlow { 0%{box-shadow:0 0 0 0 rgba(7, 86, 165, 0.4);} 70%{box-shadow:0 0 0 10px rgba(7, 86, 165, 0);} 100%{box-shadow:0 0 0 0 rgba(7, 86, 165, 0);} }
+    @keyframes shimmer { 0%{background-position:-1000px 0;} 100%{background-position:1000px 0;} }
+    .stage-col { animation: fadeUp .3s ease forwards; opacity: 0; }
+    .stage-col:nth-child(1) { animation-delay: .04s; }
+    .stage-col:nth-child(2) { animation-delay: .08s; }
+    .stage-col:nth-child(3) { animation-delay: .12s; }
+    .stage-col:nth-child(4) { animation-delay: .16s; }
+    .stage-col:nth-child(5) { animation-delay: .20s; }
+    .detail-drawer:not(.hidden) { animation: slideIn .25s ease forwards; }
+    .prospect-card { animation: fadeUp .2s ease forwards; opacity: 0; }
+
+    /* Prospect Modal Styles - Enhanced UI */
+    #addProspectModal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(15, 23, 42, 0.55);
+      backdrop-filter: blur(2px);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #addProspectModal.active {
+      display: flex;
+    }
+
+    .prospect-modal-container {
+      background: white;
+      border-radius: 16px;
+      width: 90%;
+      max-width: 920px;
+      max-height: 88vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2), 0 10px 20px rgba(0, 0, 0, 0.1);
+      animation: slideIn .3s ease;
+      overflow: hidden;
+    }
+
+    .prospect-modal-header {
+      padding: 28px 32px 20px;
+      background: linear-gradient(135deg, #0756a5 0%, #0E65B8 100%);
+      position: relative;
+      border-bottom: none;
+    }
+
+    .prospect-modal-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 24px;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 6px;
+      letter-spacing: -0.3px;
+    }
+
+    .prospect-modal-desc {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.85);
+      font-weight: 400;
+      line-height: 1.4;
+    }
+
+    .prospect-modal-close {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      font-size: 26px;
+      color: white;
+      cursor: pointer;
+      padding: 4px;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      transition: all .2s ease;
+    }
+
+    .prospect-modal-close:hover {
+      background: rgba(255, 255, 255, 0.25);
+      border-color: rgba(255, 255, 255, 0.35);
+      transform: rotate(90deg);
+    }
+
+    .prospect-modal-tabs {
+      display: flex;
+      gap: 1px;
+      border-bottom: 2px solid var(--border);
+      padding: 0;
+      overflow-x: auto;
+      background: #f5f7fa;
+    }
+
+    .prospect-form-tab {
+      padding: 18px 24px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #64748b;
+      cursor: pointer;
+      border: none;
+      border-bottom: 3px solid transparent;
+      transition: all .25s ease;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      white-space: nowrap;
+      flex: 1;
+      text-align: center;
+      position: relative;
+      background: #f5f7fa;
+    }
+
+    .prospect-form-tab:hover {
+      color: var(--blue);
+      background: #eef2f7;
+    }
+
+    .prospect-form-tab.active {
+      color: var(--blue);
+      background: white;
+      border-bottom-color: var(--blue);
+      box-shadow: 0 2px 8px rgba(7, 86, 165, 0.08);
+    }
+
+    .prospect-modal-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 28px 32px;
+      background: white;
+    }
+
+    .prospect-modal-body::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .prospect-modal-body::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .prospect-modal-body::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 3px;
+    }
+
+    .prospect-modal-body::-webkit-scrollbar-thumb:hover {
+      background: #cbd5e1;
+    }
+
+    .prospect-form-section {
+      display: none;
+      animation: fadeUp .3s ease;
+    }
+
+    .prospect-form-section.active {
+      display: block;
+    }
+
+    .prospect-section-title {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: #475569;
+      margin: 28px 0 16px 0;
+      padding: 0 0 12px 0;
+      border-bottom: 2px solid var(--border);
+    }
+
+    .prospect-section-title:first-of-type {
+      margin-top: 0;
+    }
+
+    .prospect-form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 18px;
+      margin-bottom: 16px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-2);
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+
+    .form-label.required::after {
+      content: ' *';
+      color: var(--rose);
+    }
+
+    .form-input, .form-select, .form-textarea {
+      padding: 11px 13px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-size: 13px;
+      font-family: 'DM Sans', sans-serif;
+      transition: all .2s ease;
+      background: white;
+      color: var(--text);
+    }
+
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      outline: none;
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px var(--blue-pale);
+      background: white;
+    }
+
+    .form-input::placeholder {
+      color: #94a3b8;
+    }
+
+    .form-textarea {
+      resize: vertical;
+      min-height: 90px;
+    }
+
+    .prospect-range-slider {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-top: 8px;
+    }
+
+    .prospect-range-input {
+      flex: 1;
+      height: 7px;
+      border-radius: 4px;
+      background: #e2e8f0;
+      outline: none;
+      -webkit-appearance: none;
+      cursor: pointer;
+    }
+
+    .prospect-range-input::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--blue) 0%, #0E65B8 100%);
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(7, 86, 165, 0.3);
+      transition: all .2s ease;
+    }
+
+    .prospect-range-input::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+      box-shadow: 0 4px 12px rgba(7, 86, 165, 0.4);
+    }
+
+    .prospect-range-input::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--blue) 0%, #0E65B8 100%);
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 2px 8px rgba(7, 86, 165, 0.3);
+      transition: all .2s ease;
+    }
+
+    .prospect-range-value {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--blue);
+      min-width: 70px;
+      text-align: right;
+      background: var(--blue-pale);
+      padding: 6px 10px;
+      border-radius: 8px;
+    }
+
+    .prospect-tags-container {
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      background: white;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      transition: all .2s ease;
+      min-height: 40px;
+    }
+
+    .prospect-tags-container:focus-within {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px var(--blue-pale);
+    }
+
+    .prospect-tag-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      background: linear-gradient(135deg, #d4e7f8 0%, #e8f0f7 100%);
+      color: var(--blue);
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      box-shadow: 0 1px 3px rgba(7, 86, 165, 0.1);
+      animation: slideIn 0.2s ease;
+    }
+
+    .prospect-tag-remove {
+      cursor: pointer;
+      opacity: 0.6;
+      font-size: 14px;
+      transition: all .15s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .prospect-tag-remove:hover {
+      opacity: 1;
+      transform: scale(1.2);
+    }
+
+    .prospect-tag-input {
+      flex: 1;
+      border: none;
+      outline: none;
+      font-size: 13px;
+      font-family: 'DM Sans', sans-serif;
+      min-width: 100px;
+      background: transparent;
+      color: var(--text);
+    }
+
+    .prospect-tag-input::placeholder {
+      color: #cbd5e1;
+    }
+
+    .prospect-modal-footer {
+      padding: 20px 32px;
+      border-top: 2px solid var(--border);
+      display: flex;
+      gap: 12px;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--surface);
+    }
+
+    .prospect-btn {
+      padding: 11px 20px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .2s ease;
+      font-family: 'DM Sans', sans-serif;
+      border: none;
+      text-transform: uppercase;
+      letter-spacing: .03em;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .prospect-btn-primary {
+      background: linear-gradient(135deg, var(--blue) 0%, #0E65B8 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(7, 86, 165, 0.3);
+    }
+
+    .prospect-btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(7, 86, 165, 0.4);
+    }
+
+    .prospect-btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .prospect-btn-secondary {
+      background: white;
+      border: 1.5px solid var(--border);
+      color: var(--text-2);
+    }
+
+    .prospect-btn-secondary:hover {
+      background: var(--surface);
+      border-color: var(--blue);
+      color: var(--blue);
+    }
+
+    .prospect-btn-secondary:active {
+      background: var(--blue-pale);
+    }
+
+    .rel-card {
+      background: linear-gradient(135deg, #f8fafc 0%, #f0f4f8 100%);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 14px;
+      transition: all .2s ease;
+    }
+
+    .rel-card:hover {
+      border-color: var(--blue);
+      box-shadow: 0 4px 12px rgba(7, 86, 165, 0.1);
+    }
+
+    .rel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .rel-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text);
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+
+    .rel-remove {
+      color: var(--rose);
+      cursor: pointer;
+      font-size: 16px;
+      transition: all .2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      background: rgba(190, 24, 93, 0.08);
+    }
+
+    .rel-remove:hover {
+      background: rgba(190, 24, 93, 0.15);
+      transform: rotate(90deg);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ══ SIDEBAR ══ -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-mark">
+        <svg viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7.5" stroke="white" stroke-width="1.5"/><path d="M5.5 9.5C6.5 11.5 9 13 9 13s2.5-1.5 3.5-3.5S12 5 9 5 4.5 7.5 5.5 9.5z" fill="white" fill-opacity=".9"/></svg>
+      </div>
+      <div><div class="logo-name">GiveCentral</div><div class="logo-sub">Atlas CRM</div></div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-label">Main</div>
+      <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><rect x="1.5" y="1.5" width="4" height="4" rx="1.2"/><rect x="8.5" y="1.5" width="4" height="4" rx="1.2"/><rect x="1.5" y="8.5" width="4" height="4" rx="1.2"/><rect x="8.5" y="8.5" width="4" height="4" rx="1.2"/></svg>Dashboard</div>
+      <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="6" cy="4.5" r="3"/><path d="M1 13c0-2.8 2.2-5 5-5h1c2.8 0 5 2.2 5 5"/></svg>Donors<span class="nav-badge">3,847</span></div>
+      <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M7 1.5v11M2 6.5h10"/></svg>Gifts &amp; pledges</div>
+      <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M1.5 8.5l2.5-2.5 2 2 2.5-2.5 2 2"/><rect x="1.5" y="1.5" width="11" height="11" rx="2"/></svg>Campaigns</div>
+    </div>
+    <div class="nav-group" style="margin-top:8px">
+      <div class="nav-label">Fundraising</div>
+      <div class="nav-item active"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="7" cy="7" r="5.5"/><path d="M7 4v4M7 10v.5"/></svg>Prospect pipeline<span class="nav-badge">28</span></div>
+      <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><rect x="1.5" y="2.5" width="11" height="9" rx="1.5"/><path d="M1.5 6h11M5 2.5v2M9 2.5v2"/></svg>Tasks &amp; reminders<span class="nav-badge">7</span></div>
+      <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M2 3.5h10v7H2zM2 6.5h10"/></svg>Communications</div>
+    </div>
+    <div class="nav-group" style="margin-top:8px">
+      <div class="nav-label">Intelligence</div>
+      <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="7" cy="5" r="3.5"/><path d="M5 10c0 2 4 2 4 0M4.5 8.5c-2 1-3 3.5-3 4.5M9.5 8.5c2 1 3 3.5 3 4.5"/></svg>Guru AI</div>
+    </div>
+    <div class="sidebar-user">
+      <div class="user-avatar">SR</div>
+      <div><div class="user-name">Sarah Reynolds</div><div class="user-role">Development Director</div></div>
+    </div>
+  </aside>
+
+  <!-- ══ MAIN ══ -->
+  <div class="main">
+
+    <!-- Topbar -->
+    <div class="topbar">
+      <div class="topbar-icon">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><circle cx="7" cy="7" r="5.5"/><path d="M7 4v4M7 10v.5"/></svg>
+      </div>
+      <span class="topbar-title">Prospect pipeline</span>
+      <div class="topbar-right">
+        <div class="view-toggle">
+          <button class="vt-btn active">
+            <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><rect x="1" y="1.5" width="3" height="9" rx="1"/><rect x="4.5" y="1.5" width="3" height="9" rx="1"/><rect x="8" y="1.5" width="3" height="9" rx="1"/></svg>
+            Kanban
+          </button>
+          <button class="vt-btn">
+            <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M1.5 3h9M1.5 6h9M1.5 9h9"/></svg>
+            List
+          </button>
+        </div>
+        <button class="tb-btn tb-ghost" onclick="openFilterModal()">
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><circle cx="6" cy="3.5" r="1.5"/><path d="M6 5v4"/><circle cx="3" cy="8.5" r="1.5"/><circle cx="9" cy="8.5" r="1.5"/></svg>
+          Filter
+        </button>
+        <button class="tb-btn tb-ghost" onclick="openSortModal()">
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M1.5 3h9M1.5 6h6M1.5 9h4"/></svg>
+          Sort
+        </button>
+        <button class="tb-btn tb-purple" onclick="openAddProspectModal()">
+          <svg viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="1.4" stroke-linecap="round"><path d="M6 1v10M1 6h10"/></svg>
+          Add prospect
+        </button>
+      </div>
+    </div>
+
+    <!-- Pipeline summary strip -->
+    <div class="pipeline-strip">
+      <div class="ps-item"><div class="ps-value">28</div><div class="ps-label">Prospects</div></div>
+      <div class="ps-item"><div class="ps-value" style="color:var(--purple)">$1.84M</div><div class="ps-label">Pipeline value</div></div>
+      <div class="ps-item"><div class="ps-value" style="color:var(--green)">$200k</div><div class="ps-label">Won this year</div></div>
+      <div class="ps-item"><div class="ps-value" style="color:var(--amber)">6</div><div class="ps-label">Due this week</div></div>
+      <div class="ps-item"><div class="ps-value" style="color:var(--rose)">3</div><div class="ps-label">Overdue</div></div>
+      <div class="ps-filter-wrap">
+        <span class="ps-filter-label">Officer:</span>
+        <select class="ps-filter-select" id="officerFilter" onchange="applyFilters()"><option value="">All officers</option><option value="Sarah Reynolds">Sarah Reynolds</option><option value="Mark Collins">Mark Collins</option></select>
+        <span class="ps-filter-label">Campaign:</span>
+        <select class="ps-filter-select" id="campaignFilter" onchange="applyFilters()"><option value="">All campaigns</option><option value="CMA 2026">CMA 2026</option><option value="Cathedral Capital">Cathedral Capital</option></select>
+      </div>
+    </div>
+
+    <!-- ══ BOARD + DRAWER ══ -->
+    <div style="display:flex;flex:1;overflow:hidden">
+
+      <!-- Kanban board -->
+      <div class="board-wrap" id="board">
+
+        <!-- IDENTIFICATION -->
+        <div class="stage-col col-id" data-stage="0" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+          <div class="stage-header">
+            <div class="stage-dot"></div>
+            <div class="stage-name">Identification</div>
+            <div class="stage-count">8</div>
+            <div class="stage-value">$275k</div>
+          </div>
+          <div class="cards-area">
+
+            <div class="prospect-card priority" style="animation-delay:.05s" draggable="true" ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)" onclick="openDrawer('obrien')">
+              <div class="pc-top">
+                <div class="pc-avatar" style="background:#EDE9FE;color:#7C3AED">WC</div>
+                <div class="pc-info">
+                  <div class="pc-name">William & Anne Carter</div>
+                  <div class="pc-org">St. Anthony's Parish</div>
+                </div>
+                <div class="pc-ask">$15k</div>
+              </div>
+              <div class="pc-tags">
+                <span class="pc-tag tag-major">Major prospect</span>
+                <span class="pc-tag tag-parish">Parish leader</span>
+              </div>
+              <div class="pc-meta">
+                <span class="pc-meta-item">
+                  <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><circle cx="5" cy="5" r="3.5"/><path d="M5 3v2.5l1.5 1.5"/></svg>
+                  Added 4 days ago
+                </span>
+              </div>
+              <div class="pc-footer">
+                <div class="pc-officer">
+                  <div class="pc-officer-avatar" style="background:var(--blue)">SR</div>
+                  Sarah Reynolds
+                </div>
+                <div class="pc-days days-fresh">New</div>
+              </div>
+            </div>
+
+            <div class="prospect-card" style="animation-delay:.08s" draggable="true" ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)" onclick="openDrawer('walsh')">
+              <div class="pc-top">
+                <div class="pc-avatar" style="background:#F3F4F6;color:#374151">CW</div>
+                <div class="pc-info">
+                  <div class="pc-name">Catherine Walsh</div>
+                  <div class="pc-org">Diocese Board Member</div>
+                </div>
+                <div class="pc-ask">$50k</div>
+              </div>
+              <div class="pc-tags">
+                <span class="pc-tag tag-board">Board member</span>
+                <span class="pc-tag tag-major">Major prospect</span>
+              </div>
+              <div class="pc-meta">
+                <span class="pc-meta-item due-today">
+                  <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><circle cx="5" cy="5" r="3.5"/><path d="M5 3v2.5l1.5 1.5"/></svg>
+                  Research due today
+                </span>
+              </div>
+              <div class="pc-ai">
+                <div class="pc-ai-text">Guru AI: <strong>Wealth score 82.</strong> Gave $42k lifetime. No contact in 132 days — high urgency to re-engage.</div>
+              </div>
+              <div class="pc-footer">
+                <div class="pc-officer">
+                  <div class="pc-officer-avatar" style="background:#7C3AED">MC</div>
+                  Mark Collins
+                </div>
+                <div class="pc-days days-warn">4d in stage</div>
+              </div>
+            </div>
+
+          </div>
+          <button class="add-card-btn" onclick="openAddProspectModal(0)">
+            <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M6.5 2v9M2 6.5h9"/></svg>
+            Add prospect
+          </button>
+        </div>
+
+        <!-- CULTIVATION -->
+        <div class="stage-col col-cul" data-stage="1" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+          <div class="stage-header">
+            <div class="stage-dot"></div>
+            <div class="stage-name">Cultivation</div>
+            <div class="stage-count">9</div>
+            <div class="stage-value">$510k</div>
+          </div>
+          <div class="cards-area">
+
+            <div class="prospect-card hot" style="animation-delay:.06s" draggable="true" ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)" onclick="openDrawer('grant')">
+              <div class="pc-top">
+                <div class="pc-avatar" style="background:#DBEAFE;color:#1D4ED8">MG</div>
+                <div class="pc-info">
+                  <div class="pc-name">Michael & Susan Grant</div>
+                  <div class="pc-org">Major donor since 2015</div>
+                </div>
+                <div class="pc-ask">$25k</div>
+              </div>
+              <div class="pc-tags">
+                <span class="pc-tag tag-hot">Hot prospect</span>
+                <span class="pc-tag tag-recurring">Recurring giver</span>
+              </div>
+              <div class="pc-meta">
+                <span class="pc-meta-item">
+                  <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><rect x="1" y="1.5" width="8" height="7" rx="1.2"/><path d="M1 4h8"/><path d="M3 1.5v2M7 1.5v2"/></svg>
+                  Lunch meeting Apr 12
+                </span>
+              </div>
+              <div class="pc-note">"Mentioned Cathedral project at Mass last week — seemed genuinely interested." — SR, Apr 1</div>
+              <div class="pc-footer">
+                <div class="pc-officer"><div class="pc-officer-avatar" style="background:var(--blue)">SR</div>Sarah Reynolds</div>
+                <div class="pc-days days-ok">12d in stage</div>
+              </div>
+            </div>
+
+          </div>
+          <button class="add-card-btn" onclick="openAddProspectModal(1)">
+            <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M6.5 2v9M2 6.5h9"/></svg>
+            Add prospect
+          </button>
+        </div>
+
+        <!-- SOLICITATION -->
+        <div class="stage-col col-sol" data-stage="2" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+          <div class="stage-header">
+            <div class="stage-dot"></div>
+            <div class="stage-name">Solicitation</div>
+            <div class="stage-count">6</div>
+            <div class="stage-value">$340k</div>
+          </div>
+          <div class="cards-area">
+
+            <div class="prospect-card hot" style="animation-delay:.07s" draggable="true" ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)" onclick="openDrawer('obrien')">
+              <div class="pc-top">
+                <div class="pc-avatar" style="background:#EDE9FE;color:#7C3AED">JO</div>
+                <div class="pc-info">
+                  <div class="pc-name">James & Patricia O'Brien</div>
+                  <div class="pc-org">Cathedral benefactor</div>
+                </div>
+                <div class="pc-ask" style="color:var(--amber)">$25k</div>
+              </div>
+              <div class="pc-tags">
+                <span class="pc-tag tag-hot">Ask today</span>
+                <span class="pc-tag tag-major">Major donor</span>
+              </div>
+              <div class="pc-meta">
+                <span class="pc-meta-item due-today">
+                  <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><circle cx="5" cy="5" r="3.5"/><path d="M5 3v2.5l1.5 1.5"/></svg>
+                  Call scheduled 2:00 PM today
+                </span>
+              </div>
+              <div class="pc-ai">
+                <div class="pc-ai-text">Guru AI: <strong>Propensity score 95.</strong> Best ask window: Q2 before capital campaign launch.</div>
+              </div>
+              <div class="pc-footer">
+                <div class="pc-officer"><div class="pc-officer-avatar" style="background:var(--blue)">SR</div>Sarah Reynolds</div>
+                <div class="pc-days days-warn">2d in stage</div>
+              </div>
+            </div>
+
+          </div>
+          <button class="add-card-btn" onclick="openAddProspectModal(2)">
+            <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M6.5 2v9M2 6.5h9"/></svg>
+            Add prospect
+          </button>
+        </div>
+
+        <!-- STEWARDSHIP -->
+        <div class="stage-col col-stew" data-stage="3" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+          <div class="stage-header">
+            <div class="stage-dot"></div>
+            <div class="stage-name">Stewardship</div>
+            <div class="stage-count">4</div>
+            <div class="stage-value">$218k</div>
+          </div>
+          <div class="cards-area">
+
+            <div class="prospect-card priority" style="animation-delay:.08s" draggable="true" ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)" onclick="openDrawer('sullivan')">
+              <div class="pc-top">
+                <div class="pc-avatar" style="background:#DBEAFE;color:#1D4ED8">MS</div>
+                <div class="pc-info">
+                  <div class="pc-name">Margaret Sullivan</div>
+                  <div class="pc-org">St. Michael's · $84k lifetime</div>
+                </div>
+                <div class="pc-ask">$10k</div>
+              </div>
+              <div class="pc-tags">
+                <span class="pc-tag tag-major">Major donor</span>
+                <span class="pc-tag tag-recurring">Recurring</span>
+              </div>
+              <div class="pc-ai">
+                <div class="pc-ai-text">Guru AI: <strong>Q3 upgrade ask optimal timing.</strong> Cathedral interest noted.</div>
+              </div>
+              <div class="pc-footer">
+                <div class="pc-officer"><div class="pc-officer-avatar" style="background:var(--blue)">SR</div>Sarah Reynolds</div>
+                <div class="pc-days days-late">22d in stage</div>
+              </div>
+            </div>
+
+          </div>
+          <button class="add-card-btn" onclick="openAddProspectModal(3)">
+            <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M6.5 2v9M2 6.5h9"/></svg>
+            Add prospect
+          </button>
+        </div>
+
+        <!-- CLOSED / WON -->
+        <div class="stage-col col-close" data-stage="4" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+          <div class="stage-header">
+            <div class="stage-dot"></div>
+            <div class="stage-name">Closed · Won</div>
+            <div class="stage-count">1</div>
+            <div class="stage-value">$100k</div>
+          </div>
+          <div class="cards-area">
+
+            <div class="prospect-card won" style="animation-delay:.09s" draggable="true" ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)">
+              <div class="pc-top">
+                <div class="pc-avatar" style="background:#DCFCE7;color:#15803D">MF</div>
+                <div class="pc-info">
+                  <div class="pc-name">The Morrison Foundation</div>
+                  <div class="pc-org">Corporate matching gift</div>
+                </div>
+                <div class="pc-ask" style="color:var(--green)">$100k</div>
+              </div>
+              <div class="pc-tags">
+                <span class="pc-tag" style="background:var(--green-light);color:var(--green)">Gift received ✓</span>
+              </div>
+              <div class="pc-footer">
+                <div class="pc-officer"><div class="pc-officer-avatar" style="background:var(--blue)">SR</div>Sarah Reynolds</div>
+                <div class="pc-days days-won">Won ✓</div>
+              </div>
+            </div>
+
+          </div>
+          <button class="add-card-btn" onclick="openAddProspectModal(4)">
+            <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M6.5 2v9M2 6.5h9"/></svg>
+            Record a win
+          </button>
+        </div>
+
+      </div><!-- /board-wrap -->
+
+      <!-- ══ DETAIL DRAWER ══ -->
+      <div class="detail-drawer hidden" id="drawer">
+        <div class="drawer-header">
+          <div class="drawer-avatar" id="d-avatar" style="background:#EDE9FE;color:#7C3AED">JO</div>
+          <div>
+            <div class="drawer-name" id="d-name">James & Patricia O'Brien</div>
+            <div class="drawer-org" id="d-org">Cathedral benefactor · $95k lifetime</div>
+          </div>
+          <div class="drawer-close" onclick="closeDrawer()">
+            <svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 2l7 7M9 2l-7 7"/></svg>
+          </div>
+        </div>
+
+        <!-- Move stage -->
+        <div class="drawer-section">
+          <div class="drawer-sec-title">Pipeline stage</div>
+          <div class="stage-selector">
+            <div class="stage-option" onclick="selectStage(this, 0)">
+              <div class="stage-opt-dot" style="background:#0756a5"></div>
+              <span class="stage-opt-name">Identification</span>
+            </div>
+            <div class="stage-option" onclick="selectStage(this, 1)">
+              <div class="stage-opt-dot" style="background:#059669"></div>
+              <span class="stage-opt-name">Cultivation</span>
+            </div>
+            <div class="stage-option current" onclick="selectStage(this, 2)">
+              <div class="stage-opt-dot" style="background:#D97706"></div>
+              <span class="stage-opt-name">Solicitation</span>
+              <span class="stage-opt-check">✓</span>
+            </div>
+            <div class="stage-option" onclick="selectStage(this, 3)">
+              <div class="stage-opt-dot" style="background:#15803D"></div>
+              <span class="stage-opt-name">Stewardship</span>
+            </div>
+            <div class="stage-option" onclick="selectStage(this, 4)">
+              <div class="stage-opt-dot" style="background:#22C55E"></div>
+              <span class="stage-opt-name">Closed / Won</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Key info -->
+        <div class="drawer-section">
+          <div class="drawer-sec-title">Key metrics <span class="drawer-edit" onclick="toggleEditMode()">Edit</span></div>
+          <div class="info-grid" id="infoGrid">
+            <div class="info-item"><div class="info-label">Ask amount</div><div class="info-value purple">$25,000</div></div>
+            <div class="info-item"><div class="info-label">Lifetime giving</div><div class="info-value green">$95,000</div></div>
+            <div class="info-item"><div class="info-label">AI score</div><div class="info-value purple">95 / 100</div></div>
+            <div class="info-item"><div class="info-label">Days in stage</div><div class="info-value">2</div></div>
+          </div>
+        </div>
+
+        <!-- Contact -->
+        <div class="drawer-section">
+          <div class="drawer-sec-title">Contact</div>
+          <div class="contact-list">
+            <div class="contact-row">
+              <div class="contact-icon"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><rect x="1.5" y="2" width="9" height="8" rx="1.2"/><path d="M1.5 5l4.5 3 4.5-3"/></svg></div>
+              <span class="contact-val">james.obrien@cathedral.org</span>
+            </div>
+            <div class="contact-row">
+              <div class="contact-icon"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M2 2.5s1.2-.8 2 .8l.8 1.6s.4.8-.4 1.6l-.4.4s1.6 2.4 4 3.6l.4-.4s.8-.8 1.6-.4l1.6.8s1.6.8.8 2c0 0-1.2 2-4 .8S1.6 10 .8 7.6 2 2.5 2 2.5z"/></svg></div>
+              <span class="contact-val">(727) 555-0218</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Activity timeline -->
+        <div class="drawer-section">
+          <div class="drawer-sec-title">Contact history <span class="drawer-edit" onclick="openAddActivityModal()">Add</span></div>
+          <div class="timeline" id="timeline">
+            <div class="tl-item">
+              <div class="tl-dot tl-call"><svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M2 2.5s1-.7 1.7.7l.7 1.4s.3.7-.3 1.3l-.4.4s1.4 2 3.4 3l.3-.3s.7-.7 1.3-.4l1.4.7s1.3.7.7 1.7c0 0-1 1.7-3.4.7S1.4 8.6.7 6.6 2 2.5 2 2.5z"/></svg></div>
+              <div class="tl-body">
+                <div class="tl-text"><strong>Cultivation call</strong> — Discussed Cathedral campaign interest. Patricia mentioned legacy giving possibilities.</div>
+                <div class="tl-date">Mar 28, 2026 · Sarah Reynolds</div>
+              </div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-dot tl-email"><svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><rect x="1" y="2" width="8" height="6" rx="1"/><path d="M1 3.5l4 2.5 4-2.5"/></svg></div>
+              <div class="tl-body">
+                <div class="tl-text"><strong>Proposal email sent</strong> — Cathedral Capital Fund case for support with $25k ask letter attached.</div>
+                <div class="tl-date">Apr 1, 2026 · Sarah Reynolds</div>
+              </div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-dot tl-note"><svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M2 2h6v6H2z"/><path d="M3 4.5h4M3 6h2"/></svg></div>
+              <div class="tl-body">
+                <div class="tl-text"><strong>Call scheduled</strong> — 2:00 PM today to follow up on proposal.</div>
+                <div class="tl-date">Apr 3, 2026 · Today</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Next action -->
+        <div class="drawer-section">
+          <div class="drawer-sec-title">Next action</div>
+          <div class="next-action-wrap">
+            <textarea class="na-field" id="naField" rows="2" placeholder="What's the next step?">Follow up after 2PM call — confirm pledge or schedule in-person meeting with Bishop</textarea>
+            <div class="na-row">
+              <input class="na-date" id="naDate" type="date" value="2026-04-07">
+              <button class="na-save" onclick="saveNextAction()">Save action</button>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /drawer -->
+
+    </div>
+  </div>
+
+  <!-- ══ MODALS ══ -->
+
+  <!-- Add Prospect Modal - Complete Prospect Management Form -->
+  <div class="modal-overlay" id="addProspectModal" onclick="if(event.target.id==='addProspectModal') closeAddProspectModal()">
+    <div class="prospect-modal-container" onclick="event.stopPropagation()">
+      <div class="prospect-modal-header">
+        <button class="prospect-modal-close" onclick="closeAddProspectModal()">×</button>
+        <h2 class="prospect-modal-title">✨ Create New Prospect</h2>
+        <p class="prospect-modal-desc">Build a comprehensive prospect profile for pipeline management</p>
+      </div>
+
+      <div class="prospect-modal-tabs">
+        <div class="prospect-form-tab active" onclick="switchProspectTab('basics', this)">📋 Basics</div>
+        <div class="prospect-form-tab" onclick="switchProspectTab('qualification', this)">⭐ Qualification</div>
+        <div class="prospect-form-tab" onclick="switchProspectTab('pipeline', this)">📊 Pipeline</div>
+        <div class="prospect-form-tab" onclick="switchProspectTab('engagement', this)">💬 Engagement</div>
+        <div class="prospect-form-tab" onclick="switchProspectTab('relationships', this)">🤝 Relationships</div>
+        <div class="prospect-form-tab" onclick="switchProspectTab('review', this)">✅ Review</div>
+      </div>
+
+      <div class="prospect-modal-body">
+        <!-- TAB 1: BASICS -->
+        <div class="prospect-form-section active" id="section-basics">
+          <div class="prospect-section-title">👤 Identity & Core Details</div>
+          <div class="prospect-form-grid">
+            <div class="form-group">
+              <label class="form-label">Prospect ID</label>
+              <input type="text" class="form-input" placeholder="Auto-generated" id="prospect-id" value="PROD-" readonly>
+            </div>
+          </div>
+
+          <div class="prospect-form-grid">
+            <div class="form-group">
+              <label class="form-label required">First Name</label>
+              <input type="text" class="form-input" placeholder="John" id="first-name" onchange="generateAutoID()">
+            </div>
+            <div class="form-group">
+              <label class="form-label required">Last Name</label>
+              <input type="text" class="form-input" placeholder="Doe" id="last-name" onchange="generateAutoID()">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Preferred Name</label>
+              <input type="text" class="form-input" placeholder="Optional nickname">
+            </div>
+          </div>
+
+          <div class="prospect-form-grid">
+            <div class="form-group">
+              <label class="form-label required">Email Address</label>
+              <input type="email" class="form-input" placeholder="john@example.com" id="email">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Mobile Number</label>
+              <input type="tel" class="form-input" placeholder="(727) 555-0142">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Alternate Contact</label>
+              <input type="tel" class="form-input" placeholder="Alternate number">
+            </div>
+          </div>
+
+          <div class="prospect-form-grid">
+            <div class="form-group">
+              <label class="form-label required">Parish/Diocese</label>
+              <input type="text" class="form-input" placeholder="Parish or Diocese name">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Role</label>
+              <input type="text" class="form-input" placeholder="Parish leader, Board member, etc.">
+            </div>
+          </div>
+
+          <div class="prospect-section-title">📍 Address & Location</div>
+          <div class="prospect-form-grid">
+            <div class="form-group" style="grid-column: 1 / -1">
+              <label class="form-label">Full Address</label>
+              <input type="text" class="form-input" placeholder="Street address">
+            </div>
+            <div class="form-group">
+              <label class="form-label">City</label>
+              <input type="text" class="form-input" placeholder="City">
+            </div>
+            <div class="form-group">
+              <label class="form-label">State / Province</label>
+              <input type="text" class="form-input" placeholder="State">
+            </div>
+            <div class="form-group">
+              <label class="form-label">ZIP / Postal Code</label>
+              <input type="text" class="form-input" placeholder="12345">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Country</label>
+              <input type="text" class="form-input" placeholder="Country">
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 2: QUALIFICATION -->
+        <div class="prospect-form-section" id="section-qualification">
+          <div class="prospect-section-title">🎯 Qualification & Lead Scoring</div>
+          <div class="prospect-form-grid">
+            <div class="form-group">
+              <label class="form-label">Lead Score</label>
+              <div class="prospect-range-slider">
+                <input type="range" class="prospect-range-input" min="0" max="100" value="50" id="lead-score" oninput="updateLeadScore()">
+                <div class="prospect-range-value"><span id="score-display">50</span>/100</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="prospect-form-grid">
+            <div class="form-group">
+              <label class="form-label">Qualification Status</label>
+              <select class="form-select" onchange="updateAutoTags()">
+                <option value="">Select status</option>
+                <option value="cold">❄️ Cold</option>
+                <option value="warm">🔶 Warm</option>
+                <option value="hot">🔥 Hot</option>
+                <option value="disqualified">🚫 Disqualified</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Source</label>
+              <select class="form-select">
+                <option value="">Select source</option>
+                <option value="referral">Referral</option>
+                <option value="event">Event Attendance</option>
+                <option value="website">Website</option>
+                <option value="campaign">Campaign</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Source Details</label>
+              <input type="text" class="form-input" placeholder="Who referred you? Which event?">
+            </div>
+          </div>
+
+          <div class="prospect-form-grid">
+            <div class="form-group">
+              <label class="form-label">Assigned To (Owner)</label>
+              <select class="form-select">
+                <option value="">Select team member</option>
+                <option value="sarah">Sarah Reynolds</option>
+                <option value="john">John Smith</option>
+                <option value="maria">Maria Garcia</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Territory / Region</label>
+              <select class="form-select">
+                <option value="">Select region</option>
+                <option value="northeast">Northeast</option>
+                <option value="midwest">Midwest</option>
+                <option value="south">South</option>
+                <option value="west">West</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="prospect-section-title">🏷️ Tags & Segmentation</div>
+          <div class="form-group">
+            <label class="form-label">Add Tags</label>
+            <div class="prospect-tags-container" id="tags-container">
+              <input type="text" class="prospect-tag-input" placeholder="Type tag and press Enter..." id="tag-input" onkeydown="handleTagInput(event)">
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 3: PIPELINE -->
+        <div class="prospect-form-section" id="section-pipeline">
+          <div class="prospect-section-title">🚀 Pipeline & Opportunity Intelligence</div>
+          <div class="prospect-form-grid">
+            <div class="form-group">
+              <label class="form-label">Current Pipeline Stage</label>
+              <select class="form-select" id="pipeline-stage">
+                <option value="">Select stage</option>
+                <option value="identification">🔍 Identification</option>
+                <option value="qualification">✓ Qualification</option>
+                <option value="cultivation">🌱 Cultivation</option>
+                <option value="solicitation">💼 Solicitation</option>
+                <option value="stewardship">🤝 Stewardship</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Estimated Giving Capacity</label>
+              <select class="form-select" id="capacity-tier" onchange="updateAutoTags()">
+                <option value="">Select bracket</option>
+                <option value="major">💎 Major Donor ($25K+)</option>
+                <option value="mid">📈 Mid-level ($5K-$25K)</option>
+                <option value="annual">📊 Annual Fund ($1K-$5K)</option>
+                <option value="emerging">⭐ Emerging ($0-$1K)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="prospect-form-grid">
+            <div class="form-group">
+              <label class="form-label">Potential Donation Value</label>
+              <input type="number" class="form-input" placeholder="$50,000" step="1000">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Probability of Conversion</label>
+              <div class="prospect-range-slider">
+                <input type="range" class="prospect-range-input" min="0" max="100" value="50" id="prob-value">
+                <div class="prospect-range-value"><span id="prob-display">50</span>%</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="prospect-form-grid">
+            <div class="form-group">
+              <label class="form-label">Expected Close Date</label>
+              <input type="date" class="form-input">
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 4: ENGAGEMENT -->
+        <div class="prospect-form-section" id="section-engagement">
+          <div class="prospect-section-title">💡 Engagement Insights</div>
+          <div class="prospect-form-grid">
+            <div class="form-group">
+              <label class="form-label">Preferred Communication Channel</label>
+              <select class="form-select">
+                <option value="">Select channel</option>
+                <option value="call">📞 Call</option>
+                <option value="email">📧 Email</option>
+                <option value="whatsapp">💬 WhatsApp</option>
+                <option value="inperson">🤝 In-person Meeting</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Contact Frequency Preference</label>
+              <select class="form-select">
+                <option value="">Select frequency</option>
+                <option value="weekly">Weekly</option>
+                <option value="biweekly">Bi-weekly</option>
+                <option value="monthly">Monthly</option>
+                <option value="quarterly">Quarterly</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="prospect-form-grid">
+            <div class="form-group" style="grid-column: 1 / -1">
+              <label class="form-label">Interaction Summary / Notes</label>
+              <textarea class="form-textarea" placeholder="Document key insights from initial contact, interests, concerns, etc." style="resize:vertical;min-height:80px"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 5: RELATIONSHIPS -->
+        <div class="prospect-form-section" id="section-relationships">
+          <div class="prospect-section-title">🔗 Relationship Intelligence & Compliance</div>
+          <div id="relationships-container"></div>
+          <button class="prospect-btn prospect-btn-secondary" onclick="addRelationship()" style="margin-top:12px">+ Add Relationship</button>
+
+          <div class="prospect-section-title" style="margin-top:24px">💰 Financial & Compliance</div>
+          <div class="prospect-form-grid">
+            <div class="form-group">
+              <label class="form-label">Wealth Indicator / Capacity Tier</label>
+              <select class="form-select">
+                <option value="">Select tier</option>
+                <option value="ultra">💎💎💎 Ultra High ($500K+)</option>
+                <option value="high">💎💎 High ($100K-$500K)</option>
+                <option value="mid">💎 Mid ($25K-$100K)</option>
+                <option value="emerging">⭐ Emerging (Under $25K)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Past Giving History</label>
+              <input type="text" class="form-input" placeholder="If known, e.g., $5,000 last year">
+            </div>
+          </div>
+
+          <div class="prospect-form-grid">
+            <div class="form-group">
+              <label class="form-label">Compliance Flags</label>
+              <div style="display:flex;gap:8px;margin-top:6px">
+                <label style="display:flex;align-items:center;gap:6px"><input type="checkbox"> Restricted Donor</label>
+                <label style="display:flex;align-items:center;gap:6px"><input type="checkbox"> OFAC Check Needed</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 6: REVIEW -->
+        <div class="prospect-form-section" id="section-review">
+          <div class="prospect-section-title">🎉 Review & Confirm</div>
+          <div style="background:var(--blue-pale);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:16px">
+            <div style="font-size:12px;color:var(--text);line-height:1.6">
+              <p style="margin-bottom:8px"><strong>✓ Basics:</strong> Name, email, organization, location</p>
+              <p style="margin-bottom:8px"><strong>✓ Qualification:</strong> Lead score, status, source, owner</p>
+              <p style="margin-bottom:8px"><strong>✓ Pipeline:</strong> Stage, capacity, donation potential</p>
+              <p style="margin-bottom:8px"><strong>✓ Engagement:</strong> Communication preferences, notes</p>
+              <p style="margin-bottom:8px"><strong>✓ Relationships:</strong> Connected contacts, compliance</p>
+              <p><strong>✓ Ready to Save:</strong> Prospect will be added to pipeline</p>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">📝 Initial Activity Log (Optional)</label>
+            <textarea class="form-textarea" placeholder="E.g., Initial consultation call - Expressed interest in education programs" id="initial-activity" style="resize:vertical;min-height:80px"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="prospect-modal-footer">
+        <button class="prospect-btn prospect-btn-secondary" onclick="closeAddProspectModal()">✕ Cancel</button>
+        <div style="display:flex;gap:8px">
+          <button class="prospect-btn prospect-btn-secondary" onclick="previousProspectTab()" id="prevTabBtn" style="display:none">← Back</button>
+          <button class="prospect-btn prospect-btn-secondary" onclick="nextProspectTab()" id="nextTabBtn">Continue → </button>
+          <button class="prospect-btn prospect-btn-primary" onclick="saveNewProspect()" id="saveProspectBtn" style="display:none">✓ Save Prospect</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Activity Modal -->
+  <div class="modal-overlay" id="addActivityModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h2 class="modal-title">Add action item</h2>
+        <button class="modal-close" onclick="closeAddActivityModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Activity type</label>
+          <select class="form-select" id="activityType">
+            <option value="call">Call</option>
+            <option value="email">Email</option>
+            <option value="note">Note</option>
+            <option value="gift">Gift</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Description</label>
+          <textarea class="form-input" id="activityText" rows="3" placeholder="What happened or what's planned..."></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Date</label>
+          <input class="form-input" id="activityDate" type="date">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="closeAddActivityModal()">Cancel</button>
+        <button class="btn-primary" onclick="saveActivity()">Add activity</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filter Modal -->
+  <div class="modal-overlay" id="filterModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h2 class="modal-title">Filter prospects</h2>
+        <button class="modal-close" onclick="closeFilterModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Officer</label>
+          <select class="form-select" id="filterOfficer">
+            <option value="">All officers</option>
+            <option value="Sarah Reynolds">Sarah Reynolds</option>
+            <option value="Mark Collins">Mark Collins</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Campaign</label>
+          <select class="form-select" id="filterCampaign">
+            <option value="">All campaigns</option>
+            <option value="CMA 2026">CMA 2026</option>
+            <option value="Cathedral Capital">Cathedral Capital</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="closeFilterModal()">Cancel</button>
+        <button class="btn-primary" onclick="applyFilterModal()">Apply filters</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sort Modal -->
+  <div class="modal-overlay" id="sortModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h2 class="modal-title">Sort prospects</h2>
+        <button class="modal-close" onclick="closeSortModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Sort by</label>
+          <select class="form-select" id="sortBy">
+            <option value="name">Name (A-Z)</option>
+            <option value="ask">Ask amount (high to low)</option>
+            <option value="lifetime">Lifetime giving (high to low)</option>
+            <option value="recent">Recently added</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="closeSortModal()">Cancel</button>
+        <button class="btn-primary" onclick="applySort()">Apply sort</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const DONORS = {
+      obrien: { avatar: 'JO', bg: '#EDE9FE', tc: '#7C3AED', name: "James & Patricia O'Brien", org: "Cathedral benefactor · $95k lifetime", stage: 2, ask: '$25,000', lifetime: '$95,000', score: '95', days: '2', email: 'james.obrien@cathedral.org', phone: '(727) 555-0218', officer: 'Sarah Reynolds', history: [ { type:'call', text:'<strong>Cultivation call</strong> — Discussed Cathedral campaign. Patricia mentioned legacy giving.', date:'Mar 28, 2026' }, { type:'email', text:'<strong>Proposal sent</strong> — Cathedral Capital Fund $25k ask letter.', date:'Apr 1, 2026' }, { type:'note', text:'<strong>Call scheduled</strong> — 2:00 PM today.', date:'Apr 3, 2026' } ], next: "Follow up after 2PM call — confirm pledge or schedule in-person meeting", nextDate: '2026-04-07' },
+      walsh: { avatar: 'CW', bg: '#F3F4F6', tc: '#374151', name: "Catherine Walsh", org: "Diocese Board Member", stage: 0, ask: '$50,000', lifetime: '$120,000', score: '88', days: '4', email: 'catherine.walsh@diocese.org', phone: '(727) 555-0156', officer: 'Mark Collins', history: [ { type:'call', text:'<strong>Discovery call</strong> — Discussed board engagement and giving capacity.', date:'Mar 20, 2026' } ], next: "Schedule site visit and send impact report", nextDate: '2026-04-15' },
+      grant: { avatar: 'MG', bg: '#DBEAFE', tc: '#1D4ED8', name: "Michael & Susan Grant", org: "Major donor since 2015", stage: 1, ask: '$25,000', lifetime: '$68,000', score: '81', days: '12', email: 'mgrant@grantfamily.com', phone: '(813) 555-0334', officer: 'Sarah Reynolds', history: [ { type:'call', text:'<strong>Cultivation lunch</strong> — Discussed parish capital needs. Seemed engaged.', date:'Mar 22, 2026' }, { type:'note', text:'<strong>Note</strong> — Mentioned Cathedral project at Mass. Very positive reaction.', date:'Apr 1, 2026' } ], next: "Lunch meeting April 12 — bring impact report", nextDate: '2026-04-12' },
+      sullivan: { avatar: 'MS', bg: '#DBEAFE', tc: '#1D4ED8', name: "Margaret Sullivan", org: "St. Michael's Parish · $84k lifetime", stage: 3, ask: '$10,000', lifetime: '$84,250', score: '92', days: '22', email: 'margaret.sullivan@gmail.com', phone: '(727) 555-0142', officer: 'Sarah Reynolds', history: [ { type:'gift', text:'<strong>Gift received</strong> — $2,500 to Catholic Ministry Appeal.', date:'Mar 15, 2026' }, { type:'call', text:'<strong>Stewardship call</strong> — Thanked for gift. Mentioned Cathedral interest.', date:'Mar 16, 2026' } ], next: "Q3 major gift cultivation call — propose $10k Cathedral upgrade", nextDate: '2026-07-15' }
+    };
+
+    const TL_ICONS = {
+      call:  { cls:'tl-call',  svg:'<path d="M2 2.5s1-.7 1.7.7l.7 1.4s.3.7-.3 1.3l-.4.4s1.4 2 3.4 3l.3-.3s.7-.7 1.3-.4l1.4.7s1.3.7.7 1.7c0 0-1 1.7-3.4.7S1.4 8.6.7 6.6 2 2.5 2 2.5z"/>' },
+      email: { cls:'tl-email', svg:'<rect x="1" y="2" width="8" height="6" rx="1"/><path d="M1 3.5l4 2.5 4-2.5"/>' },
+      note:  { cls:'tl-note',  svg:'<path d="M2 2h6v6H2z"/><path d="M3 4.5h4M3 6h2"/>' },
+      gift:  { cls:'tl-gift',  svg:'<path d="M5 1v8M1.5 4.5h7M2.5 4.5C2.5 3 3.5 1 5 1s2.5 2 2.5 3.5"/>' },
+    };
+
+    const STAGE_NAMES = ['Identification','Cultivation','Solicitation','Stewardship','Closed / Won'];
+    let currentDrawerKey = null;
+    let draggedCard = null;
+
+    // Drag and drop handlers
+    function handleDragStart(e) {
+      draggedCard = e.currentTarget;
+      e.currentTarget.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+    }
+
+    function handleDragEnd(e) {
+      e.currentTarget.classList.remove('dragging');
+      document.querySelectorAll('.stage-col').forEach(col => col.classList.remove('drag-over'));
+    }
+
+    function handleDragOver(e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      e.currentTarget.classList.add('drag-over');
+    }
+
+    function handleDragLeave(e) {
+      e.currentTarget.classList.remove('drag-over');
+    }
+
+    function handleDrop(e) {
+      e.preventDefault();
+      e.currentTarget.classList.remove('drag-over');
+      if (draggedCard && e.currentTarget.classList.contains('stage-col')) {
+        e.currentTarget.querySelector('.cards-area').appendChild(draggedCard);
+        draggedCard.classList.remove('dragging');
+      }
+    }
+
+    // Drawer functions
+    function openDrawer(key) {
+      const d = DONORS[key] || DONORS.obrien;
+      currentDrawerKey = key;
+
+      document.getElementById('d-avatar').textContent = d.avatar;
+      document.getElementById('d-avatar').style.background = d.bg;
+      document.getElementById('d-avatar').style.color = d.tc;
+      document.getElementById('d-name').textContent = d.name;
+      document.getElementById('d-org').textContent = d.org;
+
+      document.querySelectorAll('.stage-option').forEach((el, i) => {
+        el.classList.toggle('current', i === d.stage);
+        el.innerHTML = el.innerHTML.replace(/✓/g, '');
+        if (i === d.stage) el.innerHTML += '<span class="stage-opt-check">✓</span>';
+      });
+
+      document.getElementById('infoGrid').innerHTML = `
+        <div class="info-item"><div class="info-label">Ask amount</div><div class="info-value purple">${d.ask}</div></div>
+        <div class="info-item"><div class="info-label">Lifetime giving</div><div class="info-value green">${d.lifetime}</div></div>
+        <div class="info-item"><div class="info-label">AI score</div><div class="info-value purple">${d.score} / 100</div></div>
+        <div class="info-item"><div class="info-label">Days in stage</div><div class="info-value">${d.days}</div></div>`;
+
+      document.querySelector('.contact-list').innerHTML = `
+        <div class="contact-row"><div class="contact-icon"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><rect x="1.5" y="2" width="9" height="8" rx="1.2"/><path d="M1.5 5l4.5 3 4.5-3"/></svg></div><span class="contact-val">${d.email}</span></div>
+        <div class="contact-row"><div class="contact-icon"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M2 2.5s1.2-.8 2 .8l.8 1.6s.4.8-.4 1.6l-.4.4s1.6 2.4 4 3.6l.4-.4s.8-.8 1.6-.4l1.6.8s1.6.8.8 2c0 0-1.2 2-4 .8S1.6 10 .8 7.6 2 2.5 2 2.5z"/></svg></div><span class="contact-val">${d.phone}</span></div>`;
+
+      document.getElementById('timeline').innerHTML = d.history.map(h => {
+        const ic = TL_ICONS[h.type];
+        return `<div class="tl-item"><div class="tl-dot ${ic.cls}"><svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round">${ic.svg}</svg></div><div class="tl-body"><div class="tl-text">${h.text}</div><div class="tl-date">${h.date}</div></div></div>`;
+      }).join('');
+
+      document.getElementById('naField').value = d.next;
+      document.getElementById('naDate').value = d.nextDate;
+
+      document.getElementById('drawer').classList.remove('hidden');
+    }
+
+    function closeDrawer() {
+      document.getElementById('drawer').classList.add('hidden');
+    }
+
+    function selectStage(el, stageIdx) {
+      document.querySelectorAll('.stage-option').forEach(o => {
+        o.classList.remove('current');
+        o.querySelectorAll('.stage-opt-check').forEach(c => c.remove());
+      });
+      el.classList.add('current');
+      const check = document.createElement('span');
+      check.className = 'stage-opt-check';
+      check.textContent = '✓';
+      el.appendChild(check);
+    }
+
+    function toggleEditMode() {
+      alert('Edit mode for metrics - enter your values');
+    }
+
+    function saveNextAction() {
+      alert('Next action saved successfully!');
+    }
+
+    // Modal functions
+    // ══ PROSPECT FORM - 6 TAB SYSTEM ══
+    let currentProspectTab = 'basics';
+    const prospectTabs = ['basics', 'qualification', 'pipeline', 'engagement', 'relationships', 'review'];
+    const prospectTags = [];
+    const prospectRelationships = [];
+
+    function openAddProspectModal(stage) {
+      currentProspectTab = 'basics';
+      resetProspectForm();
+      switchProspectTab('basics');
+      if (stage) document.getElementById('pipeline-stage').value = stage;
+      document.getElementById('addProspectModal').classList.add('active');
+      addRelationship();
+    }
+
+    function closeAddProspectModal() {
+      document.getElementById('addProspectModal').classList.remove('active');
+    }
+
+    function switchProspectTab(tabName, element) {
+      // Hide all sections
+      document.querySelectorAll('.prospect-form-section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.prospect-form-tab').forEach(t => t.classList.remove('active'));
+
+      // Show selected section
+      document.getElementById(`section-${tabName}`).classList.add('active');
+      if (element) element.classList.add('active');
+
+      currentProspectTab = tabName;
+      const currentIndex = prospectTabs.indexOf(tabName);
+
+      // Update button visibility
+      document.getElementById('prevTabBtn').style.display = currentIndex === 0 ? 'none' : 'block';
+      document.getElementById('nextTabBtn').style.display = currentIndex === prospectTabs.length - 1 ? 'none' : 'block';
+      document.getElementById('saveProspectBtn').style.display = currentIndex === prospectTabs.length - 1 ? 'block' : 'none';
+
+      document.querySelector('.prospect-modal-body').scrollTop = 0;
+    }
+
+    function nextProspectTab() {
+      const currentIndex = prospectTabs.indexOf(currentProspectTab);
+      if (currentIndex < prospectTabs.length - 1) {
+        const nextTab = prospectTabs[currentIndex + 1];
+        const tabElement = document.querySelector(`.prospect-form-tab:nth-child(${currentIndex + 2})`);
+        switchProspectTab(nextTab, tabElement);
+      }
+    }
+
+    function previousProspectTab() {
+      const currentIndex = prospectTabs.indexOf(currentProspectTab);
+      if (currentIndex > 0) {
+        const prevTab = prospectTabs[currentIndex - 1];
+        const tabElement = document.querySelector(`.prospect-form-tab:nth-child(${currentIndex})`);
+        switchProspectTab(prevTab, tabElement);
+      }
+    }
+
+    function generateAutoID() {
+      const first = document.getElementById('first-name').value.substring(0, 2).toUpperCase();
+      const last = document.getElementById('last-name').value.substring(0, 2).toUpperCase();
+      const timestamp = Math.random().toString(36).substring(7).toUpperCase();
+      document.getElementById('prospect-id').value = `PROD-${first}${last}-${timestamp}`;
+    }
+
+    function updateLeadScore() {
+      const score = document.getElementById('lead-score').value;
+      document.getElementById('score-display').textContent = score;
+    }
+
+    function updateAutoTags() {
+      const capacity = document.getElementById('capacity-tier').value;
+      if (capacity === 'major') addProspectTag('Major Prospect');
+      if (capacity === 'mid') addProspectTag('Mid-level Prospect');
+    }
+
+    function handleTagInput(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const input = e.target;
+        if (input.value.trim()) {
+          addProspectTag(input.value.trim());
+          input.value = '';
+        }
+      }
+    }
+
+    function addProspectTag(tagText) {
+      if (!prospectTags.includes(tagText)) {
+        prospectTags.push(tagText);
+        renderProspectTags();
+      }
+    }
+
+    function renderProspectTags() {
+      const container = document.getElementById('tags-container');
+      const input = container.querySelector('.prospect-tag-input');
+      container.innerHTML = '';
+
+      prospectTags.forEach(tag => {
+        const tagEl = document.createElement('div');
+        tagEl.className = 'prospect-tag-pill';
+        tagEl.innerHTML = `${tag} <span class="prospect-tag-remove" onclick="removeProspectTag('${tag}')">✕</span>`;
+        container.appendChild(tagEl);
+      });
+
+      container.appendChild(input);
+    }
+
+    function removeProspectTag(tag) {
+      prospectTags.splice(prospectTags.indexOf(tag), 1);
+      renderProspectTags();
+    }
+
+    function addRelationship() {
+      const rel = { id: Date.now(), name: '', type: '', org: '', influence: '' };
+      prospectRelationships.push(rel);
+      renderProspectRelationships();
+    }
+
+    function renderProspectRelationships() {
+      const container = document.getElementById('relationships-container');
+      container.innerHTML = prospectRelationships.map((rel, idx) => `
+        <div class="rel-card">
+          <div class="rel-header">
+            <div class="rel-title">Relationship ${idx + 1}</div>
+            <span class="rel-remove" onclick="removeProspectRelationship(${rel.id})">✕</span>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <input type="text" class="form-input" placeholder="Name" value="${rel.name}" onchange="updateProspectRel(${rel.id}, 'name', this.value)">
+            <select class="form-select" onchange="updateProspectRel(${rel.id}, 'type', this.value)">
+              <option value="">Type</option>
+              <option value="family">Family</option>
+              <option value="advisor">Advisor</option>
+              <option value="influencer">Influencer</option>
+              <option value="leader">Religious Leader</option>
+            </select>
+            <input type="text" class="form-input" placeholder="Organization" value="${rel.org}" onchange="updateProspectRel(${rel.id}, 'org', this.value)">
+            <select class="form-select" onchange="updateProspectRel(${rel.id}, 'influence', this.value)">
+              <option value="">Influence Level</option>
+              <option value="high">High</option>
+              <option value="medium">Medium</option>
+              <option value="low">Low</option>
+            </select>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function updateProspectRel(id, field, value) {
+      const rel = prospectRelationships.find(r => r.id === id);
+      if (rel) rel[field] = value;
+    }
+
+    function removeProspectRelationship(id) {
+      prospectRelationships.splice(prospectRelationships.findIndex(r => r.id === id), 1);
+      renderProspectRelationships();
+    }
+
+    function saveNewProspect() {
+      const firstName = document.getElementById('first-name').value.trim();
+      const lastName = document.getElementById('last-name').value.trim();
+      const email = document.getElementById('email').value.trim();
+
+      if (!firstName || !lastName || !email) {
+        showNotification('Please fill in required fields (First Name, Last Name, Email)', 'error');
+        return;
+      }
+
+      const fullName = `${firstName} ${lastName}`;
+      closeAddProspectModal();
+      showNotification(`✓ Prospect "${fullName}" created and added to pipeline!`, 'success');
+      resetProspectForm();
+    }
+
+    function resetProspectForm() {
+      prospectTags.length = 0;
+      prospectRelationships.length = 0;
+      document.querySelectorAll('.prospect-modal-body input, .prospect-modal-body select, .prospect-modal-body textarea').forEach(el => {
+        if (el.id !== 'prospect-id' && el.type !== 'checkbox' && el.type !== 'radio') {
+          el.value = '';
+        }
+      });
+      document.getElementById('prospect-id').value = 'PROD-';
+      document.getElementById('score-display').textContent = '50';
+      document.getElementById('lead-score').value = '50';
+      renderProspectTags();
+      renderProspectRelationships();
+    }
+
+    function showNotification(message, type = 'success') {
+      const notification = document.createElement('div');
+      notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 14px 18px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 500;
+        z-index: 2000;
+        animation: slideIn 0.3s ease;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+      `;
+
+      if (type === 'success') {
+        notification.style.background = 'var(--green)';
+        notification.style.color = 'white';
+      } else if (type === 'info') {
+        notification.style.background = 'var(--blue)';
+        notification.style.color = 'white';
+      } else if (type === 'error') {
+        notification.style.background = 'var(--rose)';
+        notification.style.color = 'white';
+      }
+
+      notification.textContent = message;
+      document.body.appendChild(notification);
+
+      setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => notification.remove(), 300);
+      }, 3500);
+    }
+
+    function openAddActivityModal() {
+      document.getElementById('activityDate').valueAsDate = new Date();
+      document.getElementById('addActivityModal').classList.add('active');
+    }
+
+    function closeAddActivityModal() {
+      document.getElementById('addActivityModal').classList.remove('active');
+    }
+
+    function saveActivity() {
+      alert('Activity added! (Demo - would appear in timeline)');
+      closeAddActivityModal();
+    }
+
+    function openFilterModal() {
+      document.getElementById('filterModal').classList.add('active');
+    }
+
+    function closeFilterModal() {
+      document.getElementById('filterModal').classList.remove('active');
+    }
+
+    function applyFilterModal() {
+      applyFilters();
+      closeFilterModal();
+    }
+
+    function applyFilters() {
+      alert('Filters applied! (Demo - filtering would work in real app)');
+    }
+
+    function openSortModal() {
+      document.getElementById('sortModal').classList.add('active');
+    }
+
+    function closeSortModal() {
+      document.getElementById('sortModal').classList.remove('active');
+    }
+
+    function applySort() {
+      alert('Sort applied! (Demo - sorting would work in real app)');
+      closeSortModal();
+    }
+
+    // Close modals on background click
+    document.querySelectorAll('.modal-overlay').forEach(modal => {
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          modal.classList.remove('active');
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>
