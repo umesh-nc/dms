@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GiveCentral Atlas — Men's Ignatian Retreat</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --navy:  #0E1E35; --navy2: #152844; --navy3: #1E3A5F;
+      --blue:  #2563EB; --bluel: #DBEAFE; --bluep: #EFF6FF;
+      --green: #15803D; --greenl:#DCFCE7;
+      --amber: #D97706; --amberl:#FEF3C7;
+      --rose:  #BE185D; --rosel: #FCE7F3;
+      --teal:  #0D9488; --teall: #CCFBF1;
+      --purp:  #7C3AED; --purpl: #EDE9FE;
+      --text:  #0F172A; --text2: #334155; --text3: #64748B;
+      --border:#E2E8F0; --surf:  #F8FAFC; --white: #FFFFFF;
+    }
+    html { font-size: 14px; -webkit-font-smoothing: antialiased; }
+    body { font-family: 'DM Sans', sans-serif; background: #F0F4F8; color: var(--text); display: flex; height: 100vh; overflow: hidden; }
+
+    /* ── SIDEBAR ── */
+    .sidebar { width: 220px; background: var(--navy); display: flex; flex-direction: column; flex-shrink: 0; height: 100vh; }
+    .sb-logo { padding: 18px 18px 14px; display: flex; align-items: center; gap: 9px; border-bottom: 1px solid rgba(255,255,255,.08); }
+    .sb-mark { width: 30px; height: 30px; background: var(--blue); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+    .sb-mark svg { width: 15px; height: 15px; }
+    .sb-name { font-family: 'DM Serif Display', serif; font-size: 15px; color: white; line-height: 1; }
+    .sb-sub  { font-size: 9px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.3); margin-top: 3px; }
+    .nav-group { padding: 10px 8px 0; }
+    .nav-label { font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.28); padding: 0 10px; margin-bottom: 4px; }
+    .nav-item  { display: flex; align-items: center; gap: 9px; padding: 8px 10px; border-radius: 7px; font-size: 12px; font-weight: 500; color: rgba(255,255,255,.55); cursor: pointer; transition: all .15s; margin-bottom: 1px; }
+    .nav-item:hover  { background: rgba(255,255,255,.07); color: rgba(255,255,255,.85); }
+    .nav-item.active { background: var(--purp); color: white; }
+    .nav-item svg    { width: 14px; height: 14px; flex-shrink: 0; }
+    .nav-badge { margin-left: auto; background: rgba(255,255,255,.15); color: rgba(255,255,255,.7); border-radius: 10px; padding: 1px 7px; font-size: 10px; font-weight: 600; }
+    .sb-user { margin-top: auto; padding: 12px; border-top: 1px solid rgba(255,255,255,.08); display: flex; align-items: center; gap: 9px; }
+    .u-av { width: 30px; height: 30px; border-radius: 50%; background: var(--blue); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: white; }
+
+    /* ── MAIN ── */
+    .main { flex: 1; min-width: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+    .topbar { background: white; border-bottom: 1px solid var(--border); padding: 0 24px; height: 52px; display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+    .tb-back { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--text3); cursor: pointer; }
+    .tb-back svg { width: 13px; height: 13px; }
+    .tb-sep  { width: 1px; height: 18px; background: var(--border); }
+    .tb-title { font-size: 15px; font-weight: 600; color: var(--text); }
+    .tb-right { margin-left: auto; display: flex; gap: 8px; }
+    .btn { padding: 6px 14px; border-radius: 7px; font-size: 12px; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .15s; display: flex; align-items: center; gap: 6px; border: 1px solid var(--border); background: none; color: var(--text2); white-space: nowrap; }
+    .btn:hover { background: var(--surf); }
+    .btn svg { width: 12px; height: 12px; }
+    .btn-primary { background: var(--purp); color: white; border: none; box-shadow: 0 1px 4px rgba(124,58,237,.3); }
+    .btn-primary:hover { background: #6D28D9; }
+    .btn-green { background: var(--green); color: white; border: none; }
+    .btn-green:hover { background: #126e31; }
+
+    /* ── CONTENT ── */
+    .content { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
+
+    /* ── HERO ── */
+    .retreat-hero { background: var(--navy); padding: 20px 24px 0; flex-shrink: 0; position: relative; overflow: hidden; }
+    .rh-bg { position: absolute; inset: 0; background: radial-gradient(circle at 85% 40%, rgba(124,58,237,.2) 0%,transparent 55%), radial-gradient(circle at 10% 80%, rgba(13,148,136,.1) 0%,transparent 50%); }
+    .rh-inner { position: relative; z-index: 1; display: flex; gap: 20px; align-items: flex-start; padding-bottom: 16px; }
+    .rh-text { flex: 1; }
+    .rh-eyebrow { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: rgba(255,255,255,.4); margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+    .rh-title { font-family: 'DM Serif Display', serif; font-size: 24px; color: white; letter-spacing: -.01em; margin-bottom: 6px; }
+    .rh-tagline { font-family: 'DM Serif Display', serif; font-style: italic; font-size: 14px; color: rgba(255,255,255,.5); margin-bottom: 14px; }
+    .rh-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+    .rh-chip { display: flex; align-items: center; gap: 5px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 20px; padding: 4px 11px; font-size: 11px; color: rgba(255,255,255,.7); }
+    .rh-chip svg { width: 10px; height: 10px; opacity: .6; }
+    .rh-stats { display: flex; gap: 0; background: rgba(0,0,0,.2); border-radius: 10px; overflow: hidden; flex-shrink: 0; }
+    .rhs { padding: 12px 16px; border-right: 1px solid rgba(255,255,255,.08); text-align: center; }
+    .rhs:last-child { border-right: none; }
+    .rhs-val { font-family: 'DM Serif Display', serif; font-size: 22px; color: white; line-height: 1; margin-bottom: 3px; }
+    .rhs-val.rose  { color: #FDA4AF; }
+    .rhs-val.amber { color: #FCD34D; }
+    .rhs-val.green { color: #86EFAC; }
+    .rhs-lbl { font-size: 9px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: rgba(255,255,255,.4); }
+    /* Capacity progress */
+    .cap-strip { position: relative; z-index: 1; background: rgba(0,0,0,.2); border-top: 1px solid rgba(255,255,255,.06); padding: 8px 24px; display: flex; align-items: center; gap: 14px; }
+    .cap-track { flex: 1; height: 5px; background: rgba(255,255,255,.1); border-radius: 3px; overflow: hidden; }
+    .cap-fill  { height: 100%; border-radius: 3px; background: #FDA4AF; }
+    .cap-text  { font-size: 11px; color: rgba(255,255,255,.5); white-space: nowrap; }
+    .cap-pct   { font-size: 11px; font-weight: 700; color: #FDA4AF; }
+
+    /* ── TAB BAR ── */
+    .tab-bar { background: white; border-bottom: 1px solid var(--border); padding: 0 24px; display: flex; flex-shrink: 0; }
+    .tab { padding: 13px 18px; font-size: 13px; font-weight: 500; color: var(--text3); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all .15s; display: flex; align-items: center; gap: 7px; white-space: nowrap; }
+    .tab:hover { color: var(--text2); }
+    .tab.active { color: var(--purp); border-bottom-color: var(--purp); font-weight: 600; }
+    .tab-count { background: var(--purpl); color: var(--purp); border-radius: 20px; padding: 1px 7px; font-size: 10px; font-weight: 700; }
+    .tab-warn  { background: var(--amberl); color: var(--amber); border-radius: 20px; padding: 1px 7px; font-size: 10px; font-weight: 700; }
+
+    /* ── TAB PANELS ── */
+    .tab-content { flex: 1; overflow-y: auto; }
+    .tab-panel { display: none; padding: 20px 24px 48px; }
+    .tab-panel.active { display: block; }
+
+    /* ── SHARED CARD ── */
+    .card { background: white; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 14px; }
+    .card-head { padding: 12px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+    .ch-icon { width: 26px; height: 26px; border-radius: 7px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .ch-icon svg { width: 12px; height: 12px; }
+    .ch-title { font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--text3); flex: 1; }
+    .card-body { padding: 16px 18px; }
+
+    /* ── ROOM GRID ── */
+    .floor-section { margin-bottom: 24px; }
+    .floor-label { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--text3); margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+    .fl-count { font-size: 11px; font-weight: 600; background: var(--surf); border: 1px solid var(--border); border-radius: 20px; padding: 1px 9px; color: var(--text2); font-style: normal; letter-spacing: 0; text-transform: none; }
+    .rooms-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+    .room-tile { border-radius: 11px; border: 1.5px solid var(--border); padding: 12px 12px 10px; cursor: pointer; transition: all .15s; position: relative; overflow: hidden; }
+    .room-tile:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(15,30,53,.1); }
+    .room-tile.occupied   { background: #F0FDF4; border-color: #BBF7D0; }
+    .room-tile.partial    { background: var(--amberl); border-color: #FDE68A; }
+    .room-tile.available  { background: white; }
+    .room-tile.accessible { border-style: dashed; border-color: var(--blue); }
+    .room-tile.selected   { outline: 3px solid var(--purp); outline-offset: 2px; }
+    .rt-number { font-size: 11px; font-weight: 700; color: var(--text3); margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between; }
+    .rt-type   { font-size: 9px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
+    .rt-type.single   { color: var(--blue); }
+    .rt-type.shared   { color: var(--purp); }
+    .rt-type.acc      { color: var(--teal); }
+    .rt-occupants { display: flex; flex-direction: column; gap: 3px; margin: 6px 0; min-height: 28px; }
+    .rt-occ-row { display: flex; align-items: center; gap: 5px; }
+    .rt-occ-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
+    .rt-occ-dot.empty { background: var(--border); }
+    .rt-occ-name { font-size: 10px; color: var(--text2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+    .rt-occ-name.empty-slot { color: var(--text3); font-style: italic; }
+    .rt-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 6px; }
+    .rt-bed   { font-size: 9px; color: var(--text3); }
+    .rt-badge { font-size: 9px; font-weight: 700; padding: 1px 6px; border-radius: 10px; }
+    .rtb-full  { background: var(--greenl); color: var(--green); }
+    .rtb-part  { background: var(--amberl); color: var(--amber); }
+    .rtb-open  { background: var(--surf); color: var(--text3); border: 1px solid var(--border); }
+    .rtb-acc   { background: var(--bluel); color: var(--blue); }
+
+    /* Room detail side panel */
+    .room-detail { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 18px; margin-top: 16px; }
+    .rd-head { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+    .rd-num { width: 44px; height: 44px; background: var(--purpl); border-radius: 11px; display: flex; align-items: center; justify-content: center; font-family: 'DM Serif Display', serif; font-size: 20px; color: var(--purp); flex-shrink: 0; }
+    .rd-info { flex: 1; }
+    .rd-title { font-size: 15px; font-weight: 600; color: var(--text); }
+    .rd-sub   { font-size: 12px; color: var(--text3); margin-top: 2px; }
+    .bed-slots { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+    .bed-slot  { border: 1.5px solid var(--border); border-radius: 9px; padding: 10px 12px; transition: all .12s; }
+    .bed-slot.filled { background: var(--greenl); border-color: #BBF7D0; }
+    .bed-slot.empty  { background: var(--surf); cursor: pointer; }
+    .bed-slot.empty:hover { background: var(--purpl); border-color: #DDD6FE; }
+    .bs-label { font-size: 9px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--text3); margin-bottom: 5px; }
+    .bs-name  { font-size: 13px; font-weight: 600; color: var(--text); }
+    .bs-sub   { font-size: 11px; color: var(--text3); margin-top: 2px; }
+    .bs-add   { font-size: 12px; color: var(--purp); font-style: italic; }
+
+    /* ── REGISTRATIONS TABLE ── */
+    .reg-table-wrap { background: white; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    .rt-table { width: 100%; border-collapse: collapse; }
+    .rt-table th { font-size: 10px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--text3); padding: 9px 14px; text-align: left; background: var(--surf); border-bottom: 1px solid var(--border); white-space: nowrap; }
+    .rt-table td { padding: 11px 14px; border-bottom: .5px solid var(--border); vertical-align: top; font-size: 12px; }
+    .rt-table tr:last-child td { border-bottom: none; }
+    .rt-table tr:hover td { background: var(--surf); cursor: pointer; }
+    .rtr-name { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+    .rtr-sub  { font-size: 11px; color: var(--text3); }
+    .pill { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 20px; white-space: nowrap; display: inline-flex; align-items: center; gap: 3px; }
+    .p-single  { background: var(--bluep); color: var(--blue); }
+    .p-shared  { background: var(--purpl); color: var(--purp); }
+    .p-acc     { background: var(--bluel); color: #1D4ED8; }
+    .p-gf      { background: var(--teall); color: var(--teal); }
+    .p-veg     { background: var(--greenl); color: var(--green); }
+    .p-allergy { background: var(--rosel); color: var(--rose); }
+    .p-paid    { background: var(--greenl); color: var(--green); }
+    .p-pending { background: var(--amberl); color: var(--amber); }
+    .p-mobility{ background: var(--bluel); color: var(--blue); }
+    .p-silent  { background: var(--purpl); color: var(--purp); }
+    .room-assigned { font-weight: 600; color: var(--purp); font-size: 12px; }
+    .room-unassigned { color: var(--rose); font-weight: 600; font-size: 12px; }
+
+    /* ── DIETARY SUMMARY ── */
+    .dietary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+    .diet-stat { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+    .ds-val { font-family: 'DM Serif Display', serif; font-size: 28px; color: var(--text); line-height: 1; margin-bottom: 4px; }
+    .ds-lbl { font-size: 11px; color: var(--text3); }
+    .ds-names { font-size: 11px; color: var(--text2); margin-top: 6px; line-height: 1.6; }
+
+    .meal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .meal-card { background: white; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    .mc-head { padding: 10px 14px; background: var(--navy); border-bottom: 1px solid rgba(255,255,255,.08); }
+    .mc-title { font-size: 12px; font-weight: 600; color: white; }
+    .mc-date  { font-size: 11px; color: rgba(255,255,255,.45); }
+    .mc-body  { padding: 0; }
+    .meal-row { display: flex; align-items: center; gap: 10px; padding: 9px 14px; border-bottom: .5px solid var(--border); }
+    .meal-row:last-child { border-bottom: none; }
+    .mr-meal  { font-size: 12px; font-weight: 500; color: var(--text); flex: 1; }
+    .mr-counts { display: flex; gap: 6px; }
+    .mr-count { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 20px; }
+
+    /* ── COMMUNICATIONS ── */
+    .comm-timeline { display: flex; flex-direction: column; gap: 0; }
+    .ct-item { display: flex; gap: 14px; padding: 14px 0; border-bottom: .5px solid var(--border); }
+    .ct-item:last-child { border-bottom: none; }
+    .ct-dot-wrap { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; padding-top: 3px; }
+    .ct-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .ct-line { width: 2px; flex: 1; background: var(--border); margin-top: 4px; min-height: 20px; }
+    .ct-item:last-child .ct-line { display: none; }
+    .ct-body  { flex: 1; }
+    .ct-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 3px; }
+    .ct-meta  { font-size: 11px; color: var(--text3); margin-bottom: 4px; }
+    .ct-prev  { font-size: 12px; color: var(--text2); background: var(--surf); border: 1px solid var(--border); border-radius: 7px; padding: 8px 12px; line-height: 1.6; font-style: italic; }
+    .ct-actions { display: flex; gap: 8px; margin-top: 8px; }
+    .cta-btn { padding: 5px 12px; border-radius: 7px; font-size: 11px; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .12s; }
+    .ctab-primary { background: var(--purp); color: white; border: none; }
+    .ctab-primary:hover { background: #6D28D9; }
+    .ctab-ghost { background: none; border: 1px solid var(--border); color: var(--text2); }
+    .ctab-ghost:hover { background: var(--surf); }
+
+    /* ── MODAL ── */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(15,30,53,.55); z-index: 200; display: none; align-items: center; justify-content: center; padding: 20px; }
+    .modal-overlay.show { display: flex; }
+    .modal { background: white; border-radius: 16px; width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,.2); }
+    .modal-head { padding: 20px 24px 14px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; }
+    .mh-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .mh-icon svg { width: 16px; height: 16px; }
+    .modal-title { font-family: 'DM Serif Display', serif; font-size: 19px; color: var(--text); flex: 1; }
+    .modal-close { width: 28px; height: 28px; border: 1px solid var(--border); border-radius: 7px; background: none; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .modal-close svg { width: 12px; height: 12px; color: var(--text3); }
+    .modal-body  { padding: 20px 24px; display: flex; flex-direction: column; gap: 14px; }
+    .form-row    { display: flex; flex-direction: column; gap: 5px; }
+    .form-label  { font-size: 12px; font-weight: 600; color: var(--text2); }
+    .form-label span { color: var(--rose); }
+    .form-input  { padding: 9px 12px; border: 1px solid var(--border); border-radius: 7px; font-size: 13px; font-family: 'DM Sans', sans-serif; color: var(--text); background: var(--surf); outline: none; width: 100%; }
+    .form-input:focus  { border-color: var(--purp); background: white; }
+    .form-select { padding: 9px 12px; border: 1px solid var(--border); border-radius: 7px; font-size: 13px; font-family: 'DM Sans', sans-serif; color: var(--text); background: var(--surf); outline: none; width: 100%; cursor: pointer; }
+    .form-select:focus { border-color: var(--purp); }
+    .form-row-2  { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .form-row-3  { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+    .form-hint   { font-size: 11px; color: var(--text3); }
+    .form-section{ font-size: 10px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--text3); padding: 8px 0 4px; border-bottom: 1px solid var(--border); }
+    .toggle-row  { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; background: var(--surf); border-radius: 8px; }
+    .toggle-lbl  { font-size: 13px; color: var(--text2); }
+    .toggle-sub  { font-size: 11px; color: var(--text3); margin-top: 1px; }
+    .toggle { width: 38px; height: 21px; border-radius: 12px; cursor: pointer; transition: background .2s; flex-shrink: 0; border: none; position: relative; }
+    .toggle.on  { background: var(--purp); }
+    .toggle.off { background: #CBD5E1; }
+    .toggle-thumb { position: absolute; top: 3px; width: 15px; height: 15px; background: white; border-radius: 50%; transition: left .2s; }
+    .toggle.on  .toggle-thumb { left: 20px; }
+    .toggle.off .toggle-thumb { left: 3px; }
+    .modal-foot { padding: 14px 24px; border-top: 1px solid var(--border); display: flex; gap: 10px; justify-content: flex-end; }
+
+    /* Legend */
+    .room-legend { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 14px; }
+    .rl-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text3); }
+    .rl-swatch { width: 14px; height: 14px; border-radius: 3px; flex-shrink: 0; }
+  </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sb-logo">
+    <div class="sb-mark"><svg viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7.5" stroke="white" stroke-width="1.5"/><path d="M5.5 9.5C6.5 11.5 9 13 9 13s2.5-1.5 3.5-3.5S12 5 9 5 4.5 7.5 5.5 9.5z" fill="white" fill-opacity=".9"/></svg></div>
+    <div><div class="sb-name">GiveCentral</div><div class="sb-sub">Atlas CRM</div></div>
+  </div>
+  <div class="nav-group">
+    <div class="nav-label">Main</div>
+    <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><rect x="1.5" y="1.5" width="4" height="4" rx="1.2"/><rect x="8.5" y="1.5" width="4" height="4" rx="1.2"/><rect x="1.5" y="8.5" width="4" height="4" rx="1.2"/><rect x="8.5" y="8.5" width="4" height="4" rx="1.2"/></svg>Dashboard</div>
+    <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="6" cy="4.5" r="3"/><path d="M1 13c0-2.8 2.2-5 5-5h1c2.8 0 5 2.2 5 5"/></svg>Donors</div>
+  </div>
+  <div class="nav-group" style="margin-top:8px">
+    <div class="nav-label">Community</div>
+    <div class="nav-item active"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><rect x="1.5" y="3" width="11" height="9" rx="1.5"/><path d="M1.5 6.5h11M5 3v2M9 3v2"/></svg>Events<span class="nav-badge">7</span></div>
+    <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="5" cy="4" r="2.5"/><circle cx="10" cy="5" r="2"/><path d="M1 12.5c0-2.2 1.8-4 4-4s4 1.8 4 4"/><path d="M10 9.5c1.4.4 2.5 1.6 2.5 3"/></svg>Volunteers</div>
+  </div>
+  <div class="sb-user">
+    <div class="u-av">SR</div>
+    <div><div style="font-size:12px;font-weight:500;color:rgba(255,255,255,.75)">Sarah Reynolds</div><div style="font-size:10px;color:rgba(255,255,255,.35)">Development Director</div></div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="tb-back"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M9 2L4 7l5 5"/></svg>All events</div>
+    <div class="tb-sep"></div>
+    <span class="tb-title">Men's Ignatian Retreat 2026</span>
+    <div class="tb-right">
+      <button class="btn"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M6 1v7M3 5.5l3 3 3-3"/><path d="M1.5 10.5h9"/></svg>Export roster</button>
+      <button class="btn btn-primary" onclick="openModal('register')">
+        <svg viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="1.4" stroke-linecap="round"><path d="M6 1v10M1 6h10"/></svg>
+        Register participant
+      </button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- Hero -->
+    <div class="retreat-hero">
+      <div class="rh-bg"></div>
+      <div class="rh-inner">
+        <div class="rh-text">
+          <div class="rh-eyebrow">
+            4-day silent retreat · Overnight
+            <span style="background:rgba(190,24,93,.3);color:#FDA4AF;border-radius:20px;padding:1px 9px;font-size:9px;font-weight:700">SOLD OUT · 6 on waitlist</span>
+          </div>
+          <div class="rh-title">Men's Ignatian Retreat 2026</div>
+          <div class="rh-tagline">"Be still and know that I am God." — Psalm 46:10</div>
+          <div class="rh-chips">
+            <div class="rh-chip"><svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><rect x="1" y="2" width="9" height="8" rx="1.2"/><path d="M1 5h9"/></svg>Aug 7–10, 2026 · 4 days / 3 nights</div>
+            <div class="rh-chip"><svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M5.5 1C4 1 3 2 3 3.5c0 2 2.5 5 2.5 5s2.5-3 2.5-5C8 2 7 1 5.5 1z"/></svg>Jesuit Retreat House, Parma OH</div>
+            <div class="rh-chip"><svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><circle cx="5.5" cy="4" r="2.5"/><path d="M1 10c0-2.5 2-4.5 4.5-4.5S10 7.5 10 10"/></svg>Director: Fr. Thomas McCarthy, SJ</div>
+            <div class="rh-chip"><svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M1.5 9.5l2-2 2 2 2-2.5 2 2.5"/></svg>$395/person · includes lodging &amp; meals</div>
+          </div>
+        </div>
+        <div class="rh-stats">
+          <div class="rhs"><div class="rhs-val">40</div><div class="rhs-lbl">Registered</div></div>
+          <div class="rhs"><div class="rhs-val">40</div><div class="rhs-lbl">Capacity</div></div>
+          <div class="rhs"><div class="rhs-val rose">6</div><div class="rhs-lbl">Waitlist</div></div>
+          <div class="rhs"><div class="rhs-val amber">2</div><div class="rhs-lbl">Unassigned</div></div>
+          <div class="rhs"><div class="rhs-val green">$15,800</div><div class="rhs-lbl">Revenue</div></div>
+        </div>
+      </div>
+      <div class="cap-strip">
+        <span class="cap-text">Capacity</span>
+        <div class="cap-track"><div class="cap-fill" style="width:100%"></div></div>
+        <span class="cap-pct">40 / 40 — Sold out</span>
+      </div>
+    </div>
+
+    <!-- Tab bar -->
+    <div class="tab-bar">
+      <div class="tab active" onclick="switchTab('rooms',this)">Room assignment <span class="tab-warn">2 unassigned</span></div>
+      <div class="tab" onclick="switchTab('registrations',this)">Registrations <span class="tab-count">40</span></div>
+      <div class="tab" onclick="switchTab('dietary',this)">Dietary &amp; accommodations <span class="tab-warn">8 flags</span></div>
+      <div class="tab" onclick="switchTab('communications',this)">Communications</div>
+    </div>
+
+    <div class="tab-content">
+
+      <!-- ── ROOMS TAB ── -->
+      <div class="tab-panel active" id="panel-rooms">
+
+        <div style="display:flex;gap:10px;align-items:center;margin-bottom:14px">
+          <div class="room-legend">
+            <div class="rl-item"><div class="rl-swatch" style="background:#F0FDF4;border:1px solid #BBF7D0"></div>Occupied (full)</div>
+            <div class="rl-item"><div class="rl-swatch" style="background:var(--amberl);border:1px solid #FDE68A"></div>Partially filled</div>
+            <div class="rl-item"><div class="rl-swatch" style="background:white;border:1px solid var(--border)"></div>Available</div>
+            <div class="rl-item"><div class="rl-swatch" style="background:white;border:2px dashed var(--blue)"></div>Accessible room</div>
+          </div>
+          <button class="btn btn-primary" style="margin-left:auto;font-size:11px" onclick="openModal('assign-room')">Assign room</button>
+        </div>
+
+        <div id="room-grid-container"></div>
+
+        <!-- Room detail panel -->
+        <div class="room-detail" id="room-detail" style="display:none">
+          <div class="rd-head">
+            <div class="rd-num" id="rd-num">101</div>
+            <div class="rd-info">
+              <div class="rd-title" id="rd-title">Room 101 — Single</div>
+              <div class="rd-sub"  id="rd-sub">Occupied · Ground floor · Standard</div>
+            </div>
+            <button class="btn" style="margin-left:auto;font-size:11px" onclick="document.getElementById('room-detail').style.display='none'">Close</button>
+            <button class="btn btn-primary" style="font-size:11px" onclick="openModal('assign-room')">Edit assignment</button>
+          </div>
+          <div class="bed-slots" id="bed-slots"></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div>
+              <div style="font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);margin-bottom:8px">Room notes</div>
+              <textarea style="width:100%;border:1px solid var(--border);border-radius:7px;padding:8px 10px;font-size:12px;font-family:'DM Sans',sans-serif;resize:none;min-height:64px;background:var(--surf);outline:none;color:var(--text)" placeholder="Special instructions, accessibility needs, notes for housekeeping…"></textarea>
+            </div>
+            <div>
+              <div style="font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);margin-bottom:8px">Occupant flags</div>
+              <div id="occ-flags" style="display:flex;flex-direction:column;gap:5px"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── REGISTRATIONS TAB ── -->
+      <div class="tab-panel" id="panel-registrations">
+        <div style="display:flex;gap:10px;align-items:center;margin-bottom:14px">
+          <input type="text" placeholder="Search participants…" style="padding:7px 12px;border:1px solid var(--border);border-radius:7px;font-size:12px;font-family:'DM Sans',sans-serif;outline:none;flex:1;max-width:320px" onfocus="this.style.borderColor='var(--purp)'" onblur="this.style.borderColor='var(--border)'">
+          <button class="btn" onclick="filterReg('all',this)" style="background:var(--navy);color:white;border-color:var(--navy)">All (40)</button>
+          <button class="btn" onclick="filterReg('paid',this)">Paid</button>
+          <button class="btn" onclick="filterReg('unassigned',this)">Unassigned rooms</button>
+          <button class="btn" onclick="filterReg('dietary',this)">Dietary needs</button>
+        </div>
+        <div class="reg-table-wrap">
+          <table class="rt-table">
+            <thead>
+              <tr>
+                <th>Participant</th>
+                <th>Room type</th>
+                <th>Room assigned</th>
+                <th>Dietary</th>
+                <th>Accommodations</th>
+                <th>Emergency contact</th>
+                <th>Payment</th>
+                <th>Retreat history</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="reg-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── DIETARY & ACCOMMODATIONS TAB ── -->
+      <div class="tab-panel" id="panel-dietary">
+
+        <!-- Summary -->
+        <div class="dietary-grid">
+          <div class="diet-stat">
+            <div class="ds-val" style="color:var(--teal)">4</div>
+            <div class="ds-lbl">Gluten-free</div>
+            <div class="ds-names">Thomas O'Brien, David Walsh,<br>Fr. McCarthy, Patrick Ryan</div>
+          </div>
+          <div class="diet-stat">
+            <div class="ds-val" style="color:var(--green)">2</div>
+            <div class="ds-lbl">Vegetarian</div>
+            <div class="ds-names">William Chen, Andrew Kim</div>
+          </div>
+          <div class="diet-stat">
+            <div class="ds-val" style="color:var(--rose)">1</div>
+            <div class="ds-lbl">Nut allergy (severe)</div>
+            <div class="ds-names">Michael Burns — epipen required</div>
+          </div>
+          <div class="diet-stat">
+            <div class="ds-val" style="color:var(--amber)">1</div>
+            <div class="ds-lbl">Diabetic — low sugar</div>
+            <div class="ds-names">Robert Walsh — medical diet</div>
+          </div>
+        </div>
+
+        <!-- Accommodations -->
+        <div class="card">
+          <div class="card-head">
+            <div class="ch-icon" style="background:var(--bluel)"><svg viewBox="0 0 12 12" fill="none" stroke="var(--blue)" stroke-width="1.3" stroke-linecap="round"><path d="M6 1C4.3 1 3 2.3 3 4c0 2.4 3 7 3 7s3-4.6 3-7C9 2.3 7.7 1 6 1z"/><circle cx="6" cy="4" r="1.2"/></svg></div>
+            <span class="ch-title">Physical accommodations</span>
+          </div>
+          <div class="card-body">
+            <table class="rt-table" style="margin:-4px">
+              <thead><tr><th>Participant</th><th>Need</th><th>Room assigned</th><th>Notes</th><th></th></tr></thead>
+              <tbody>
+                <tr><td><div class="rtr-name">James O'Brien</div></td><td><span class="pill p-mobility">Mobility — walker</span></td><td><span class="room-assigned">Room 110 (accessible)</span></td><td style="font-size:11px;color:var(--text3)">Ground floor, grab bars, wide doorway</td><td><button class="cta-btn ctab-ghost" style="padding:3px 9px;font-size:10px" onclick="openModal('edit-accommodation')">Edit</button></td></tr>
+                <tr><td><div class="rtr-name">Michael Burns</div></td><td><span class="pill p-allergy">Nut allergy — epipen</span></td><td><span class="room-assigned">Room 104</span></td><td style="font-size:11px;color:var(--text3)">Epipen location communicated to kitchen staff and Fr. McCarthy</td><td><button class="cta-btn ctab-ghost" style="padding:3px 9px;font-size:10px" onclick="openModal('edit-accommodation')">Edit</button></td></tr>
+                <tr><td><div class="rtr-name">Fr. Thomas McCarthy</div></td><td><span class="pill p-acc">Accessible bathroom</span></td><td><span class="room-assigned">Room 201 (accessible)</span></td><td style="font-size:11px;color:var(--text3)">Director's room — requires roll-in shower</td><td><button class="cta-btn ctab-ghost" style="padding:3px 9px;font-size:10px" onclick="openModal('edit-accommodation')">Edit</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Meal planning grid -->
+        <div class="card">
+          <div class="card-head">
+            <div class="ch-icon" style="background:var(--greenl)"><svg viewBox="0 0 12 12" fill="none" stroke="var(--green)" stroke-width="1.3" stroke-linecap="round"><path d="M3 1v4.5a2.5 2.5 0 005 0V1M5.5 1v10M5.5 8.5h3"/></svg></div>
+            <span class="ch-title">Meal planning — dietary summary per meal</span>
+          </div>
+          <div class="card-body">
+            <div class="meal-grid">
+              <div class="meal-card">
+                <div class="mc-head"><div class="mc-title">Day 1 — Friday Aug 7</div></div>
+                <div class="mc-body">
+                  <div class="meal-row"><span class="mr-meal">Dinner (arrival)</span><div class="mr-counts"><span class="mr-count" style="background:var(--surf);color:var(--text2);border:1px solid var(--border)">38 standard</span><span class="mr-count" style="background:var(--teall);color:var(--teal)">4 GF</span><span class="mr-count" style="background:var(--greenl);color:var(--green)">2 Veg</span></div></div>
+                </div>
+              </div>
+              <div class="meal-card">
+                <div class="mc-head"><div class="mc-title">Day 2 — Saturday Aug 8</div></div>
+                <div class="mc-body">
+                  <div class="meal-row"><span class="mr-meal">Breakfast</span><div class="mr-counts"><span class="mr-count" style="background:var(--surf);color:var(--text2);border:1px solid var(--border)">38 standard</span><span class="mr-count" style="background:var(--teall);color:var(--teal)">4 GF</span></div></div>
+                  <div class="meal-row"><span class="mr-meal">Lunch</span><div class="mr-counts"><span class="mr-count" style="background:var(--surf);color:var(--text2);border:1px solid var(--border)">38 standard</span><span class="mr-count" style="background:var(--teall);color:var(--teal)">4 GF</span><span class="mr-count" style="background:var(--greenl);color:var(--green)">2 Veg</span><span class="mr-count" style="background:var(--rosel);color:var(--rose)">1 NF</span></div></div>
+                  <div class="meal-row"><span class="mr-meal">Dinner</span><div class="mr-counts"><span class="mr-count" style="background:var(--surf);color:var(--text2);border:1px solid var(--border)">38 standard</span><span class="mr-count" style="background:var(--teall);color:var(--teal)">4 GF</span><span class="mr-count" style="background:var(--greenl);color:var(--green)">2 Veg</span></div></div>
+                </div>
+              </div>
+              <div class="meal-card">
+                <div class="mc-head"><div class="mc-title">Day 3 — Sunday Aug 9</div></div>
+                <div class="mc-body">
+                  <div class="meal-row"><span class="mr-meal">Breakfast</span><div class="mr-counts"><span class="mr-count" style="background:var(--surf);color:var(--text2);border:1px solid var(--border)">38 standard</span><span class="mr-count" style="background:var(--teall);color:var(--teal)">4 GF</span></div></div>
+                  <div class="meal-row"><span class="mr-meal">Lunch</span><div class="mr-counts"><span class="mr-count" style="background:var(--surf);color:var(--text2);border:1px solid var(--border)">38 standard</span><span class="mr-count" style="background:var(--teall);color:var(--teal)">4 GF</span><span class="mr-count" style="background:var(--greenl);color:var(--green)">2 Veg</span></div></div>
+                  <div class="meal-row"><span class="mr-meal">Dinner</span><div class="mr-counts"><span class="mr-count" style="background:var(--surf);color:var(--text2);border:1px solid var(--border)">38 standard</span><span class="mr-count" style="background:var(--teall);color:var(--teal)">4 GF</span><span class="mr-count" style="background:var(--greenl);color:var(--green)">2 Veg</span><span class="mr-count" style="background:var(--amberl);color:var(--amber)">1 Low-sugar</span></div></div>
+                </div>
+              </div>
+              <div class="meal-card">
+                <div class="mc-head"><div class="mc-title">Day 4 — Monday Aug 10</div></div>
+                <div class="mc-body">
+                  <div class="meal-row"><span class="mr-meal">Breakfast (departure)</span><div class="mr-counts"><span class="mr-count" style="background:var(--surf);color:var(--text2);border:1px solid var(--border)">38 standard</span><span class="mr-count" style="background:var(--teall);color:var(--teal)">4 GF</span><span class="mr-count" style="background:var(--greenl);color:var(--green)">2 Veg</span></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── COMMUNICATIONS TAB ── -->
+      <div class="tab-panel" id="panel-communications">
+        <div class="card" style="margin-bottom:14px">
+          <div class="card-head">
+            <div class="ch-icon" style="background:var(--purpl)"><svg viewBox="0 0 12 12" fill="none" stroke="var(--purp)" stroke-width="1.3" stroke-linecap="round"><path d="M1.5 2.5h9a1 1 0 011 1v5a1 1 0 01-1 1h-9a1 1 0 01-1-1v-5a1 1 0 011-1z"/><path d="M1.5 3.5l4.5 3 4.5-3"/></svg></div>
+            <span class="ch-title">Scheduled communications</span>
+            <button class="btn btn-primary" style="margin-left:auto;font-size:11px" onclick="openModal('new-comm')">+ New message</button>
+          </div>
+        </div>
+
+        <div class="comm-timeline">
+
+          <div class="ct-item">
+            <div class="ct-dot-wrap"><div class="ct-dot" style="background:var(--green)"></div><div class="ct-line"></div></div>
+            <div class="ct-body">
+              <div class="ct-title">Registration confirmation</div>
+              <div class="ct-meta">Sent automatically on registration · All 40 participants · Email</div>
+              <div class="ct-prev">"Dear [First Name], your registration for the Men's Ignatian Retreat (August 7–10, 2026) is confirmed. Room assignment and full details will follow closer to the retreat. Please plan to arrive between 3:00–5:00 PM on Friday, August 7…"</div>
+            </div>
+          </div>
+
+          <div class="ct-item">
+            <div class="ct-dot-wrap"><div class="ct-dot" style="background:var(--green)"></div><div class="ct-line"></div></div>
+            <div class="ct-body">
+              <div class="ct-title">Retreat details &amp; packing list</div>
+              <div class="ct-meta">Sent Jun 15 · All 40 participants · Email</div>
+              <div class="ct-prev">"Thirty days remain until the retreat. Here is everything you need to know: directions to Jesuit Retreat House, what to bring, the daily schedule, and silence guidelines. Your room assignment will follow in a separate email…"</div>
+            </div>
+          </div>
+
+          <div class="ct-item">
+            <div class="ct-dot-wrap"><div class="ct-dot" style="background:var(--amber)"></div><div class="ct-line"></div></div>
+            <div class="ct-body">
+              <div class="ct-title">Room assignment notification</div>
+              <div class="ct-meta">Scheduled: Jul 15 · All 40 participants · Email</div>
+              <div class="ct-prev">"Your room assignment for the Men's Ignatian Retreat is Room [Room Number]. [Room type description.] If you have any questions or need adjustments for accessibility or medical reasons, please contact us…"</div>
+              <div class="ct-actions">
+                <button class="cta-btn ctab-primary" onclick="openModal('preview-comm')">Preview &amp; edit</button>
+                <button class="cta-btn ctab-ghost">Send test</button>
+                <button class="cta-btn ctab-ghost">Send now</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="ct-item">
+            <div class="ct-dot-wrap"><div class="ct-dot" style="background:var(--border)"></div><div class="ct-line"></div></div>
+            <div class="ct-body">
+              <div class="ct-title">7-day reminder &amp; final details</div>
+              <div class="ct-meta">Scheduled: Aug 1 · All 40 participants · Email</div>
+              <div class="ct-prev">"One week until the retreat. Please review your emergency contact information and confirm any dietary needs in advance. Arrival is 3:00–5:00 PM…"</div>
+              <div class="ct-actions">
+                <button class="cta-btn ctab-primary" onclick="openModal('preview-comm')">Preview &amp; edit</button>
+                <button class="cta-btn ctab-ghost">Send test</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="ct-item">
+            <div class="ct-dot-wrap"><div class="ct-dot" style="background:var(--border)"></div><div class="ct-line"></div></div>
+            <div class="ct-body">
+              <div class="ct-title">Post-retreat thank you &amp; formation follow-up</div>
+              <div class="ct-meta">Scheduled: Aug 12 · All 40 participants · Email</div>
+              <div class="ct-prev">"Thank you for joining us for the Men's Ignatian Retreat. We hope your time of prayer and silence was fruitful. Your attendance has been recorded in your formation history in Atlas…"</div>
+              <div class="ct-actions">
+                <button class="cta-btn ctab-primary" onclick="openModal('preview-comm')">Preview &amp; edit</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal-overlay" onclick="handleOverlayClick(event)">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="mh-icon" id="mh-icon" style="background:var(--purpl)"><svg viewBox="0 0 16 16" fill="none" stroke="var(--purp)" stroke-width="1.4" stroke-linecap="round"><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M2 7h12M7 2v12"/></svg></div>
+      <div class="modal-title" id="modal-title">Register participant</div>
+      <button class="modal-close" onclick="closeModal()"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 2l8 8M10 2l-8 8"/></svg></button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-foot" id="modal-foot"></div>
+  </div>
+</div>
+
+<script>
+// ── DATA ─────────────────────────────────────────────────────
+const ROOMS = [
+  // Ground floor
+  { num:"101", floor:1, type:"single",   beds:1, occupants:["James O'Brien"],         dietary:["mobility"], accessible:false, note:"Walker needed" },
+  { num:"102", floor:1, type:"single",   beds:1, occupants:["David Harrington"],       dietary:[], accessible:false, note:"" },
+  { num:"103", floor:1, type:"shared",   beds:2, occupants:["Thomas Sullivan","Fr. Joseph Williams"], dietary:[], accessible:false, note:"" },
+  { num:"104", floor:1, type:"shared",   beds:2, occupants:["Michael Burns","Robert Walsh"],        dietary:["nut-allergy","diabetic"], accessible:false, note:"Epipen on nightstand" },
+  { num:"105", floor:1, type:"single",   beds:1, occupants:["William Chen"],           dietary:["veg"], accessible:false, note:"" },
+  { num:"106", floor:1, type:"shared",   beds:2, occupants:["Patrick Ryan",""],         dietary:["gf"], accessible:false, note:"" },
+  { num:"107", floor:1, type:"single",   beds:1, occupants:["Andrew Kim"],             dietary:["veg"], accessible:false, note:"" },
+  { num:"108", floor:1, type:"shared",   beds:2, occupants:["Carlos Mendez","John Murphy"],         dietary:[], accessible:false, note:"" },
+  { num:"109", floor:1, type:"single",   beds:1, occupants:["Paul O'Malley"],          dietary:[], accessible:false, note:"" },
+  { num:"110", floor:1, type:"single",   beds:1, occupants:["James Harrington Jr."],   dietary:["mobility"], accessible:true, note:"Accessible — grab bars, wide doorway" },
+  // Upper floor
+  { num:"201", floor:2, type:"single",   beds:1, occupants:["Fr. Thomas McCarthy"],    dietary:["accessible"], accessible:true, note:"Director's room — accessible bathroom" },
+  { num:"202", floor:2, type:"shared",   beds:2, occupants:["David Walsh","Thomas O'Brien"], dietary:["gf"], accessible:false, note:"" },
+  { num:"203", floor:2, type:"single",   beds:1, occupants:["Richard Collins"],        dietary:[], accessible:false, note:"" },
+  { num:"204", floor:2, type:"shared",   beds:2, occupants:["Francis Ryan","Brendan Murphy"],     dietary:[], accessible:false, note:"" },
+  { num:"205", floor:2, type:"single",   beds:1, occupants:[""],                       dietary:[], accessible:false, note:"Unassigned" },
+  { num:"206", floor:2, type:"shared",   beds:2, occupants:["Martin Walsh",""],        dietary:["gf"], accessible:false, note:"Second bed unassigned" },
+  { num:"207", floor:2, type:"single",   beds:1, occupants:["Declan O'Brien"],         dietary:[], accessible:false, note:"" },
+  { num:"208", floor:2, type:"shared",   beds:2, occupants:["Gregory Sullivan","Peter Callahan"], dietary:[], accessible:false, note:"" },
+  { num:"209", floor:2, type:"single",   beds:1, occupants:["Michael Fitzgerald"],     dietary:[], accessible:false, note:"" },
+  { num:"210", floor:2, type:"shared",   beds:2, occupants:["Stephen Walsh","Kevin Doyle"],       dietary:[], accessible:false, note:"" },
+];
+
+const PARTICIPANTS = [
+  { id:1,  name:"James O'Brien",       room:"101", roomType:"single",   dietary:["mobility"],   emergency:"Patricia O'Brien · (216) 555-0101", payment:"paid",    history:["2024","2023","2021"] },
+  { id:2,  name:"Fr. Thomas McCarthy", room:"201", roomType:"single",   dietary:["accessible"], emergency:"Diocese Office · (216) 696-6525",    payment:"comp",    history:["2025","2024","2023","2022","2021"] },
+  { id:3,  name:"David Harrington",    room:"102", roomType:"single",   dietary:[],             emergency:"Susan Harrington · (216) 555-0188",  payment:"paid",    history:["2024"] },
+  { id:4,  name:"Thomas Sullivan",     room:"103", roomType:"shared",   dietary:[],             emergency:"Margaret Sullivan · (216) 555-0142", payment:"paid",    history:["2025","2024","2023"] },
+  { id:5,  name:"Michael Burns",       room:"104", roomType:"shared",   dietary:["nut-allergy"],emergency:"Helen Burns · (216) 555-0177",       payment:"paid",    history:["2023"] },
+  { id:6,  name:"William Chen",        room:"105", roomType:"single",   dietary:["veg"],        emergency:"Grace Chen · (216) 555-0133",        payment:"paid",    history:["2025","2024"] },
+  { id:7,  name:"Patrick Ryan",        room:"106", roomType:"shared",   dietary:["gf"],         emergency:"Anne Ryan · (216) 555-0166",         payment:"paid",    history:[] },
+  { id:8,  name:"Andrew Kim",          room:"107", roomType:"single",   dietary:["veg"],        emergency:"Linda Kim · (216) 555-0199",         payment:"paid",    history:["2025"] },
+  { id:9,  name:"Robert Walsh",        room:"104", roomType:"shared",   dietary:["diabetic"],   emergency:"Helen Walsh · (216) 555-0122",       payment:"paid",    history:["2022","2021"] },
+  { id:10, name:"David Walsh",         room:"202", roomType:"shared",   dietary:[],             emergency:"Ann Walsh · (216) 555-0144",         payment:"paid",    history:["2024","2022"] },
+  { id:11, name:"Thomas O'Brien",      room:"202", roomType:"shared",   dietary:["gf"],         emergency:"Colleen O'Brien · (216) 555-0155",   payment:"paid",    history:["2025"] },
+  { id:12, name:"Martin Walsh",        room:"206", roomType:"shared",   dietary:["gf"],         emergency:"Mary Walsh · (216) 555-0187",        payment:"pending", history:["2024"] },
+  { id:13, name:"Fr. Joseph Williams", room:"103", roomType:"shared",   dietary:[],             emergency:"Diocese Office · (216) 696-6525",    payment:"comp",    history:["2025","2024","2023","2022"] },
+  { id:14, name:"James Harrington Jr.",room:"110", roomType:"accessible",dietary:["mobility"],  emergency:"David Harrington · (216) 555-0188",  payment:"paid",    history:[] },
+  { id:15, name:"Unassigned participant",room:"",  roomType:"single",   dietary:[],             emergency:"—",                                  payment:"paid",    history:[] },
+];
+
+const DIET_LABELS = { gf:"Gluten-free", veg:"Vegetarian", "nut-allergy":"Nut allergy", diabetic:"Diabetic", mobility:"Mobility aid", accessible:"Accessible room", none:"None" };
+const DIET_CLASSES = { gf:"p-gf", veg:"p-veg", "nut-allergy":"p-allergy", diabetic:"p-pending", mobility:"p-mobility", accessible:"p-acc" };
+
+// ── RENDER ROOM GRID ─────────────────────────────────────────
+function renderRoomGrid() {
+  const floors = [...new Set(ROOMS.map(r => r.floor))].sort();
+  const floorNames = { 1:"Ground Floor (Rooms 101–110)", 2:"Upper Floor (Rooms 201–210)" };
+  let html = '';
+  floors.forEach(f => {
+    const rooms = ROOMS.filter(r => r.floor === f);
+    const floorOcc = rooms.filter(r => r.occupants.every(o => o)).length;
+    html += `<div class="floor-section">
+      <div class="floor-label">${floorNames[f]||'Floor '+f} <span class="fl-count">${floorOcc}/${rooms.length} occupied</span></div>
+      <div class="rooms-grid">
+        ${rooms.map(r => {
+          const filled = r.occupants.filter(o => o).length;
+          const tileClass = r.occupants.length > 0 && filled === r.beds ? 'occupied' : filled > 0 ? 'partial' : 'available';
+          const badge = filled === r.beds ? `<span class="rt-badge rtb-full">Full</span>` :
+                        filled > 0 ? `<span class="rt-badge rtb-part">${filled}/${r.beds}</span>` :
+                        `<span class="rt-badge rtb-open">Open</span>`;
+          const accBadge = r.accessible ? `<span class="rt-badge rtb-acc" style="margin-left:2px">♿</span>` : '';
+          const occRows = Array.from({length:r.beds}, (_,i) => {
+            const name = r.occupants[i]||'';
+            return `<div class="rt-occ-row"><div class="rt-occ-dot ${!name?'empty':''}"></div><div class="rt-occ-name ${!name?'empty-slot':''}">${name||'—'}</div></div>`;
+          }).join('');
+          return `<div class="room-tile ${tileClass} ${r.accessible?'accessible':''}" onclick="showRoomDetail('${r.num}')">
+            <div class="rt-number">${r.num} ${accBadge}</div>
+            <div class="rt-type ${r.type==='single'?'single':r.type==='shared'?'shared':'acc'}">${r.type}</div>
+            <div class="rt-occupants">${occRows}</div>
+            <div class="rt-footer"><span class="rt-bed">${r.beds} bed${r.beds>1?'s':''}</span>${badge}</div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`;
+  });
+  document.getElementById('room-grid-container').innerHTML = html;
+}
+
+function showRoomDetail(num) {
+  const r = ROOMS.find(x => x.num === num);
+  if (!r) return;
+  document.querySelectorAll('.room-tile').forEach(t => t.classList.remove('selected'));
+  document.querySelectorAll('.room-tile').forEach(t => { if (t.textContent.trim().startsWith(num)) t.classList.add('selected'); });
+  document.getElementById('rd-num').textContent = num;
+  document.getElementById('rd-title').textContent = `Room ${num} — ${r.type.charAt(0).toUpperCase()+r.type.slice(1)}${r.accessible?' (accessible)':''}`;
+  const filled = r.occupants.filter(o => o).length;
+  document.getElementById('rd-sub').textContent = `${filled}/${r.beds} occupied · ${['Ground','Upper'][r.floor-1]} floor · ${r.accessible?'Accessible':'Standard'}`;
+
+  // Bed slots
+  const beds = Array.from({length:r.beds}, (_,i) => {
+    const name = r.occupants[i]||'';
+    const p = PARTICIPANTS.find(p => p.name === name);
+    const dietHtml = p ? p.dietary.map(d => `<span class="pill ${DIET_CLASSES[d]||'p-pending'}" style="font-size:9px">${DIET_LABELS[d]||d}</span>`).join(' ') : '';
+    return name
+      ? `<div class="bed-slot filled">
+          <div class="bs-label">Bed ${i+1}</div>
+          <div class="bs-name">${name}</div>
+          ${dietHtml ? `<div class="bs-sub" style="margin-top:4px;display:flex;gap:4px;flex-wrap:wrap">${dietHtml}</div>` : ''}
+         </div>`
+      : `<div class="bed-slot empty" onclick="openModal('assign-room')">
+          <div class="bs-label">Bed ${i+1}</div>
+          <div class="bs-add">+ Assign participant</div>
+         </div>`;
+  }).join('');
+  document.getElementById('bed-slots').innerHTML = beds;
+
+  // Flags
+  const flags = r.dietary.map(d => `<span class="pill ${DIET_CLASSES[d]||'p-pending'}">${DIET_LABELS[d]||d}</span>`).join(' ');
+  document.getElementById('occ-flags').innerHTML = flags || '<span style="font-size:12px;color:var(--text3)">No flags</span>';
+
+  document.getElementById('room-detail').style.display = 'block';
+  document.getElementById('room-detail').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+// ── RENDER REGISTRATIONS ─────────────────────────────────────
+function renderRegistrations() {
+  document.getElementById('reg-tbody').innerHTML = PARTICIPANTS.map(p => {
+    const dietHtml = p.dietary.length ? p.dietary.map(d => `<span class="pill ${DIET_CLASSES[d]||'p-pending'}">${DIET_LABELS[d]||d}</span>`).join(' ') : '<span style="color:var(--text3);font-size:11px">None</span>';
+    const histHtml = p.history.length ? p.history.map(y=>`<span style="font-size:10px;background:var(--purpl);color:var(--purp);border-radius:10px;padding:1px 6px">${y}</span>`).join(' ') : '<span style="color:var(--text3);font-size:11px">First retreat</span>';
+    const roomHtml = p.room
+      ? `<span class="room-assigned">Room ${p.room}</span>`
+      : `<span class="room-unassigned">Unassigned</span>`;
+    return `<tr onclick="openModal('edit-reg')">
+      <td><div class="rtr-name">${p.name}</div></td>
+      <td><span class="pill ${p.roomType==='single'?'p-single':p.roomType==='shared'?'p-shared':'p-acc'}">${p.roomType}</span></td>
+      <td>${roomHtml}</td>
+      <td style="display:flex;gap:4px;flex-wrap:wrap;padding:11px 14px">${dietHtml}</td>
+      <td>${p.dietary.filter(d=>['mobility','accessible'].includes(d)).map(d=>`<span class="pill p-acc">${DIET_LABELS[d]}</span>`).join(' ')||'<span style="color:var(--text3);font-size:11px">None</span>'}</td>
+      <td style="font-size:11px;color:var(--text3);line-height:1.5">${p.emergency}</td>
+      <td><span class="pill ${p.payment==='paid'?'p-paid':p.payment==='comp'?'p-single':'p-pending'}">${p.payment==='comp'?'Complimentary':p.payment.charAt(0).toUpperCase()+p.payment.slice(1)}</span></td>
+      <td>${histHtml}</td>
+      <td><button class="cta-btn ctab-primary" style="padding:3px 9px;font-size:10px" onclick="event.stopPropagation();openModal('edit-reg')">Edit</button></td>
+    </tr>`;
+  }).join('');
+}
+
+// ── TABS ─────────────────────────────────────────────────────
+function switchTab(id, el) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  if (id === 'registrations') renderRegistrations();
+}
+
+// ── MODAL ─────────────────────────────────────────────────────
+const MODALS = {
+  'register': {
+    title: 'Register participant',
+    icon: `<svg viewBox="0 0 16 16" fill="none" stroke="var(--purp)" stroke-width="1.4" stroke-linecap="round"><circle cx="8" cy="5" r="3.5"/><path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6"/></svg>`,
+    iconBg: 'var(--purpl)',
+    body: `
+      <div class="form-section">Participant</div>
+      <div class="form-row"><label class="form-label">Donor / constituent <span>*</span></label>
+        <input class="form-input" placeholder="Search by name or ID…"></div>
+      <div class="form-row-2">
+        <div class="form-row"><label class="form-label">Registration date</label>
+          <input class="form-input" type="date"></div>
+        <div class="form-row"><label class="form-label">Payment status</label>
+          <select class="form-select"><option>Paid — $395</option><option>Pending — invoice sent</option><option>Complimentary</option><option>Scholarship</option></select></div>
+      </div>
+      <div class="form-section">Room preference</div>
+      <div class="form-row-2">
+        <div class="form-row"><label class="form-label">Room type preference</label>
+          <select class="form-select"><option>Single room</option><option>Shared room</option><option>No preference</option></select></div>
+        <div class="form-row"><label class="form-label">Accessibility needed?</label>
+          <select class="form-select"><option>No</option><option>Yes — ground floor required</option><option>Yes — roll-in shower</option><option>Yes — wide doorway</option></select></div>
+      </div>
+      <div class="form-section">Dietary &amp; medical</div>
+      <div class="form-row-3">
+        <div class="form-row"><label class="form-label">Dietary restriction</label>
+          <select class="form-select"><option>None</option><option>Gluten-free</option><option>Vegetarian</option><option>Vegan</option><option>Nut allergy</option><option>Diabetic / low sugar</option><option>Other</option></select></div>
+        <div class="form-row"><label class="form-label">Mobility aid?</label>
+          <select class="form-select"><option>None</option><option>Walker</option><option>Wheelchair</option><option>Cane</option></select></div>
+        <div class="form-row"><label class="form-label">Medical notes</label>
+          <input class="form-input" placeholder="Epipen, medications…"></div>
+      </div>
+      <div class="form-section">Emergency contact</div>
+      <div class="form-row-2">
+        <div class="form-row"><label class="form-label">Contact name <span>*</span></label>
+          <input class="form-input" placeholder="Full name"></div>
+        <div class="form-row"><label class="form-label">Contact phone <span>*</span></label>
+          <input class="form-input" placeholder="(216) 555-0100"></div>
+      </div>
+      <div class="form-row"><label class="form-label">Relationship to participant</label>
+        <select class="form-select"><option>Spouse / partner</option><option>Parent</option><option>Child</option><option>Sibling</option><option>Friend</option><option>Parish contact</option></select></div>
+      <div class="form-section">Notes</div>
+      <div class="form-row"><label class="form-label">Internal staff note</label>
+        <textarea class="form-input" style="min-height:54px;resize:none" placeholder="Seating / room notes, pastoral context, prior year notes…"></textarea></div>
+      <div class="toggle-row"><div><div class="toggle-lbl">Add to formation history</div><div class="toggle-sub">Record this retreat in the participant's formation history on their donor record</div></div>
+        <button class="toggle on" onclick="this.classList.toggle('on');this.classList.toggle('off')"><div class="toggle-thumb"></div></button></div>`,
+    foot: `<button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-green" onclick="closeModal()"><svg viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="1.4" stroke-linecap="round" width="12" height="12"><path d="M2 6l3 3 6-6"/></svg>Save registration</button>`
+  },
+  'assign-room': {
+    title: 'Assign room',
+    icon: `<svg viewBox="0 0 16 16" fill="none" stroke="var(--purp)" stroke-width="1.4" stroke-linecap="round"><path d="M2 13V5.5L8 2l6 3.5V13H2z"/><rect x="6" y="9" width="4" height="4"/></svg>`,
+    iconBg: 'var(--purpl)',
+    body: `
+      <div class="form-row"><label class="form-label">Participant <span>*</span></label>
+        <select class="form-select"><option>Martin Walsh — Room 206 (current)</option><option>Unassigned participant</option><option>Move existing participant</option></select></div>
+      <div class="form-row-2">
+        <div class="form-row"><label class="form-label">Room number <span>*</span></label>
+          <input class="form-input" placeholder="e.g. 205"></div>
+        <div class="form-row"><label class="form-label">Bed number (shared rooms)</label>
+          <select class="form-select"><option>Bed 1</option><option>Bed 2</option><option>N/A (single room)</option></select></div>
+      </div>
+      <div class="form-row"><label class="form-label">Reason for assignment / notes</label>
+        <textarea class="form-input" style="min-height:54px;resize:none" placeholder="Reason for this assignment, conflicts to avoid, special instructions…"></textarea></div>`,
+    foot: `<button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="closeModal()">Assign room</button>`
+  },
+  'new-comm': {
+    title: 'New communication',
+    icon: `<svg viewBox="0 0 16 16" fill="none" stroke="var(--purp)" stroke-width="1.4" stroke-linecap="round"><path d="M2 3h12a1 1 0 011 1v7a1 1 0 01-1 1H2a1 1 0 01-1-1V4a1 1 0 011-1z"/><path d="M1 4l7 5 7-5"/></svg>`,
+    iconBg: 'var(--purpl)',
+    body: `
+      <div class="form-row"><label class="form-label">Subject line <span>*</span></label>
+        <input class="form-input" placeholder="e.g. Your room assignment for the Men's Ignatian Retreat"></div>
+      <div class="form-row-2">
+        <div class="form-row"><label class="form-label">Recipients</label>
+          <select class="form-select"><option>All 40 participants</option><option>Participants with dietary needs</option><option>Unassigned rooms only</option><option>Select individuals</option></select></div>
+        <div class="form-row"><label class="form-label">Send date</label>
+          <input class="form-input" type="date"></div>
+      </div>
+      <div class="form-row"><label class="form-label">Message body</label>
+        <textarea class="form-input" style="min-height:100px;resize:vertical" placeholder="Dear [First Name],\n\nMessage body here…"></textarea></div>
+      <div class="form-row"><span class="form-hint">Available merge fields: [First Name], [Last Name], [Room Number], [Room Type], [Arrival Date], [Emergency Contact Name]</span></div>`,
+    foot: `<button class="btn" onclick="closeModal()">Cancel</button><button class="btn" onclick="closeModal()">Save as draft</button><button class="btn btn-primary" onclick="closeModal()">Schedule send</button>`
+  },
+  'preview-comm': {
+    title: 'Preview & edit message',
+    icon: `<svg viewBox="0 0 16 16" fill="none" stroke="var(--purp)" stroke-width="1.4" stroke-linecap="round"><path d="M1 8s3-6 7-6 7 6 7 6-3 6-7 6-7-6-7-6z"/><circle cx="8" cy="8" r="2.5"/></svg>`,
+    iconBg: 'var(--purpl)',
+    body: `
+      <div style="background:var(--surf);border:1px solid var(--border);border-radius:9px;padding:14px 16px;margin-bottom:4px">
+        <div style="font-size:11px;color:var(--text3);margin-bottom:6px">Preview (as seen by recipient)</div>
+        <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:10px">Your room assignment — Men's Ignatian Retreat</div>
+        <div style="font-size:12px;color:var(--text2);line-height:1.75">Dear James,<br><br>
+        Your room assignment for the Men's Ignatian Retreat (August 7–10, 2026) is <strong>Room 101 — Single</strong> on the ground floor.<br><br>
+        Please arrive between 3:00 and 5:00 PM on Friday, August 7. Your room will be ready upon arrival.<br><br>
+        If you have any questions or need adjustments for accessibility or medical reasons, please contact us at least two weeks before the retreat.<br><br>
+        In Christ,<br>
+        Fr. Thomas McCarthy, SJ</div>
+      </div>
+      <div class="form-row"><label class="form-label">Edit message body</label>
+        <textarea class="form-input" style="min-height:80px;resize:vertical">Dear [First Name],\n\nYour room assignment for the Men's Ignatian Retreat is Room [Room Number] on the [Floor] floor.\n\nPlease arrive between 3:00 and 5:00 PM on Friday, August 7…</textarea></div>`,
+    foot: `<button class="btn" onclick="closeModal()">Cancel</button><button class="btn" onclick="closeModal()">Save changes</button><button class="btn btn-primary" onclick="closeModal()">Send to all 40</button>`
+  },
+  'edit-accommodation': {
+    title: 'Edit accommodation',
+    icon: `<svg viewBox="0 0 16 16" fill="none" stroke="var(--blue)" stroke-width="1.4" stroke-linecap="round"><circle cx="8" cy="6" r="3.5"/><path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6"/></svg>`,
+    iconBg: 'var(--bluel)',
+    body: `
+      <div class="form-row"><label class="form-label">Participant</label>
+        <input class="form-input" value="James O'Brien" readonly></div>
+      <div class="form-row"><label class="form-label">Accommodation type</label>
+        <select class="form-select"><option selected>Mobility aid — walker</option><option>Wheelchair accessible</option><option>Roll-in shower</option><option>Wide doorway required</option><option>Ground floor required</option><option>Medical equipment (specify)</option></select></div>
+      <div class="form-row"><label class="form-label">Notes for retreat staff</label>
+        <textarea class="form-input" style="min-height:60px;resize:none">Walker needed. Please ensure clear path from room to chapel and dining room.</textarea></div>`,
+    foot: `<button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="closeModal()">Save</button>`
+  },
+};
+
+function openModal(type) {
+  const cfg = MODALS[type] || { title:'Edit', icon:'', iconBg:'var(--purpl)', body:'', foot:`<button class="btn btn-primary" onclick="closeModal()">Save</button>` };
+  document.getElementById('mh-icon').style.background = cfg.iconBg;
+  document.getElementById('mh-icon').innerHTML = cfg.icon;
+  document.getElementById('modal-title').textContent = cfg.title;
+  document.getElementById('modal-body').innerHTML = cfg.body;
+  document.getElementById('modal-foot').innerHTML = cfg.foot;
+  document.getElementById('modal-overlay').classList.add('show');
+}
+function closeModal() { document.getElementById('modal-overlay').classList.remove('show'); }
+function handleOverlayClick(e) { if (e.target === document.getElementById('modal-overlay')) closeModal(); }
+
+// ── INIT ──────────────────────────────────────────────────────
+renderRoomGrid();
+renderRegistrations();
+</script>
+</body>
+</html>

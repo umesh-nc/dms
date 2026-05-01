@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GiveCentral Atlas — Integrations</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --navy:  #0E1E35; --navy2: #152844; --navy3: #1E3A5F;
+      --blue:  #2563EB; --bluel: #DBEAFE; --bluep: #EFF6FF;
+      --green: #15803D; --greenl:#DCFCE7;
+      --amber: #D97706; --amberl:#FEF3C7;
+      --rose:  #BE185D; --rosel: #FCE7F3;
+      --teal:  #0D9488; --teall: #CCFBF1;
+      --purp:  #7C3AED; --purpl: #EDE9FE;
+      --text:  #0F172A; --text2: #334155; --text3: #64748B;
+      --border:#E2E8F0; --surf:  #F8FAFC; --white: #FFFFFF;
+    }
+    html { font-size: 14px; -webkit-font-smoothing: antialiased; }
+    body { font-family: 'DM Sans', sans-serif; background: #F0F4F8; color: var(--text); display: flex; height: 100vh; overflow: hidden; }
+
+    /* ── SIDEBAR ── */
+    .sidebar { width: 220px; background: var(--navy); display: flex; flex-direction: column; flex-shrink: 0; height: 100vh; }
+    .sb-logo { padding: 18px 18px 14px; display: flex; align-items: center; gap: 9px; border-bottom: 1px solid rgba(255,255,255,.08); }
+    .sb-mark { width: 30px; height: 30px; background: var(--blue); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+    .sb-mark svg { width: 15px; height: 15px; }
+    .sb-name { font-family: 'DM Serif Display', serif; font-size: 15px; color: white; line-height: 1; }
+    .sb-sub  { font-size: 9px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.3); margin-top: 3px; }
+    .nav-group { padding: 10px 8px 0; }
+    .nav-label { font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.28); padding: 0 10px; margin-bottom: 4px; }
+    .nav-item  { display: flex; align-items: center; gap: 9px; padding: 8px 10px; border-radius: 7px; font-size: 12px; font-weight: 500; color: rgba(255,255,255,.55); cursor: pointer; transition: all .15s; margin-bottom: 1px; }
+    .nav-item:hover  { background: rgba(255,255,255,.07); color: rgba(255,255,255,.85); }
+    .nav-item.active { background: var(--blue); color: white; }
+    .nav-item svg    { width: 14px; height: 14px; flex-shrink: 0; }
+    .sb-user { margin-top: auto; padding: 12px; border-top: 1px solid rgba(255,255,255,.08); display: flex; align-items: center; gap: 9px; }
+    .u-av { width: 30px; height: 30px; border-radius: 50%; background: var(--blue); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: white; }
+
+    /* ── MAIN ── */
+    .main { flex: 1; min-width: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+    .topbar { background: white; border-bottom: 1px solid var(--border); padding: 0 28px; height: 52px; display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+    .tb-icon { width: 28px; height: 28px; background: var(--bluep); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+    .tb-icon svg { width: 14px; height: 14px; color: var(--blue); }
+    .tb-title { font-size: 15px; font-weight: 600; color: var(--text); }
+    .tb-sep   { width: 1px; height: 18px; background: var(--border); }
+    .tb-sub   { font-size: 12px; color: var(--text3); }
+    .tb-right { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+    .btn { padding: 6px 14px; border-radius: 7px; font-size: 12px; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .15s; display: flex; align-items: center; gap: 6px; border: 1px solid var(--border); background: none; color: var(--text2); }
+    .btn:hover { background: var(--surf); }
+    .btn svg { width: 12px; height: 12px; }
+    .btn-primary { background: var(--blue); color: white; border: none; box-shadow: 0 1px 4px rgba(37,99,235,.3); }
+    .btn-primary:hover { background: #1D4ED8; }
+
+    /* ── CONTENT ── */
+    .content { flex: 1; overflow-y: auto; padding: 24px 28px 48px; display: flex; flex-direction: column; gap: 20px; }
+
+    /* ── SUMMARY STATS BAR ── */
+    .stats-bar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+    .stat-card { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; display: flex; align-items: center; gap: 12px; }
+    .stat-icon { width: 34px; height: 34px; border-radius: 9px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .stat-icon svg { width: 15px; height: 15px; }
+    .stat-val  { font-family: 'DM Serif Display', serif; font-size: 24px; color: var(--text); line-height: 1; }
+    .stat-lbl  { font-size: 11px; color: var(--text3); margin-top: 2px; }
+
+    /* ── CATEGORY HEADING ── */
+    .cat-heading { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--text3); padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+
+    /* ── INTEGRATION CARD ── */
+    .int-grid { display: flex; flex-direction: column; gap: 10px; }
+    .int-card {
+      background: white; border: 1px solid var(--border); border-radius: 12px;
+      overflow: hidden; transition: box-shadow .15s;
+    }
+    .int-card:hover { box-shadow: 0 4px 16px rgba(15,30,53,.07); }
+    .int-card.error  { border-color: #FBCFE8; }
+    .int-card.warning{ border-color: #FDE68A; }
+
+    .int-main { padding: 16px 20px; display: grid; grid-template-columns: 48px 1fr auto; gap: 16px; align-items: center; }
+
+    /* Logo area */
+    .int-logo { width: 48px; height: 48px; border-radius: 11px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 11px; font-weight: 800; letter-spacing: -.02em; }
+
+    /* Info */
+    .int-name { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 3px; display: flex; align-items: center; gap: 8px; }
+    .int-desc { font-size: 12px; color: var(--text3); line-height: 1.5; }
+    .int-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 7px; }
+    .int-chip { display: flex; align-items: center; gap: 4px; font-size: 11px; color: var(--text3); }
+    .int-chip svg { width: 11px; height: 11px; flex-shrink: 0; }
+
+    /* Actions column */
+    .int-actions { display: flex; flex-direction: column; align-items: flex-end; gap: 7px; flex-shrink: 0; }
+    .status-pill { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; white-space: nowrap; }
+    .sp-connected  { background: var(--greenl); color: var(--green); }
+    .sp-error      { background: var(--rosel);  color: var(--rose); }
+    .sp-warning    { background: var(--amberl); color: var(--amber); }
+    .sp-inactive   { background: var(--surf);   color: var(--text3); border: 1px solid var(--border); }
+    .sp-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .int-action-btns { display: flex; gap: 6px; }
+    .ia-btn { padding: 5px 12px; border-radius: 7px; font-size: 11px; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .15s; white-space: nowrap; }
+    .iab-ghost { background: none; border: 1px solid var(--border); color: var(--text2); }
+    .iab-ghost:hover { background: var(--surf); }
+    .iab-primary { background: var(--blue); color: white; border: none; }
+    .iab-primary:hover { background: #1D4ED8; }
+    .iab-danger { background: none; border: 1px solid #FBCFE8; color: var(--rose); }
+    .iab-danger:hover { background: var(--rosel); }
+    .iab-warning { background: var(--amber); color: white; border: none; }
+    .iab-warning:hover { background: #b45309; }
+    .iab-connect { background: var(--navy); color: white; border: none; }
+    .iab-connect:hover { background: var(--navy3); }
+
+    /* Expanded detail panel */
+    .int-detail { display: none; border-top: 1px solid var(--border); background: var(--surf); }
+    .int-detail.open { display: block; }
+    .int-detail-inner { padding: 16px 20px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+    .id-section-title { font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--text3); margin-bottom: 10px; }
+    .id-kv { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: .5px solid var(--border); font-size: 12px; }
+    .id-kv:last-child { border-bottom: none; }
+    .id-key { color: var(--text3); }
+    .id-val { font-weight: 500; color: var(--text); text-align: right; }
+    .id-val.green { color: var(--green); }
+    .id-val.amber { color: var(--amber); }
+    .id-val.rose  { color: var(--rose); }
+
+    /* Error/warning banner inside detail */
+    .id-alert { display: flex; gap: 10px; padding: 10px 12px; border-radius: 8px; margin: 0 20px 14px; font-size: 12px; line-height: 1.55; }
+    .id-alert svg { width: 14px; height: 14px; flex-shrink: 0; margin-top: 1px; }
+    .id-alert-error   { background: var(--rosel);  color: #9D174D; border: 1px solid #FBCFE8; }
+    .id-alert-warning { background: var(--amberl); color: #78350F; border: 1px solid #FDE68A; }
+    .id-alert-info    { background: var(--bluep);  color: #1E40AF; border: 1px solid var(--bluel); }
+
+    /* Sync log */
+    .sync-log { padding: 0 20px 16px; }
+    .sync-log-title { font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--text3); margin-bottom: 8px; }
+    .sync-row { display: flex; align-items: center; gap: 10px; padding: 6px 0; border-bottom: .5px solid var(--border); font-size: 11px; }
+    .sync-row:last-child { border-bottom: none; }
+    .sync-type { font-weight: 600; color: var(--text2); flex: 1; }
+    .sync-time { color: var(--text3); }
+    .sync-count { font-size: 10px; font-weight: 700; padding: 1px 7px; border-radius: 20px; }
+    .sc-ok   { background: var(--greenl); color: var(--green); }
+    .sc-warn { background: var(--amberl); color: var(--amber); }
+    .sc-err  { background: var(--rosel);  color: var(--rose); }
+
+    /* ── CONFIGURE MODAL ── */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(15,30,53,.6); z-index: 200; display: none; align-items: center; justify-content: center; padding: 20px; }
+    .modal-overlay.show { display: flex; }
+    .modal { background: white; border-radius: 16px; width: 100%; max-width: 540px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,.2); }
+    .modal-head { padding: 20px 24px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 14px; }
+    .modal-logo { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 11px; font-weight: 800; }
+    .modal-title { font-family: 'DM Serif Display', serif; font-size: 19px; color: var(--text); flex: 1; }
+    .modal-sub   { font-size: 12px; color: var(--text3); margin-top: 2px; }
+    .modal-close { width: 28px; height: 28px; border: 1px solid var(--border); border-radius: 7px; background: none; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .modal-close svg { width: 12px; height: 12px; color: var(--text3); }
+    .modal-body  { padding: 20px 24px; display: flex; flex-direction: column; gap: 14px; }
+    .form-row    { display: flex; flex-direction: column; gap: 5px; }
+    .form-label  { font-size: 12px; font-weight: 600; color: var(--text2); }
+    .form-label span { color: var(--rose); }
+    .form-input  { padding: 9px 12px; border: 1px solid var(--border); border-radius: 7px; font-size: 13px; font-family: 'DM Sans', sans-serif; color: var(--text); background: var(--surf); outline: none; width: 100%; }
+    .form-input:focus { border-color: var(--blue); background: white; }
+    .form-hint   { font-size: 11px; color: var(--text3); }
+    .form-select { padding: 9px 12px; border: 1px solid var(--border); border-radius: 7px; font-size: 13px; font-family: 'DM Sans', sans-serif; color: var(--text); background: var(--surf); outline: none; width: 100%; cursor: pointer; }
+    .form-select:focus { border-color: var(--blue); }
+    .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .modal-foot  { padding: 14px 24px; border-top: 1px solid var(--border); display: flex; gap: 10px; justify-content: flex-end; }
+
+    /* Toggle switch */
+    .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: var(--surf); border-radius: 8px; }
+    .toggle-label { font-size: 13px; color: var(--text2); }
+    .toggle-sub   { font-size: 11px; color: var(--text3); margin-top: 2px; }
+    .toggle { width: 38px; height: 21px; border-radius: 12px; cursor: pointer; transition: background .2s; flex-shrink: 0; position: relative; border: none; }
+    .toggle.on  { background: var(--green); }
+    .toggle.off { background: #CBD5E1; }
+    .toggle-thumb { position: absolute; top: 3px; width: 15px; height: 15px; background: white; border-radius: 50%; transition: left .2s; }
+    .toggle.on  .toggle-thumb { left: 20px; }
+    .toggle.off .toggle-thumb { left: 3px; }
+
+    /* ── ANIMATION ── */
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinning { animation: spin .7s linear infinite; }
+    @keyframes slideDown { from{opacity:0;transform:translateY(-4px)} to{opacity:1;transform:translateY(0)} }
+    .int-detail.open { animation: slideDown .15s ease; }
+  </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sb-logo">
+    <div class="sb-mark"><svg viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7.5" stroke="white" stroke-width="1.5"/><path d="M5.5 9.5C6.5 11.5 9 13 9 13s2.5-1.5 3.5-3.5S12 5 9 5 4.5 7.5 5.5 9.5z" fill="white" fill-opacity=".9"/></svg></div>
+    <div><div class="sb-name">GiveCentral</div><div class="sb-sub">Atlas CRM</div></div>
+  </div>
+  <div class="nav-group">
+    <div class="nav-label">Main</div>
+    <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><rect x="1.5" y="1.5" width="4" height="4" rx="1.2"/><rect x="8.5" y="1.5" width="4" height="4" rx="1.2"/><rect x="1.5" y="8.5" width="4" height="4" rx="1.2"/><rect x="8.5" y="8.5" width="4" height="4" rx="1.2"/></svg>Dashboard</div>
+    <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="6" cy="4.5" r="3"/><path d="M1 13c0-2.8 2.2-5 5-5h1c2.8 0 5 2.2 5 5"/></svg>Donors</div>
+    <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M7 1.5v11M2 6.5h10"/></svg>Gifts &amp; pledges</div>
+  </div>
+  <div class="nav-group" style="margin-top:8px">
+    <div class="nav-label">Admin</div>
+    <div class="nav-item active"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><rect x="1.5" y="1.5" width="4.5" height="4.5" rx="1.2"/><path d="M8.5 3.5c0-1.1.9-2 2-2s2 .9 2 2-.9 2-2 2-2-.9-2-2z"/><path d="M3.5 9c0-1.1.9-2 2-2"/><rect x="8" y="8" width="5" height="5" rx="1.2"/></svg>Integrations</div>
+    <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="7" cy="5" r="3.5"/><path d="M1 13c0-3.3 2.7-6 6-6s6 2.7 6 6"/></svg>Users &amp; roles</div>
+    <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M7 1.5L1.5 4v4.5c0 2.3 2.4 4.3 5.5 5 3.1-.7 5.5-2.7 5.5-5V4L7 1.5z"/></svg>Security</div>
+  </div>
+  <div class="sb-user">
+    <div class="u-av">VN</div>
+    <div><div style="font-size:12px;font-weight:500;color:rgba(255,255,255,.75)">Vish Nath</div><div style="font-size:10px;color:rgba(255,255,255,.35)">Diocese Admin</div></div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="tb-icon"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><rect x="1.5" y="1.5" width="4.5" height="4.5" rx="1.2"/><path d="M8.5 3.5c0-1.1.9-2 2-2s2 .9 2 2-.9 2-2 2-2-.9-2-2z"/><rect x="8" y="8" width="5" height="5" rx="1.2"/><path d="M3.5 9c0-1.1.9-2 2-2"/></svg></div>
+    <span class="tb-title">Integrations</span>
+    <div class="tb-sep"></div>
+    <span class="tb-sub">Diocese of St. Petersburg · Atlas CRM</span>
+    <div class="tb-right">
+      <button class="btn" onclick="syncAll()">
+        <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" id="sync-all-icon"><path d="M10.5 3A5 5 0 1 0 11 6"/><path d="M10.5 1v2h-2"/></svg>
+        Sync all
+      </button>
+      <button class="btn btn-primary">
+        <svg viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="1.4" stroke-linecap="round"><path d="M6 1v10M1 6h10"/></svg>
+        Add integration
+      </button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- Stats bar -->
+    <div class="stats-bar">
+      <div class="stat-card">
+        <div class="stat-icon" style="background:var(--greenl)"><svg viewBox="0 0 15 15" fill="none" stroke="var(--green)" stroke-width="1.5" stroke-linecap="round"><path d="M2.5 7.5l3 3 7-7"/></svg></div>
+        <div><div class="stat-val" style="color:var(--green)">8</div><div class="stat-lbl">Connected</div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background:var(--rosel)"><svg viewBox="0 0 15 15" fill="none" stroke="var(--rose)" stroke-width="1.5" stroke-linecap="round"><circle cx="7.5" cy="7.5" r="5.5"/><path d="M7.5 5v3.5M7.5 10.5v.3"/></svg></div>
+        <div><div class="stat-val" style="color:var(--rose)">1</div><div class="stat-lbl">Error</div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background:var(--amberl)"><svg viewBox="0 0 15 15" fill="none" stroke="var(--amber)" stroke-width="1.5" stroke-linecap="round"><path d="M7.5 2v4.5M7.5 10v.5"/><path d="M1.5 13L7.5 1.5 13.5 13H1.5z"/></svg></div>
+        <div><div class="stat-val" style="color:var(--amber)">1</div><div class="stat-lbl">Warning</div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background:var(--bluep)"><svg viewBox="0 0 15 15" fill="none" stroke="var(--blue)" stroke-width="1.5" stroke-linecap="round"><circle cx="7.5" cy="7.5" r="5.5"/><path d="M7.5 4v4.5h3"/></svg></div>
+        <div><div class="stat-val">14 min</div><div class="stat-lbl">Last sync</div></div>
+      </div>
+    </div>
+
+    <!-- ── FUNDRAISING & DONOR MANAGEMENT ── -->
+    <div>
+      <div class="cat-heading">Fundraising &amp; gift management</div>
+      <div class="int-grid" style="margin-top:10px">
+
+        <!-- DocuSign -->
+        <div class="int-card" id="card-docusign">
+          <div class="int-main">
+            <div class="int-logo" style="background:#1A2B63;color:#F9B800">DS</div>
+            <div>
+              <div class="int-name">
+                DocuSign
+                <span style="font-size:10px;font-weight:600;background:var(--bluep);color:var(--blue);padding:1px 7px;border-radius:20px">Gift agreements</span>
+              </div>
+              <div class="int-desc">Send, track, and store gift agreements, pledge documents, and naming opportunity agreements directly from donor and gift records.</div>
+              <div class="int-meta">
+                <div class="int-chip"><svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><circle cx="5.5" cy="5.5" r="4"/><path d="M5.5 3.5v2.5h2"/></svg>Last sync: 14 min ago</div>
+                <div class="int-chip"><svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><rect x="1.5" y="2" width="8" height="7.5" rx="1.2"/><path d="M3.5 5.5h4M3.5 7h2.5"/></svg>3 envelopes sent this month</div>
+                <div class="int-chip"><svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><circle cx="5.5" cy="4" r="2.5"/><path d="M1 10c0-2.5 2-4.5 4.5-4.5S10 7.5 10 10"/></svg>org-diocese-stpete.docusign.net</div>
+              </div>
+            </div>
+            <div class="int-actions">
+              <span class="status-pill sp-connected"><span class="sp-dot" style="background:var(--green)"></span>Connected</span>
+              <div class="int-action-btns">
+                <button class="ia-btn iab-ghost" onclick="toggleDetail('docusign')">Details ↓</button>
+                <button class="ia-btn iab-primary" onclick="openModal('docusign')">Configure</button>
+              </div>
+            </div>
+          </div>
+          <div class="int-detail" id="detail-docusign">
+            <div class="int-detail-inner">
+              <div>
+                <div class="id-section-title">Connection</div>
+                <div class="id-kv"><span class="id-key">Account</span><span class="id-val">org-diocese-stpete</span></div>
+                <div class="id-kv"><span class="id-key">Auth method</span><span class="id-val">OAuth 2.0 JWT</span></div>
+                <div class="id-kv"><span class="id-key">Token expires</span><span class="id-val green">Jun 14, 2026</span></div>
+                <div class="id-kv"><span class="id-key">Templates loaded</span><span class="id-val">6 templates</span></div>
+                <div class="id-kv"><span class="id-key">Webhook</span><span class="id-val green">Active</span></div>
+              </div>
+              <div>
+                <div class="id-section-title">Usage this month</div>
+                <div class="id-kv"><span class="id-key">Envelopes sent</span><span class="id-val">3</span></div>
+                <div class="id-kv"><span class="id-key">Signatures complete</span><span class="id-val green">2</span></div>
+                <div class="id-kv"><span class="id-key">Awaiting signature</span><span class="id-val amber">1</span></div>
+                <div class="id-kv"><span class="id-key">Auto-attached to records</span><span class="id-val green">2</span></div>
+              </div>
+              <div>
+                <div class="id-section-title">Settings</div>
+                <div class="id-kv"><span class="id-key">Auto-attach on complete</span><span class="id-val green">Enabled</span></div>
+                <div class="id-kv"><span class="id-key">Notify on sign</span><span class="id-val green">Enabled</span></div>
+                <div class="id-kv"><span class="id-key">Reminder after</span><span class="id-val">3 days</span></div>
+                <div class="id-kv"><span class="id-key">Envelope expiry</span><span class="id-val">30 days</span></div>
+              </div>
+            </div>
+            <div class="sync-log">
+              <div class="sync-log-title">Recent activity</div>
+              <div class="sync-row"><span class="sync-type">O'Brien Naming Agreement sent</span><span class="sync-time">Apr 22, 2:14 PM</span><span class="sync-count sc-ok">Sent</span></div>
+              <div class="sync-row"><span class="sync-type">O'Brien Pledge Agreement completed</span><span class="sync-time">Mar 16, 11:08 AM</span><span class="sync-count sc-ok">Signed</span></div>
+              <div class="sync-row"><span class="sync-type">Sullivan Pledge completed</span><span class="sync-time">Mar 10, 9:44 AM</span><span class="sync-count sc-ok">Signed</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MarketSmart -->
+        <div class="int-card" id="card-marketsmart">
+          <div class="int-main">
+            <div class="int-logo" style="background:#1F4E79;color:#90CAF9">MS</div>
+            <div>
+              <div class="int-name">
+                MarketSmart
+                <span style="font-size:10px;font-weight:600;background:var(--purpl);color:var(--purp);padding:1px 7px;border-radius:20px">Planned giving</span>
+              </div>
+              <div class="int-desc">Sync planned giving prospects and bequest intent engagement data into Atlas moves management pipeline. Life events and interest signals flow automatically.</div>
+              <div class="int-meta">
+                <div class="int-chip"><svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><circle cx="5.5" cy="5.5" r="4"/><path d="M5.5 3.5v2.5h2"/></svg>Last sync: 2 hrs ago</div>
+                <div class="int-chip"><svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><circle cx="5.5" cy="4" r="2.5"/><path d="M1 10c0-2.5 2-4.5 4.5-4.5S10 7.5 10 10"/></svg>14 prospects synced</div>
+              </div>
+            </div>
+            <div class="int-actions">
+              <span class="status-pill sp-connected"><span class="sp-dot" style="background:var(--green)"></span>Connected</span>
+              <div class="int-action-btns">
+                <button class="ia-btn iab-ghost" onclick="toggleDetail('marketsmart')">Details ↓</button>
+                <button class="ia-btn iab-primary" onclick="openModal('marketsmart')">Configure</button>
+              </div>
+            </div>
+          </div>
+          <div class="int-detail" id="detail-marketsmart">
+            <div class="int-detail-inner">
+              <div>
+                <div class="id-section-title">Connection</div>
+                <div class="id-kv"><span class="id-key">API endpoint</span><span class="id-val">api.marketsmart.com</span></div>
+                <div class="id-kv"><span class="id-key">Auth method</span><span class="id-val">API key</span></div>
+                <div class="id-kv"><span class="id-key">Sync direction</span><span class="id-val">MarketSmart → Atlas</span></div>
+              </div>
+              <div>
+                <div class="id-section-title">Sync stats</div>
+                <div class="id-kv"><span class="id-key">Prospects synced</span><span class="id-val">14</span></div>
+                <div class="id-kv"><span class="id-key">New this month</span><span class="id-val green">3</span></div>
+                <div class="id-kv"><span class="id-key">Bequest intents</span><span class="id-val">2</span></div>
+              </div>
+              <div>
+                <div class="id-section-title">Settings</div>
+                <div class="id-kv"><span class="id-key">Auto-create pipeline record</span><span class="id-val green">Enabled</span></div>
+                <div class="id-kv"><span class="id-key">Sync frequency</span><span class="id-val">Every 2 hours</span></div>
+                <div class="id-kv"><span class="id-key">Pipeline stage on import</span><span class="id-val">Identification</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Marketo -->
+        <div class="int-card" id="card-marketo">
+          <div class="int-main">
+            <div class="int-logo" style="background:#5C4EE5;color:white">MK</div>
+            <div>
+              <div class="int-name">
+                Marketo
+                <span style="font-size:10px;font-weight:600;background:var(--purpl);color:var(--purp);padding:1px 7px;border-radius:20px">Print campaigns</span>
+              </div>
+              <div class="int-desc">Export major donor segments to Marketo for personalised premium print stewardship campaigns. One-way sync: Atlas → Marketo. Field mapping configured per campaign.</div>
+              <div class="int-meta">
+                <div class="int-chip"><svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><circle cx="5.5" cy="5.5" r="4"/><path d="M5.5 3.5v2.5h2"/></svg>Last export: Apr 18</div>
+                <div class="int-chip"><svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M1.5 8.5l2.5-2.5 2 2 2.5-2.5 2 2"/></svg>847 records in active segment</div>
+              </div>
+            </div>
+            <div class="int-actions">
+              <span class="status-pill sp-connected"><span class="sp-dot" style="background:var(--green)"></span>Connected</span>
+              <div class="int-action-btns">
+                <button class="ia-btn iab-ghost" onclick="toggleDetail('marketo')">Details ↓</button>
+                <button class="ia-btn iab-primary" onclick="openModal('marketo')">Configure</button>
+              </div>
+            </div>
+          </div>
+          <div class="int-detail" id="detail-marketo">
+            <div class="int-detail-inner">
+              <div>
+                <div class="id-section-title">Connection</div>
+                <div class="id-kv"><span class="id-key">Munchkin ID</span><span class="id-val">814-XYZ-001</span></div>
+                <div class="id-kv"><span class="id-key">Auth method</span><span class="id-val">Client credentials</span></div>
+                <div class="id-kv"><span class="id-key">Direction</span><span class="id-val">Atlas → Marketo only</span></div>
+              </div>
+              <div>
+                <div class="id-section-title">Active segments</div>
+                <div class="id-kv"><span class="id-key">Major donors ($10K+)</span><span class="id-val">847 records</span></div>
+                <div class="id-kv"><span class="id-key">Lapsed major donors</span><span class="id-val">124 records</span></div>
+                <div class="id-kv"><span class="id-key">Planned giving prospects</span><span class="id-val">14 records</span></div>
+              </div>
+              <div>
+                <div class="id-section-title">Settings</div>
+                <div class="id-kv"><span class="id-key">Field mapping</span><span class="id-val amber">Needs review</span></div>
+                <div class="id-kv"><span class="id-key">Sync on demand</span><span class="id-val green">Enabled</span></div>
+                <div class="id-kv"><span class="id-key">Scheduled export</span><span class="id-val">Monthly — 1st</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── WEALTH & RELATIONSHIP INTELLIGENCE ── -->
+    <div>
+      <div class="cat-heading">Wealth &amp; relationship intelligence</div>
+      <div class="int-grid" style="margin-top:10px">
+
+        <!-- WealthEngine -->
+        <div class="int-card" id="card-wealthengine">
+          <div class="int-main">
+            <div class="int-logo" style="background:#0F3460;color:#E94560">WE</div>
+            <div>
+              <div class="int-name">
+                WealthEngine
+                <span style="font-size:10px;font-weight:600;background:var(--amberl);color:var(--amber);padding:1px 7px;border-radius:20px">Wealth screening</span>
+              </div>
+              <div class="int-desc">Pull capacity estimates, real estate holdings, business affiliations, and LAI scores. Versioned screening records with scheduled quarterly refresh and change alerts.</div>
+              <div class="int-meta">
+                <div class="int-chip"><svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><circle cx="5.5" cy="5.5" r="4"/><path d="M5.5 3.5v2.5h2"/></svg>Last sync: 6 hrs ago</div>
+                <div class="int-chip"><svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M1.5 8.5l2.5-2.5 2 2 2.5-2.5 2 2"/></svg>47 records screened</div>
+                <div class="int-chip"><svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M1 5.5h9M5.5 1v9"/></svg>96 / 500 credits used</div>
+              </div>
+            </div>
+            <div class="int-actions">
+              <span class="status-pill sp-connected"><span class="sp-dot" style="background:var(--green)"></span>Connected</span>
+              <div class="int-action-btns">
+                <button class="ia-btn iab-ghost" onclick="toggleDetail('wealthengine')">Details ↓</button>
+                <button class="ia-btn iab-primary" onclick="openModal('wealthengine')">Configure</button>
+              </div>
+            </div>
+          </div>
+          <div class="int-detail" id="detail-wealthengine">
+            <div class="int-detail-inner">
+              <div>
+                <div class="id-section-title">Connection</div>
+                <div class="id-kv"><span class="id-key">API version</span><span class="id-val">v3.1</span></div>
+                <div class="id-kv"><span class="id-key">Auth method</span><span class="id-val">API key</span></div>
+                <div class="id-kv"><span class="id-key">Account tier</span><span class="id-val">Professional</span></div>
+                <div class="id-kv"><span class="id-key">Credits remaining</span><span class="id-val green">404 / 500</span></div>
+                <div class="id-kv"><span class="id-key">Credit reset</span><span class="id-val">Jul 1, 2026</span></div>
+              </div>
+              <div>
+                <div class="id-section-title">Screening stats</div>
+                <div class="id-kv"><span class="id-key">Records screened total</span><span class="id-val">47</span></div>
+                <div class="id-kv"><span class="id-key">Screened this quarter</span><span class="id-val">12</span></div>
+                <div class="id-kv"><span class="id-key">Change alerts triggered</span><span class="id-val amber">3</span></div>
+                <div class="id-kv"><span class="id-key">Avg capacity score</span><span class="id-val">74 / 100</span></div>
+              </div>
+              <div>
+                <div class="id-section-title">Settings</div>
+                <div class="id-kv"><span class="id-key">Refresh schedule</span><span class="id-val">Quarterly</span></div>
+                <div class="id-kv"><span class="id-key">Alert threshold</span><span class="id-val">≥10% capacity change</span></div>
+                <div class="id-kv"><span class="id-key">Auto-screen new prospects</span><span class="id-val green">Enabled</span></div>
+                <div class="id-kv"><span class="id-key">Versioning</span><span class="id-val green">On — full history kept</span></div>
+              </div>
+            </div>
+            <div class="sync-log">
+              <div class="sync-log-title">Recent screenings</div>
+              <div class="sync-row"><span class="sync-type">Quarterly refresh — 12 records</span><span class="sync-time">Apr 14, 2026</span><span class="sync-count sc-ok">12 updated</span></div>
+              <div class="sync-row"><span class="sync-type">Manual — O'Brien, J &amp; P</span><span class="sync-time">Jan 14, 2026</span><span class="sync-count sc-ok">1 updated</span></div>
+              <div class="sync-row"><span class="sync-type">Change alert — 3 capacity shifts ≥10%</span><span class="sync-time">Jan 14, 2026</span><span class="sync-count sc-warn">3 alerts</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RelSci -->
+        <div class="int-card warning" id="card-relsci">
+          <div class="int-main">
+            <div class="int-logo" style="background:#212121;color:#BDBDBD">RS</div>
+            <div>
+              <div class="int-name">
+                RelSci
+                <span style="font-size:10px;font-weight:600;background:var(--amberl);color:var(--amber);padding:1px 7px;border-radius:20px">Relationship mapping</span>
+              </div>
+              <div class="int-desc">Board affiliations, executive connections, and relationship pathways to your donors. Powers the Linkage dimension of the LAI framework and surfaces life events.</div>
+              <div class="int-meta">
+                <div class="int-chip" style="color:var(--amber)"><svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M5.5 2v3.5M5.5 8v.5"/><path d="M1 10.5L5.5 1.5 10 10.5H1z"/></svg>API key expires in 8 days</div>
+                <div class="int-chip"><svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><circle cx="5.5" cy="5.5" r="4"/><path d="M5.5 3.5v2.5h2"/></svg>Last sync: 6 hrs ago</div>
+                <div class="int-chip"><svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><circle cx="5.5" cy="4" r="2.5"/><path d="M1 10c0-2.5 2-4.5 4.5-4.5S10 7.5 10 10"/></svg>15 connections on O'Brien</div>
+              </div>
+            </div>
+            <div class="int-actions">
+              <span class="status-pill sp-warning"><span class="sp-dot" style="background:var(--amber)"></span>Expiring soon</span>
+              <div class="int-action-btns">
+                <button class="ia-btn iab-ghost" onclick="toggleDetail('relsci')">Details ↓</button>
+                <button class="ia-btn iab-warning" onclick="openModal('relsci')">Renew key</button>
+              </div>
+            </div>
+          </div>
+          <div class="int-detail" id="detail-relsci">
+            <div class="id-alert id-alert-warning">
+              <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M7 2v4.5M7 10v.5"/><path d="M1.5 13L7 1.5 12.5 13H1.5z"/></svg>
+              <span>Your RelSci API key expires <strong>April 30, 2026</strong>. Renew it in the RelSci portal and update the key below before then to avoid a sync interruption. Screenings will fail silently after expiry.</span>
+            </div>
+            <div class="int-detail-inner">
+              <div>
+                <div class="id-section-title">Connection</div>
+                <div class="id-kv"><span class="id-key">API endpoint</span><span class="id-val">api.relsci.com/v2</span></div>
+                <div class="id-kv"><span class="id-key">Key expires</span><span class="id-val rose">Apr 30, 2026</span></div>
+                <div class="id-kv"><span class="id-key">Auth method</span><span class="id-val">API key</span></div>
+              </div>
+              <div>
+                <div class="id-section-title">Coverage</div>
+                <div class="id-kv"><span class="id-key">Donors with RelSci data</span><span class="id-val">38</span></div>
+                <div class="id-kv"><span class="id-key">Total connections mapped</span><span class="id-val">412</span></div>
+                <div class="id-kv"><span class="id-key">Life events tracked</span><span class="id-val">22</span></div>
+              </div>
+              <div>
+                <div class="id-section-title">Settings</div>
+                <div class="id-kv"><span class="id-key">Sync with WealthEngine</span><span class="id-val green">Combined run</span></div>
+                <div class="id-kv"><span class="id-key">Life event alerts</span><span class="id-val green">Enabled</span></div>
+                <div class="id-kv"><span class="id-key">Refresh schedule</span><span class="id-val">Quarterly</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── VOLUNTEER & COMPLIANCE ── -->
+    <div>
+      <div class="cat-heading">Volunteer management &amp; compliance</div>
+      <div class="int-grid" style="margin-top:10px">
+
+        <!-- Samaritan -->
+        <div class="int-card" id="card-samaritan">
+          <div class="int-main">
+            <div class="int-logo" style="background:#0D6E3F;color:white">SAM</div>
+            <div>
+              <div class="int-name">
+                Samaritan
+                <span style="font-size:10px;font-weight:600;background:var(--greenl);color:var(--green);padding:1px 7px;border-radius:20px">Volunteer scheduling</span>
+                <span style="font-size:10px;font-weight:600;background:var(--surf);color:var(--text3);border:1px solid var(--border);padding:1px 7px;border-radius:20px">Deep-link embed</span>
+              </div>
+              <div class="int-desc">Volunteer shift scheduling, sign-up workflows, and event slot management via deep-link embed. Samaritan pushes hours and assignments nightly. Atlas pushes volunteer-flagged individuals to Samaritan on creation.</div>
+              <div class="int-meta">
+                <div class="int-chip"><svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><circle cx="5.5" cy="5.5" r="4"/><path d="M5.5 3.5v2.5h2"/></svg>Last sync: 11:02 PM last night</div>
+                <div class="int-chip"><svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><circle cx="5.5" cy="4" r="2.5"/><path d="M1 10c0-2.5 2-4.5 4.5-4.5S10 7.5 10 10"/></svg>284 volunteers synced</div>
+                <div class="int-chip"><svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><rect x="1.5" y="2" width="8" height="7.5" rx="1.2"/><path d="M1.5 5h8"/></svg>312 upcoming shifts</div>
+              </div>
+            </div>
+            <div class="int-actions">
+              <span class="status-pill sp-connected"><span class="sp-dot" style="background:var(--green)"></span>Connected</span>
+              <div class="int-action-btns">
+                <button class="ia-btn iab-ghost" onclick="toggleDetail('samaritan')">Details ↓</button>
+                <button class="ia-btn iab-primary" onclick="openModal('samaritan')">Configure</button>
+              </div>
+            </div>
+          </div>
+          <div class="int-detail" id="detail-samaritan">
+            <div class="int-detail-inner">
+              <div>
+                <div class="id-section-title">Connection</div>
+                <div class="id-kv"><span class="id-key">Integration type</span><span class="id-val">Deep-link + API sync</span></div>
+                <div class="id-kv"><span class="id-key">Auth method</span><span class="id-val">OAuth 2.0</span></div>
+                <div class="id-kv"><span class="id-key">Embed domain</span><span class="id-val">diocese.samaritan.com</span></div>
+              </div>
+              <div>
+                <div class="id-section-title">Sync stats</div>
+                <div class="id-kv"><span class="id-key">Volunteers synced</span><span class="id-val">284</span></div>
+                <div class="id-kv"><span class="id-key">New pushed to Samaritan</span><span class="id-val green">3 this week</span></div>
+                <div class="id-kv"><span class="id-key">Hours pulled last night</span><span class="id-val green">14 records</span></div>
+              </div>
+              <div>
+                <div class="id-section-title">Settings</div>
+                <div class="id-kv"><span class="id-key">Nightly pull</span><span class="id-val green">11 PM daily</span></div>
+                <div class="id-kv"><span class="id-key">Push on volunteer flag</span><span class="id-val green">Immediate</span></div>
+                <div class="id-kv"><span class="id-key">BG check gate</span><span class="id-val green">Enforced</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Virtus / NCSI -->
+        <div class="int-card error" id="card-virtus">
+          <div class="int-main">
+            <div class="int-logo" style="background:#7B1D1D;color:#FCA5A5">VC</div>
+            <div>
+              <div class="int-name">
+                Virtus / NCSI
+                <span style="font-size:10px;font-weight:600;background:var(--rosel);color:var(--rose);padding:1px 7px;border-radius:20px">Background checks</span>
+              </div>
+              <div class="int-desc">Safe environment background check status for volunteers and staff. Tracks check dates, expiry, and blocks event assignment if check is not current. Supports both Virtus and NCSI providers.</div>
+              <div class="int-meta">
+                <div class="int-chip" style="color:var(--rose)"><svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><circle cx="5.5" cy="5.5" r="4"/><path d="M3.5 3.5l4 4M7.5 3.5l-4 4"/></svg>Sync failed — API timeout</div>
+                <div class="int-chip"><svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><circle cx="5.5" cy="5.5" r="4"/><path d="M5.5 3.5v2.5h2"/></svg>Last successful: Apr 20</div>
+                <div class="int-chip"><svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M1.5 5.5L5.5 1.5 9.5 5.5M5.5 1.5v8"/></svg>11 checks expiring within 60 days</div>
+              </div>
+            </div>
+            <div class="int-actions">
+              <span class="status-pill sp-error"><span class="sp-dot" style="background:var(--rose)"></span>Sync error</span>
+              <div class="int-action-btns">
+                <button class="ia-btn iab-ghost" onclick="toggleDetail('virtus')">Details ↓</button>
+                <button class="ia-btn iab-danger" onclick="retrySync('virtus')">Retry sync</button>
+                <button class="ia-btn iab-primary" onclick="openModal('virtus')">Configure</button>
+              </div>
+            </div>
+          </div>
+          <div class="int-detail" id="detail-virtus">
+            <div class="id-alert id-alert-error">
+              <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="7" cy="7" r="5.5"/><path d="M7 4.5V7.5M7 9.5v.3"/></svg>
+              <span>Last sync attempt failed on April 22 at 6:00 AM with a <strong>502 Bad Gateway</strong> from the Virtus API. This may be a temporary Virtus outage. Check <strong>status.virtus.com</strong> and retry. If the issue persists, contact Virtus support.</span>
+            </div>
+            <div class="int-detail-inner">
+              <div>
+                <div class="id-section-title">Connection</div>
+                <div class="id-kv"><span class="id-key">Provider</span><span class="id-val">Virtus + NCSI</span></div>
+                <div class="id-kv"><span class="id-key">Virtus API</span><span class="id-val rose">502 Bad Gateway</span></div>
+                <div class="id-kv"><span class="id-key">NCSI API</span><span class="id-val green">OK</span></div>
+                <div class="id-kv"><span class="id-key">Last successful</span><span class="id-val amber">Apr 20, 6:02 AM</span></div>
+              </div>
+              <div>
+                <div class="id-section-title">Check status</div>
+                <div class="id-kv"><span class="id-key">Volunteers on record</span><span class="id-val">284</span></div>
+                <div class="id-kv"><span class="id-key">Current — cleared</span><span class="id-val green">251</span></div>
+                <div class="id-kv"><span class="id-key">Expiring within 60 days</span><span class="id-val amber">11</span></div>
+                <div class="id-kv"><span class="id-key">Expired / not on file</span><span class="id-val rose">22</span></div>
+              </div>
+              <div>
+                <div class="id-section-title">Settings</div>
+                <div class="id-kv"><span class="id-key">Check frequency</span><span class="id-val">Daily 6 AM</span></div>
+                <div class="id-kv"><span class="id-key">Assignment block</span><span class="id-val green">Hard block</span></div>
+                <div class="id-kv"><span class="id-key">Expiry alert window</span><span class="id-val">60 days</span></div>
+                <div class="id-kv"><span class="id-key">Notify coordinator</span><span class="id-val green">Email + dashboard</span></div>
+              </div>
+            </div>
+            <div class="sync-log">
+              <div class="sync-log-title">Sync history</div>
+              <div class="sync-row"><span class="sync-type">Scheduled sync attempt</span><span class="sync-time">Apr 22, 6:00 AM</span><span class="sync-count sc-err">502 error</span></div>
+              <div class="sync-row"><span class="sync-type">Scheduled sync</span><span class="sync-time">Apr 21, 6:02 AM</span><span class="sync-count sc-ok">OK</span></div>
+              <div class="sync-row"><span class="sync-type">Scheduled sync</span><span class="sync-time">Apr 20, 6:02 AM</span><span class="sync-count sc-ok">OK</span></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── NOT YET CONNECTED ── -->
+    <div>
+      <div class="cat-heading">Available — not yet connected</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
+
+        <div class="int-card" style="opacity:.8">
+          <div class="int-main">
+            <div class="int-logo" style="background:#F1F5F9;color:#64748B;font-size:9px">SOC</div>
+            <div>
+              <div class="int-name" style="color:var(--text3)">Social media enrichment
+                <span style="font-size:10px;font-weight:600;background:var(--surf);color:var(--text3);border:1px solid var(--border);padding:1px 7px;border-radius:20px">Phase 3</span>
+              </div>
+              <div class="int-desc" style="color:var(--text3)">LinkedIn, professional profile discovery, and life event alerts via FullContact or Clearbit. Surfaces promotions and new board appointments for major gift timing.</div>
+            </div>
+            <div class="int-actions">
+              <span class="status-pill sp-inactive">Not connected</span>
+              <div class="int-action-btns">
+                <button class="ia-btn iab-connect" onclick="openModal('social')">Connect</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="int-card" style="opacity:.8">
+          <div class="int-main">
+            <div class="int-logo" style="background:#F1F5F9;color:#64748B;font-size:9px">PUB</div>
+            <div>
+              <div class="int-name" style="color:var(--text3)">Publication subscriptions
+                <span style="font-size:10px;font-weight:600;background:var(--surf);color:var(--text3);border:1px solid var(--border);padding:1px 7px;border-radius:20px">Phase 3</span>
+              </div>
+              <div class="int-desc" style="color:var(--text3)">Sync subscription records for diocesan publications. Manage complimentary subscriptions as stewardship benefits linked to donor giving levels.</div>
+            </div>
+            <div class="int-actions">
+              <span class="status-pill sp-inactive">Not connected</span>
+              <div class="int-action-btns">
+                <button class="ia-btn iab-connect" onclick="openModal('pub')">Connect</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── CONFIGURE MODAL ── -->
+<div class="modal-overlay" id="modal-overlay" onclick="handleOverlayClick(event)">
+  <div class="modal" id="modal">
+    <div class="modal-head">
+      <div class="modal-logo" id="modal-logo">DS</div>
+      <div>
+        <div class="modal-title" id="modal-title">Configure DocuSign</div>
+        <div class="modal-sub" id="modal-sub">Update API credentials and sync settings</div>
+      </div>
+      <button class="modal-close" onclick="closeModal()"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 2l8 8M10 2l-8 8"/></svg></button>
+    </div>
+    <div class="modal-body" id="modal-body">
+      <!-- populated by JS -->
+    </div>
+    <div class="modal-foot">
+      <button class="btn" onclick="closeModal()">Cancel</button>
+      <button class="btn" onclick="closeModal()" style="border-color:#FBCFE8;color:var(--rose)">Disconnect</button>
+      <button class="btn btn-primary" onclick="saveModal()">Save changes</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Toggle detail panels ──
+function toggleDetail(id) {
+  const el = document.getElementById('detail-' + id);
+  const btn = el.closest('.int-card').querySelector('.iab-ghost');
+  if (el.classList.contains('open')) {
+    el.classList.remove('open');
+    btn.textContent = 'Details ↓';
+  } else {
+    el.classList.add('open');
+    btn.textContent = 'Details ↑';
+  }
+}
+
+// ── Retry sync ──
+function retrySync(id) {
+  const card = document.getElementById('card-' + id);
+  const btn = card.querySelector('.iab-danger');
+  const pill = card.querySelector('.status-pill');
+  btn.textContent = '↻ Retrying…';
+  btn.disabled = true;
+  setTimeout(() => {
+    pill.className = 'status-pill sp-connected';
+    pill.innerHTML = '<span class="sp-dot" style="background:var(--green)"></span>Connected';
+    btn.textContent = '✓ Synced';
+    btn.style.background = 'var(--green)';
+    btn.style.color = 'white';
+    btn.style.border = 'none';
+    card.classList.remove('error');
+    const metaChip = card.querySelector('.int-chip');
+    if (metaChip) metaChip.style.color = '';
+    // update last sync text
+    const chips = card.querySelectorAll('.int-chip');
+    chips.forEach(c => {
+      if (c.textContent.includes('Sync failed')) {
+        c.innerHTML = c.innerHTML.replace('Sync failed — API timeout', 'Last sync: just now');
+        c.style.color = '';
+      }
+    });
+  }, 2200);
+}
+
+// ── Sync all ──
+function syncAll() {
+  const icon = document.getElementById('sync-all-icon');
+  icon.classList.add('spinning');
+  setTimeout(() => icon.classList.remove('spinning'), 2000);
+}
+
+// ── Modal configs ──
+const modalConfigs = {
+  docusign: {
+    logo: 'DS', logoBg: '#1A2B63', logoColor: '#F9B800',
+    title: 'Configure DocuSign',
+    sub: 'Gift agreements · OAuth 2.0 JWT',
+    body: `
+      <div class="form-row"><label class="form-label">Account ID <span>*</span></label>
+        <input class="form-input" value="org-diocese-stpete"></div>
+      <div class="form-row"><label class="form-label">Integration key <span>*</span></label>
+        <input class="form-input" type="password" value="••••••••••••••••••••"></div>
+      <div class="form-row"><label class="form-label">RSA private key</label>
+        <textarea class="form-input" style="min-height:60px;resize:none" placeholder="Paste private key for JWT auth…"></textarea>
+        <span class="form-hint">Used for JWT grant flow. Rotate annually in DocuSign Admin.</span></div>
+      <div class="form-row-2">
+        <div class="form-row"><label class="form-label">Reminder after (days)</label>
+          <input class="form-input" value="3" type="number"></div>
+        <div class="form-row"><label class="form-label">Envelope expiry (days)</label>
+          <input class="form-input" value="30" type="number"></div>
+      </div>
+      <div class="toggle-row"><div><div class="toggle-label">Auto-attach signed documents</div><div class="toggle-sub">Attach completed PDFs to the gift/pledge record</div></div>
+        <button class="toggle on" onclick="this.classList.toggle('on');this.classList.toggle('off')"><div class="toggle-thumb"></div></button></div>
+      <div class="toggle-row"><div><div class="toggle-label">Notify staff on signature</div><div class="toggle-sub">Email the assigned gift officer when a signer completes</div></div>
+        <button class="toggle on" onclick="this.classList.toggle('on');this.classList.toggle('off')"><div class="toggle-thumb"></div></button></div>
+    `
+  },
+  wealthengine: {
+    logo: 'WE', logoBg: '#0F3460', logoColor: '#E94560',
+    title: 'Configure WealthEngine',
+    sub: 'Wealth screening · API key',
+    body: `
+      <div class="form-row"><label class="form-label">API key <span>*</span></label>
+        <input class="form-input" type="password" value="••••••••••••••••••••"></div>
+      <div class="form-row"><label class="form-label">API version</label>
+        <select class="form-select"><option>v3.1 (recommended)</option><option>v3.0</option></select></div>
+      <div class="form-row"><label class="form-label">Refresh schedule</label>
+        <select class="form-select"><option>Quarterly</option><option>Monthly</option><option>Manual only</option></select></div>
+      <div class="form-row"><label class="form-label">Change alert threshold (%)</label>
+        <input class="form-input" value="10" type="number">
+        <span class="form-hint">Alert staff when a donor's capacity estimate changes by this percentage or more.</span></div>
+      <div class="toggle-row"><div><div class="toggle-label">Auto-screen new prospects</div><div class="toggle-sub">Run a WealthEngine screen when a donor enters the pipeline</div></div>
+        <button class="toggle on" onclick="this.classList.toggle('on');this.classList.toggle('off')"><div class="toggle-thumb"></div></button></div>
+      <div class="toggle-row"><div><div class="toggle-label">Keep version history</div><div class="toggle-sub">Never overwrite prior screens — always create a new versioned record</div></div>
+        <button class="toggle on" onclick="this.classList.toggle('on');this.classList.toggle('off')"><div class="toggle-thumb"></div></button></div>
+    `
+  },
+  relsci: {
+    logo: 'RS', logoBg: '#212121', logoColor: '#BDBDBD',
+    title: 'Renew RelSci API key',
+    sub: 'Relationship mapping · Key expires Apr 30, 2026',
+    body: `
+      <div style="background:var(--amberl);border:1px solid #FDE68A;border-radius:8px;padding:11px 13px;font-size:12px;color:#78350F;margin-bottom:4px">
+        Your current key expires in 8 days. Paste your new key below. Get it from your RelSci account portal at relsci.com/settings/api.</div>
+      <div class="form-row"><label class="form-label">New API key <span>*</span></label>
+        <input class="form-input" placeholder="Paste new RelSci API key…"></div>
+      <div class="form-row"><label class="form-label">API endpoint</label>
+        <input class="form-input" value="api.relsci.com/v2"></div>
+      <div class="form-row"><label class="form-label">Refresh schedule</label>
+        <select class="form-select"><option>Quarterly (combined with WealthEngine)</option><option>Monthly</option><option>Manual only</option></select></div>
+      <div class="toggle-row"><div><div class="toggle-label">Life event alerts</div><div class="toggle-sub">Alert staff when RelSci detects a life event (promotion, new board role)</div></div>
+        <button class="toggle on" onclick="this.classList.toggle('on');this.classList.toggle('off')"><div class="toggle-thumb"></div></button></div>
+    `
+  },
+  virtus: {
+    logo: 'VC', logoBg: '#7B1D1D', logoColor: '#FCA5A5',
+    title: 'Configure Virtus / NCSI',
+    sub: 'Safe environment · Background checks',
+    body: `
+      <div class="form-row"><label class="form-label">Virtus API key</label>
+        <input class="form-input" type="password" value="••••••••••••••••••••"></div>
+      <div class="form-row"><label class="form-label">NCSI API key</label>
+        <input class="form-input" type="password" value="••••••••••••••••••••"></div>
+      <div class="form-row"><label class="form-label">Sync schedule</label>
+        <select class="form-select"><option>Daily — 6:00 AM</option><option>Twice daily</option><option>Manual only</option></select></div>
+      <div class="form-row"><label class="form-label">Expiry alert window (days)</label>
+        <input class="form-input" value="60" type="number">
+        <span class="form-hint">Alert coordinators this many days before a check expires.</span></div>
+      <div class="form-row"><label class="form-label">Assignment block policy</label>
+        <select class="form-select"><option>Hard block — cannot assign if check not current</option><option>Soft warning — allow with supervisor override</option></select></div>
+      <div class="toggle-row"><div><div class="toggle-label">Email coordinator on expiry</div><div class="toggle-sub">Send an email alert when a volunteer's check is expiring</div></div>
+        <button class="toggle on" onclick="this.classList.toggle('on');this.classList.toggle('off')"><div class="toggle-thumb"></div></button></div>
+    `
+  },
+  samaritan: {
+    logo: 'SAM', logoBg: '#0D6E3F', logoColor: 'white',
+    title: 'Configure Samaritan',
+    sub: 'Volunteer scheduling · Deep-link + API sync',
+    body: `
+      <div class="form-row"><label class="form-label">Samaritan subdomain <span>*</span></label>
+        <input class="form-input" value="diocese"></div>
+      <div class="form-row"><label class="form-label">OAuth client ID</label>
+        <input class="form-input" type="password" value="••••••••••••••••••••"></div>
+      <div class="form-row"><label class="form-label">Nightly pull time</label>
+        <select class="form-select"><option>11:00 PM</option><option>10:00 PM</option><option>12:00 AM</option></select></div>
+      <div class="toggle-row"><div><div class="toggle-label">Push new volunteers immediately</div><div class="toggle-sub">When a volunteer flag is set in Atlas, push to Samaritan right away</div></div>
+        <button class="toggle on" onclick="this.classList.toggle('on');this.classList.toggle('off')"><div class="toggle-thumb"></div></button></div>
+      <div class="toggle-row"><div><div class="toggle-label">Enforce background check gate</div><div class="toggle-sub">Block Samaritan assignment if Virtus/NCSI check is not current in Atlas</div></div>
+        <button class="toggle on" onclick="this.classList.toggle('on');this.classList.toggle('off')"><div class="toggle-thumb"></div></button></div>
+    `
+  },
+  marketsmart: {
+    logo: 'MS', logoBg: '#1F4E79', logoColor: '#90CAF9',
+    title: 'Configure MarketSmart',
+    sub: 'Planned giving · API sync',
+    body: `
+      <div class="form-row"><label class="form-label">API key <span>*</span></label>
+        <input class="form-input" type="password" value="••••••••••••••••••••"></div>
+      <div class="form-row"><label class="form-label">Sync frequency</label>
+        <select class="form-select"><option>Every 2 hours</option><option>Every 6 hours</option><option>Daily</option></select></div>
+      <div class="form-row"><label class="form-label">Pipeline stage on import</label>
+        <select class="form-select"><option>Identification</option><option>Qualification</option><option>Cultivation</option></select></div>
+      <div class="toggle-row"><div><div class="toggle-label">Auto-create pipeline record</div><div class="toggle-sub">Automatically add a moves management record when a new prospect syncs</div></div>
+        <button class="toggle on" onclick="this.classList.toggle('on');this.classList.toggle('off')"><div class="toggle-thumb"></div></button></div>
+    `
+  },
+  marketo: {
+    logo: 'MK', logoBg: '#5C4EE5', logoColor: 'white',
+    title: 'Configure Marketo',
+    sub: 'Print campaigns · One-way export',
+    body: `
+      <div class="form-row"><label class="form-label">Munchkin ID <span>*</span></label>
+        <input class="form-input" value="814-XYZ-001"></div>
+      <div class="form-row"><label class="form-label">Client ID</label>
+        <input class="form-input" type="password" value="••••••••••••••••••••"></div>
+      <div class="form-row"><label class="form-label">Client secret</label>
+        <input class="form-input" type="password" value="••••••••••••••••••••"></div>
+      <div class="form-row"><label class="form-label">Scheduled export</label>
+        <select class="form-select"><option>Monthly — 1st of month</option><option>Quarterly</option><option>Manual only</option></select></div>
+      <div class="form-row">
+        <label class="form-label">Field mapping</label>
+        <div style="background:var(--amberl);border:1px solid #FDE68A;border-radius:8px;padding:10px 12px;font-size:12px;color:#78350F">
+          Field mapping needs review — 3 Atlas fields are not mapped to Marketo tokens. <a href="#" style="color:var(--amber);font-weight:600">Review mapping →</a>
+        </div>
+      </div>
+    `
+  },
+  social: {
+    logo: '🔗', logoBg: '#F1F5F9', logoColor: '#475569',
+    title: 'Connect Social Enrichment',
+    sub: 'Phase 3 · Not yet configured',
+    body: `
+      <div style="background:var(--bluep);border:1px solid var(--bluel);border-radius:8px;padding:11px 13px;font-size:12px;color:#1E40AF;margin-bottom:4px">
+        Social enrichment requires selecting a vendor (FullContact or Clearbit) and diocese approval for privacy policy updates before enabling.</div>
+      <div class="form-row"><label class="form-label">Vendor</label>
+        <select class="form-select"><option value="">— Select a vendor —</option><option>FullContact</option><option>Clearbit</option><option>Manual entry only</option></select></div>
+      <div class="form-row"><label class="form-label">API key</label>
+        <input class="form-input" placeholder="Paste vendor API key…"></div>
+      <div class="toggle-row"><div><div class="toggle-label">Life event alerts</div><div class="toggle-sub">Alert staff when a donor is promoted, changes employer, or joins a new board</div></div>
+        <button class="toggle off" onclick="this.classList.toggle('on');this.classList.toggle('off')"><div class="toggle-thumb"></div></button></div>
+    `
+  },
+};
+
+function openModal(id) {
+  const cfg = modalConfigs[id] || { logo:'?', logoBg:'#64748B', logoColor:'white', title:'Configure', sub:'', body:'' };
+  const logo = document.getElementById('modal-logo');
+  logo.textContent = cfg.logo;
+  logo.style.background = cfg.logoBg;
+  logo.style.color = cfg.logoColor;
+  document.getElementById('modal-title').textContent = cfg.title;
+  document.getElementById('modal-sub').textContent = cfg.sub;
+  document.getElementById('modal-body').innerHTML = cfg.body;
+  document.getElementById('modal-overlay').classList.add('show');
+}
+function closeModal() { document.getElementById('modal-overlay').classList.remove('show'); }
+function handleOverlayClick(e) { if (e.target === document.getElementById('modal-overlay')) closeModal(); }
+function saveModal() {
+  closeModal();
+}
+</script>
+</body>
+</html>

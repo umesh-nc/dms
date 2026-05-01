@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GiveCentral Atlas — Batch Gift Entry</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --navy:   #0E1E35; --navy2:  #152844;
+      --blue:   #2563EB; --bluel:  #DBEAFE; --bluep: #EFF6FF;
+      --green:  #15803D; --greenl: #DCFCE7;
+      --amber:  #D97706; --amberl: #FEF3C7;
+      --rose:   #BE185D; --rosel:  #FCE7F3;
+      --teal:   #0D9488; --teall:  #CCFBF1;
+      --text:   #0F172A; --text2:  #334155; --text3:  #64748B;
+      --border: #E2E8F0; --surf:   #F8FAFC; --white:  #FFFFFF;
+    }
+    html { font-size: 14px; -webkit-font-smoothing: antialiased; }
+    body { font-family: 'DM Sans', sans-serif; background: #F0F4F8; color: var(--text); min-height: 100vh; display: flex; overflow: hidden; height: 100vh; }
+
+    /* ── SIDEBAR ── */
+    .sidebar { width: 220px; background: var(--navy); height: 100vh; display: flex; flex-direction: column; flex-shrink: 0; }
+    .sb-logo { padding: 18px 18px 14px; display: flex; align-items: center; gap: 9px; border-bottom: 1px solid rgba(255,255,255,.08); }
+    .sb-mark { width: 30px; height: 30px; background: var(--blue); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+    .sb-mark svg { width: 15px; height: 15px; }
+    .sb-name { font-family: 'DM Serif Display', serif; font-size: 15px; color: white; line-height: 1; }
+    .sb-sub  { font-size: 9px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.3); margin-top: 3px; }
+    .nav-group { padding: 10px 8px 0; }
+    .nav-label { font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.28); padding: 0 10px; margin-bottom: 4px; }
+    .nav-item  { display: flex; align-items: center; gap: 9px; padding: 8px 10px; border-radius: 7px; font-size: 12px; font-weight: 500; color: rgba(255,255,255,.55); cursor: pointer; transition: all .15s; margin-bottom: 1px; }
+    .nav-item:hover  { background: rgba(255,255,255,.07); color: rgba(255,255,255,.85); }
+    .nav-item.active { background: var(--blue); color: white; }
+    .nav-item svg    { width: 14px; height: 14px; flex-shrink: 0; }
+    .nav-badge { margin-left: auto; background: rgba(255,255,255,.15); color: rgba(255,255,255,.7); border-radius: 10px; padding: 1px 7px; font-size: 10px; font-weight: 600; }
+    .sb-user { margin-top: auto; padding: 12px; border-top: 1px solid rgba(255,255,255,.08); display: flex; align-items: center; gap: 9px; }
+    .u-av { width: 30px; height: 30px; border-radius: 50%; background: var(--blue); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: white; }
+
+    /* ── MAIN ── */
+    .main { flex: 1; min-width: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+
+    /* Topbar */
+    .topbar { background: white; border-bottom: 1px solid var(--border); padding: 0 24px; height: 52px; display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+    .tb-icon { width: 28px; height: 28px; background: var(--bluep); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+    .tb-icon svg { width: 14px; height: 14px; color: var(--blue); }
+    .tb-title { font-size: 15px; font-weight: 600; color: var(--text); }
+    .tb-sep   { width: 1px; height: 18px; background: var(--border); }
+    .tb-sub   { font-size: 12px; color: var(--text3); }
+    .tb-right { margin-left: auto; display: flex; gap: 8px; }
+    .btn { padding: 6px 14px; border-radius: 7px; font-size: 12px; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .15s; display: flex; align-items: center; gap: 6px; }
+    .btn svg { width: 12px; height: 12px; }
+    .btn-ghost   { background: none; border: 1px solid var(--border); color: var(--text2); }
+    .btn-ghost:hover { background: var(--surf); }
+    .btn-blue    { background: var(--blue); color: white; border: none; box-shadow: 0 1px 4px rgba(37,99,235,.3); }
+    .btn-blue:hover { background: #1D4ED8; }
+    .btn-green   { background: var(--green); color: white; border: none; box-shadow: 0 1px 4px rgba(21,128,61,.3); }
+    .btn-green:hover { background: #126e31; }
+    .btn-amber   { background: var(--amber); color: white; border: none; box-shadow: 0 1px 4px rgba(217,119,6,.3); }
+    .btn-amber:hover { background: #b45309; }
+    .btn-disabled { background: var(--surf); color: var(--text3); border: 1px solid var(--border); cursor: not-allowed; opacity: .7; }
+
+    /* ── CONTENT ── */
+    .content { flex: 1; overflow-y: auto; padding: 20px 24px 80px; display: flex; flex-direction: column; gap: 14px; }
+
+    /* ── BATCH HEADER CARD ── */
+    .batch-header { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 16px 20px; display: flex; align-items: center; gap: 20px; }
+    .bh-info { flex: 1; }
+    .bh-name { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 3px; }
+    .bh-meta { font-size: 12px; color: var(--text3); display: flex; gap: 14px; flex-wrap: wrap; }
+    .bh-meta span { display: flex; align-items: center; gap: 5px; }
+    .bh-meta svg  { width: 11px; height: 11px; }
+    .bh-stats { display: flex; gap: 0; }
+    .bhs { padding: 8px 16px; border-left: 1px solid var(--border); text-align: center; }
+    .bhs-val { font-size: 20px; font-weight: 600; color: var(--text); line-height: 1; font-family: 'DM Serif Display', serif; }
+    .bhs-val.green { color: var(--green); }
+    .bhs-val.rose  { color: var(--rose); }
+    .bhs-val.amber { color: var(--amber); }
+    .bhs-lbl { font-size: 10px; color: var(--text3); margin-top: 3px; }
+
+    /* ── VALIDATION BANNER ── */
+    .validation-banner {
+      background: #FEF3C7; border: 1px solid #FCD34D; border-radius: 10px;
+      padding: 13px 18px; display: flex; gap: 14px; align-items: flex-start;
+    }
+    .vb-icon { width: 32px; height: 32px; background: var(--amberl); border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .vb-icon svg { width: 14px; height: 14px; color: var(--amber); }
+    .vb-title { font-size: 13px; font-weight: 600; color: #78350F; margin-bottom: 4px; }
+    .vb-body  { font-size: 12px; color: #92400E; line-height: 1.6; flex: 1; }
+    .vb-actions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+
+    /* ── FILTER BAR ── */
+    .filter-bar { display: flex; align-items: center; gap: 10px; background: white; border: 1px solid var(--border); border-radius: 10px; padding: 10px 16px; }
+    .filter-pills { display: flex; gap: 6px; }
+    .fp { padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 500; border: 1px solid var(--border); color: var(--text3); cursor: pointer; transition: all .15s; user-select: none; }
+    .fp:hover { border-color: #94A3B8; color: var(--text2); }
+    .fp.active  { background: var(--navy); color: white; border-color: var(--navy); font-weight: 600; }
+    .fp.f-valid { }
+    .fp.f-error { }
+    .fp.f-warn  { }
+    .fp.active.f-valid { background: var(--green); border-color: var(--green); }
+    .fp.active.f-error { background: var(--rose);  border-color: var(--rose); }
+    .fp.active.f-warn  { background: var(--amber); border-color: var(--amber); }
+    .filter-search { flex: 1; }
+    .filter-search input { width: 100%; border: 1px solid var(--border); border-radius: 7px; padding: 6px 12px; font-size: 12px; font-family: 'DM Sans', sans-serif; color: var(--text); background: var(--surf); outline: none; }
+    .filter-search input:focus { border-color: var(--blue); background: white; }
+
+    /* ── BATCH TABLE ── */
+    .batch-table-wrap { background: white; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    .bt-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+    .bt-table thead tr { background: var(--surf); }
+    .bt-table th { font-size: 10px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--text3); padding: 9px 12px; text-align: left; border-bottom: 1px solid var(--border); white-space: nowrap; overflow: hidden; }
+    .bt-table th.col-check { width: 36px; }
+    .bt-table th.col-row   { width: 44px; }
+    .bt-table th.col-donor { width: 200px; }
+    .bt-table th.col-amt   { width: 90px; }
+    .bt-table th.col-date  { width: 90px; }
+    .bt-table th.col-fund  { width: 160px; }
+    .bt-table th.col-appl  { width: 140px; }
+    .bt-table th.col-type  { width: 90px; }
+    .bt-table th.col-status{ width: 160px; }
+    .bt-table th.col-act   { width: 60px; }
+
+    .bt-table td { padding: 0; border-bottom: .5px solid var(--border); vertical-align: middle; }
+    .bt-table tr:last-child td { border-bottom: none; }
+    .td-inner { padding: 9px 12px; font-size: 12px; }
+
+    /* Row state coloring */
+    .row-valid  td { background: white; }
+    .row-valid:hover td { background: #F0FDF4; }
+    .row-error  td { background: #FFF5F5; }
+    .row-error:hover td { background: #FFE8E8; }
+    .row-error  td:first-child { box-shadow: inset 3px 0 0 var(--rose); }
+    .row-warn   td { background: #FFFBEB; }
+    .row-warn:hover td { background: #FEF3C7; }
+    .row-warn   td:first-child { box-shadow: inset 3px 0 0 var(--amber); }
+    .row-posted td { background: #F0FDF4; opacity: .65; }
+    .row-posted td:first-child { box-shadow: inset 3px 0 0 var(--green); }
+
+    /* Status badges */
+    .status-pill { display: inline-flex; align-items: center; gap: 5px; padding: 3px 8px; border-radius: 20px; font-size: 10px; font-weight: 700; white-space: nowrap; }
+    .sp-valid  { background: var(--greenl); color: var(--green); }
+    .sp-error  { background: var(--rosel);  color: var(--rose); }
+    .sp-warn   { background: var(--amberl); color: var(--amber); }
+    .sp-posted { background: var(--bluel);  color: #1D4ED8; }
+    .sp-dot    { width: 5px; height: 5px; border-radius: 50%; }
+
+    /* Error detail inline */
+    .error-detail { font-size: 11px; color: var(--rose); margin-top: 2px; display: flex; align-items: center; gap: 4px; }
+    .error-detail svg { width: 10px; height: 10px; flex-shrink: 0; }
+    .warn-detail  { font-size: 11px; color: var(--amber); margin-top: 2px; display: flex; align-items: center; gap: 4px; }
+    .warn-detail svg { width: 10px; height: 10px; flex-shrink: 0; }
+
+    /* Row action icons */
+    .row-actions { display: flex; gap: 4px; }
+    .ra-btn { width: 26px; height: 26px; border: 1px solid var(--border); border-radius: 7px; background: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .15s; }
+    .ra-btn:hover { background: var(--surf); border-color: #94A3B8; }
+    .ra-btn svg { width: 11px; height: 11px; color: var(--text3); }
+
+    /* Checkbox */
+    .row-checkbox { width: 15px; height: 15px; border: 1.5px solid var(--border); border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .15s; flex-shrink: 0; }
+    .row-checkbox.checked { background: var(--blue); border-color: var(--blue); }
+    .row-checkbox.checked svg { display: block; }
+    .row-checkbox svg { display: none; width: 9px; height: 9px; }
+
+    /* ── CONTROL TOTAL RECONCILIATION ── */
+    .recon-bar { background: var(--navy); border-radius: 10px; padding: 12px 20px; display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+    .recon-item { text-align: center; }
+    .recon-val { font-family: 'DM Serif Display', serif; font-size: 18px; color: white; }
+    .recon-val.green { color: #86EFAC; }
+    .recon-val.rose  { color: #FDA4AF; }
+    .recon-lbl { font-size: 9px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: rgba(255,255,255,.4); margin-top: 3px; }
+    .recon-sep { width: 1px; height: 36px; background: rgba(255,255,255,.1); }
+    .recon-status { display: flex; align-items: center; gap: 8px; }
+    .recon-status-dot { width: 8px; height: 8px; border-radius: 50%; }
+    .recon-status-text { font-size: 12px; font-weight: 600; }
+
+    /* ── POST ACTIONS FOOTER ── */
+    .post-footer { background: white; border: 1.5px solid var(--border); border-radius: 12px; padding: 16px 20px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+    .pf-summary { flex: 1; }
+    .pf-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+    .pf-body  { font-size: 12px; color: var(--text3); line-height: 1.55; }
+    .pf-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    /* ── SUCCESS STATE ── */
+    .success-overlay { display: none; }
+    .success-overlay.show { display: flex; }
+    .success-panel { background: white; border-radius: 16px; border: 1px solid var(--border); padding: 36px 40px; max-width: 560px; width: 100%; text-align: center; }
+    .success-icon { width: 60px; height: 60px; background: var(--greenl); border-radius: 50%; margin: 0 auto 18px; display: flex; align-items: center; justify-content: center; }
+    .success-icon svg { width: 26px; height: 26px; color: var(--green); }
+    .success-title { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--text); margin-bottom: 10px; }
+    .success-body  { font-size: 13px; color: var(--text2); line-height: 1.7; margin-bottom: 20px; }
+    .success-stats { display: flex; gap: 0; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin-bottom: 22px; }
+    .ss-stat { flex: 1; padding: 14px; border-right: 1px solid var(--border); }
+    .ss-stat:last-child { border-right: none; }
+    .ss-val { font-family: 'DM Serif Display', serif; font-size: 22px; line-height: 1; margin-bottom: 4px; }
+    .ss-val.green { color: var(--green); }
+    .ss-val.amber { color: var(--amber); }
+    .ss-lbl { font-size: 10px; color: var(--text3); }
+    .success-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
+    /* ── EXCEPTION BATCH PANEL ── */
+    .exc-panel { background: #FFFBEB; border: 1.5px solid #FCD34D; border-radius: 12px; overflow: hidden; display: none; }
+    .exc-panel.show { display: block; }
+    .exc-header { padding: 12px 18px; border-bottom: 1px solid #FDE68A; display: flex; align-items: center; gap: 10px; }
+    .exc-icon { width: 28px; height: 28px; background: var(--amberl); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+    .exc-icon svg { width: 13px; height: 13px; color: var(--amber); }
+    .exc-title { font-size: 13px; font-weight: 600; color: #78350F; flex: 1; }
+    .exc-badge { font-size: 10px; font-weight: 700; background: var(--amber); color: white; padding: 2px 9px; border-radius: 20px; }
+    .exc-body { padding: 14px 18px; }
+
+    /* Locked batch notice */
+    .locked-notice { display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: var(--bluel); border: 1px solid #93C5FD; border-radius: 8px; margin-bottom: 12px; font-size: 12px; color: #1D4ED8; }
+    .locked-notice svg { width: 14px; height: 14px; flex-shrink: 0; }
+  </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sb-logo">
+    <div class="sb-mark"><svg viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7.5" stroke="white" stroke-width="1.5"/><path d="M5.5 9.5C6.5 11.5 9 13 9 13s2.5-1.5 3.5-3.5S12 5 9 5 4.5 7.5 5.5 9.5z" fill="white" fill-opacity=".9"/></svg></div>
+    <div><div class="sb-name">GiveCentral</div><div class="sb-sub">Atlas CRM</div></div>
+  </div>
+  <div class="nav-group">
+    <div class="nav-label">Main</div>
+    <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><rect x="1.5" y="1.5" width="4" height="4" rx="1.2"/><rect x="8.5" y="1.5" width="4" height="4" rx="1.2"/><rect x="1.5" y="8.5" width="4" height="4" rx="1.2"/><rect x="8.5" y="8.5" width="4" height="4" rx="1.2"/></svg>Dashboard</div>
+    <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="6" cy="4.5" r="3"/><path d="M1 13c0-2.8 2.2-5 5-5h1c2.8 0 5 2.2 5 5"/></svg>Donors</div>
+    <div class="nav-item active"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M7 1.5v11M2 6.5h10"/></svg>Gifts &amp; pledges</div>
+    <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M1.5 8.5l2.5-2.5 2 2 2.5-2.5 2 2"/><rect x="1.5" y="1.5" width="11" height="11" rx="2"/></svg>Campaigns</div>
+  </div>
+  <div class="nav-group" style="margin-top:8px">
+    <div class="nav-label">Tools</div>
+    <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><rect x="1.5" y="3" width="11" height="9" rx="1.5"/><path d="M1.5 6.5h11M5 3v2M9 3v2"/></svg>Batch entry<span class="nav-badge">3</span></div>
+    <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M7 1.5v9M3.5 7l3.5 4 3.5-4"/><path d="M1.5 12.5h11"/></svg>Import</div>
+  </div>
+  <div class="sb-user">
+    <div class="u-av">JW</div>
+    <div><div style="font-size:12px;font-weight:500;color:rgba(255,255,255,.75)">Janet Williams</div><div style="font-size:10px;color:rgba(255,255,255,.35)">Gift entry clerk</div></div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="tb-icon"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><rect x="1.5" y="3" width="11" height="9" rx="1.5"/><path d="M1.5 6.5h11M5 3v2M9 3v2"/></svg></div>
+    <span class="tb-title">Batch entry</span>
+    <div class="tb-sep"></div>
+    <span class="tb-sub" id="topbar-sub">Batch #2026-0418 · CMA April Mail · In progress</span>
+    <div class="tb-right">
+      <button class="btn btn-ghost" id="btn-validate" onclick="runValidation()">
+        <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><circle cx="6" cy="6" r="4.5"/><path d="M4 6l1.5 1.5 3-3"/></svg>
+        Validate batch
+      </button>
+      <button class="btn btn-ghost" id="btn-save">
+        <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M6 1v7M3 5.5l3 3 3-3"/><path d="M1.5 10.5h9"/></svg>
+        Save draft
+      </button>
+    </div>
+  </div>
+
+  <div class="content" id="main-content">
+
+    <!-- Phase 1: Entry state (batch header + table) -->
+    <div id="phase-entry">
+
+      <!-- Batch header -->
+      <div class="batch-header">
+        <div class="bh-info">
+          <div class="bh-name">Batch #2026-0418 — CMA April Mail Response</div>
+          <div class="bh-meta">
+            <span><svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><rect x="1" y="2" width="9" height="8" rx="1.2"/><path d="M1 5h9M3.5 2v2M7.5 2v2"/></svg>Created Apr 18, 2026</span>
+            <span><svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><circle cx="5.5" cy="4" r="2.5"/><path d="M1 10c0-2.5 2-4.5 4.5-4.5S10 7.5 10 10"/></svg>Janet Williams</span>
+            <span><svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M5.5 1v6M2.5 5l3 3 3-3"/></svg>Appeal: CMA 2026 Direct Mail</span>
+          </div>
+        </div>
+        <div class="bh-stats">
+          <div class="bhs"><div class="bhs-val" id="stat-total">14</div><div class="bhs-lbl">Total rows</div></div>
+          <div class="bhs"><div class="bhs-val green" id="stat-valid">0</div><div class="bhs-lbl">Valid</div></div>
+          <div class="bhs"><div class="bhs-val rose"  id="stat-errors">0</div><div class="bhs-lbl">Errors</div></div>
+          <div class="bhs"><div class="bhs-val amber" id="stat-warnings">0</div><div class="bhs-lbl">Warnings</div></div>
+        </div>
+      </div>
+
+      <!-- Validation banner (hidden until validate runs) -->
+      <div class="validation-banner" id="validation-banner" style="display:none">
+        <div class="vb-icon"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M7 2v4.5M7 10v.5"/><path d="M1.5 13L7 1.5 12.5 13H1.5z"/></svg></div>
+        <div style="flex:1">
+          <div class="vb-title">Batch validated — 3 rows require attention</div>
+          <div class="vb-body">
+            <strong>2 errors</strong> (cannot post): Row 4 — donor not found in database; Row 11 — fund code GL-4450 not valid for Diocese entity.<br>
+            <strong>1 warning</strong> (will post with flag): Row 8 — possible duplicate gift, same donor gave $250 on Apr 15. Review before posting.
+          </div>
+          <div class="vb-actions">
+            <button class="btn btn-green" onclick="showPostOptions()">
+              <svg viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="1.4" stroke-linecap="round"><path d="M2 6l3 3 6-6"/></svg>
+              Post 11 clean gifts now
+            </button>
+            <button class="btn btn-amber" onclick="filterErrors()">
+              <svg viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="1.4" stroke-linecap="round"><path d="M6 1.5v4.5M6 9v.5"/><path d="M1 11L6 1l5 10H1z"/></svg>
+              Review 3 exceptions
+            </button>
+            <button class="btn btn-ghost">Fix errors inline</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filter bar -->
+      <div class="filter-bar">
+        <div class="filter-pills">
+          <div class="fp active" onclick="filterRows('all',this)">All (14)</div>
+          <div class="fp f-valid" onclick="filterRows('valid',this)">Valid (11)</div>
+          <div class="fp f-error" onclick="filterRows('error',this)">Errors (2)</div>
+          <div class="fp f-warn"  onclick="filterRows('warn',this)">Warnings (1)</div>
+        </div>
+        <div class="filter-search"><input type="text" placeholder="Search donor name, amount…" oninput="searchRows(this.value)"></div>
+        <span style="font-size:12px;color:var(--text3);white-space:nowrap">Control total:</span>
+        <input type="text" value="$4,375.00" style="width:100px;border:1px solid var(--border);border-radius:7px;padding:5px 10px;font-size:12px;font-family:'DM Sans',sans-serif;color:var(--text);background:var(--surf);outline:none">
+      </div>
+
+      <!-- Batch table -->
+      <div class="batch-table-wrap">
+        <table class="bt-table" id="batch-table">
+          <thead>
+            <tr>
+              <th class="col-check"><div class="row-checkbox" id="select-all-cb" onclick="toggleSelectAll(this)" style="margin:0 auto"><svg viewBox="0 0 9 9" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round"><path d="M1.5 4.5l2 2 4-4"/></svg></div></th>
+              <th class="col-row">#</th>
+              <th class="col-donor">Donor</th>
+              <th class="col-amt">Amount</th>
+              <th class="col-date">Gift date</th>
+              <th class="col-fund">Fund</th>
+              <th class="col-appl">Appeal</th>
+              <th class="col-type">Type</th>
+              <th class="col-status">Status</th>
+              <th class="col-act"></th>
+            </tr>
+          </thead>
+          <tbody id="batch-tbody"></tbody>
+        </table>
+      </div>
+
+      <!-- Control total reconciliation -->
+      <div class="recon-bar" id="recon-bar">
+        <div class="recon-item"><div class="recon-val">$4,375.00</div><div class="recon-lbl">Control total</div></div>
+        <div class="recon-sep"></div>
+        <div class="recon-item"><div class="recon-val" id="recon-entered">$0.00</div><div class="recon-lbl">Entered total</div></div>
+        <div class="recon-sep"></div>
+        <div class="recon-item"><div class="recon-val" id="recon-clean">$0.00</div><div class="recon-lbl">Clean gifts total</div></div>
+        <div class="recon-sep"></div>
+        <div class="recon-item"><div class="recon-val rose" id="recon-exception">$0.00</div><div class="recon-lbl">Exception total</div></div>
+        <div class="recon-sep"></div>
+        <div class="recon-status" id="recon-status">
+          <div class="recon-status-dot" style="background:var(--text3)"></div>
+          <span class="recon-status-text" style="color:rgba(255,255,255,.5)">Run validation to reconcile</span>
+        </div>
+      </div>
+
+      <!-- Post options footer -->
+      <div class="post-footer" id="post-footer" style="display:none">
+        <div class="pf-summary">
+          <div class="pf-title">Ready to post — choose how to handle exceptions</div>
+          <div class="pf-body">11 clean gifts ($3,825.00) are ready to post immediately. 3 exception rows ($550.00) will be held. You can post the clean gifts now and route exceptions to a new pending batch for resolution.</div>
+        </div>
+        <div class="pf-actions">
+          <button class="btn btn-green" onclick="postCleanGifts()">
+            <svg viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="1.4" stroke-linecap="round"><path d="M2 6l3 3 6-6"/></svg>
+            Post 11 clean gifts + create exception batch
+          </button>
+          <button class="btn btn-ghost">Post all 14 (including warnings)</button>
+          <button class="btn btn-ghost">Cancel</button>
+        </div>
+      </div>
+
+    </div><!-- /phase-entry -->
+
+    <!-- Phase 2: Posted + exception batch created -->
+    <div id="phase-posted" style="display:none">
+
+      <!-- Success notice -->
+      <div style="background:var(--greenl);border:1px solid #86EFAC;border-radius:12px;padding:16px 20px;display:flex;gap:14px;align-items:center">
+        <div style="width:36px;height:36px;background:var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <svg viewBox="0 0 14 14" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" width="14" height="14"><path d="M2.5 7l3 3 6-6"/></svg>
+        </div>
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:600;color:#14532D;margin-bottom:3px">11 gifts posted successfully — Batch #2026-0418 locked</div>
+          <div style="font-size:12px;color:#15803D">$3,825.00 posted to CMA 2026 Annual Fund · Posted Apr 18, 2026 14:32 by Janet Williams · Batch is now locked and cannot be edited</div>
+        </div>
+        <button class="btn btn-ghost" style="border-color:#86EFAC;color:var(--green)">View posted batch</button>
+      </div>
+
+      <!-- Locked batch notice -->
+      <div class="locked-notice">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" width="14" height="14"><rect x="3" y="6" width="8" height="7" rx="1.2"/><path d="M5 6V4.5a2 2 0 014 0V6"/></svg>
+        <span><strong>Batch #2026-0418 is locked.</strong> Posted batches cannot be edited. To correct a posted gift, use a reversing entry or create a new gift record. The audit trail below shows all posted transactions.</span>
+      </div>
+
+      <!-- Exception batch -->
+      <div class="exc-panel show">
+        <div class="exc-header">
+          <div class="exc-icon"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M6.5 2v4M6.5 9v.5"/><path d="M1 12L6.5 1.5 12 12H1z"/></svg></div>
+          <span class="exc-title">Exception batch created — Batch #2026-0418-EX</span>
+          <span class="exc-badge">3 rows pending</span>
+          <button class="btn btn-amber" style="margin-left:auto">Resolve exceptions</button>
+        </div>
+        <div class="exc-body">
+          <div style="font-size:12px;color:#92400E;margin-bottom:12px;line-height:1.6">The following 3 rows could not be posted with the clean batch. Each row shows the reason code. Resolve each exception and post individually, or wait until all are resolved and post as a batch.</div>
+          <table class="bt-table" style="background:white;border-radius:8px;overflow:hidden">
+            <thead>
+              <tr style="background:#FEF9C3">
+                <th class="col-row" style="width:44px">#</th>
+                <th class="col-donor">Donor</th>
+                <th class="col-amt">Amount</th>
+                <th class="col-status" style="width:220px">Exception reason</th>
+                <th class="col-act">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="row-error">
+                <td><div class="td-inner" style="color:var(--text3)">4</div></td>
+                <td><div class="td-inner">
+                  <div style="font-weight:500;color:var(--text)">Kathleen Murphy</div>
+                  <div class="error-detail"><svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="5" cy="5" r="3.5"/><path d="M5 3.5v2M5 7v.2"/></svg>Donor not found in database</div>
+                </div></td>
+                <td><div class="td-inner" style="font-weight:600">$125.00</div></td>
+                <td><div class="td-inner"><span class="status-pill sp-error"><span class="sp-dot" style="background:var(--rose)"></span>Donor not found</span></div></td>
+                <td><div class="td-inner"><button class="btn btn-ghost" style="padding:4px 10px;font-size:11px" onclick="resolveException(this,'4')">Resolve</button></div></td>
+              </tr>
+              <tr class="row-error">
+                <td><div class="td-inner" style="color:var(--text3)">11</div></td>
+                <td><div class="td-inner">
+                  <div style="font-weight:500;color:var(--text)">Robert Hennessy</div>
+                  <div class="error-detail"><svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="5" cy="5" r="3.5"/><path d="M5 3.5v2M5 7v.2"/></svg>Fund code GL-4450 invalid for Diocese entity</div>
+                </div></td>
+                <td><div class="td-inner" style="font-weight:600">$300.00</div></td>
+                <td><div class="td-inner"><span class="status-pill sp-error"><span class="sp-dot" style="background:var(--rose)"></span>Invalid GL code</span></div></td>
+                <td><div class="td-inner"><button class="btn btn-ghost" style="padding:4px 10px;font-size:11px" onclick="resolveException(this,'11')">Resolve</button></div></td>
+              </tr>
+              <tr class="row-warn">
+                <td><div class="td-inner" style="color:var(--text3)">8</div></td>
+                <td><div class="td-inner">
+                  <div style="font-weight:500;color:var(--text)">Margaret Sullivan</div>
+                  <div class="warn-detail"><svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M5 1.5v3M5 7v.3"/><path d="M1 9L5 1.5 9 9H1z"/></svg>Possible duplicate — same donor, $250 on Apr 15</div>
+                </div></td>
+                <td><div class="td-inner" style="font-weight:600">$125.00</div></td>
+                <td><div class="td-inner"><span class="status-pill sp-warn"><span class="sp-dot" style="background:var(--amber)"></span>Possible duplicate</span></div></td>
+                <td><div class="td-inner" style="display:flex;gap:4px">
+                  <button class="btn btn-ghost" style="padding:4px 10px;font-size:11px;color:var(--green);border-color:var(--green)" onclick="postDuplicate(this)">Post anyway</button>
+                  <button class="btn btn-ghost" style="padding:4px 10px;font-size:11px" onclick="voidRow(this,'8')">Void</button>
+                </div></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div style="display:flex;align-items:center;gap:12px;margin-top:14px;padding-top:14px;border-top:1px solid #FDE68A">
+            <div style="flex:1;font-size:12px;color:#92400E"><strong>Exception total: $550.00</strong> · Must be resolved before this batch can be fully closed</div>
+            <button class="btn btn-ghost" style="font-size:11px">Export exception report</button>
+            <button class="btn btn-ghost" style="font-size:11px">Assign to supervisor</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Posted gifts (locked) audit view -->
+      <div class="batch-table-wrap">
+        <div style="padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px">
+          <svg viewBox="0 0 14 14" fill="none" stroke="var(--green)" stroke-width="1.5" stroke-linecap="round" width="14" height="14"><rect x="3" y="6" width="8" height="7" rx="1.2"/><path d="M5 6V4.5a2 2 0 014 0V6"/></svg>
+          <span style="font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--text3)">Posted gifts — Batch #2026-0418 (locked · read-only)</span>
+          <span style="margin-left:auto;font-size:11px;color:var(--text3)">11 gifts · $3,825.00</span>
+        </div>
+        <table class="bt-table">
+          <thead>
+            <tr>
+              <th class="col-row">#</th>
+              <th class="col-donor">Donor</th>
+              <th class="col-amt">Amount</th>
+              <th class="col-date">Gift date</th>
+              <th class="col-fund">Fund</th>
+              <th class="col-type">Type</th>
+              <th class="col-status">Status</th>
+            </tr>
+          </thead>
+          <tbody id="posted-tbody"></tbody>
+        </table>
+      </div>
+
+    </div><!-- /phase-posted -->
+
+  </div>
+</div>
+
+<script>
+const ROWS = [
+  { row:1,  donor:"James O'Brien",       amount:500,   date:"Apr 14", fund:"CMA Annual Fund",          appeal:"Direct Mail Apr",  type:"Check",  state:"valid" },
+  { row:2,  donor:"Patricia Kim",         amount:250,   date:"Apr 14", fund:"CMA Annual Fund",          appeal:"Direct Mail Apr",  type:"Credit",  state:"valid" },
+  { row:3,  donor:"Thomas Nguyen",        amount:100,   date:"Apr 15", fund:"CMA Annual Fund",          appeal:"Direct Mail Apr",  type:"Check",  state:"valid" },
+  { row:4,  donor:"Kathleen Murphy",      amount:125,   date:"Apr 15", fund:"CMA Annual Fund",          appeal:"Direct Mail Apr",  type:"Check",  state:"error",   error:"Donor not found in database" },
+  { row:5,  donor:"David Harrington",     amount:500,   date:"Apr 15", fund:"CMA Annual Fund",          appeal:"Direct Mail Apr",  type:"Credit",  state:"valid" },
+  { row:6,  donor:"Elena Ramirez",        amount:75,    date:"Apr 15", fund:"CMA Annual Fund",          appeal:"Direct Mail Apr",  type:"Check",  state:"valid" },
+  { row:7,  donor:"Michael Grant",        amount:250,   date:"Apr 16", fund:"CMA Annual Fund",          appeal:"Direct Mail Apr",  type:"Credit",  state:"valid" },
+  { row:8,  donor:"Margaret Sullivan",    amount:125,   date:"Apr 16", fund:"CMA Annual Fund",          appeal:"Direct Mail Apr",  type:"Check",  state:"warn",    warn:"Possible duplicate — $250 on Apr 15" },
+  { row:9,  donor:"Carlos Mendez",        amount:200,   date:"Apr 16", fund:"CMA Annual Fund",          appeal:"Direct Mail Apr",  type:"Credit",  state:"valid" },
+  { row:10, donor:"Barbara Costello",     amount:150,   date:"Apr 17", fund:"CMA Annual Fund",          appeal:"Direct Mail Apr",  type:"Check",  state:"valid" },
+  { row:11, donor:"Robert Hennessy",      amount:300,   date:"Apr 17", fund:"CC Medical Clinic (GL-4450)","appeal":"Direct Mail Apr",  type:"Credit",  state:"error",   error:"Fund GL-4450 not valid for Diocese entity" },
+  { row:12, donor:"Susan Walsh",          amount:100,   date:"Apr 17", fund:"CMA Annual Fund",          appeal:"Direct Mail Apr",  type:"Check",  state:"valid" },
+  { row:13, donor:"Peter Morrison",       amount:750,   date:"Apr 18", fund:"CMA Annual Fund",          appeal:"Direct Mail Apr",  type:"Credit",  state:"valid" },
+  { row:14, donor:"Anne Fitzgerald",      amount:325,   date:"Apr 18", fund:"CMA Annual Fund",          appeal:"Direct Mail Apr",  type:"Check",  state:"valid" },
+];
+
+let validated = false;
+let currentFilter = 'all';
+let searchTerm = '';
+
+function renderTable(rows) {
+  const tbody = document.getElementById('batch-tbody');
+  const filtered = rows.filter(r => {
+    const matchFilter = currentFilter === 'all' || r.state === currentFilter;
+    const matchSearch = !searchTerm || r.donor.toLowerCase().includes(searchTerm) || String(r.amount).includes(searchTerm);
+    return matchFilter && matchSearch;
+  });
+  tbody.innerHTML = filtered.map(r => {
+    const stateClass = `row-${r.state}`;
+    const stateIcon = r.state === 'valid' ? 'sp-valid' : r.state === 'error' ? 'sp-error' : 'sp-warn';
+    const stateLabel = r.state === 'valid' ? 'Valid' : r.state === 'error' ? 'Error' : 'Warning';
+    const dotBg = r.state === 'valid' ? 'var(--green)' : r.state === 'error' ? 'var(--rose)' : 'var(--amber)';
+    const errorLine = r.error ? `<div class="error-detail"><svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" width="10" height="10"><circle cx="5" cy="5" r="3.5"/><path d="M5 3.5v2M5 7v.2"/></svg>${r.error}</div>` : '';
+    const warnLine = r.warn ? `<div class="warn-detail"><svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" width="10" height="10"><path d="M5 1.5v3M5 7v.3"/><path d="M1 9L5 1.5 9 9H1z"/></svg>${r.warn}</div>` : '';
+    const statusBlock = validated
+      ? `<span class="status-pill ${stateIcon}"><span class="sp-dot" style="background:${dotBg}"></span>${stateLabel}</span>`
+      : `<span style="font-size:11px;color:var(--text3)">Not validated</span>`;
+    return `<tr class="${stateClass}" data-row="${r.row}" data-state="${r.state}">
+      <td><div class="td-inner" style="display:flex;justify-content:center"><div class="row-checkbox" onclick="toggleRow(this)"><svg viewBox="0 0 9 9" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" width="9" height="9"><path d="M1.5 4.5l2 2 4-4"/></svg></div></div></td>
+      <td><div class="td-inner" style="color:var(--text3)">${r.row}</div></td>
+      <td><div class="td-inner"><div style="font-weight:500;color:var(--text)">${r.donor}</div>${errorLine}${warnLine}</div></td>
+      <td><div class="td-inner" style="font-weight:600">$${r.amount.toLocaleString()}.00</div></td>
+      <td><div class="td-inner" style="color:var(--text2)">${r.date}</div></td>
+      <td><div class="td-inner" style="color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${r.fund}</div></td>
+      <td><div class="td-inner" style="color:var(--text2)">${r.appeal}</div></td>
+      <td><div class="td-inner"><span style="font-size:11px;background:var(--surf);border:1px solid var(--border);padding:2px 8px;border-radius:20px;color:var(--text2)">${r.type}</span></div></td>
+      <td><div class="td-inner">${statusBlock}</div></td>
+      <td><div class="td-inner"><div class="row-actions">
+        <button class="ra-btn"><svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M1.5 9.5l4-4 4 4M5.5 5.5V1.5"/></svg></button>
+        <button class="ra-btn"><svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M1.5 5.5l2 2 6-6"/></svg></button>
+      </div></div></td>
+    </tr>`;
+  }).join('');
+}
+
+function runValidation() {
+  validated = true;
+  document.getElementById('stat-valid').textContent = '11';
+  document.getElementById('stat-errors').textContent = '2';
+  document.getElementById('stat-warnings').textContent = '1';
+  document.getElementById('validation-banner').style.display = 'flex';
+
+  const entered = ROWS.reduce((s,r) => s + r.amount, 0);
+  const clean   = ROWS.filter(r => r.state === 'valid').reduce((s,r) => s + r.amount, 0);
+  const exc     = ROWS.filter(r => r.state !== 'valid').reduce((s,r) => s + r.amount, 0);
+  document.getElementById('recon-entered').textContent = '$' + entered.toLocaleString() + '.00';
+  document.getElementById('recon-clean').textContent   = '$' + clean.toLocaleString() + '.00';
+  document.getElementById('recon-exception').textContent = '$' + exc.toLocaleString() + '.00';
+
+  const diff = entered - 4375;
+  const rs = document.getElementById('recon-status');
+  if (diff !== 0) {
+    rs.innerHTML = `<div class="recon-status-dot" style="background:var(--rose)"></div><span class="recon-status-text" style="color:#FDA4AF">Out of balance by $${Math.abs(diff)}.00</span>`;
+  } else {
+    rs.innerHTML = `<div class="recon-status-dot" style="background:var(--green)"></div><span class="recon-status-text" style="color:#86EFAC">Balanced</span>`;
+  }
+  renderTable(ROWS);
+}
+
+function showPostOptions() {
+  document.getElementById('post-footer').style.display = 'flex';
+  document.getElementById('post-footer').scrollIntoView({ behavior:'smooth', block:'nearest' });
+}
+
+function filterRows(f, el) {
+  currentFilter = f;
+  document.querySelectorAll('.fp').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  renderTable(ROWS);
+}
+
+function filterErrors() {
+  filterRows('error', document.querySelectorAll('.fp')[2]);
+}
+
+function searchRows(v) {
+  searchTerm = v.toLowerCase();
+  renderTable(ROWS);
+}
+
+function toggleRow(cb) {
+  cb.classList.toggle('checked');
+}
+
+function toggleSelectAll(cb) {
+  cb.classList.toggle('checked');
+  document.querySelectorAll('#batch-tbody .row-checkbox').forEach(c => {
+    if (cb.classList.contains('checked')) c.classList.add('checked');
+    else c.classList.remove('checked');
+  });
+}
+
+function postCleanGifts() {
+  document.getElementById('phase-entry').style.display = 'none';
+  document.getElementById('phase-posted').style.display = 'block';
+  document.getElementById('topbar-sub').textContent = 'Batch #2026-0418 · CMA April Mail · Posted — locked';
+  document.getElementById('btn-validate').style.display = 'none';
+  document.getElementById('btn-save').style.display = 'none';
+
+  const clean = ROWS.filter(r => r.state === 'valid');
+  const ptbody = document.getElementById('posted-tbody');
+  ptbody.innerHTML = clean.map(r => `<tr class="row-posted">
+    <td><div class="td-inner" style="color:var(--text3)">${r.row}</div></td>
+    <td><div class="td-inner" style="font-weight:500;color:var(--text)">${r.donor}</div></td>
+    <td><div class="td-inner" style="font-weight:600">$${r.amount.toLocaleString()}.00</div></td>
+    <td><div class="td-inner">${r.date}</div></td>
+    <td><div class="td-inner" style="color:var(--text2)">${r.fund}</div></td>
+    <td><div class="td-inner"><span style="font-size:11px;background:var(--surf);border:1px solid var(--border);padding:2px 8px;border-radius:20px;color:var(--text2)">${r.type}</span></div></td>
+    <td><div class="td-inner"><span class="status-pill sp-posted"><span class="sp-dot" style="background:#1D4ED8"></span>Posted</span></div></td>
+  </tr>`).join('');
+}
+
+function resolveException(btn, row) {
+  const tr = btn.closest('tr');
+  tr.style.opacity = '.4';
+  btn.textContent = 'Resolved';
+  btn.disabled = true;
+}
+
+function postDuplicate(btn) {
+  const tr = btn.closest('tr');
+  tr.querySelector('.status-pill').className = 'status-pill sp-posted';
+  tr.querySelector('.status-pill').innerHTML = '<span class="sp-dot" style="background:#1D4ED8"></span>Posted';
+  tr.querySelector('.warn-detail').style.display = 'none';
+  btn.closest('td').innerHTML = '<div class="td-inner" style="font-size:11px;color:var(--green);font-weight:600">Posted</div>';
+}
+
+function voidRow(btn, row) {
+  const tr = btn.closest('tr');
+  tr.style.opacity = '.35';
+  tr.querySelector('.status-pill').className = 'status-pill';
+  tr.querySelector('.status-pill').style.cssText = 'background:var(--surf);color:var(--text3);border:1px solid var(--border)';
+  tr.querySelector('.status-pill').textContent = 'Voided';
+  btn.closest('td').innerHTML = '<div class="td-inner" style="font-size:11px;color:var(--text3)">Voided</div>';
+}
+
+renderTable(ROWS);
+</script>
+</body>
+</html>

@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GiveCentral Atlas — Bishop's Annual Gala</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --navy:  #0E1E35; --navy2: #152844; --navy3: #1E3A5F;
+      --blue:  #2563EB; --bluel: #DBEAFE; --bluep: #EFF6FF;
+      --green: #15803D; --greenl:#DCFCE7;
+      --amber: #D97706; --amberl:#FEF3C7;
+      --rose:  #BE185D; --rosel: #FCE7F3;
+      --teal:  #0D9488; --teall: #CCFBF1;
+      --purp:  #7C3AED; --purpl: #EDE9FE;
+      --gold:  #B45309; --goldl: #FEF3C7;
+      --text:  #0F172A; --text2: #334155; --text3: #64748B;
+      --border:#E2E8F0; --surf:  #F8FAFC; --white: #FFFFFF;
+    }
+    html { font-size: 14px; -webkit-font-smoothing: antialiased; }
+    body { font-family: 'DM Sans', sans-serif; background: #F0F4F8; color: var(--text); display: flex; height: 100vh; overflow: hidden; }
+
+    /* ── SIDEBAR ── */
+    .sidebar { width: 220px; background: var(--navy); display: flex; flex-direction: column; flex-shrink: 0; height: 100vh; }
+    .sb-logo { padding: 18px 18px 14px; display: flex; align-items: center; gap: 9px; border-bottom: 1px solid rgba(255,255,255,.08); }
+    .sb-mark { width: 30px; height: 30px; background: var(--blue); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+    .sb-mark svg { width: 15px; height: 15px; }
+    .sb-name { font-family: 'DM Serif Display', serif; font-size: 15px; color: white; line-height: 1; }
+    .sb-sub  { font-size: 9px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.3); margin-top: 3px; }
+    .nav-group { padding: 10px 8px 0; }
+    .nav-label { font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.28); padding: 0 10px; margin-bottom: 4px; }
+    .nav-item  { display: flex; align-items: center; gap: 9px; padding: 8px 10px; border-radius: 7px; font-size: 12px; font-weight: 500; color: rgba(255,255,255,.55); cursor: pointer; transition: all .15s; margin-bottom: 1px; }
+    .nav-item:hover  { background: rgba(255,255,255,.07); color: rgba(255,255,255,.85); }
+    .nav-item.active { background: var(--amber); color: white; }
+    .nav-item svg    { width: 14px; height: 14px; flex-shrink: 0; }
+    .nav-badge { margin-left: auto; background: rgba(255,255,255,.15); color: rgba(255,255,255,.7); border-radius: 10px; padding: 1px 7px; font-size: 10px; font-weight: 600; }
+    .sb-user { margin-top: auto; padding: 12px; border-top: 1px solid rgba(255,255,255,.08); display: flex; align-items: center; gap: 9px; }
+    .u-av { width: 30px; height: 30px; border-radius: 50%; background: var(--blue); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: white; }
+
+    /* ── MAIN ── */
+    .main { flex: 1; min-width: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+    .topbar { background: white; border-bottom: 1px solid var(--border); padding: 0 24px; height: 52px; display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+    .tb-back { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--text3); cursor: pointer; }
+    .tb-back svg { width: 13px; height: 13px; }
+    .tb-sep  { width: 1px; height: 18px; background: var(--border); }
+    .tb-title { font-size: 15px; font-weight: 600; color: var(--text); }
+    .tb-right { margin-left: auto; display: flex; gap: 8px; }
+    .btn { padding: 6px 14px; border-radius: 7px; font-size: 12px; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .15s; display: flex; align-items: center; gap: 6px; border: 1px solid var(--border); background: none; color: var(--text2); white-space: nowrap; }
+    .btn:hover { background: var(--surf); }
+    .btn svg { width: 12px; height: 12px; }
+    .btn-primary { background: var(--amber); color: white; border: none; box-shadow: 0 1px 4px rgba(217,119,6,.3); }
+    .btn-primary:hover { background: #b45309; }
+    .btn-navy { background: var(--navy); color: white; border: none; }
+    .btn-navy:hover { background: var(--navy3); }
+
+    /* ── CONTENT ── */
+    .content { flex: 1; overflow-y: auto; padding: 0; display: flex; flex-direction: column; }
+
+    /* ── EVENT HERO ── */
+    .event-hero { background: var(--navy); padding: 20px 24px; display: flex; gap: 20px; align-items: flex-start; position: relative; overflow: hidden; flex-shrink: 0; }
+    .eh-bg { position: absolute; inset: 0; background: radial-gradient(circle at 90% 50%, rgba(217,119,6,.18) 0%,transparent 55%), radial-gradient(circle at 10% 80%, rgba(37,99,235,.1) 0%,transparent 50%); }
+    .eh-inner { position: relative; z-index: 1; flex: 1; }
+    .eh-eyebrow { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: rgba(255,255,255,.4); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+    .eh-title { font-family: 'DM Serif Display', serif; font-size: 24px; color: white; letter-spacing: -.01em; margin-bottom: 6px; }
+    .eh-meta  { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
+    .eh-chip  { display: flex; align-items: center; gap: 5px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 20px; padding: 4px 11px; font-size: 11px; color: rgba(255,255,255,.7); }
+    .eh-chip svg { width: 11px; height: 11px; opacity: .6; }
+    .eh-stats { display: flex; gap: 0; position: relative; z-index: 1; background: rgba(0,0,0,.2); border-radius: 10px; overflow: hidden; flex-shrink: 0; }
+    .ehs { padding: 12px 18px; border-right: 1px solid rgba(255,255,255,.08); text-align: center; }
+    .ehs:last-child { border-right: none; }
+    .ehs-val { font-family: 'DM Serif Display', serif; font-size: 22px; color: white; line-height: 1; margin-bottom: 3px; }
+    .ehs-val.gold  { color: #FCD34D; }
+    .ehs-val.green { color: #86EFAC; }
+    .ehs-val.rose  { color: #FDA4AF; }
+    .ehs-lbl { font-size: 9px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: rgba(255,255,255,.4); }
+
+    /* Revenue progress bar */
+    .rev-prog { position: relative; z-index: 1; padding: 0 24px 16px; background: var(--navy); flex-shrink: 0; }
+    .rp-inner { background: rgba(0,0,0,.25); border-radius: 8px; padding: 10px 16px; display: flex; align-items: center; gap: 14px; }
+    .rp-label { font-size: 11px; color: rgba(255,255,255,.5); white-space: nowrap; }
+    .rp-track { flex: 1; height: 6px; background: rgba(255,255,255,.12); border-radius: 3px; overflow: hidden; }
+    .rp-fill  { height: 100%; border-radius: 3px; background: linear-gradient(90deg, #F59E0B, #D97706); }
+    .rp-pct   { font-size: 12px; font-weight: 700; color: #FCD34D; white-space: nowrap; }
+
+    /* ── TAB BAR ── */
+    .tab-bar { background: white; border-bottom: 1px solid var(--border); padding: 0 24px; display: flex; gap: 0; flex-shrink: 0; }
+    .tab { padding: 13px 18px; font-size: 13px; font-weight: 500; color: var(--text3); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all .15s; display: flex; align-items: center; gap: 7px; white-space: nowrap; }
+    .tab:hover { color: var(--text2); }
+    .tab.active { color: var(--amber); border-bottom-color: var(--amber); font-weight: 600; }
+    .tab-badge { background: var(--rosel); color: var(--rose); border-radius: 20px; padding: 1px 7px; font-size: 10px; font-weight: 700; }
+    .tab-badge-ok { background: var(--greenl); color: var(--green); border-radius: 20px; padding: 1px 7px; font-size: 10px; font-weight: 700; }
+
+    /* ── TAB CONTENT ── */
+    .tab-content { flex: 1; overflow-y: auto; }
+    .tab-panel { display: none; padding: 20px 24px 48px; }
+    .tab-panel.active { display: block; }
+
+    /* ── SPONSORSHIPS TAB ── */
+    .spons-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+
+    /* Tier summary card */
+    .tier-card { background: white; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    .tier-card.top-tier { border: 2px solid #FCD34D; }
+    .tier-bar { height: 4px; }
+    .tier-body { padding: 14px 16px; }
+    .tier-head { display: flex; align-items: center; gap: 9px; margin-bottom: 10px; }
+    .tier-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .tier-icon svg { width: 14px; height: 14px; }
+    .tier-name  { font-size: 14px; font-weight: 700; color: var(--text); flex: 1; }
+    .tier-price { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--text); letter-spacing: -.02em; line-height: 1; margin-bottom: 4px; }
+    .tier-seats { font-size: 11px; color: var(--text3); margin-bottom: 10px; }
+    .tier-prog  { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+    .tp-track   { flex: 1; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+    .tp-fill    { height: 100%; border-radius: 2px; }
+    .tp-count   { font-size: 11px; font-weight: 700; white-space: nowrap; }
+    .tier-actions { display: flex; gap: 6px; }
+    .ta-btn { flex: 1; padding: 6px 0; border-radius: 7px; font-size: 11px; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; text-align: center; border: 1px solid var(--border); background: none; color: var(--text2); transition: all .12s; }
+    .ta-btn:hover { background: var(--surf); }
+    .ta-btn-primary { background: var(--amber); color: white; border: none; }
+    .ta-btn-primary:hover { background: #b45309; }
+
+    /* Sponsorship list table */
+    .spons-table-wrap { background: white; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    .sec-label-row { padding: 12px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+    .sec-label { font-size: 10px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--text3); flex: 1; }
+    .st-table { width: 100%; border-collapse: collapse; }
+    .st-table th { font-size: 10px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--text3); padding: 9px 14px; text-align: left; background: var(--surf); border-bottom: 1px solid var(--border); white-space: nowrap; }
+    .st-table td { padding: 11px 14px; border-bottom: .5px solid var(--border); vertical-align: middle; font-size: 12px; }
+    .st-table tr:last-child td { border-bottom: none; }
+    .st-table tr:hover td { background: var(--surf); cursor: pointer; }
+    .donor-name { font-size: 13px; font-weight: 600; color: var(--text); }
+    .donor-sub  { font-size: 11px; color: var(--text3); margin-top: 1px; }
+    .payment-badge { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 20px; }
+    .pb-paid   { background: var(--greenl); color: var(--green); }
+    .pb-partial{ background: var(--amberl); color: var(--amber); }
+    .pb-daf    { background: var(--bluep);  color: var(--blue); }
+    .pb-pledge { background: var(--purpl);  color: var(--purp); }
+    .name-chip { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; }
+    .nc-ok   { color: var(--green); }
+    .nc-miss { color: var(--rose); font-weight: 600; }
+    .nc-miss svg { width: 9px; height: 9px; }
+    .attend-check { width: 18px; height: 18px; border: 1.5px solid var(--border); border-radius: 5px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .12s; }
+    .attend-check.yes { background: var(--green); border-color: var(--green); }
+    .attend-check.yes svg { display: block; }
+    .attend-check svg { display: none; width: 10px; height: 10px; }
+    .attend-check.no  { background: var(--surf); }
+
+    /* ── TABLE ASSIGNMENT TAB ── */
+    .table-controls { display: flex; gap: 10px; align-items: center; margin-bottom: 16px; }
+    .table-legend { display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+    .tl-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text3); }
+    .tl-dot  { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+
+    .tables-container { display: grid; grid-template-columns: repeat(10, 1fr); gap: 8px; }
+    .table-tile { border-radius: 9px; padding: 8px 6px; cursor: pointer; transition: all .15s; text-align: center; border: 1.5px solid transparent; }
+    .table-tile:hover { transform: scale(1.04); }
+    .tt-full    { background: #FEF3C7; border-color: #FCD34D; }
+    .tt-partial { background: #EFF6FF; border-color: #BFDBFE; }
+    .tt-empty   { background: white; border-color: var(--border); }
+    .tt-expanded{ background: #EDE9FE; border-color: #DDD6FE; }
+    .tt-staff   { background: #F1F5F9; border-color: #CBD5E1; }
+    .tt-number  { font-size: 11px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+    .tt-sponsor { font-size: 9px; color: var(--text3); line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+    .tt-seats   { font-size: 9px; font-weight: 700; margin-top: 2px; }
+    .tt-full .tt-seats    { color: var(--amber); }
+    .tt-partial .tt-seats { color: var(--blue); }
+    .tt-empty .tt-seats   { color: var(--text3); }
+    .tt-expanded .tt-seats{ color: var(--purp); }
+    .tt-staff .tt-seats   { color: var(--text3); }
+
+    /* Table detail panel */
+    .table-detail { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-top: 16px; }
+    .td-head { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+    .td-num  { width: 40px; height: 40px; background: var(--amberl); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-family: 'DM Serif Display', serif; font-size: 18px; color: var(--amber); font-weight: 700; }
+    .td-title{ font-size: 15px; font-weight: 600; color: var(--text); }
+    .td-sub  { font-size: 12px; color: var(--text3); margin-top: 2px; }
+    .seat-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+    .seat-chip { padding: 7px 8px; border-radius: 7px; font-size: 11px; text-align: center; cursor: pointer; transition: all .12s; }
+    .sc-filled { background: var(--greenl); color: var(--green); font-weight: 500; border: 1px solid #BBF7D0; }
+    .sc-empty  { background: var(--surf); color: var(--text3); border: 1px dashed var(--border); }
+    .sc-staff  { background: var(--bluep); color: var(--blue); border: 1px solid var(--bluel); }
+    .sc-empty:hover { background: var(--amberl); border-color: #FDE68A; color: var(--amber); }
+
+    /* ── GUEST LIST TAB ── */
+    .guest-filter-bar { display: flex; gap: 10px; align-items: center; margin-bottom: 14px; }
+    .missing-banner { background: var(--rosel); border: 1px solid #FBCFE8; border-radius: 9px; padding: 10px 16px; display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+    .mb-icon { width: 28px; height: 28px; background: var(--rose); border-radius: 7px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .mb-icon svg { width: 12px; height: 12px; color: white; }
+    .mb-text { font-size: 12px; color: #9D174D; line-height: 1.6; flex: 1; }
+    .mb-action { padding: 5px 12px; background: var(--rose); color: white; border: none; border-radius: 7px; font-size: 11px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; white-space: nowrap; }
+
+    .guest-table { background: white; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    .gt-head-row { display: grid; grid-template-columns: 1fr 180px 140px 120px 120px 100px 80px; gap: 0; background: var(--surf); border-bottom: 1px solid var(--border); }
+    .gt-body-row { display: grid; grid-template-columns: 1fr 180px 140px 120px 120px 100px 80px; gap: 0; border-bottom: .5px solid var(--border); transition: background .1s; cursor: pointer; }
+    .gt-body-row:last-child { border-bottom: none; }
+    .gt-body-row:hover { background: var(--surf); }
+    .gt-body-row.missing { background: #FFF5F5; }
+    .gt-body-row.missing:hover { background: #FFE8E8; }
+    .gt-cell { padding: 10px 14px; font-size: 12px; color: var(--text2); display: flex; align-items: center; }
+    .gt-th   { padding: 8px 14px; font-size: 10px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--text3); }
+    .missing-count { display: inline-flex; align-items: center; gap: 4px; background: var(--rosel); color: var(--rose); border-radius: 20px; padding: 1px 7px; font-size: 10px; font-weight: 700; }
+    .missing-count svg { width: 9px; height: 9px; }
+    .guest-expand { display: flex; flex-direction: column; gap: 4px; width: 100%; }
+    .ge-guest { display: flex; align-items: center; gap: 7px; font-size: 11px; }
+    .ge-num { width: 16px; height: 16px; background: var(--surf); border: 1px solid var(--border); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; color: var(--text3); flex-shrink: 0; }
+    .ge-name { color: var(--text); font-weight: 500; }
+    .ge-name.missing { color: var(--rose); font-style: italic; }
+    .ge-diet { font-size: 10px; color: var(--text3); background: var(--surf); border-radius: 10px; padding: 0px 5px; }
+
+    /* Dietary icons */
+    .diet-tag { font-size: 10px; padding: 1px 6px; border-radius: 10px; background: var(--teall); color: var(--teal); font-weight: 500; }
+
+    /* ── REPORTS TAB ── */
+    .report-toolbar { display: flex; gap: 10px; align-items: center; margin-bottom: 16px; flex-wrap: wrap; }
+    .report-table { background: white; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    .rt-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+    .rt-table th { background: var(--navy); color: white; padding: 9px 12px; text-align: left; font-size: 9px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; }
+    .rt-table td { padding: 9px 12px; border-bottom: .5px solid var(--border); color: var(--text2); vertical-align: middle; }
+    .rt-table tr:last-child td { border-bottom: none; }
+    .rt-table tr:hover td { background: var(--surf); }
+    .rt-table tr.missing-row td { background: #FFF5F5; }
+    .bal-green { color: var(--green); font-weight: 600; }
+    .bal-red   { color: var(--rose); font-weight: 600; }
+    .bal-amber { color: var(--amber); font-weight: 600; }
+
+    /* ── NOTES ROW ── */
+    .notes-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+    .note-card { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; }
+    .nc-label { font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 8px; }
+    .nc-label.internal { color: var(--rose); }
+    .nc-label.donor    { color: var(--blue); }
+    .note-area { width: 100%; border: 1px solid var(--border); border-radius: 7px; padding: 8px 10px; font-size: 12px; font-family: 'DM Sans', sans-serif; resize: none; min-height: 60px; outline: none; color: var(--text); background: var(--surf); }
+    .note-area:focus { border-color: var(--amber); background: white; }
+
+    /* ── MODAL ── */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(15,30,53,.55); z-index: 200; display: none; align-items: center; justify-content: center; padding: 20px; }
+    .modal-overlay.show { display: flex; }
+    .modal { background: white; border-radius: 14px; width: 100%; max-width: 520px; max-height: 88vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,.2); }
+    .modal-head { padding: 18px 22px 14px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; }
+    .modal-title { font-family: 'DM Serif Display', serif; font-size: 18px; color: var(--text); flex: 1; }
+    .modal-close { width: 26px; height: 26px; border: 1px solid var(--border); border-radius: 6px; background: none; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .modal-close svg { width: 11px; height: 11px; color: var(--text3); }
+    .modal-body  { padding: 18px 22px; display: flex; flex-direction: column; gap: 12px; }
+    .form-row { display: flex; flex-direction: column; gap: 5px; }
+    .form-label { font-size: 12px; font-weight: 600; color: var(--text2); }
+    .form-label span { color: var(--rose); }
+    .form-input { padding: 8px 11px; border: 1px solid var(--border); border-radius: 7px; font-size: 13px; font-family: 'DM Sans', sans-serif; color: var(--text); background: var(--surf); outline: none; width: 100%; }
+    .form-input:focus { border-color: var(--amber); background: white; }
+    .form-select { padding: 8px 11px; border: 1px solid var(--border); border-radius: 7px; font-size: 13px; font-family: 'DM Sans', sans-serif; background: var(--surf); outline: none; width: 100%; cursor: pointer; }
+    .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .modal-foot { padding: 12px 22px; border-top: 1px solid var(--border); display: flex; gap: 8px; justify-content: flex-end; }
+    .guest-input-row { display: flex; gap: 8px; align-items: flex-end; }
+    .guest-input-row .form-row { flex: 1; }
+    .remove-btn { padding: 8px 10px; border: 1px solid var(--border); background: none; border-radius: 7px; cursor: pointer; color: var(--rose); font-size: 13px; }
+    .add-guest-btn { display: flex; align-items: center; gap: 6px; padding: 7px 12px; border: 1px dashed var(--border); border-radius: 7px; background: none; cursor: pointer; font-size: 12px; color: var(--text3); font-family: 'DM Sans', sans-serif; transition: all .12s; }
+    .add-guest-btn:hover { border-color: var(--amber); color: var(--amber); }
+  </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sb-logo">
+    <div class="sb-mark"><svg viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7.5" stroke="white" stroke-width="1.5"/><path d="M5.5 9.5C6.5 11.5 9 13 9 13s2.5-1.5 3.5-3.5S12 5 9 5 4.5 7.5 5.5 9.5z" fill="white" fill-opacity=".9"/></svg></div>
+    <div><div class="sb-name">GiveCentral</div><div class="sb-sub">Atlas CRM</div></div>
+  </div>
+  <div class="nav-group">
+    <div class="nav-label">Main</div>
+    <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><rect x="1.5" y="1.5" width="4" height="4" rx="1.2"/><rect x="8.5" y="1.5" width="4" height="4" rx="1.2"/><rect x="1.5" y="8.5" width="4" height="4" rx="1.2"/><rect x="8.5" y="8.5" width="4" height="4" rx="1.2"/></svg>Dashboard</div>
+    <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="6" cy="4.5" r="3"/><path d="M1 13c0-2.8 2.2-5 5-5h1c2.8 0 5 2.2 5 5"/></svg>Donors</div>
+    <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M7 1.5v11M2 6.5h10"/></svg>Gifts &amp; pledges</div>
+  </div>
+  <div class="nav-group" style="margin-top:8px">
+    <div class="nav-label">Community</div>
+    <div class="nav-item active"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><rect x="1.5" y="3" width="11" height="9" rx="1.5"/><path d="M1.5 6.5h11M5 3v2M9 3v2"/></svg>Events<span class="nav-badge">7</span></div>
+    <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="5" cy="4" r="2.5"/><circle cx="10" cy="5" r="2"/><path d="M1 12.5c0-2.2 1.8-4 4-4s4 1.8 4 4"/><path d="M10 9.5c1.4.4 2.5 1.6 2.5 3"/></svg>Volunteers</div>
+  </div>
+  <div class="sb-user">
+    <div class="u-av">MD</div>
+    <div><div style="font-size:12px;font-weight:500;color:rgba(255,255,255,.75)">Mike Donovan</div><div style="font-size:10px;color:rgba(255,255,255,.35)">Major Gifts Officer</div></div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="tb-back"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M9 2L4 7l5 5"/></svg>All events</div>
+    <div class="tb-sep"></div>
+    <span class="tb-title">Bishop's Annual Gala 2026</span>
+    <div class="tb-right">
+      <button class="btn"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M1 6.5l2-2 2 2 2-2.5 2 2.5M10 1.5v9"/></svg>Export report</button>
+      <button class="btn"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M8 1.5H4a1 1 0 00-1 1v7a1 1 0 001 1h4a1 1 0 001-1v-7a1 1 0 00-1-1z"/><path d="M5 4.5h2M5 6.5h2M5 8.5h1"/></svg>Event page</button>
+      <button class="btn btn-primary" onclick="openModal('add-sponsorship')">
+        <svg viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="1.4" stroke-linecap="round"><path d="M6 1v10M1 6h10"/></svg>
+        Add sponsorship
+      </button>
+    </div>
+  </div>
+
+  <div class="content">
+    <!-- Hero -->
+    <div class="event-hero">
+      <div class="eh-bg"></div>
+      <div class="eh-inner">
+        <div class="eh-eyebrow">
+          Annual fundraising gala
+          <span style="background:rgba(21,128,61,.3);color:#86EFAC;border-radius:20px;padding:1px 9px;font-size:9px">Open · Registration live</span>
+        </div>
+        <div class="eh-title">Bishop's Annual Gala 2026</div>
+        <div class="eh-meta">
+          <div class="eh-chip"><svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><rect x="1" y="2" width="9" height="8" rx="1.2"/><path d="M1 5h9"/></svg>Friday, May 16, 2026 · 6:00 PM</div>
+          <div class="eh-chip"><svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M5.5 1C4 1 3 2 3 3.5c0 2 2.5 5 2.5 5s2.5-3 2.5-5C8 2 7 1 5.5 1z"/></svg>Marriott Downtown · Rocky River</div>
+          <div class="eh-chip"><svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><circle cx="5.5" cy="4" r="2.5"/><path d="M1 10c0-2.5 2-4.5 4.5-4.5S10 7.5 10 10"/></svg>Solicitor: Mike Donovan · Reservations: Sarah Reynolds</div>
+        </div>
+      </div>
+      <div class="eh-stats">
+        <div class="ehs"><div class="ehs-val gold">$387K</div><div class="ehs-lbl">Revenue</div></div>
+        <div class="ehs"><div class="ehs-val">468</div><div class="ehs-lbl">Registered</div></div>
+        <div class="ehs"><div class="ehs-val">32</div><div class="ehs-lbl">Remaining</div></div>
+        <div class="ehs"><div class="ehs-val rose">14</div><div class="ehs-lbl">Names missing</div></div>
+        <div class="ehs"><div class="ehs-val">12</div><div class="ehs-lbl">Waitlist</div></div>
+      </div>
+    </div>
+    <div class="rev-prog">
+      <div class="rp-inner">
+        <span class="rp-label">Revenue vs. goal</span>
+        <div class="rp-track"><div class="rp-fill" style="width:86%"></div></div>
+        <span class="rp-pct">$387K of $450K · 86%</span>
+        <span style="font-size:11px;color:rgba(255,255,255,.35);margin-left:6px">· 24 days to event</span>
+      </div>
+    </div>
+
+    <!-- Tab bar -->
+    <div class="tab-bar">
+      <div class="tab active" onclick="switchTab('sponsorships',this)">Sponsorships &amp; tickets</div>
+      <div class="tab" onclick="switchTab('tables',this)">Table assignment</div>
+      <div class="tab" onclick="switchTab('guests',this)">Guest list <span class="tab-badge" id="missing-badge">14 missing</span></div>
+      <div class="tab" onclick="switchTab('report',this)">Reservation report</div>
+      <div class="tab" onclick="switchTab('waitlist',this)">Waitlist <span class="tab-badge-ok">12</span></div>
+    </div>
+
+    <div class="tab-content">
+
+      <!-- ── SPONSORSHIPS TAB ── -->
+      <div class="tab-panel active" id="panel-sponsorships">
+        <!-- Tier summary cards -->
+        <div class="spons-grid">
+          <!-- Presenting -->
+          <div class="tier-card top-tier">
+            <div class="tier-bar" style="background:linear-gradient(90deg,#B45309,#D97706)"></div>
+            <div class="tier-body">
+              <div class="tier-head">
+                <div class="tier-icon" style="background:#FEF3C7"><svg viewBox="0 0 14 14" fill="none" stroke="var(--amber)" stroke-width="1.5" stroke-linecap="round"><path d="M7 1l1.8 3.5 4 .6-2.9 2.8.7 4L7 10l-3.6 1.9.7-4L1.2 5.1l4-.6z"/></svg></div>
+                <span class="tier-name">Presenting</span>
+              </div>
+              <div class="tier-price">$50,000</div>
+              <div class="tier-seats">20 seats · 2 tables</div>
+              <div class="tier-prog">
+                <div class="tp-track"><div class="tp-fill" style="width:100%;background:var(--amber)"></div></div>
+                <span class="tp-count" style="color:var(--amber)">1/1 sold</span>
+              </div>
+              <div class="tier-actions">
+                <button class="ta-btn ta-btn-primary" onclick="openModal('view-tier')">Manage</button>
+              </div>
+            </div>
+          </div>
+          <!-- Diamond -->
+          <div class="tier-card">
+            <div class="tier-bar" style="background:linear-gradient(90deg,#0D9488,#2563EB)"></div>
+            <div class="tier-body">
+              <div class="tier-head">
+                <div class="tier-icon" style="background:var(--teall)"><svg viewBox="0 0 14 14" fill="none" stroke="var(--teal)" stroke-width="1.5" stroke-linecap="round"><path d="M7 2l2 3h3L9.5 8 11 12 7 9.5 3 12l1.5-4L2 5h3z"/></svg></div>
+                <span class="tier-name">Diamond</span>
+              </div>
+              <div class="tier-price">$25,000</div>
+              <div class="tier-seats">10 seats · 1 table</div>
+              <div class="tier-prog">
+                <div class="tp-track"><div class="tp-fill" style="width:100%;background:var(--teal)"></div></div>
+                <span class="tp-count" style="color:var(--teal)">4/4 sold</span>
+              </div>
+              <div class="tier-actions">
+                <button class="ta-btn" onclick="openModal('view-tier')">View</button>
+                <button class="ta-btn ta-btn-primary" onclick="openModal('add-sponsorship')">+ Add</button>
+              </div>
+            </div>
+          </div>
+          <!-- Gold -->
+          <div class="tier-card">
+            <div class="tier-bar" style="background:linear-gradient(90deg,#D97706,#F59E0B)"></div>
+            <div class="tier-body">
+              <div class="tier-head">
+                <div class="tier-icon" style="background:var(--amberl)"><svg viewBox="0 0 14 14" fill="none" stroke="var(--amber)" stroke-width="1.5" stroke-linecap="round"><path d="M7 1l1.8 3.5 4 .6-2.9 2.8.7 4L7 10l-3.6 1.9.7-4L1.2 5.1l4-.6z"/></svg></div>
+                <span class="tier-name">Gold Table</span>
+              </div>
+              <div class="tier-price">$15,000</div>
+              <div class="tier-seats">10 seats · 1 table</div>
+              <div class="tier-prog">
+                <div class="tp-track"><div class="tp-fill" style="width:75%;background:var(--blue)"></div></div>
+                <span class="tp-count" style="color:var(--blue)">6/8 sold</span>
+              </div>
+              <div class="tier-actions">
+                <button class="ta-btn" onclick="openModal('view-tier')">View</button>
+                <button class="ta-btn ta-btn-primary" onclick="openModal('add-sponsorship')">+ Add</button>
+              </div>
+            </div>
+          </div>
+          <!-- Individual -->
+          <div class="tier-card">
+            <div class="tier-bar" style="background:linear-gradient(90deg,var(--purp),var(--teal))"></div>
+            <div class="tier-body">
+              <div class="tier-head">
+                <div class="tier-icon" style="background:var(--purpl)"><svg viewBox="0 0 14 14" fill="none" stroke="var(--purp)" stroke-width="1.4" stroke-linecap="round"><circle cx="7" cy="4.5" r="3"/><path d="M2 13c0-2.8 2.2-5 5-5s5 2.2 5 5"/></svg></div>
+                <span class="tier-name">Individual</span>
+              </div>
+              <div class="tier-price">$500</div>
+              <div class="tier-seats">1 seat per ticket</div>
+              <div class="tier-prog">
+                <div class="tp-track"><div class="tp-fill" style="width:88%;background:var(--green)"></div></div>
+                <span class="tp-count" style="color:var(--green)">88 sold</span>
+              </div>
+              <div class="tier-actions">
+                <button class="ta-btn" onclick="openModal('view-tier')">View all</button>
+                <button class="ta-btn ta-btn-primary" onclick="openModal('add-sponsorship')">+ Add</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sponsorship list -->
+        <div class="spons-table-wrap">
+          <div class="sec-label-row">
+            <span class="sec-label">All sponsorships &amp; tickets</span>
+            <button class="btn" style="font-size:11px;padding:4px 10px" onclick="openModal('add-sponsorship')">+ Add</button>
+          </div>
+          <table class="st-table" id="spons-table">
+            <thead>
+              <tr>
+                <th>Donor</th>
+                <th>Tier</th>
+                <th>Amount</th>
+                <th>Payment</th>
+                <th>Seats allocated</th>
+                <th>Names complete</th>
+                <th>Table</th>
+                <th>Attending?</th>
+                <th>Solicitor</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="spons-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── TABLE ASSIGNMENT TAB ── -->
+      <div class="tab-panel" id="panel-tables">
+        <div class="table-controls">
+          <span style="font-size:13px;font-weight:600;color:var(--text)">50 tables · Marriott Grand Ballroom</span>
+          <span style="font-size:12px;color:var(--text3);margin-left:4px">Standard: 10 seats · Expandable to 12</span>
+          <button class="btn" style="margin-left:auto;font-size:11px" onclick="openModal('table-detail')">Manage layout</button>
+          <button class="btn btn-primary" style="font-size:11px" onclick="openModal('assign-table')">Assign table</button>
+        </div>
+        <div class="table-legend">
+          <div class="tl-item"><div class="tl-dot" style="background:#FEF3C7;border:1px solid #FCD34D"></div>Fully assigned</div>
+          <div class="tl-item"><div class="tl-dot" style="background:#EFF6FF;border:1px solid #BFDBFE"></div>Partially assigned</div>
+          <div class="tl-item"><div class="tl-dot" style="background:white;border:1px solid var(--border)"></div>Unassigned</div>
+          <div class="tl-item"><div class="tl-dot" style="background:#EDE9FE;border:1px solid #DDD6FE"></div>Expanded (12 seats)</div>
+          <div class="tl-item"><div class="tl-dot" style="background:#F1F5F9;border:1px solid #CBD5E1"></div>Staff / complimentary</div>
+        </div>
+        <div class="tables-container" id="tables-grid"></div>
+        <div class="table-detail" id="table-detail-panel" style="display:none">
+          <div class="td-head">
+            <div class="td-num" id="td-num">1</div>
+            <div>
+              <div class="td-title" id="td-title">O'Brien Family — Presenting Sponsor</div>
+              <div class="td-sub" id="td-sub">12 seats (expanded) · All seats assigned</div>
+            </div>
+            <button class="btn" style="margin-left:auto;font-size:11px" onclick="openModal('edit-table')">Edit table</button>
+          </div>
+          <div class="seat-grid" id="seat-grid"></div>
+          <div class="notes-row" style="margin-top:14px;margin-bottom:0">
+            <div class="note-card">
+              <div class="nc-label internal">Internal staff note (not visible to donor)</div>
+              <textarea class="note-area" rows="2">Seat Patricia near Bishop's table — she is hard of hearing. James has mobility issues, needs aisle seat.</textarea>
+            </div>
+            <div class="note-card">
+              <div class="nc-label donor">Donor seating preference</div>
+              <textarea class="note-area" rows="2" readonly>"We'd prefer to be near the Harrington table if possible. Appreciate proximity to the stage."</textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── GUEST LIST TAB ── -->
+      <div class="tab-panel" id="panel-guests">
+        <div class="missing-banner">
+          <div class="mb-icon"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M6 2v4M6 8.5v.5"/><path d="M1 11L6 1l5 10H1z"/></svg></div>
+          <div class="mb-text"><strong>14 guest names still missing</strong> across 6 sponsorships. Names are required for check-in, seating, and the event program. Seats without names are shown in red below.</div>
+          <button class="mb-action" onclick="sendFollowUp()">Send follow-up emails</button>
+        </div>
+        <div class="guest-filter-bar">
+          <input type="text" placeholder="Search by donor or guest name…" style="padding:6px 11px;border:1px solid var(--border);border-radius:7px;font-size:12px;font-family:'DM Sans',sans-serif;outline:none;flex:1" onfocus="this.style.borderColor='var(--amber)'" onblur="this.style.borderColor='var(--border)'">
+          <button class="btn" onclick="filterGuests('all')" id="gf-all" style="background:var(--navy);color:white;border-color:var(--navy)">All</button>
+          <button class="btn" onclick="filterGuests('missing')" id="gf-miss">Missing names</button>
+          <button class="btn" onclick="filterGuests('dietary')" id="gf-diet">Dietary needs</button>
+        </div>
+        <div class="guest-table">
+          <div class="gt-head-row">
+            <div class="gt-th">Donor / Sponsorship</div>
+            <div class="gt-th">Tier &amp; seats</div>
+            <div class="gt-th">Table</div>
+            <div class="gt-th">Names status</div>
+            <div class="gt-th">Dietary flags</div>
+            <div class="gt-th">Attending</div>
+            <div class="gt-th"></div>
+          </div>
+          <div id="guest-rows"></div>
+        </div>
+      </div>
+
+      <!-- ── REPORT TAB ── -->
+      <div class="tab-panel" id="panel-report">
+        <div class="report-toolbar">
+          <span style="font-size:14px;font-weight:600;color:var(--text)">Reservation report</span>
+          <span style="font-size:12px;color:var(--text3)">48 reservations · as of Apr 28, 2026</span>
+          <button class="btn" style="margin-left:auto">
+            <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M6 1v7M3 5.5l3 3 3-3"/><path d="M1.5 10.5h9"/></svg>
+            Download CSV
+          </button>
+          <button class="btn btn-navy">
+            <svg viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="1.3" stroke-linecap="round"><rect x="1.5" y="1.5" width="9" height="9" rx="1.2"/><path d="M4 5.5h4M4 7.5h2.5"/></svg>
+            PDF report
+          </button>
+        </div>
+        <div class="report-table">
+          <table class="rt-table" id="report-table">
+            <thead>
+              <tr>
+                <th>Donor</th>
+                <th>Tier</th>
+                <th>Table</th>
+                <th>Seats allocated</th>
+                <th>Expected</th>
+                <th>Names missing</th>
+                <th>Total pledge</th>
+                <th>Paid</th>
+                <th>Balance</th>
+                <th>Payment type</th>
+                <th>Solicitor</th>
+              </tr>
+            </thead>
+            <tbody id="report-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── WAITLIST TAB ── -->
+      <div class="tab-panel" id="panel-waitlist">
+        <div style="background:white;border:1px solid var(--border);border-radius:12px;overflow:hidden">
+          <div class="sec-label-row">
+            <span class="sec-label">Waitlist · 12 on list</span>
+            <button class="btn" style="font-size:11px;padding:4px 10px" onclick="openModal('add-waitlist')">+ Add to waitlist</button>
+          </div>
+          <table class="st-table">
+            <thead><tr><th>#</th><th>Donor</th><th>Level of interest</th><th>Date added</th><th>Staff note</th><th>Notified?</th><th></th></tr></thead>
+            <tbody>
+              <tr><td style="color:var(--text3)">1</td><td><div class="donor-name">William &amp; Grace Chen</div><div class="donor-sub">Referred by Bishop Kelly</div></td><td><span class="payment-badge pb-partial">Diamond Table — $25,000</span></td><td style="color:var(--text2)">Apr 10</td><td style="color:var(--text3);font-style:italic;font-size:11px">Personally called by Bishop on Apr 8</td><td><span class="payment-badge pb-paid">Notified</span></td><td><button class="ta-btn ta-btn-primary" style="padding:4px 10px;font-size:11px">Promote</button></td></tr>
+              <tr><td style="color:var(--text3)">2</td><td><div class="donor-name">Catherine &amp; James Murphy</div><div class="donor-sub">Prior year Gold sponsor</div></td><td><span class="payment-badge pb-pledge">Gold Table — $15,000</span></td><td style="color:var(--text2)">Apr 14</td><td style="color:var(--text3);font-style:italic;font-size:11px">Want same table as Harringtons</td><td><span class="payment-badge" style="background:var(--amberl);color:var(--amber)">Pending</span></td><td><button class="ta-btn ta-btn-primary" style="padding:4px 10px;font-size:11px">Promote</button></td></tr>
+              <tr><td style="color:var(--text3)">3</td><td><div class="donor-name">Dr. Robert &amp; Helen Walsh</div><div class="donor-sub"></div></td><td><span class="payment-badge pb-daf">2 individual tickets</span></td><td style="color:var(--text2)">Apr 17</td><td style="color:var(--text3);font-style:italic;font-size:11px">Happy to accept at any level</td><td><span class="payment-badge" style="background:var(--amberl);color:var(--amber)">Pending</span></td><td><button class="ta-btn ta-btn-primary" style="padding:4px 10px;font-size:11px">Promote</button></td></tr>
+              <tr><td style="color:var(--text3)">4</td><td><div class="donor-name">St. Michael's Parish</div><div class="donor-sub">Fr. Matthew requesting 4 seats for priests</div></td><td><span class="payment-badge pb-partial">4 complimentary seats</span></td><td style="color:var(--text2)">Apr 20</td><td style="color:var(--text3);font-style:italic;font-size:11px">Referred by Fr. Collins — Bishop approved</td><td><span class="payment-badge" style="background:var(--amberl);color:var(--amber)">Pending</span></td><td><button class="ta-btn ta-btn-primary" style="padding:4px 10px;font-size:11px">Promote</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal-overlay" onclick="handleOverlayClick(event)">
+  <div class="modal" id="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="modal-title">Add sponsorship</div>
+      <button class="modal-close" onclick="closeModal()"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 2l8 8M10 2l-8 8"/></svg></button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-foot" id="modal-foot"></div>
+  </div>
+</div>
+
+<script>
+// ── DATA ─────────────────────────────────────────────────────
+const SPONSORSHIPS = [
+  { id:1, donor:"James & Patricia O'Brien",  tier:"Presenting",  amount:50000, paid:50000, payType:"check",   seats:12, names:12, missing:0,  table:1,  attend:"yes", solicitor:"Mike D.", dietary:["GF","Mobility"], note:"Expanded to 12 seats" },
+  { id:2, donor:"Catholic Community Foundation", tier:"Diamond", amount:25000, paid:25000, payType:"check",   seats:10, names:10, missing:0,  table:2,  attend:"yes", solicitor:"Mike D.", dietary:[], note:"" },
+  { id:3, donor:"First Catholic Bank",       tier:"Diamond",     amount:25000, paid:25000, payType:"check",   seats:10, names:8,  missing:2,  table:5,  attend:"yes", solicitor:"Sarah R.", dietary:["Veg"], note:"" },
+  { id:4, donor:"David & Susan Harrington",  tier:"Diamond",     amount:25000, paid:0,     payType:"pledge",  seats:10, names:10, missing:0,  table:3,  attend:"yes", solicitor:"Mike D.", dietary:["GF"], note:"Invoice sent Apr 10" },
+  { id:5, donor:"O'Brien & Callahan LLP",    tier:"Diamond",     amount:25000, paid:12500, payType:"partial", seats:10, names:7,  missing:3,  table:7,  attend:"yes", solicitor:"Sarah R.", dietary:["Crustacean"], note:"50% deposit received" },
+  { id:6, donor:"Sullivan Family Foundation",tier:"Gold",        amount:15000, paid:15000, payType:"daf",     seats:10, names:10, missing:0,  table:8,  attend:"yes", solicitor:"Mike D.", dietary:[], note:"DAF from Fidelity; tickets purchased separately by credit card" },
+  { id:7, donor:"Dr. Patricia Kim & guests", tier:"Gold",        amount:15000, paid:15000, payType:"check",   seats:10, names:4,  missing:6,  table:12, attend:"yes", solicitor:"Janet W.", dietary:["Veg","GF"], note:"6 names still pending" },
+  { id:8, donor:"Westlake Medical Group",    tier:"Gold",        amount:15000, paid:0,     payType:"pledge",  seats:10, names:10, missing:0,  table:14, attend:"yes", solicitor:"Mike D.", dietary:[], note:"Invoice outstanding" },
+  { id:9, donor:"Thomas & Angela Kowalski",  tier:"Individual",  amount:500,   paid:500,   payType:"credit",  seats:2,  names:2,  missing:0,  table:20, attend:"yes", solicitor:"Sarah R.", dietary:["GF"], note:"" },
+  { id:10,donor:"Fr. Joseph Williams",       tier:"Complimentary",amount:0,   paid:0,     payType:"comp",    seats:2,  names:2,  missing:0,  table:4,  attend:"yes", solicitor:"—", dietary:[], note:"Diocesan priests — complimentary" },
+  { id:11,donor:"Barbara & Michael Costello",tier:"Individual",  amount:500,   paid:500,   payType:"credit",  seats:2,  names:1,  missing:1,  table:22, attend:"partial", solicitor:"Sarah R.", dietary:[], note:"Guest name still needed" },
+  { id:12,donor:"Staff & volunteers",        tier:"Staff",       amount:0,     paid:0,     payType:"comp",    seats:8,  names:8,  missing:0,  table:50, attend:"yes", solicitor:"—", dietary:["Veg"], note:"Staff table — not on donor reports" },
+];
+
+const PAY_CLASSES = { check:"pb-paid", credit:"pb-paid", partial:"pb-partial", daf:"pb-daf", pledge:"pb-pledge", comp:"pb-paid" };
+const PAY_LABELS  = { check:"Check", credit:"Credit card", partial:"Partial", daf:"DAF", pledge:"Pledge", comp:"Complimentary" };
+
+// ── SPONSORSHIP TABLE ─────────────────────────────────────────
+function renderSponsorships() {
+  document.getElementById('spons-tbody').innerHTML = SPONSORSHIPS.map(s => {
+    const balance = s.amount - s.paid;
+    const missingHtml = s.missing > 0
+      ? `<span class="missing-count"><svg viewBox="0 0 9 9" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" width="9" height="9"><circle cx="4.5" cy="4.5" r="3.5"/><path d="M4.5 3v2M4.5 6.5v.2"/></svg>${s.missing} missing</span>`
+      : `<span class="name-chip nc-ok">✓ Complete</span>`;
+    const dietHtml = s.dietary.length > 0
+      ? s.dietary.map(d => `<span class="diet-tag">${d}</span>`).join(' ')
+      : '<span style="color:var(--text3);font-size:11px">None</span>';
+    return `<tr onclick="openModal('edit-sponsorship',${s.id})">
+      <td><div class="donor-name">${s.donor}</div>${s.note?`<div class="donor-sub">${s.note}</div>`:''}</td>
+      <td><span style="font-size:11px;font-weight:600;color:var(--text2)">${s.tier}</span></td>
+      <td style="font-weight:600;color:var(--text)">$${s.amount.toLocaleString()}</td>
+      <td><span class="payment-badge ${PAY_CLASSES[s.payType]}">${PAY_LABELS[s.payType]}</span></td>
+      <td style="font-weight:600">${s.seats}</td>
+      <td>${missingHtml}</td>
+      <td style="font-weight:600;color:var(--purp)">${s.table ? 'Table '+s.table : '<span style="color:var(--rose)">Unassigned</span>'}</td>
+      <td><div class="attend-check ${s.attend==='yes'?'yes':'no'}" onclick="event.stopPropagation();toggleAttend(this)"><svg viewBox="0 0 10 10" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" width="10" height="10"><path d="M1.5 5l2.5 2.5 5-5"/></svg></div></td>
+      <td style="font-size:11px;color:var(--text3)">${s.solicitor}</td>
+      <td><button class="ta-btn ta-btn-primary" style="padding:3px 9px;font-size:10px" onclick="event.stopPropagation();openModal('edit-sponsorship',${s.id})">Edit</button></td>
+    </tr>`;
+  }).join('');
+}
+function toggleAttend(el) { el.classList.toggle('yes'); el.classList.toggle('no'); }
+
+// ── TABLES GRID ───────────────────────────────────────────────
+const TABLE_DATA = [
+  { n:1,  type:'expanded', sponsor:"O'Brien",       seats:"12/12" },
+  { n:2,  type:'full',     sponsor:"CCF",            seats:"10/10" },
+  { n:3,  type:'full',     sponsor:"Harrington",     seats:"10/10" },
+  { n:4,  type:'staff',    sponsor:"Clergy",         seats:"10/10" },
+  { n:5,  type:'partial',  sponsor:"First Catholic", seats:"8/10"  },
+  { n:6,  type:'empty',    sponsor:"—",              seats:"0/10"  },
+  { n:7,  type:'partial',  sponsor:"Callahan LLP",   seats:"7/10"  },
+  { n:8,  type:'full',     sponsor:"Sullivan",       seats:"10/10" },
+  { n:9,  type:'empty',    sponsor:"—",              seats:"0/10"  },
+  { n:10, type:'empty',    sponsor:"—",              seats:"0/10"  },
+  { n:11, type:'partial',  sponsor:"Morrison",       seats:"6/10"  },
+  { n:12, type:'partial',  sponsor:"Kim",            seats:"4/10"  },
+  { n:13, type:'full',     sponsor:"Diocese",        seats:"10/10" },
+  { n:14, type:'partial',  sponsor:"Westlake Med",   seats:"0/10"  },
+  { n:15, type:'empty',    sponsor:"—",              seats:"0/10"  },
+  { n:16, type:'full',     sponsor:"Andrews",        seats:"10/10" },
+  { n:17, type:'partial',  sponsor:"Nguyen",         seats:"7/10"  },
+  { n:18, type:'empty',    sponsor:"—",              seats:"0/10"  },
+  { n:19, type:'full',     sponsor:"Ramirez",        seats:"10/10" },
+  { n:20, type:'partial',  sponsor:"Kowalski",       seats:"2/10"  },
+];
+// Fill remaining 30 tables
+for (let i = 21; i <= 50; i++) {
+  TABLE_DATA.push({ n:i, type: i<=40?'partial':'empty', sponsor: i<=35?'Reserved':'—', seats: i<=35?`${Math.floor(Math.random()*6+4)}/10`:'0/10' });
+}
+TABLE_DATA[49] = { n:50, type:'staff', sponsor:'Staff', seats:'8/8' };
+
+function renderTables() {
+  document.getElementById('tables-grid').innerHTML = TABLE_DATA.map(t => `
+    <div class="table-tile tt-${t.type}" onclick="showTableDetail(${t.n})">
+      <div class="tt-number">${t.n}</div>
+      <div class="tt-sponsor">${t.sponsor}</div>
+      <div class="tt-seats">${t.seats}</div>
+    </div>
+  `).join('');
+}
+
+function showTableDetail(n) {
+  document.querySelectorAll('.table-tile').forEach(t => t.style.outline = '');
+  document.querySelector(`.table-tile:nth-child(${n})`).style.outline = '2px solid var(--amber)';
+  const t = TABLE_DATA[n-1];
+  document.getElementById('td-num').textContent = n;
+  const spons = SPONSORSHIPS.find(s => s.table === n);
+  document.getElementById('td-title').textContent = spons ? spons.donor : 'Unassigned';
+  const seatCount = t.type === 'expanded' ? 12 : 10;
+  const filled = spons ? spons.names : 0;
+  document.getElementById('td-sub').textContent = `${seatCount} seats${t.type==='expanded'?' (expanded)':''} · ${filled}/${seatCount} assigned`;
+  // Render seats
+  const names = spons ? ['James O\'Brien','Patricia O\'Brien','Colleen O\'Brien','Thomas O\'Brien','Fr. Kelly','Bishop Williams','Sr. Agnes','Dr. Chen','Margaret Sullivan','Robert Walsh','Sarah Reynolds','Mike Donovan'] : [];
+  const seatHtml = Array.from({length:seatCount}, (_,i) => {
+    const name = names[i];
+    if (!name) return `<div class="seat-chip sc-empty" onclick="openModal('assign-seat')">Seat ${i+1}<br><span style="font-size:9px">+ Add</span></div>`;
+    if (name.includes('Reynolds') || name.includes('Donovan')) return `<div class="seat-chip sc-staff">${name.split(' ')[0]}<br><span style="font-size:9px">Staff</span></div>`;
+    return `<div class="seat-chip sc-filled">${name.split(' ')[0]}<br><span style="font-size:9px">${name.split(' ').slice(1).join(' ')}</span></div>`;
+  }).join('');
+  document.getElementById('seat-grid').innerHTML = seatHtml;
+  document.getElementById('table-detail-panel').style.display = 'block';
+  document.getElementById('table-detail-panel').scrollIntoView({ behavior:'smooth', block:'nearest' });
+}
+
+// ── GUEST LIST ────────────────────────────────────────────────
+function renderGuests(filter='all') {
+  const rows = SPONSORSHIPS.filter(s => s.tier !== 'Staff').filter(s => {
+    if (filter === 'missing') return s.missing > 0;
+    if (filter === 'dietary') return s.dietary.length > 0;
+    return true;
+  }).map(s => {
+    const missingHtml = s.missing > 0
+      ? `<div class="missing-count"><svg viewBox="0 0 9 9" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" width="9" height="9"><circle cx="4.5" cy="4.5" r="3.5"/><path d="M4.5 3v2M4.5 6.5v.2"/></svg>${s.missing} seat${s.missing>1?'s':''} unnamed</div>`
+      : `<span class="name-chip nc-ok" style="font-size:11px">✓ All ${s.seats} names</span>`;
+    const dietHtml = s.dietary.length > 0
+      ? s.dietary.map(d=>`<span class="diet-tag">${d}</span>`).join(' ')
+      : `<span style="font-size:11px;color:var(--text3)">None</span>`;
+    const guestPreview = Array.from({length:Math.min(s.seats,4)},(_,i) => {
+      const isMissing = i >= s.names - s.missing + (s.seats - s.names);
+      const name = isMissing ? 'Name needed' : ['James O\'Brien','Patricia O\'Brien','Fr. Kelly','Guest'][Math.min(i,3)];
+      return `<div class="ge-guest"><span class="ge-num">${i+1}</span><span class="ge-name ${isMissing?'missing':''}">${name}</span>${i===0&&s.dietary.includes('GF')?'<span class="ge-diet">GF</span>':''}</div>`;
+    }).join('') + (s.seats > 4 ? `<div class="ge-guest" style="color:var(--text3);font-size:11px">+${s.seats-4} more seats…</div>` : '');
+    return `<div class="gt-body-row ${s.missing>0?'missing':''}" onclick="openModal('edit-guests',${s.id})">
+      <div class="gt-cell" style="flex-direction:column;align-items:flex-start;gap:6px">
+        <div style="font-weight:600;font-size:13px;color:var(--text)">${s.donor}</div>
+        <div class="guest-expand">${guestPreview}</div>
+      </div>
+      <div class="gt-cell" style="flex-direction:column;align-items:flex-start;gap:4px">
+        <span style="font-weight:600;font-size:12px">${s.tier}</span>
+        <span style="font-size:11px;color:var(--text3)">${s.seats} seats</span>
+      </div>
+      <div class="gt-cell"><span style="font-weight:600;color:var(--purp)">Table ${s.table||'—'}</span></div>
+      <div class="gt-cell">${missingHtml}</div>
+      <div class="gt-cell" style="gap:4px;flex-wrap:wrap">${dietHtml}</div>
+      <div class="gt-cell"><span style="font-size:11px;font-weight:600;color:${s.attend==='yes'?'var(--green)':'var(--amber)'}">${s.attend==='yes'?'Attending':'Partial'}</span></div>
+      <div class="gt-cell"><button class="ta-btn ta-btn-primary" style="padding:3px 9px;font-size:10px" onclick="event.stopPropagation();openModal('edit-guests',${s.id})">Edit</button></div>
+    </div>`;
+  }).join('');
+  document.getElementById('guest-rows').innerHTML = rows;
+}
+
+function filterGuests(f) {
+  ['all','miss','diet'].forEach(x => {
+    const el = document.getElementById('gf-'+x);
+    if (el) { el.style.background=''; el.style.color=''; el.style.borderColor=''; }
+  });
+  const map = {all:'all',missing:'miss',dietary:'diet'};
+  const el = document.getElementById('gf-'+(map[f]||f));
+  if (el) { el.style.background='var(--navy)'; el.style.color='white'; el.style.borderColor='var(--navy)'; }
+  renderGuests(f);
+}
+
+function sendFollowUp() {
+  const btn = document.querySelector('.mb-action');
+  btn.textContent = '✓ Emails sent';
+  btn.style.background = 'var(--green)';
+  setTimeout(() => { btn.textContent = 'Send follow-up emails'; btn.style.background=''; }, 2500);
+}
+
+// ── REPORT TABLE ─────────────────────────────────────────────
+function renderReport() {
+  document.getElementById('report-tbody').innerHTML = SPONSORSHIPS.filter(s => s.tier !== 'Staff').map(s => {
+    const bal = s.amount - s.paid;
+    const balClass = bal === 0 ? 'bal-green' : bal > 5000 ? 'bal-red' : 'bal-amber';
+    const balStr = bal === 0 ? 'Paid in full' : '-$' + bal.toLocaleString();
+    return `<tr class="${s.missing>0?'missing-row':''}">
+      <td><div style="font-weight:600;color:var(--text)">${s.donor}</div><div style="font-size:10px;color:var(--text3)">${s.note||''}</div></td>
+      <td style="font-weight:500">${s.tier}</td>
+      <td style="color:var(--purp);font-weight:600">${s.table?'T'+s.table:'—'}</td>
+      <td style="text-align:center">${s.seats}</td>
+      <td style="text-align:center">${s.names}</td>
+      <td style="text-align:center">${s.missing > 0 ? `<span style="color:var(--rose);font-weight:700">${s.missing}</span>` : `<span style="color:var(--green)">—</span>`}</td>
+      <td style="font-weight:600">$${s.amount.toLocaleString()}</td>
+      <td style="color:var(--green);font-weight:600">$${s.paid.toLocaleString()}</td>
+      <td class="${balClass}">${balStr}</td>
+      <td><span class="payment-badge ${PAY_CLASSES[s.payType]}">${PAY_LABELS[s.payType]}</span></td>
+      <td style="color:var(--text3)">${s.solicitor}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ── TABS ─────────────────────────────────────────────────────
+function switchTab(id, el) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+  if (id === 'report') renderReport();
+  if (id === 'guests') renderGuests();
+}
+
+// ── MODAL ─────────────────────────────────────────────────────
+const MODAL_CONFIGS = {
+  'add-sponsorship': {
+    title: 'Add sponsorship or ticket',
+    body: `
+      <div class="form-row"><label class="form-label">Donor <span>*</span></label>
+        <input class="form-input" placeholder="Search donor name or ID…"></div>
+      <div class="form-row"><label class="form-label">Tier <span>*</span></label>
+        <select class="form-select"><option>Presenting — $50,000</option><option>Diamond — $25,000</option><option>Gold Table — $15,000</option><option>Silver Table — $10,000</option><option>Individual ticket — $500</option><option>Complimentary</option></select></div>
+      <div class="form-row-2">
+        <div class="form-row"><label class="form-label">Seats allocated</label><input class="form-input" type="number" value="10"></div>
+        <div class="form-row"><label class="form-label">Table number</label><input class="form-input" type="number" placeholder="e.g. 12"></div>
+      </div>
+      <div class="form-row"><label class="form-label">Payment method</label>
+        <select class="form-select"><option>Check</option><option>Credit card</option><option>Pledge (invoice)</option><option>DAF distribution + tickets</option><option>Complimentary</option></select></div>
+      <div class="form-row"><label class="form-label">Amount received</label>
+        <input class="form-input" placeholder="$0.00"></div>
+      <div class="form-row-2">
+        <div class="form-row"><label class="form-label">Solicitor</label>
+          <select class="form-select"><option>Mike Donovan</option><option>Sarah Reynolds</option><option>Janet Williams</option></select></div>
+        <div class="form-row"><label class="form-label">Reservations contact</label>
+          <select class="form-select"><option>Sarah Reynolds</option><option>Mike Donovan</option></select></div>
+      </div>
+      <div class="form-row"><label class="form-label" style="color:var(--rose)">Internal staff note (not visible to donor)</label>
+        <textarea class="form-input" style="min-height:50px;resize:none" placeholder="Seating conflicts, mobility, VIP instructions…"></textarea></div>`,
+    foot: `<button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="closeModal()">Save sponsorship</button>`
+  },
+  'edit-guests': {
+    title: 'Edit guest names',
+    body: `
+      <div style="background:var(--amberl);border:1px solid #FDE68A;border-radius:8px;padding:10px 12px;font-size:12px;color:#78350F;margin-bottom:4px">
+        Collecting guest names is required for check-in, seating charts, and the event program. Names are also used for post-event follow-up and gift acknowledgement.</div>
+      <div id="guest-inputs">
+        <div class="guest-input-row" style="margin-bottom:8px">
+          <div class="form-row"><label class="form-label">Seat 1 — First name</label><input class="form-input" value="James"></div>
+          <div class="form-row"><label class="form-label">Last name</label><input class="form-input" value="O'Brien"></div>
+          <div class="form-row"><label class="form-label">Dietary</label><select class="form-select" style="padding:8px 8px"><option>None</option><option selected>Gluten-free</option><option>Vegetarian</option><option>Crustacean allergy</option></select></div>
+        </div>
+        <div class="guest-input-row" style="margin-bottom:8px">
+          <div class="form-row"><label class="form-label">Seat 2 — First name</label><input class="form-input" value="Patricia"></div>
+          <div class="form-row"><label class="form-label">Last name</label><input class="form-input" value="O'Brien"></div>
+          <div class="form-row"><label class="form-label">Dietary</label><select class="form-select" style="padding:8px 8px"><option>None</option><option selected>Gluten-free</option><option>Vegetarian</option><option>Crustacean allergy</option></select></div>
+        </div>
+        <div class="guest-input-row" style="margin-bottom:8px">
+          <div class="form-row"><label class="form-label" style="color:var(--rose)">Seat 3 — First name</label><input class="form-input" placeholder="Name needed" style="border-color:#FBCFE8"></div>
+          <div class="form-row"><label class="form-label" style="color:var(--rose)">Last name</label><input class="form-input" placeholder="Name needed" style="border-color:#FBCFE8"></div>
+          <div class="form-row"><label class="form-label">Dietary</label><select class="form-select" style="padding:8px 8px"><option>None</option><option>Gluten-free</option><option>Vegetarian</option></select></div>
+        </div>
+      </div>
+      <button class="add-guest-btn"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" width="12" height="12"><path d="M6 1v10M1 6h10"/></svg>Add another seat</button>
+      <div class="form-row"><label class="form-label">Donor seating preference note</label>
+        <textarea class="form-input" style="min-height:50px;resize:none" placeholder="e.g. near certain guests, away from stage, accessibility needs…"></textarea></div>`,
+    foot: `<button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="closeModal()">Save guest names</button>`
+  },
+  'assign-table': {
+    title: 'Assign table',
+    body: `
+      <div class="form-row"><label class="form-label">Sponsorship / donor <span>*</span></label>
+        <select class="form-select"><option>First Catholic Bank — Diamond</option><option>O'Brien & Callahan LLP — Diamond</option><option>Westlake Medical Group — Gold</option><option>Dr. Patricia Kim — Gold</option></select></div>
+      <div class="form-row"><label class="form-label">Table number <span>*</span></label>
+        <input class="form-input" type="number" placeholder="1–50"></div>
+      <div class="form-row"><label class="form-label">Seat count</label>
+        <select class="form-select"><option>Standard (10 seats)</option><option>Expanded (11 seats)</option><option>Expanded (12 seats)</option></select></div>
+      <div class="form-row"><label class="form-label">Internal note</label>
+        <textarea class="form-input" style="min-height:44px;resize:none" placeholder="Seating instructions, conflicts, notes…"></textarea></div>`,
+    foot: `<button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="closeModal()">Assign table</button>`
+  },
+  'add-waitlist': {
+    title: 'Add to waitlist',
+    body: `
+      <div class="form-row"><label class="form-label">Donor <span>*</span></label>
+        <input class="form-input" placeholder="Search donor name…"></div>
+      <div class="form-row"><label class="form-label">Level of interest</label>
+        <select class="form-select"><option>Diamond Table — $25,000</option><option>Gold Table — $15,000</option><option>Individual ticket — $500</option><option>Complimentary (clergy/staff)</option></select></div>
+      <div class="form-row"><label class="form-label">Staff note</label>
+        <textarea class="form-input" style="min-height:60px;resize:none" placeholder="e.g. referred by Fr. Collins, specific preference, how to notify…"></textarea></div>`,
+    foot: `<button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="closeModal()">Add to waitlist</button>`
+  },
+};
+
+function openModal(type, id) {
+  const cfg = MODAL_CONFIGS[type] || { title:'Edit', body:'', foot:`<button class="btn btn-primary" onclick="closeModal()">Save</button>` };
+  document.getElementById('modal-title').textContent = cfg.title;
+  document.getElementById('modal-body').innerHTML = cfg.body;
+  document.getElementById('modal-foot').innerHTML = cfg.foot;
+  document.getElementById('modal-overlay').classList.add('show');
+}
+function closeModal() { document.getElementById('modal-overlay').classList.remove('show'); }
+function handleOverlayClick(e) { if (e.target === document.getElementById('modal-overlay')) closeModal(); }
+
+// ── INIT ─────────────────────────────────────────────────────
+renderSponsorships();
+renderTables();
+renderGuests();
+</script>
+</body>
+</html>

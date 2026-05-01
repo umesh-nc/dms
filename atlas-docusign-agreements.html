@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GiveCentral Atlas — DocuSign Gift Agreements</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --navy:  #0E1E35; --navy2: #152844; --navy3: #1E3A5F;
+      --blue:  #2563EB; --bluel: #DBEAFE; --bluep: #EFF6FF;
+      --green: #15803D; --greenl:#DCFCE7;
+      --amber: #D97706; --amberl:#FEF3C7;
+      --rose:  #BE185D; --rosel: #FCE7F3;
+      --teal:  #0D9488; --teall: #CCFBF1;
+      --purp:  #7C3AED; --purpl: #EDE9FE;
+      --ds:    #1A2B63; /* DocuSign navy */
+      --dsg:   #F9B800; /* DocuSign gold */
+      --text:  #0F172A; --text2: #334155; --text3: #64748B;
+      --border:#E2E8F0; --surf:  #F8FAFC; --white: #FFFFFF;
+    }
+    html { font-size: 14px; -webkit-font-smoothing: antialiased; }
+    body { font-family: 'DM Sans', sans-serif; background: #F0F4F8; color: var(--text); min-height: 100vh; display: flex; overflow: hidden; height: 100vh; }
+
+    /* ── SIDEBAR ── */
+    .sidebar { width: 220px; background: var(--navy); height: 100vh; display: flex; flex-direction: column; flex-shrink: 0; }
+    .sb-logo { padding: 18px 18px 14px; display: flex; align-items: center; gap: 9px; border-bottom: 1px solid rgba(255,255,255,.08); }
+    .sb-mark { width: 30px; height: 30px; background: var(--blue); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+    .sb-mark svg { width: 15px; height: 15px; }
+    .sb-name { font-family: 'DM Serif Display', serif; font-size: 15px; color: white; line-height: 1; }
+    .sb-sub  { font-size: 9px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.3); margin-top: 3px; }
+    .nav-group { padding: 10px 8px 0; }
+    .nav-label { font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.28); padding: 0 10px; margin-bottom: 4px; }
+    .nav-item  { display: flex; align-items: center; gap: 9px; padding: 8px 10px; border-radius: 7px; font-size: 12px; font-weight: 500; color: rgba(255,255,255,.55); cursor: pointer; transition: all .15s; margin-bottom: 1px; }
+    .nav-item:hover  { background: rgba(255,255,255,.07); color: rgba(255,255,255,.85); }
+    .nav-item.active { background: var(--blue); color: white; }
+    .nav-item svg { width: 14px; height: 14px; flex-shrink: 0; }
+    .nav-badge { margin-left: auto; background: rgba(255,255,255,.15); color: rgba(255,255,255,.7); border-radius: 10px; padding: 1px 7px; font-size: 10px; font-weight: 600; }
+    .sb-user { margin-top: auto; padding: 12px; border-top: 1px solid rgba(255,255,255,.08); display: flex; align-items: center; gap: 9px; }
+    .u-av { width: 30px; height: 30px; border-radius: 50%; background: var(--blue); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: white; }
+
+    /* ── MAIN ── */
+    .main { flex: 1; min-width: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+    .topbar { background: white; border-bottom: 1px solid var(--border); padding: 0 24px; height: 52px; display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+    .tb-back { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--text3); cursor: pointer; }
+    .tb-back svg { width: 13px; height: 13px; }
+    .tb-sep  { width: 1px; height: 18px; background: var(--border); }
+    .tb-title { font-size: 15px; font-weight: 600; color: var(--text); }
+    .tb-sub  { font-size: 12px; color: var(--text3); }
+    .tb-chip { display: flex; align-items: center; gap: 5px; background: var(--bluep); border: 1px solid var(--bluel); border-radius: 20px; padding: 3px 10px; font-size: 11px; font-weight: 600; color: var(--blue); }
+    .tb-chip svg { width: 10px; height: 10px; }
+    .tb-right { margin-left: auto; display: flex; gap: 8px; }
+    .btn { padding: 6px 14px; border-radius: 7px; font-size: 12px; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .15s; display: flex; align-items: center; gap: 6px; border: 1px solid var(--border); background: none; color: var(--text2); }
+    .btn:hover { background: var(--surf); }
+    .btn svg { width: 12px; height: 12px; }
+    .btn-primary { background: var(--blue); color: white; border: none; box-shadow: 0 1px 4px rgba(37,99,235,.3); }
+    .btn-primary:hover { background: #1D4ED8; }
+    .btn-ds { background: var(--ds); color: white; border: none; box-shadow: 0 1px 4px rgba(26,43,99,.35); }
+    .btn-ds:hover { background: #111e4a; }
+    .btn-green { background: var(--green); color: white; border: none; }
+    .btn-green:hover { background: #126e31; }
+
+    /* ── CONTENT ── */
+    .content { flex: 1; overflow-y: auto; padding: 20px 24px 40px; display: flex; flex-direction: column; gap: 14px; }
+
+    /* ── GIFT RECORD HEADER ── */
+    .gift-hero { background: var(--navy); border-radius: 14px; padding: 20px 24px; position: relative; overflow: hidden; display: flex; gap: 20px; align-items: flex-start; }
+    .gh-bg { position: absolute; inset: 0; background: radial-gradient(circle at 85% 50%, rgba(37,99,235,.2) 0%, transparent 55%), radial-gradient(circle at 5% 80%, rgba(13,148,136,.1) 0%, transparent 50%); }
+    .gh-inner { position: relative; z-index: 1; flex: 1; }
+    .gh-eyebrow { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: rgba(255,255,255,.4); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+    .gh-name { font-family: 'DM Serif Display', serif; font-size: 22px; color: white; margin-bottom: 5px; }
+    .gh-amount { font-family: 'DM Serif Display', serif; font-size: 36px; color: #FCD34D; letter-spacing: -.02em; line-height: 1; margin-bottom: 8px; }
+    .gh-meta { display: flex; flex-wrap: wrap; gap: 8px; }
+    .gh-chip { display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 20px; padding: 5px 11px; font-size: 11px; color: rgba(255,255,255,.7); }
+    .gh-chip svg { width: 11px; height: 11px; opacity: .6; }
+    .gh-stats { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 8px; align-items: flex-end; }
+    .gift-status-pill { display: flex; align-items: center; gap: 7px; padding: 7px 14px; border-radius: 30px; font-size: 12px; font-weight: 700; }
+    .gsp-pledge  { background: rgba(37,99,235,.25); color: #93C5FD; }
+    .gsp-signed  { background: rgba(21,128,61,.25); color: #86EFAC; }
+    .gsp-pending { background: rgba(217,119,6,.25); color: #FCD34D; }
+    .gsp-dot { width: 7px; height: 7px; border-radius: 50%; }
+
+    /* ── AGREEMENT PANEL TABS ── */
+    .panel-tabs { display: flex; gap: 2px; background: white; border: 1px solid var(--border); border-radius: 10px; padding: 5px; }
+    .pt { flex: 1; padding: 7px 10px; border-radius: 7px; font-size: 12px; font-weight: 500; color: var(--text3); cursor: pointer; text-align: center; transition: all .15s; border: none; background: none; font-family: 'DM Sans', sans-serif; }
+    .pt:hover { background: var(--surf); color: var(--text2); }
+    .pt.active { background: var(--navy); color: white; font-weight: 600; }
+
+    /* ── MAIN GRID ── */
+    .main-grid { display: grid; grid-template-columns: 1fr 340px; gap: 14px; }
+
+    /* ── AGREEMENT TIMELINE ── */
+    .agreement-card { background: white; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    .ac-head { padding: 12px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+    .ac-icon { width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .ac-icon svg { width: 13px; height: 13px; }
+    .ac-title { font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--text3); flex: 1; }
+    .ds-badge { display: flex; align-items: center; gap: 5px; background: var(--ds); color: var(--dsg); border-radius: 6px; padding: 3px 9px; font-size: 10px; font-weight: 700; }
+    .ds-badge svg { width: 10px; height: 10px; }
+
+    /* Agreement row */
+    .agr-list { display: flex; flex-direction: column; }
+    .agr-item { padding: 16px 18px; border-bottom: .5px solid var(--border); display: grid; grid-template-columns: 28px 1fr auto; gap: 12px; align-items: flex-start; cursor: pointer; transition: background .12s; }
+    .agr-item:last-child { border-bottom: none; }
+    .agr-item:hover { background: var(--surf); }
+    .agr-dot-col { display: flex; flex-direction: column; align-items: center; padding-top: 3px; }
+    .agr-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .agr-line { width: 2px; background: var(--border); flex: 1; margin-top: 4px; min-height: 20px; }
+    .agr-item:last-child .agr-line { display: none; }
+    .agr-template { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 3px; }
+    .agr-meta { font-size: 11px; color: var(--text3); display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 6px; }
+    .agr-meta span { display: flex; align-items: center; gap: 4px; }
+    .agr-meta svg { width: 10px; height: 10px; }
+    .agr-signers { display: flex; gap: 6px; }
+    .signer-chip { display: flex; align-items: center; gap: 5px; padding: 3px 9px; border-radius: 20px; font-size: 10px; font-weight: 600; }
+    .sc-signed  { background: var(--greenl); color: var(--green); }
+    .sc-sent    { background: var(--amberl); color: var(--amber); }
+    .sc-pending { background: var(--surf); color: var(--text3); border: 1px solid var(--border); }
+    .sc-void    { background: var(--rosel); color: var(--rose); }
+    .signer-dot { width: 5px; height: 5px; border-radius: 50%; }
+    .agr-actions { display: flex; flex-direction: column; gap: 5px; align-items: flex-end; }
+    .agr-action-btn { padding: 4px 11px; border-radius: 6px; font-size: 11px; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .15s; white-space: nowrap; }
+    .aab-ghost { background: none; border: 1px solid var(--border); color: var(--text2); }
+    .aab-ghost:hover { background: var(--surf); }
+    .aab-ds { background: var(--ds); color: white; border: none; }
+    .aab-ds:hover { background: #111e4a; }
+    .aab-remind { background: var(--amberl); color: var(--amber); border: 1px solid #FDE68A; }
+    .aab-remind:hover { background: #FDE68A; }
+
+    /* ── STATUS TRACKER ── */
+    .status-track { padding: 14px 18px; background: var(--surf); border-radius: 9px; margin: 0 18px 14px; }
+    .st-title { font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--text3); margin-bottom: 10px; }
+    .st-steps { display: flex; align-items: center; gap: 0; }
+    .st-step { flex: 1; display: flex; flex-direction: column; align-items: center; position: relative; }
+    .st-step::after { content: ''; position: absolute; top: 11px; left: 50%; width: 100%; height: 2px; z-index: 0; }
+    .st-step:last-child::after { display: none; }
+    .st-step.done::after    { background: var(--green); }
+    .st-step.active::after  { background: linear-gradient(90deg, var(--green) 0%, var(--border) 100%); }
+    .st-step.pending::after { background: var(--border); }
+    .st-circle { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 1; flex-shrink: 0; margin-bottom: 6px; }
+    .st-circle svg { width: 10px; height: 10px; }
+    .st-done    .st-circle { background: var(--green); }
+    .st-active  .st-circle { background: var(--amber); border: 2px solid var(--amber); }
+    .st-pending .st-circle { background: white; border: 2px solid var(--border); }
+    .st-label { font-size: 9px; font-weight: 600; text-align: center; line-height: 1.3; }
+    .st-done   .st-label { color: var(--green); }
+    .st-active .st-label  { color: var(--amber); }
+    .st-pending .st-label { color: var(--text3); }
+
+    /* ── RIGHT PANEL: SEND FORM / SUMMARY ── */
+    .right-panel { display: flex; flex-direction: column; gap: 12px; }
+
+    .send-card { background: white; border: 1.5px solid var(--ds); border-radius: 12px; overflow: hidden; }
+    .send-head { background: var(--ds); padding: 12px 16px; display: flex; align-items: center; gap: 10px; }
+    .send-head-icon { width: 28px; height: 28px; background: rgba(255,255,255,.15); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+    .send-head-icon svg { width: 13px; height: 13px; color: var(--dsg); }
+    .send-head-title { font-size: 13px; font-weight: 700; color: white; flex: 1; }
+    .send-head-badge { font-size: 10px; font-weight: 700; background: rgba(249,184,0,.2); color: var(--dsg); padding: 2px 9px; border-radius: 20px; }
+
+    .send-body { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+    .form-row { display: flex; flex-direction: column; gap: 5px; }
+    .form-label { font-size: 11px; font-weight: 600; color: var(--text2); }
+    .form-label span { color: var(--rose); }
+    .form-input { padding: 8px 11px; border: 1px solid var(--border); border-radius: 7px; font-size: 12px; font-family: 'DM Sans', sans-serif; color: var(--text); background: var(--surf); outline: none; width: 100%; }
+    .form-input:focus { border-color: var(--blue); background: white; }
+    .form-input.prefilled { background: var(--bluep); border-color: var(--bluel); color: var(--text); }
+    .form-input[readonly] { cursor: default; }
+    .form-select { padding: 8px 11px; border: 1px solid var(--border); border-radius: 7px; font-size: 12px; font-family: 'DM Sans', sans-serif; color: var(--text); background: var(--surf); outline: none; width: 100%; cursor: pointer; }
+    .form-select:focus { border-color: var(--blue); }
+    .form-hint { font-size: 10px; color: var(--text3); }
+    .form-divider { height: 1px; background: var(--border); }
+
+    /* Template preview card */
+    .tpl-preview { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+    .tpl-prev-head { padding: 8px 11px; background: var(--surf); border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 7px; }
+    .tpl-prev-icon { width: 22px; height: 22px; background: var(--ds); border-radius: 5px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .tpl-prev-icon svg { width: 10px; height: 10px; color: var(--dsg); }
+    .tpl-prev-name { font-size: 11px; font-weight: 600; color: var(--text); flex: 1; }
+    .tpl-prev-pages { font-size: 10px; color: var(--text3); }
+    .tpl-prev-body { padding: 10px 11px; display: flex; flex-direction: column; gap: 4px; }
+    .tpl-field { display: flex; gap: 8px; font-size: 10px; }
+    .tpl-field-key { color: var(--text3); min-width: 80px; }
+    .tpl-field-val { color: var(--blue); font-weight: 500; }
+
+    /* Signer rows */
+    .signer-rows { display: flex; flex-direction: column; gap: 7px; }
+    .signer-row { display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: var(--surf); border: 1px solid var(--border); border-radius: 8px; }
+    .signer-av { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; flex-shrink: 0; }
+    .signer-name { font-size: 12px; font-weight: 500; color: var(--text); flex: 1; }
+    .signer-email-small { font-size: 10px; color: var(--text3); }
+    .signer-order { font-size: 10px; font-weight: 700; background: var(--navy); color: rgba(255,255,255,.6); border-radius: 20px; padding: 1px 7px; flex-shrink: 0; }
+
+    /* Send confirmation overlay */
+    .send-confirm { display: none; flex-direction: column; align-items: center; text-align: center; padding: 20px 16px; gap: 10px; }
+    .send-confirm.show { display: flex; }
+    .send-confirm-icon { width: 52px; height: 52px; background: var(--greenl); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+    .send-confirm-icon svg { width: 22px; height: 22px; color: var(--green); }
+
+    /* Pending reminder card */
+    .reminder-card { background: white; border: 1.5px solid #FDE68A; border-radius: 12px; overflow: hidden; }
+    .rc-head { background: var(--amberl); padding: 10px 14px; border-bottom: 1px solid #FDE68A; display: flex; align-items: center; gap: 8px; }
+    .rc-icon { width: 24px; height: 24px; background: var(--amber); border-radius: 6px; display: flex; align-items: center; justify-content: center; }
+    .rc-icon svg { width: 11px; height: 11px; color: white; }
+    .rc-title { font-size: 11px; font-weight: 700; color: #78350F; flex: 1; }
+    .rc-body { padding: 12px 14px; font-size: 12px; color: var(--text2); line-height: 1.6; }
+
+    /* Info card (right) */
+    .info-card { background: white; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    .info-head { padding: 10px 14px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
+    .info-icon { width: 24px; height: 24px; border-radius: 6px; display: flex; align-items: center; justify-content: center; }
+    .info-icon svg { width: 11px; height: 11px; }
+    .info-title { font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--text3); }
+    .info-body { padding: 12px 14px; }
+    .kv { display: flex; justify-content: space-between; align-items: flex-start; padding: 6px 0; border-bottom: .5px solid var(--border); gap: 10px; }
+    .kv:last-child { border-bottom: none; }
+    .kv-key { font-size: 11px; color: var(--text3); flex-shrink: 0; }
+    .kv-val { font-size: 11px; font-weight: 600; color: var(--text); text-align: right; }
+    .kv-val.green { color: var(--green); }
+    .kv-val.amber { color: var(--amber); }
+
+    /* ── MODAL OVERLAY (new agreement) ── */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(15,30,53,.6); z-index: 200; display: none; align-items: center; justify-content: center; padding: 20px; }
+    .modal-overlay.show { display: flex; }
+    .modal { background: white; border-radius: 16px; width: 100%; max-width: 660px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,.25); }
+    .modal-top { padding: 20px 24px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; gap: 14px; }
+    .modal-ds-icon { width: 40px; height: 40px; background: var(--ds); border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .modal-ds-icon svg { width: 18px; height: 18px; color: var(--dsg); }
+    .modal-title { font-family: 'DM Serif Display', serif; font-size: 20px; color: var(--text); }
+    .modal-sub   { font-size: 12px; color: var(--text3); margin-top: 3px; }
+    .modal-close { margin-left: auto; width: 28px; height: 28px; border: 1px solid var(--border); border-radius: 7px; background: none; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .modal-close svg { width: 12px; height: 12px; color: var(--text3); }
+    .modal-body { padding: 22px 24px; display: flex; flex-direction: column; gap: 18px; }
+
+    /* Step indicator */
+    .modal-steps { display: flex; gap: 0; background: var(--surf); border-radius: 9px; overflow: hidden; }
+    .ms { flex: 1; padding: 8px 12px; text-align: center; font-size: 11px; font-weight: 500; color: var(--text3); border-right: 1px solid var(--border); transition: all .2s; }
+    .ms:last-child { border-right: none; }
+    .ms.active { background: var(--navy); color: white; font-weight: 700; }
+    .ms.done   { background: var(--greenl); color: var(--green); }
+    .ms-num { font-size: 10px; opacity: .6; display: block; margin-bottom: 1px; }
+
+    /* Template selector cards */
+    .tpl-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .tpl-card { border: 1.5px solid var(--border); border-radius: 10px; padding: 13px 14px; cursor: pointer; transition: all .18s; }
+    .tpl-card:hover { border-color: #94A3B8; }
+    .tpl-card.selected { border-color: var(--ds); background: #F0F4FF; }
+    .tpl-card-icon { width: 34px; height: 34px; background: var(--ds); border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-bottom: 9px; }
+    .tpl-card-icon svg { width: 15px; height: 15px; color: var(--dsg); }
+    .tpl-card-name { font-size: 12px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+    .tpl-card-desc { font-size: 10px; color: var(--text3); line-height: 1.5; }
+    .tpl-card-pages { font-size: 10px; font-weight: 600; color: var(--blue); margin-top: 7px; }
+    .tpl-selected-check { position: absolute; top: 8px; right: 8px; width: 18px; height: 18px; background: var(--ds); border-radius: 50%; display: none; align-items: center; justify-content: center; }
+    .tpl-card.selected .tpl-selected-check { display: flex; }
+    .tpl-card { position: relative; }
+    .tpl-selected-check svg { width: 9px; height: 9px; }
+
+    /* Prefill preview section */
+    .prefill-section { background: var(--bluep); border: 1px solid var(--bluel); border-radius: 10px; padding: 14px 16px; }
+    .pf-title { font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--blue); margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+    .pf-title svg { width: 12px; height: 12px; }
+    .pf-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .pf-field { }
+    .pf-key { font-size: 10px; color: #1D4ED8; margin-bottom: 2px; }
+    .pf-val { font-size: 12px; font-weight: 500; color: var(--navy); background: white; border-radius: 5px; padding: 5px 9px; border: 1px solid var(--bluel); }
+    .pf-edit { font-size: 10px; color: var(--blue); cursor: pointer; margin-top: 3px; }
+
+    .modal-signers { display: flex; flex-direction: column; gap: 8px; }
+    .ms-row { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: var(--surf); border: 1px solid var(--border); border-radius: 8px; }
+    .ms-av  { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+    .ms-info { flex: 1; }
+    .ms-name  { font-size: 12px; font-weight: 600; color: var(--text); }
+    .ms-email { font-size: 11px; color: var(--text3); }
+    .ms-role  { font-size: 10px; font-weight: 700; background: var(--navy); color: rgba(255,255,255,.6); border-radius: 20px; padding: 2px 9px; }
+
+    .modal-message { }
+    .msg-area { width: 100%; border: 1px solid var(--border); border-radius: 7px; padding: 10px 12px; font-size: 12px; font-family: 'DM Sans', sans-serif; color: var(--text); background: var(--surf); resize: vertical; min-height: 70px; outline: none; }
+    .msg-area:focus { border-color: var(--blue); background: white; }
+
+    .modal-footer { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; gap: 10px; justify-content: flex-end; align-items: center; }
+    .modal-footer-note { font-size: 11px; color: var(--text3); flex: 1; }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+    .fade-in { animation: fadeUp .25s ease forwards; }
+    @keyframes checkPop { 0%{transform:scale(0)} 70%{transform:scale(1.2)} 100%{transform:scale(1)} }
+    .check-pop { animation: checkPop .4s ease forwards; }
+  </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sb-logo">
+    <div class="sb-mark"><svg viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7.5" stroke="white" stroke-width="1.5"/><path d="M5.5 9.5C6.5 11.5 9 13 9 13s2.5-1.5 3.5-3.5S12 5 9 5 4.5 7.5 5.5 9.5z" fill="white" fill-opacity=".9"/></svg></div>
+    <div><div class="sb-name">GiveCentral</div><div class="sb-sub">Atlas CRM</div></div>
+  </div>
+  <div class="nav-group">
+    <div class="nav-label">Main</div>
+    <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><rect x="1.5" y="1.5" width="4" height="4" rx="1.2"/><rect x="8.5" y="1.5" width="4" height="4" rx="1.2"/><rect x="1.5" y="8.5" width="4" height="4" rx="1.2"/><rect x="8.5" y="8.5" width="4" height="4" rx="1.2"/></svg>Dashboard</div>
+    <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="6" cy="4.5" r="3"/><path d="M1 13c0-2.8 2.2-5 5-5h1c2.8 0 5 2.2 5 5"/></svg>Donors</div>
+    <div class="nav-item active"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M7 1.5v11M2 6.5h10"/></svg>Gifts &amp; pledges</div>
+  </div>
+  <div class="nav-group" style="margin-top:8px">
+    <div class="nav-label">Tools</div>
+    <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><rect x="1.5" y="2" width="8" height="10" rx="1.3"/><path d="M4 5h5M4 7.5h5M4 10h3"/><path d="M9.5 5l3 3-1.5 1.5-3-3"/></svg>Gift agreements<span class="nav-badge">1</span></div>
+  </div>
+  <div class="sb-user">
+    <div class="u-av">MD</div>
+    <div><div style="font-size:12px;font-weight:500;color:rgba(255,255,255,.75)">Mike Donovan</div><div style="font-size:10px;color:rgba(255,255,255,.35)">Major Gifts Officer</div></div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="tb-back"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M9 2L4 7l5 5"/></svg>O'Brien donor record</div>
+    <div class="tb-sep"></div>
+    <span class="tb-title">Pledge #PL-2026-0047</span>
+    <div class="tb-sep"></div>
+    <span class="tb-sub">Gift agreements</span>
+    <div class="tb-chip">
+      <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M5 1.5v4M3 4l2 2 2-2"/><path d="M1.5 8.5h7"/></svg>
+      DocuSign connected
+    </div>
+    <div class="tb-right">
+      <button class="btn" onclick="">View pledge record</button>
+      <button class="btn btn-ds" onclick="openModal()">
+        <svg viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="1.4" stroke-linecap="round"><path d="M6 1v7M3 5.5l3 3 3-3"/><path d="M1.5 10.5h9"/></svg>
+        Send new agreement
+      </button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- Gift hero -->
+    <div class="gift-hero">
+      <div class="gh-bg"></div>
+      <div class="gh-inner">
+        <div class="gh-eyebrow">Pledge record · PL-2026-0047</div>
+        <div class="gh-name">James &amp; Patricia O'Brien — Cathedral Capital Campaign</div>
+        <div class="gh-amount">$250,000</div>
+        <div class="gh-meta">
+          <div class="gh-chip"><svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><rect x="1" y="2" width="9" height="8" rx="1.2"/><path d="M1 5h9"/></svg>5-year pledge · 2026–2030</div>
+          <div class="gh-chip"><svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M5.5 2v6M3 6l2.5 2 2.5-2"/></svg>$50,000/yr · April installments</div>
+          <div class="gh-chip"><svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><circle cx="5.5" cy="4" r="2.5"/><path d="M1 10c0-2.5 2-4.5 4.5-4.5S10 7.5 10 10"/></svg>Solicited by Mike Donovan</div>
+          <div class="gh-chip"><svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M1.5 9.5l2-2 2 2 2-2.5 2 2.5"/></svg>Campaign: Cathedral Renovation 2026</div>
+        </div>
+      </div>
+      <div class="gh-stats">
+        <div class="gift-status-pill gsp-pledge">
+          <div class="gsp-dot" style="background:#93C5FD"></div>
+          Active pledge
+        </div>
+        <div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:4px;text-align:right">$50,000 paid · $200,000 remaining</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.4);text-align:right">1 of 5 installments</div>
+      </div>
+    </div>
+
+    <!-- Panel tabs -->
+    <div class="panel-tabs">
+      <button class="pt active" onclick="switchPT('agreements',this)">Gift agreements</button>
+      <button class="pt" onclick="switchPT('history',this)">Payment history</button>
+      <button class="pt" onclick="switchPT('notes',this)">Notes &amp; actions</button>
+      <button class="pt" onclick="switchPT('details',this)">Gift details</button>
+    </div>
+
+    <!-- Main grid -->
+    <div class="main-grid">
+
+      <!-- LEFT: Agreement list -->
+      <div style="display:flex;flex-direction:column;gap:14px">
+
+        <!-- Active agreement with tracker -->
+        <div class="agreement-card">
+          <div class="ac-head">
+            <div class="ac-icon" style="background:var(--greenl)"><svg viewBox="0 0 13 13" fill="none" stroke="var(--green)" stroke-width="1.4" stroke-linecap="round"><path d="M2 7.5l2-2 2 2 4-4 1.5 1.5"/></svg></div>
+            <span class="ac-title">Active agreements</span>
+            <div class="ds-badge"><svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><rect x="1.5" y="1.5" width="7" height="8" rx="1"/><path d="M3 4.5h4M3 6.5h3"/></svg>DocuSign</div>
+          </div>
+
+          <!-- Progress tracker for the signed agreement -->
+          <div class="status-track" style="margin-top:14px">
+            <div class="st-title">Pledge agreement — signature progress</div>
+            <div class="st-steps">
+              <div class="st-step st-done">
+                <div class="st-circle"><svg viewBox="0 0 10 10" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round"><path d="M2 5l2 2 4-4"/></svg></div>
+                <span class="st-label">Created</span>
+              </div>
+              <div class="st-step st-done">
+                <div class="st-circle"><svg viewBox="0 0 10 10" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round"><path d="M2 5l2 2 4-4"/></svg></div>
+                <span class="st-label">Sent</span>
+              </div>
+              <div class="st-step st-done">
+                <div class="st-circle"><svg viewBox="0 0 10 10" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round"><path d="M2 5l2 2 4-4"/></svg></div>
+                <span class="st-label">Viewed</span>
+              </div>
+              <div class="st-step st-done">
+                <div class="st-circle"><svg viewBox="0 0 10 10" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round"><path d="M2 5l2 2 4-4"/></svg></div>
+                <span class="st-label">Donor signed</span>
+              </div>
+              <div class="st-step st-done">
+                <div class="st-circle"><svg viewBox="0 0 10 10" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round"><path d="M2 5l2 2 4-4"/></svg></div>
+                <span class="st-label">Diocese signed</span>
+              </div>
+              <div class="st-step st-done">
+                <div class="st-circle"><svg viewBox="0 0 10 10" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round"><path d="M2 5l2 2 4-4"/></svg></div>
+                <span class="st-label">Complete</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="agr-list">
+            <div class="agr-item">
+              <div class="agr-dot-col">
+                <div class="agr-dot" style="background:var(--green)"></div>
+                <div class="agr-line"></div>
+              </div>
+              <div>
+                <div class="agr-template">5-Year Pledge Agreement — Cathedral Capital</div>
+                <div class="agr-meta">
+                  <span><svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><rect x="1" y="2" width="8" height="7" rx="1"/><path d="M1 4.5h8"/></svg>Sent Mar 14 · Completed Mar 16, 2026</span>
+                  <span>Envelope #ENV-8841-2026</span>
+                </div>
+                <div class="agr-signers">
+                  <span class="signer-chip sc-signed"><span class="signer-dot" style="background:var(--green)"></span>James O'Brien — signed</span>
+                  <span class="signer-chip sc-signed"><span class="signer-dot" style="background:var(--green)"></span>Patricia O'Brien — signed</span>
+                  <span class="signer-chip sc-signed"><span class="signer-dot" style="background:var(--green)"></span>Bishop Kelly — signed</span>
+                </div>
+              </div>
+              <div class="agr-actions">
+                <button class="agr-action-btn aab-ds" onclick="">View in DocuSign</button>
+                <button class="agr-action-btn aab-ghost" onclick="">Download PDF</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pending agreement with tracker -->
+        <div class="agreement-card">
+          <div class="ac-head">
+            <div class="ac-icon" style="background:var(--amberl)"><svg viewBox="0 0 13 13" fill="none" stroke="var(--amber)" stroke-width="1.4" stroke-linecap="round"><circle cx="6.5" cy="6.5" r="5"/><path d="M6.5 4v3.5h2.5"/></svg></div>
+            <span class="ac-title">Awaiting signature</span>
+            <span style="font-size:11px;font-weight:600;color:var(--amber);background:var(--amberl);padding:2px 9px;border-radius:20px">2 of 3 signed</span>
+          </div>
+
+          <!-- In-progress tracker -->
+          <div class="status-track" style="margin-top:14px">
+            <div class="st-title">Naming agreement — signature progress</div>
+            <div class="st-steps">
+              <div class="st-step st-done">
+                <div class="st-circle"><svg viewBox="0 0 10 10" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round"><path d="M2 5l2 2 4-4"/></svg></div>
+                <span class="st-label">Created</span>
+              </div>
+              <div class="st-step st-done">
+                <div class="st-circle"><svg viewBox="0 0 10 10" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round"><path d="M2 5l2 2 4-4"/></svg></div>
+                <span class="st-label">Sent</span>
+              </div>
+              <div class="st-step st-done">
+                <div class="st-circle"><svg viewBox="0 0 10 10" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round"><path d="M2 5l2 2 4-4"/></svg></div>
+                <span class="st-label">Viewed</span>
+              </div>
+              <div class="st-step st-done">
+                <div class="st-circle"><svg viewBox="0 0 10 10" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round"><path d="M2 5l2 2 4-4"/></svg></div>
+                <span class="st-label">Donor signed</span>
+              </div>
+              <div class="st-step st-active">
+                <div class="st-circle"><svg viewBox="0 0 10 10" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round"><path d="M5 2v3.5h2.5"/></svg></div>
+                <span class="st-label">Diocese signing</span>
+              </div>
+              <div class="st-step st-pending">
+                <div class="st-circle"></div>
+                <span class="st-label">Complete</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="agr-list">
+            <div class="agr-item">
+              <div class="agr-dot-col">
+                <div class="agr-dot" style="background:var(--amber)"></div>
+              </div>
+              <div>
+                <div class="agr-template">Naming Opportunity Agreement — O'Brien Chapel</div>
+                <div class="agr-meta">
+                  <span><svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><rect x="1" y="2" width="8" height="7" rx="1"/><path d="M1 4.5h8"/></svg>Sent Apr 10 · Awaiting Diocese countersignature</span>
+                  <span>Envelope #ENV-9104-2026</span>
+                </div>
+                <div class="agr-signers">
+                  <span class="signer-chip sc-signed"><span class="signer-dot" style="background:var(--green)"></span>James O'Brien — signed Apr 11</span>
+                  <span class="signer-chip sc-signed"><span class="signer-dot" style="background:var(--green)"></span>Patricia O'Brien — signed Apr 11</span>
+                  <span class="signer-chip sc-sent"><span class="signer-dot" style="background:var(--amber)"></span>Bishop Kelly — awaiting</span>
+                </div>
+              </div>
+              <div class="agr-actions">
+                <button class="agr-action-btn aab-remind" onclick="showReminder()">Send reminder</button>
+                <button class="agr-action-btn aab-ghost" onclick="">View envelope</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Void / expired history -->
+        <div class="agreement-card">
+          <div class="ac-head">
+            <div class="ac-icon" style="background:var(--surf)"><svg viewBox="0 0 13 13" fill="none" stroke="var(--text3)" stroke-width="1.3" stroke-linecap="round"><circle cx="6.5" cy="6.5" r="5"/><path d="M6.5 4v3.5h2.5"/></svg></div>
+            <span class="ac-title">Prior agreements</span>
+          </div>
+          <div class="agr-list">
+            <div class="agr-item" style="opacity:.55">
+              <div class="agr-dot-col">
+                <div class="agr-dot" style="background:var(--rose)"></div>
+              </div>
+              <div>
+                <div class="agr-template">5-Year Pledge Agreement (draft v1)</div>
+                <div class="agr-meta">
+                  <span>Sent Mar 8 · Voided Mar 14 · Replaced by updated terms</span>
+                </div>
+                <div class="agr-signers">
+                  <span class="signer-chip sc-void"><span class="signer-dot" style="background:var(--rose)"></span>Voided</span>
+                </div>
+              </div>
+              <div class="agr-actions">
+                <button class="agr-action-btn aab-ghost">View voided</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT: Send panel + info -->
+      <div class="right-panel">
+
+        <!-- Pending reminder notice -->
+        <div class="reminder-card" id="reminder-card" style="display:none">
+          <div class="rc-head">
+            <div class="rc-icon"><svg viewBox="0 0 11 11" fill="none" stroke="white" stroke-width="1.4" stroke-linecap="round"><path d="M5.5 1v5M5.5 8.5v.5"/><path d="M1 10.5L5.5.5 10 10.5H1z"/></svg></div>
+            <span class="rc-title">Reminder sent to Bishop Kelly</span>
+          </div>
+          <div class="rc-body">Reminder email delivered Apr 22 at 9:14 AM. DocuSign will auto-escalate if not signed within 7 days.</div>
+        </div>
+
+        <!-- Send new agreement CTA card -->
+        <div class="send-card">
+          <div class="send-head">
+            <div class="send-head-icon"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><rect x="1.5" y="2" width="8" height="10" rx="1.3"/><path d="M4 5.5h5M4 7.5h5M4 9.5h2.5"/><path d="M9.5 5l3 3-1.5 1.5-3-3V9h-1.5V7.5"/></svg></div>
+            <span class="send-head-title">Send new agreement</span>
+            <span class="send-head-badge">via DocuSign</span>
+          </div>
+          <div class="send-body" id="send-form">
+            <div class="form-row">
+              <label class="form-label">Agreement template <span>*</span></label>
+              <select class="form-select" id="tpl-select" onchange="updatePreview(this.value)">
+                <option value="">— Select a template —</option>
+                <option value="pledge">5-Year Pledge Agreement</option>
+                <option value="naming">Naming Opportunity Agreement</option>
+                <option value="endowment">Endowment Establishment Agreement</option>
+                <option value="bequest">Bequest Intent Letter</option>
+                <option value="daf">DAF Distribution Agreement</option>
+                <option value="annual">Annual Fund Gift Agreement</option>
+              </select>
+              <span class="form-hint">Templates managed by diocese administrator</span>
+            </div>
+
+            <div id="tpl-preview-wrap" style="display:none">
+              <div class="tpl-preview">
+                <div class="tpl-prev-head">
+                  <div class="tpl-prev-icon"><svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><rect x="1.5" y="1.5" width="7" height="8" rx="1"/><path d="M3 4.5h4M3 6.5h3"/></svg></div>
+                  <span class="tpl-prev-name" id="tpl-prev-name">5-Year Pledge Agreement</span>
+                  <span class="tpl-prev-pages" id="tpl-prev-pages">3 pages · 2 signers</span>
+                </div>
+                <div class="tpl-prev-body" id="tpl-prev-body">
+                  <div class="tpl-field"><span class="tpl-field-key">Donor name</span><span class="tpl-field-val">James &amp; Patricia O'Brien ←</span></div>
+                  <div class="tpl-field"><span class="tpl-field-key">Gift amount</span><span class="tpl-field-val">$250,000 ←</span></div>
+                  <div class="tpl-field"><span class="tpl-field-key">Fund</span><span class="tpl-field-val">Cathedral Capital Fund ←</span></div>
+                  <div class="tpl-field"><span class="tpl-field-key">Schedule</span><span class="tpl-field-val">$50,000 / year ← </span></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <label class="form-label">Pre-populated from donor &amp; gift record</label>
+              <div style="background:var(--bluep);border:1px solid var(--bluel);border-radius:8px;padding:11px 12px;display:flex;flex-direction:column;gap:6px">
+                <div style="display:flex;justify-content:space-between;font-size:12px"><span style="color:#1D4ED8">Donor</span><span style="font-weight:600;color:var(--navy)">James &amp; Patricia O'Brien</span></div>
+                <div style="display:flex;justify-content:space-between;font-size:12px"><span style="color:#1D4ED8">Address</span><span style="font-weight:600;color:var(--navy)">14 Bayshore Blvd, Rocky River OH</span></div>
+                <div style="display:flex;justify-content:space-between;font-size:12px"><span style="color:#1D4ED8">Gift amount</span><span style="font-weight:600;color:var(--navy)">$250,000</span></div>
+                <div style="display:flex;justify-content:space-between;font-size:12px"><span style="color:#1D4ED8">Fund</span><span style="font-weight:600;color:var(--navy)">Cathedral Capital Fund</span></div>
+                <div style="display:flex;justify-content:space-between;font-size:12px"><span style="color:#1D4ED8">Date</span><span style="font-weight:600;color:var(--navy)">April 22, 2026</span></div>
+              </div>
+              <span class="form-hint" style="color:var(--blue)">← All fields pre-filled from this gift record. Review in DocuSign before sending.</span>
+            </div>
+
+            <div class="form-divider"></div>
+
+            <div class="form-row">
+              <label class="form-label">Signers</label>
+              <div class="signer-rows">
+                <div class="signer-row">
+                  <div class="signer-av" style="background:#EDE9FE;color:#7C3AED">JO</div>
+                  <div class="signer-info">
+                    <div class="signer-name">James O'Brien</div>
+                    <div class="signer-email-small">james.obrien@obriencallahan.com</div>
+                  </div>
+                  <span class="signer-order">1st</span>
+                </div>
+                <div class="signer-row">
+                  <div class="signer-av" style="background:#EDE9FE;color:#7C3AED">PO</div>
+                  <div class="signer-info">
+                    <div class="signer-name">Patricia O'Brien</div>
+                    <div class="signer-email-small">patricia.obrien@gmail.com</div>
+                  </div>
+                  <span class="signer-order">1st</span>
+                </div>
+                <div class="signer-row">
+                  <div class="signer-av" style="background:var(--navy);color:rgba(255,255,255,.7)">BK</div>
+                  <div class="signer-info">
+                    <div class="signer-name">Bishop Michael Kelly</div>
+                    <div class="signer-email-small">bishop.kelly@diostpete.org</div>
+                  </div>
+                  <span class="signer-order">2nd</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <label class="form-label">Personal message (optional)</label>
+              <textarea class="msg-area" placeholder="Dear James and Patricia, please review and sign the attached gift agreement for your generous pledge…"></textarea>
+            </div>
+
+            <button class="btn btn-ds" style="width:100%;justify-content:center;padding:10px" onclick="openModal()">
+              <svg viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="1.4" stroke-linecap="round"><path d="M6 1v7M3 5.5l3 3 3-3"/><path d="M1.5 10.5h9"/></svg>
+              Preview &amp; send via DocuSign
+            </button>
+          </div>
+        </div>
+
+        <!-- Gift agreement info -->
+        <div class="info-card">
+          <div class="info-head">
+            <div class="info-icon" style="background:var(--surf)"><svg viewBox="0 0 11 11" fill="none" stroke="var(--text3)" stroke-width="1.3" stroke-linecap="round"><circle cx="5.5" cy="5.5" r="4.5"/><path d="M5.5 4.5v3M5.5 3.5v.5"/></svg></div>
+            <span class="info-title">Agreement summary</span>
+          </div>
+          <div class="info-body">
+            <div class="kv"><span class="kv-key">Total agreements</span><span class="kv-val">3 (1 complete, 1 pending, 1 void)</span></div>
+            <div class="kv"><span class="kv-key">Signed &amp; complete</span><span class="kv-val green">1</span></div>
+            <div class="kv"><span class="kv-key">Awaiting signature</span><span class="kv-val amber">1 — countersign pending</span></div>
+            <div class="kv"><span class="kv-key">Next expiry</span><span class="kv-val amber">Apr 30, 2026</span></div>
+            <div class="kv"><span class="kv-key">Storage</span><span class="kv-val">DocuSign + Atlas attachment</span></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── MODAL: Send new agreement ── -->
+<div class="modal-overlay" id="modal-overlay" onclick="handleOverlayClick(event)">
+  <div class="modal" id="modal">
+
+    <div class="modal-top">
+      <div class="modal-ds-icon"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><rect x="2" y="2" width="11" height="14" rx="1.8"/><path d="M5 7h7M5 10h7M5 13h4"/><path d="M13 6l4 4-2 2-4-4V9h-1.5V7.5"/></svg></div>
+      <div>
+        <div class="modal-title">Send gift agreement</div>
+        <div class="modal-sub">Pledge #PL-2026-0047 · James &amp; Patricia O'Brien · $250,000</div>
+      </div>
+      <button class="modal-close" onclick="closeModal()"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 2l8 8M10 2l-8 8"/></svg></button>
+    </div>
+
+    <!-- Step indicator -->
+    <div style="padding:14px 24px 0">
+      <div class="modal-steps" id="modal-steps">
+        <div class="ms active" id="ms1"><span class="ms-num">Step 1</span>Choose template</div>
+        <div class="ms" id="ms2"><span class="ms-num">Step 2</span>Review fields</div>
+        <div class="ms" id="ms3"><span class="ms-num">Step 3</span>Signers &amp; message</div>
+        <div class="ms" id="ms4"><span class="ms-num">Step 4</span>Send</div>
+      </div>
+    </div>
+
+    <!-- Step 1: Template selection -->
+    <div class="modal-body" id="modal-step1">
+      <div>
+        <div style="font-size:12px;color:var(--text3);margin-bottom:12px">Select the agreement template that matches this gift. Templates are pre-approved by the Diocese of St. Petersburg.</div>
+        <div class="tpl-grid">
+          <div class="tpl-card selected" onclick="selectTpl(this)">
+            <div class="tpl-selected-check"><svg viewBox="0 0 9 9" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round"><path d="M1.5 4.5l2 2 4-4"/></svg></div>
+            <div class="tpl-card-icon"><svg viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><rect x="2" y="2" width="9" height="12" rx="1.3"/><path d="M4.5 6.5h6M4.5 9h6M4.5 11.5h3"/><path d="M11 5l3 3-1.5 1.5-3-3V7.5h-1.5V6"/></svg></div>
+            <div class="tpl-card-name">5-Year Pledge Agreement</div>
+            <div class="tpl-card-desc">Multi-year pledge with annual installment schedule, gift designation, and fund details.</div>
+            <div class="tpl-card-pages">3 pages · 2 signer roles</div>
+          </div>
+          <div class="tpl-card" onclick="selectTpl(this)">
+            <div class="tpl-selected-check"><svg viewBox="0 0 9 9" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round"><path d="M1.5 4.5l2 2 4-4"/></svg></div>
+            <div class="tpl-card-icon"><svg viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M7.5 1.5C5.6 1.5 4 3.1 4 5c0 2.7 3.5 8.5 3.5 8.5s3.5-5.8 3.5-8.5c0-1.9-1.6-3.5-3.5-3.5z"/><circle cx="7.5" cy="5" r="1.5"/></svg></div>
+            <div class="tpl-card-name">Naming Opportunity Agreement</div>
+            <div class="tpl-card-desc">Recognition and naming rights for a facility, room, or program in perpetuity.</div>
+            <div class="tpl-card-pages">4 pages · 3 signer roles</div>
+          </div>
+          <div class="tpl-card" onclick="selectTpl(this)">
+            <div class="tpl-selected-check"><svg viewBox="0 0 9 9" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round"><path d="M1.5 4.5l2 2 4-4"/></svg></div>
+            <div class="tpl-card-icon"><svg viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M7.5 1.5v11M3 7.5h9"/><circle cx="7.5" cy="7.5" r="5.5"/></svg></div>
+            <div class="tpl-card-name">Endowment Establishment</div>
+            <div class="tpl-card-desc">Named endowment fund creation with minimum gift, purpose, and distribution terms.</div>
+            <div class="tpl-card-pages">5 pages · 3 signer roles</div>
+          </div>
+          <div class="tpl-card" onclick="selectTpl(this)">
+            <div class="tpl-selected-check"><svg viewBox="0 0 9 9" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round"><path d="M1.5 4.5l2 2 4-4"/></svg></div>
+            <div class="tpl-card-icon"><svg viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M2 12V5.5L7.5 1l5.5 4.5V12H2z"/><rect x="5" y="8" width="5" height="4"/></svg></div>
+            <div class="tpl-card-name">Bequest Intent Letter</div>
+            <div class="tpl-card-desc">Non-binding statement of planned gift intention. Simplest template — 1 page.</div>
+            <div class="tpl-card-pages">1 page · 1 signer role</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 2: Review pre-filled fields -->
+    <div class="modal-body" id="modal-step2" style="display:none">
+      <div class="prefill-section">
+        <div class="pf-title"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M6 1v7M3 5.5l3 3 3-3"/><path d="M1.5 10.5h9"/></svg>Fields pre-populated from gift record</div>
+        <div class="pf-grid">
+          <div class="pf-field"><div class="pf-key">Donor legal name</div><div class="pf-val">James Patrick O'Brien &amp; Patricia Anne O'Brien</div><div class="pf-edit">Edit →</div></div>
+          <div class="pf-field"><div class="pf-key">Mailing address</div><div class="pf-val">14 Bayshore Blvd, Rocky River, OH 44116</div><div class="pf-edit">Edit →</div></div>
+          <div class="pf-field"><div class="pf-key">Total pledge amount</div><div class="pf-val">$250,000.00</div><div class="pf-edit">Edit →</div></div>
+          <div class="pf-field"><div class="pf-key">Annual installment</div><div class="pf-val">$50,000.00</div><div class="pf-edit">Edit →</div></div>
+          <div class="pf-field"><div class="pf-key">Fund designation</div><div class="pf-val">Cathedral Capital Fund (GL-5100)</div><div class="pf-edit">Edit →</div></div>
+          <div class="pf-field"><div class="pf-key">Legal entity</div><div class="pf-val">Diocese of St. Petersburg</div><div class="pf-edit">Edit →</div></div>
+          <div class="pf-field"><div class="pf-key">Pledge start date</div><div class="pf-val">April 22, 2026</div><div class="pf-edit">Edit →</div></div>
+          <div class="pf-field"><div class="pf-key">Pledge end date</div><div class="pf-val">April 22, 2031</div><div class="pf-edit">Edit →</div></div>
+        </div>
+      </div>
+      <div style="background:var(--amberl);border:1px solid #FDE68A;border-radius:8px;padding:10px 12px;font-size:12px;color:#78350F;display:flex;gap:8px;align-items:flex-start">
+        <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" width="14" height="14" style="flex-shrink:0;margin-top:1px"><path d="M6 1.5v4M6 8.5v.5"/><path d="M1 11L6 1.5 11 11H1z"/></svg>
+        Review all pre-filled fields before sending. Changes made here update the DocuSign envelope only — to update the gift record, edit it separately in Atlas.
+      </div>
+    </div>
+
+    <!-- Step 3: Signers & message -->
+    <div class="modal-body" id="modal-step3" style="display:none">
+      <div>
+        <div style="font-size:12px;color:var(--text3);margin-bottom:10px">Signers are pre-configured by the template. Signing order is enforced — donors sign first, Diocese countersigns second.</div>
+        <div class="modal-signers">
+          <div class="ms-row">
+            <div class="ms-av" style="background:#EDE9FE;color:#7C3AED">JO</div>
+            <div class="ms-info"><div class="ms-name">James O'Brien</div><div class="ms-email">james.obrien@obriencallahan.com</div></div>
+            <span class="ms-role">Donor · Signs 1st</span>
+          </div>
+          <div class="ms-row">
+            <div class="ms-av" style="background:#EDE9FE;color:#7C3AED">PO</div>
+            <div class="ms-info"><div class="ms-name">Patricia O'Brien</div><div class="ms-email">patricia.obrien@gmail.com</div></div>
+            <span class="ms-role">Co-donor · Signs 1st</span>
+          </div>
+          <div class="ms-row">
+            <div class="ms-av" style="background:var(--navy);color:rgba(255,255,255,.7)">BK</div>
+            <div class="ms-info"><div class="ms-name">Bishop Michael Kelly</div><div class="ms-email">bishop.kelly@diostpete.org</div></div>
+            <span class="ms-role">Diocese · Countersigns 2nd</span>
+          </div>
+        </div>
+      </div>
+      <div class="modal-message">
+        <div style="font-size:11px;font-weight:600;color:var(--text2);margin-bottom:6px">Personal message to signers</div>
+        <textarea class="msg-area" style="min-height:90px">Dear James and Patricia,
+
+Thank you for your extraordinary commitment to the Cathedral Capital Campaign. Attached is your formal pledge agreement for your review and signature.
+
+With gratitude,
+Mike Donovan
+Major Gifts Officer, Diocese of St. Petersburg</textarea>
+      </div>
+      <div style="background:var(--surf);border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-size:11px;color:var(--text3);line-height:1.6">
+        Auto-reminders: DocuSign will send a reminder after 3 days if unsigned, then again after 7 days. Envelope expires after 30 days.
+      </div>
+    </div>
+
+    <!-- Step 4: Confirm and send -->
+    <div class="modal-body" id="modal-step4" style="display:none">
+      <div style="background:var(--ds);border-radius:10px;padding:16px;color:white;display:flex;gap:14px;align-items:flex-start">
+        <div style="width:36px;height:36px;background:rgba(249,184,0,.2);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <svg viewBox="0 0 14 14" fill="none" stroke="var(--dsg)" stroke-width="1.5" stroke-linecap="round" width="15" height="15"><rect x="2" y="2" width="9" height="11" rx="1.3"/><path d="M4.5 6h5M4.5 8.5h5M4.5 11h3"/><path d="M11 5l2.5 2.5-1.2 1.2-2.5-2.5V7H8.5V5.5"/></svg>
+        </div>
+        <div>
+          <div style="font-size:13px;font-weight:700;margin-bottom:5px;color:white">Ready to send via DocuSign</div>
+          <div style="font-size:12px;color:rgba(255,255,255,.7);line-height:1.7">
+            Template: <strong style="color:white">5-Year Pledge Agreement</strong><br>
+            Donor: <strong style="color:white">James &amp; Patricia O'Brien</strong><br>
+            Amount: <strong style="color:white">$250,000</strong><br>
+            Signers: <strong style="color:white">3 recipients</strong> · Signing order enforced<br>
+            Expiry: <strong style="color:white">May 22, 2026</strong>
+          </div>
+        </div>
+      </div>
+      <div style="background:var(--greenl);border:1px solid #BBF7D0;border-radius:8px;padding:10px 12px;font-size:12px;color:#14532D;display:flex;gap:8px;align-items:center">
+        <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" width="14" height="14"><path d="M2 6l3 3 6-6"/></svg>
+        Signed agreements are automatically attached to this gift record in Atlas. A completion notification will be sent to you.
+      </div>
+    </div>
+
+    <!-- Sent confirmation (step 5) -->
+    <div class="modal-body" id="modal-step5" style="display:none">
+      <div style="text-align:center;padding:10px 0 6px">
+        <div class="send-confirm-icon check-pop" style="margin:0 auto 16px;width:60px;height:60px">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5" stroke-linecap="round" width="26" height="26"><path d="M4 12l5 5 11-11"/></svg>
+        </div>
+        <div style="font-family:'DM Serif Display',serif;font-size:22px;color:var(--text);margin-bottom:8px">Agreement sent via DocuSign</div>
+        <div style="font-size:13px;color:var(--text3);line-height:1.7;margin-bottom:20px">Envelope sent to 3 recipients. James and Patricia O'Brien will receive an email to sign first. Bishop Kelly will be notified after the donors have signed.<br><br>A task has been created to follow up in 5 days if not signed.</div>
+        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+          <button class="btn btn-ds" onclick="closeModal()">View in DocuSign</button>
+          <button class="btn" onclick="closeModal()">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer" id="modal-footer">
+      <span class="modal-footer-note" id="footer-note">Select a template to continue</span>
+      <button class="btn" onclick="closeModal()">Cancel</button>
+      <button class="btn" id="btn-back" onclick="modalBack()" style="display:none">← Back</button>
+      <button class="btn btn-ds" id="btn-next" onclick="modalNext()">Next →</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+let currentStep = 1;
+const totalSteps = 4;
+
+function openModal() {
+  document.getElementById('modal-overlay').classList.add('show');
+  goToStep(1);
+}
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('show');
+  document.getElementById('reminder-card').style.display = 'none';
+}
+function handleOverlayClick(e) {
+  if (e.target === document.getElementById('modal-overlay')) closeModal();
+}
+
+function goToStep(n) {
+  currentStep = n;
+  for (let i = 1; i <= 5; i++) {
+    const el = document.getElementById('modal-step' + i);
+    if (el) el.style.display = (i === n) ? 'flex' : 'none';
+  }
+  for (let i = 1; i <= 4; i++) {
+    const ms = document.getElementById('ms' + i);
+    if (!ms) continue;
+    ms.classList.remove('active', 'done');
+    if (i < n) ms.classList.add('done');
+    else if (i === n) ms.classList.add('active');
+  }
+  const footer = document.getElementById('modal-footer');
+  const btnNext = document.getElementById('btn-next');
+  const btnBack = document.getElementById('btn-back');
+  const note    = document.getElementById('footer-note');
+  const steps   = document.getElementById('modal-steps');
+
+  if (n === 5) {
+    footer.style.display = 'none';
+    steps.style.display = 'none';
+    return;
+  }
+  footer.style.display = 'flex';
+  steps.style.display = 'flex';
+  btnBack.style.display = n > 1 ? '' : 'none';
+  const notes = ['Select a template to continue','Review and confirm pre-filled fields','Add signers and a personal message','Ready to send — click Send to deliver via DocuSign'];
+  note.textContent = notes[n - 1] || '';
+  btnNext.textContent = n === 4 ? '⬤  Send via DocuSign' : 'Next →';
+  btnNext.className = n === 4 ? 'btn btn-ds' : 'btn btn-primary';
+}
+
+function modalNext() {
+  if (currentStep < 4) goToStep(currentStep + 1);
+  else goToStep(5);
+}
+function modalBack() {
+  if (currentStep > 1) goToStep(currentStep - 1);
+}
+
+function selectTpl(card) {
+  document.querySelectorAll('.tpl-card').forEach(c => c.classList.remove('selected'));
+  card.classList.add('selected');
+}
+
+function switchPT(id, el) {
+  document.querySelectorAll('.pt').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function updatePreview(val) {
+  const wrap = document.getElementById('tpl-preview-wrap');
+  if (!val) { wrap.style.display = 'none'; return; }
+  wrap.style.display = 'block';
+  const names = { pledge:'5-Year Pledge Agreement', naming:'Naming Opportunity Agreement', endowment:'Endowment Establishment Agreement', bequest:'Bequest Intent Letter', daf:'DAF Distribution Agreement', annual:'Annual Fund Gift Agreement' };
+  const pages = { pledge:'3 pages · 2 signers', naming:'4 pages · 3 signers', endowment:'5 pages · 3 signers', bequest:'1 page · 1 signer', daf:'2 pages · 2 signers', annual:'2 pages · 2 signers' };
+  document.getElementById('tpl-prev-name').textContent = names[val];
+  document.getElementById('tpl-prev-pages').textContent = pages[val];
+}
+
+function showReminder() {
+  const card = document.getElementById('reminder-card');
+  card.style.display = 'block';
+  card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+</script>
+</body>
+</html>

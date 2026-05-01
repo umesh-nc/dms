@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GiveCentral Atlas — Visit Planning Map</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --navy:  #0E1E35; --navy2: #152844; --navy3: #1E3A5F;
+      --blue:  #2563EB; --bluel: #DBEAFE; --bluep: #EFF6FF;
+      --green: #15803D; --greenl:#DCFCE7;
+      --amber: #D97706; --amberl:#FEF3C7;
+      --rose:  #BE185D; --rosel: #FCE7F3;
+      --teal:  #0D9488; --teall: #CCFBF1;
+      --purp:  #7C3AED; --purpl: #EDE9FE;
+      --text:  #0F172A; --text2: #334155; --text3: #64748B;
+      --border:#E2E8F0; --surf:  #F8FAFC; --white: #FFFFFF;
+    }
+    html { font-size: 14px; -webkit-font-smoothing: antialiased; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--navy); color: var(--text); display: flex; height: 100vh; overflow: hidden; }
+
+    /* ── SIDEBAR ── */
+    .sidebar { width: 220px; background: var(--navy); display: flex; flex-direction: column; flex-shrink: 0; height: 100vh; border-right: 1px solid rgba(255,255,255,.06); }
+    .sb-logo { padding: 18px 18px 14px; display: flex; align-items: center; gap: 9px; border-bottom: 1px solid rgba(255,255,255,.08); }
+    .sb-mark { width: 30px; height: 30px; background: var(--blue); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+    .sb-mark svg { width: 15px; height: 15px; }
+    .sb-name { font-family: 'DM Serif Display', serif; font-size: 15px; color: white; line-height: 1; }
+    .sb-sub  { font-size: 9px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.3); margin-top: 3px; }
+    .nav-group { padding: 10px 8px 0; }
+    .nav-label { font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.28); padding: 0 10px; margin-bottom: 4px; }
+    .nav-item  { display: flex; align-items: center; gap: 9px; padding: 8px 10px; border-radius: 7px; font-size: 12px; font-weight: 500; color: rgba(255,255,255,.55); cursor: pointer; transition: all .15s; margin-bottom: 1px; }
+    .nav-item:hover  { background: rgba(255,255,255,.07); color: rgba(255,255,255,.85); }
+    .nav-item.active { background: var(--purp); color: white; }
+    .nav-item svg    { width: 14px; height: 14px; flex-shrink: 0; }
+    .sb-user { margin-top: auto; padding: 12px; border-top: 1px solid rgba(255,255,255,.08); display: flex; align-items: center; gap: 9px; }
+    .u-av { width: 30px; height: 30px; border-radius: 50%; background: var(--blue); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: white; }
+
+    /* ── MAIN LAYOUT ── */
+    .main { flex: 1; min-width: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+    .topbar { background: var(--navy2); border-bottom: 1px solid rgba(255,255,255,.08); padding: 0 20px; height: 52px; display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+    .tb-back { display: flex; align-items: center; gap: 5px; font-size: 12px; color: rgba(255,255,255,.5); cursor: pointer; transition: color .12s; }
+    .tb-back:hover { color: white; }
+    .tb-back svg { width: 13px; height: 13px; }
+    .tb-sep  { width: 1px; height: 18px; background: rgba(255,255,255,.12); }
+    .tb-title { font-size: 14px; font-weight: 600; color: white; }
+    .tb-sub  { font-size: 12px; color: rgba(255,255,255,.45); }
+    .tb-right { margin-left: auto; display: flex; gap: 8px; }
+    .btn { padding: 6px 13px; border-radius: 7px; font-size: 12px; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .15s; display: flex; align-items: center; gap: 5px; border: 1px solid rgba(255,255,255,.15); background: rgba(255,255,255,.08); color: rgba(255,255,255,.8); }
+    .btn:hover { background: rgba(255,255,255,.14); color: white; }
+    .btn svg { width: 11px; height: 11px; }
+    .btn-primary { background: var(--purp); color: white; border-color: var(--purp); box-shadow: 0 1px 6px rgba(124,58,237,.4); }
+    .btn-primary:hover { background: #6D28D9; }
+    .btn-green { background: var(--green); color: white; border-color: var(--green); }
+    .btn-green:hover { background: #126e31; }
+
+    /* ── MAP BODY ── */
+    .map-body { flex: 1; display: flex; overflow: hidden; position: relative; }
+
+    /* ── LEFT PANEL (filters + donor list) ── */
+    .left-panel { width: 320px; flex-shrink: 0; background: white; display: flex; flex-direction: column; overflow: hidden; border-right: 1px solid var(--border); }
+    .lp-section { padding: 14px 16px; border-bottom: 1px solid var(--border); }
+    .lp-label { font-size: 10px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--text3); margin-bottom: 10px; }
+
+    /* Origin donor card */
+    .origin-card { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: var(--navy); border-radius: 10px; }
+    .origin-pin { width: 28px; height: 28px; background: var(--purp); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .origin-pin svg { width: 13px; height: 13px; }
+    .origin-name { font-size: 13px; font-weight: 600; color: white; }
+    .origin-addr { font-size: 11px; color: rgba(255,255,255,.5); margin-top: 1px; }
+    .origin-change { font-size: 11px; color: rgba(124,58,237,.8); cursor: pointer; margin-left: auto; white-space: nowrap; }
+    .origin-change:hover { color: #C4B5FD; }
+
+    /* Radius slider */
+    .radius-row { display: flex; align-items: center; gap: 10px; }
+    .radius-track { flex: 1; }
+    .radius-track input[type=range] { width: 100%; accent-color: var(--purp); cursor: pointer; }
+    .radius-val { font-size: 13px; font-weight: 700; color: var(--purp); min-width: 46px; text-align: right; }
+
+    /* Filter pills */
+    .filter-pills { display: flex; flex-wrap: wrap; gap: 6px; }
+    .fp { padding: 5px 11px; border-radius: 20px; font-size: 11px; font-weight: 500; border: 1px solid var(--border); color: var(--text3); cursor: pointer; transition: all .15s; user-select: none; }
+    .fp:hover { border-color: #94A3B8; color: var(--text2); }
+    .fp.active { font-weight: 700; }
+    .fp-pipeline.active { background: var(--bluep); border-color: var(--blue); color: var(--blue); }
+    .fp-lapsed.active   { background: var(--rosel); border-color: #FBCFE8; color: var(--rose); }
+    .fp-major.active    { background: var(--amberl); border-color: #FDE68A; color: var(--amber); }
+    .fp-new.active      { background: var(--greenl); border-color: #BBF7D0; color: var(--green); }
+    .fp-all.active      { background: var(--purpl); border-color: #DDD6FE; color: var(--purp); }
+
+    /* Sort control */
+    .sort-row { display: flex; gap: 6px; align-items: center; }
+    .sort-row select { flex: 1; padding: 6px 10px; border: 1px solid var(--border); border-radius: 7px; font-size: 12px; font-family: 'DM Sans', sans-serif; color: var(--text2); background: var(--surf); outline: none; }
+    .sort-row select:focus { border-color: var(--purp); }
+    .result-count { font-size: 11px; color: var(--text3); flex-shrink: 0; }
+
+    /* Donor list */
+    .donor-list { flex: 1; overflow-y: auto; }
+    .donor-list::-webkit-scrollbar { width: 4px; }
+    .donor-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+    .donor-row { padding: 11px 16px; border-bottom: .5px solid var(--border); cursor: pointer; transition: background .12s; display: flex; gap: 11px; align-items: flex-start; }
+    .donor-row:hover { background: var(--surf); }
+    .donor-row.selected { background: var(--purpl); border-left: 3px solid var(--purp); }
+    .donor-row.in-route { background: #F0FDF4; border-left: 3px solid var(--green); }
+    .dr-num { width: 22px; height: 22px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+    .dr-body { flex: 1; min-width: 0; }
+    .dr-name { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 2px; display: flex; align-items: center; gap: 6px; }
+    .dr-addr { font-size: 11px; color: var(--text3); margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .dr-tags { display: flex; gap: 5px; flex-wrap: wrap; }
+    .dr-tag  { font-size: 9px; font-weight: 700; padding: 1px 6px; border-radius: 10px; white-space: nowrap; }
+    .dt-pipeline { background: var(--bluep); color: var(--blue); }
+    .dt-lapsed   { background: var(--rosel); color: var(--rose); }
+    .dt-major    { background: var(--amberl); color: var(--amber); }
+    .dt-new      { background: var(--greenl); color: var(--green); }
+    .dr-dist { font-size: 11px; font-weight: 700; color: var(--purp); flex-shrink: 0; margin-top: 2px; }
+    .dr-check { width: 18px; height: 18px; border: 1.5px solid var(--border); border-radius: 5px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; transition: all .12s; }
+    .dr-check.checked { background: var(--green); border-color: var(--green); }
+    .dr-check.checked svg { display: block; }
+    .dr-check svg { display: none; width: 10px; height: 10px; }
+
+    /* Route planning footer */
+    .route-footer { padding: 12px 16px; background: var(--navy); border-top: 1px solid rgba(255,255,255,.08); }
+    .rf-row { display: flex; align-items: center; gap: 10px; }
+    .rf-count { font-size: 13px; font-weight: 600; color: white; flex: 1; }
+    .rf-sub   { font-size: 11px; color: rgba(255,255,255,.45); margin-top: 2px; }
+
+    /* ── MAP CANVAS ── */
+    .map-canvas { flex: 1; position: relative; background: #1a2a3a; overflow: hidden; }
+
+    /* SVG map background */
+    .map-svg { width: 100%; height: 100%; }
+
+    /* Map controls */
+    .map-controls { position: absolute; top: 14px; right: 14px; display: flex; flex-direction: column; gap: 6px; }
+    .mc-btn { width: 34px; height: 34px; background: white; border: none; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,.25); transition: all .12s; font-size: 16px; font-weight: 600; color: var(--text2); font-family: 'DM Sans', sans-serif; }
+    .mc-btn:hover { background: var(--surf); transform: scale(1.05); }
+
+    /* Radius circle overlay */
+    .radius-overlay { position: absolute; pointer-events: none; }
+
+    /* Map pins */
+    .map-pin { position: absolute; transform: translate(-50%, -100%); cursor: pointer; transition: transform .15s; }
+    .map-pin:hover { transform: translate(-50%, -100%) scale(1.15); z-index: 10; }
+    .map-pin.selected { transform: translate(-50%, -100%) scale(1.2); z-index: 20; }
+    .pin-body { width: 32px; height: 32px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 10px rgba(0,0,0,.35); border: 2px solid rgba(255,255,255,.4); }
+    .pin-inner { transform: rotate(45deg); font-size: 10px; font-weight: 700; color: white; }
+    .pin-origin .pin-body { background: var(--purp); width: 38px; height: 38px; border: 3px solid white; }
+    .pin-origin .pin-inner { font-size: 11px; }
+    .pin-pipeline .pin-body { background: var(--blue); }
+    .pin-lapsed   .pin-body { background: var(--rose); }
+    .pin-major    .pin-body { background: var(--amber); }
+    .pin-new      .pin-body { background: var(--green); }
+    .pin-route    .pin-body { border: 3px solid var(--green) !important; box-shadow: 0 0 0 3px rgba(21,128,61,.3) !important; }
+    .pin-label { position: absolute; top: -6px; left: 50%; transform: translateX(-50%); background: white; border-radius: 20px; padding: 1px 7px; font-size: 9px; font-weight: 700; white-space: nowrap; box-shadow: 0 1px 4px rgba(0,0,0,.2); pointer-events: none; color: var(--text); }
+
+    /* Route lines */
+    .route-line { position: absolute; pointer-events: none; }
+
+    /* ── POPUP CARD ── */
+    .popup { position: absolute; background: white; border-radius: 12px; width: 240px; box-shadow: 0 8px 32px rgba(0,0,0,.3); z-index: 50; display: none; overflow: hidden; }
+    .popup.show { display: block; }
+    .popup-head { padding: 12px 14px 10px; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; gap: 9px; }
+    .popup-av { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: white; flex-shrink: 0; }
+    .popup-name { font-size: 13px; font-weight: 600; color: var(--text); line-height: 1.3; }
+    .popup-addr { font-size: 11px; color: var(--text3); margin-top: 2px; }
+    .popup-close { margin-left: auto; width: 20px; height: 20px; border: none; background: none; cursor: pointer; color: var(--text3); font-size: 16px; line-height: 1; flex-shrink: 0; }
+    .popup-body { padding: 10px 14px; display: flex; flex-direction: column; gap: 5px; }
+    .pb-row { display: flex; justify-content: space-between; font-size: 12px; }
+    .pb-key { color: var(--text3); }
+    .pb-val { font-weight: 500; color: var(--text); }
+    .popup-tags { display: flex; gap: 5px; flex-wrap: wrap; padding: 0 14px 8px; }
+    .popup-actions { padding: 8px 14px 12px; display: flex; gap: 7px; }
+    .pa-btn { flex: 1; padding: 7px 0; border-radius: 7px; font-size: 11px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; text-align: center; transition: all .12s; }
+    .pa-primary { background: var(--purp); color: white; border: none; }
+    .pa-primary:hover { background: #6D28D9; }
+    .pa-ghost { background: none; border: 1px solid var(--border); color: var(--text2); }
+    .pa-ghost:hover { background: var(--surf); }
+    .pa-green { background: var(--green); color: white; border: none; }
+    .pa-green:hover { background: #126e31; }
+
+    /* ── ROUTE SIDEBAR ── */
+    .route-panel { position: absolute; right: 0; top: 0; bottom: 0; width: 280px; background: white; border-left: 1px solid var(--border); display: flex; flex-direction: column; transform: translateX(100%); transition: transform .25s ease; z-index: 30; }
+    .route-panel.open { transform: translateX(0); }
+    .rp-head { padding: 14px 16px; border-bottom: 1px solid var(--border); background: var(--navy); }
+    .rp-title { font-size: 14px; font-weight: 600; color: white; margin-bottom: 2px; }
+    .rp-sub   { font-size: 11px; color: rgba(255,255,255,.45); }
+    .rp-close { position: absolute; top: 14px; right: 14px; width: 24px; height: 24px; border: 1px solid rgba(255,255,255,.2); border-radius: 6px; background: none; cursor: pointer; color: rgba(255,255,255,.6); font-size: 14px; display: flex; align-items: center; justify-content: center; }
+    .route-stops { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 6px; }
+    .route-stop { display: flex; gap: 10px; align-items: flex-start; }
+    .rs-line { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
+    .rs-dot  { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: white; flex-shrink: 0; }
+    .rs-connector { width: 2px; flex: 1; min-height: 14px; background: var(--border); margin: 3px 0; }
+    .rs-body { flex: 1; padding-bottom: 6px; }
+    .rs-name { font-size: 12px; font-weight: 600; color: var(--text); }
+    .rs-addr { font-size: 11px; color: var(--text3); margin-top: 1px; }
+    .rs-drive { font-size: 10px; color: var(--purp); font-weight: 600; margin-top: 3px; }
+    .rp-summary { padding: 12px 16px; border-top: 1px solid var(--border); background: var(--surf); }
+    .rp-stat { display: flex; justify-content: space-between; font-size: 12px; padding: 4px 0; }
+    .rp-stat-key { color: var(--text3); }
+    .rp-stat-val { font-weight: 600; color: var(--text); }
+    .rp-actions { padding: 10px 16px 14px; display: flex; gap: 8px; }
+
+    /* Legend */
+    .map-legend { position: absolute; bottom: 14px; left: 14px; background: rgba(15,30,53,.88); border-radius: 10px; padding: 10px 14px; display: flex; flex-direction: column; gap: 6px; }
+    .leg-item { display: flex; align-items: center; gap: 8px; font-size: 11px; color: rgba(255,255,255,.7); }
+    .leg-dot  { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sb-logo">
+    <div class="sb-mark"><svg viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7.5" stroke="white" stroke-width="1.5"/><path d="M5.5 9.5C6.5 11.5 9 13 9 13s2.5-1.5 3.5-3.5S12 5 9 5 4.5 7.5 5.5 9.5z" fill="white" fill-opacity=".9"/></svg></div>
+    <div><div class="sb-name">GiveCentral</div><div class="sb-sub">Atlas CRM</div></div>
+  </div>
+  <div class="nav-group">
+    <div class="nav-label">Main</div>
+    <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><rect x="1.5" y="1.5" width="4" height="4" rx="1.2"/><rect x="8.5" y="1.5" width="4" height="4" rx="1.2"/><rect x="1.5" y="8.5" width="4" height="4" rx="1.2"/><rect x="8.5" y="8.5" width="4" height="4" rx="1.2"/></svg>Dashboard</div>
+    <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="6" cy="4.5" r="3"/><path d="M1 13c0-2.8 2.2-5 5-5h1c2.8 0 5 2.2 5 5"/></svg>Donors</div>
+    <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M7 1.5v11M2 6.5h10"/></svg>Gifts &amp; pledges</div>
+  </div>
+  <div class="nav-group" style="margin-top:8px">
+    <div class="nav-label">Planning</div>
+    <div class="nav-item active"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M7 1C5 1 3.5 2.5 3.5 4.5c0 3 3.5 8 3.5 8s3.5-5 3.5-8C10.5 2.5 9 1 7 1z"/><circle cx="7" cy="4.5" r="1.5"/></svg>Visit planning</div>
+    <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M1.5 8.5l2.5-2.5 2 2 2.5-2.5 2 2"/><rect x="1.5" y="1.5" width="11" height="11" rx="2"/></svg>Campaigns</div>
+  </div>
+  <div class="nav-group" style="margin-top:8px">
+    <div class="nav-label">Intelligence</div>
+    <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="7" cy="5" r="3.5"/><path d="M5 10c0 2 4 2 4 0M4.5 8.5c-2 1-3 3.5-3 4.5M9.5 8.5c2 1 3 3.5 3 4.5"/></svg>Guru AI</div>
+  </div>
+  <div class="sb-user">
+    <div class="u-av">SR</div>
+    <div><div style="font-size:12px;font-weight:500;color:rgba(255,255,255,.75)">Sarah Reynolds</div><div style="font-size:10px;color:rgba(255,255,255,.35)">Development Director</div></div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="tb-back"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M9 2L4 7l5 5"/></svg>Donor record</div>
+    <div class="tb-sep"></div>
+    <span class="tb-title">Visit planning</span>
+    <div class="tb-sep"></div>
+    <span class="tb-sub">James &amp; Patricia O'Brien · Rocky River, OH</span>
+    <div class="tb-right">
+      <button class="btn">
+        <svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M5.5 1v7M3 5l2.5 2.5L8 5"/><path d="M1.5 9.5h8"/></svg>
+        Export list
+      </button>
+      <button class="btn btn-primary" id="btn-plan-route" onclick="toggleRoutePanel()">
+        <svg viewBox="0 0 11 11" fill="none" stroke="white" stroke-width="1.3" stroke-linecap="round"><path d="M2 9l2-2 2 2 3-3"/><circle cx="2" cy="9" r=".8" fill="white"/><circle cx="9" cy="3" r=".8" fill="white"/></svg>
+        Plan route
+        <span id="route-badge" style="background:rgba(255,255,255,.25);border-radius:10px;padding:1px 6px;font-size:10px">0</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="map-body">
+
+    <!-- ── LEFT PANEL ── -->
+    <div class="left-panel">
+
+      <!-- Origin -->
+      <div class="lp-section">
+        <div class="lp-label">Starting point</div>
+        <div class="origin-card">
+          <div class="origin-pin"><svg viewBox="0 0 13 13" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round"><path d="M6.5 1C4.8 1 3.5 2.3 3.5 4c0 2.4 3 7 3 7s3-4.6 3-7C9.5 2.3 8.2 1 6.5 1z"/><circle cx="6.5" cy="4" r="1.2"/></svg></div>
+          <div>
+            <div class="origin-name">James &amp; Patricia O'Brien</div>
+            <div class="origin-addr">14 Bayshore Blvd, Rocky River</div>
+          </div>
+          <span class="origin-change">Change</span>
+        </div>
+      </div>
+
+      <!-- Radius -->
+      <div class="lp-section">
+        <div class="lp-label">Search radius</div>
+        <div class="radius-row">
+          <div class="radius-track">
+            <input type="range" id="radius-slider" min="2" max="25" value="10" oninput="updateRadius(this.value)">
+          </div>
+          <div class="radius-val" id="radius-label">10 mi</div>
+        </div>
+      </div>
+
+      <!-- Filters -->
+      <div class="lp-section">
+        <div class="lp-label">Filter donors</div>
+        <div class="filter-pills">
+          <div class="fp fp-all active" onclick="toggleFilter(this,'all')">All (11)</div>
+          <div class="fp fp-pipeline" onclick="toggleFilter(this,'pipeline')">In pipeline (4)</div>
+          <div class="fp fp-major" onclick="toggleFilter(this,'major')">Major gift (3)</div>
+          <div class="fp fp-lapsed" onclick="toggleFilter(this,'lapsed')">Lapsed (3)</div>
+          <div class="fp fp-new" onclick="toggleFilter(this,'new')">New (1)</div>
+        </div>
+      </div>
+
+      <!-- Sort + count -->
+      <div class="lp-section" style="border-bottom:1px solid var(--border)">
+        <div class="sort-row">
+          <select onchange="sortDonors(this.value)">
+            <option value="distance">Sort by distance</option>
+            <option value="capacity">Sort by capacity score</option>
+            <option value="lastgift">Sort by last gift</option>
+            <option value="name">Sort by name</option>
+          </select>
+          <span class="result-count" id="result-count">11 donors</span>
+        </div>
+      </div>
+
+      <!-- Donor list -->
+      <div class="donor-list" id="donor-list"></div>
+
+      <!-- Route footer -->
+      <div class="route-footer">
+        <div class="rf-row">
+          <div>
+            <div class="rf-count" id="route-count">0 stops selected</div>
+            <div class="rf-sub">Check donors above to add to route</div>
+          </div>
+          <button class="btn btn-green" onclick="toggleRoutePanel()" id="btn-build-route" style="opacity:.5;cursor:default" disabled>
+            <svg viewBox="0 0 11 11" fill="none" stroke="white" stroke-width="1.3" stroke-linecap="round"><path d="M2 9l2-2 2 2 3-3"/></svg>
+            Build route
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── MAP CANVAS ── -->
+    <div class="map-canvas" id="map-canvas">
+
+      <!-- Simulated map using SVG streets + terrain -->
+      <svg class="map-svg" viewBox="0 0 900 600" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+        <!-- Water -->
+        <rect width="900" height="600" fill="#1e3a52"/>
+        <!-- Land masses -->
+        <path d="M0 0 L900 0 L900 600 L0 600 Z" fill="#2d4a3e" opacity=".4"/>
+        <path d="M0 120 Q200 80 400 140 Q600 200 900 120 L900 600 L0 600 Z" fill="#1f3346"/>
+        <path d="M0 160 Q150 110 350 160 Q550 210 750 160 Q850 140 900 165 L900 600 L0 600 Z" fill="#243d52"/>
+        <!-- Main roads -->
+        <line x1="0" y1="300" x2="900" y2="300" stroke="#3a5566" stroke-width="8"/>
+        <line x1="450" y1="0" x2="450" y2="600" stroke="#3a5566" stroke-width="8"/>
+        <line x1="0" y1="180" x2="900" y2="220" stroke="#3a5566" stroke-width="6"/>
+        <line x1="0" y1="420" x2="900" y2="400" stroke="#3a5566" stroke-width="6"/>
+        <line x1="200" y1="0" x2="160" y2="600" stroke="#3a5566" stroke-width="5"/>
+        <line x1="700" y1="0" x2="730" y2="600" stroke="#3a5566" stroke-width="5"/>
+        <!-- Secondary roads -->
+        <line x1="0" y1="80" x2="900" y2="100" stroke="#2e4a5a" stroke-width="3"/>
+        <line x1="0" y1="500" x2="900" y2="480" stroke="#2e4a5a" stroke-width="3"/>
+        <line x1="330" y1="0" x2="310" y2="600" stroke="#2e4a5a" stroke-width="3"/>
+        <line x1="580" y1="0" x2="600" y2="600" stroke="#2e4a5a" stroke-width="3"/>
+        <line x1="0" y1="370" x2="900" y2="350" stroke="#2e4a5a" stroke-width="3"/>
+        <!-- Road labels -->
+        <text x="460" y="296" font-family="DM Sans" font-size="9" fill="#6b8fa0" font-weight="500">Lake Road</text>
+        <text x="28" y="295" font-family="DM Sans" font-size="9" fill="#6b8fa0" font-weight="500">Clifton Blvd</text>
+        <text x="445" y="20" font-family="DM Sans" font-size="9" fill="#6b8fa0" font-weight="500" writing-mode="vertical-lr">Detroit Rd</text>
+        <text x="195" y="20" font-family="DM Sans" font-size="9" fill="#6b8fa0" font-weight="500" writing-mode="vertical-lr">Wooster Rd</text>
+        <text x="695" y="20" font-family="DM Sans" font-size="9" fill="#6b8fa0" font-weight="500" writing-mode="vertical-lr">Center Ridge Rd</text>
+        <!-- City blocks / buildings -->
+        <rect x="80" y="220" width="90" height="60" rx="3" fill="#1e3550" opacity=".7"/>
+        <rect x="190" y="230" width="110" height="50" rx="3" fill="#1e3550" opacity=".7"/>
+        <rect x="320" y="225" width="95" height="55" rx="3" fill="#1e3550" opacity=".7"/>
+        <rect x="470" y="220" width="100" height="58" rx="3" fill="#1e3550" opacity=".7"/>
+        <rect x="590" y="228" width="85" height="52" rx="3" fill="#1e3550" opacity=".7"/>
+        <rect x="720" y="222" width="110" height="57" rx="3" fill="#1e3550" opacity=".7"/>
+        <rect x="80" y="330" width="90" height="55" rx="3" fill="#1e3550" opacity=".7"/>
+        <rect x="200" y="335" width="100" height="50" rx="3" fill="#1e3550" opacity=".7"/>
+        <rect x="330" y="325" width="95" height="55" rx="3" fill="#1e3550" opacity=".7"/>
+        <rect x="480" y="330" width="90" height="52" rx="3" fill="#1e3550" opacity=".7"/>
+        <rect x="610" y="328" width="80" height="54" rx="3" fill="#1e3550" opacity=".7"/>
+        <rect x="730" y="332" width="100" height="50" rx="3" fill="#1e3550" opacity=".7"/>
+        <rect x="100" y="420" width="80" height="45" rx="3" fill="#1e3550" opacity=".6"/>
+        <rect x="240" y="415" width="100" height="48" rx="3" fill="#1e3550" opacity=".6"/>
+        <rect x="380" y="410" width="95" height="48" rx="3" fill="#1e3550" opacity=".6"/>
+        <rect x="510" y="415" width="90" height="46" rx="3" fill="#1e3550" opacity=".6"/>
+        <rect x="650" y="412" width="100" height="46" rx="3" fill="#1e3550" opacity=".6"/>
+        <!-- Lake Erie label -->
+        <text x="50" y="80" font-family="DM Serif Display" font-size="18" fill="#4a7a99" font-style="italic" opacity=".5">Lake Erie</text>
+        <!-- Neighborhood labels -->
+        <text x="100" y="200" font-family="DM Sans" font-size="11" fill="#5a7a8a" font-weight="600" opacity=".8">Rocky River</text>
+        <text x="350" y="200" font-family="DM Sans" font-size="11" fill="#5a7a8a" font-weight="600" opacity=".8">Westlake</text>
+        <text x="600" y="200" font-family="DM Sans" font-size="11" fill="#5a7a8a" font-weight="600" opacity=".8">Bay Village</text>
+        <text x="120" y="390" font-family="DM Sans" font-size="11" fill="#5a7a8a" font-weight="600" opacity=".8">Lakewood</text>
+        <text x="580" y="390" font-family="DM Sans" font-size="11" fill="#5a7a8a" font-weight="600" opacity=".8">Avon Lake</text>
+      </svg>
+
+      <!-- Radius circle (SVG overlay) -->
+      <svg id="radius-circle" class="radius-overlay" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none">
+        <defs>
+          <radialGradient id="rg" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#7C3AED" stop-opacity=".05"/>
+            <stop offset="100%" stop-color="#7C3AED" stop-opacity=".18"/>
+          </radialGradient>
+        </defs>
+        <ellipse id="radius-ellipse" cx="280" cy="290" rx="220" ry="180" fill="url(#rg)" stroke="#7C3AED" stroke-width="1.5" stroke-dasharray="6 4" opacity=".7"/>
+      </svg>
+
+      <!-- Route SVG lines -->
+      <svg id="route-lines-svg" class="radius-overlay" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none"></svg>
+
+      <!-- Map pins rendered by JS -->
+      <div id="pins-container"></div>
+
+      <!-- Map controls -->
+      <div class="map-controls">
+        <button class="mc-btn" onclick="zoomIn()">+</button>
+        <button class="mc-btn" onclick="zoomOut()">−</button>
+        <button class="mc-btn" title="My location" style="font-size:13px">◎</button>
+      </div>
+
+      <!-- Legend -->
+      <div class="map-legend">
+        <div style="font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:4px">Legend</div>
+        <div class="leg-item"><div class="leg-dot" style="background:var(--purp)"></div>Starting point</div>
+        <div class="leg-item"><div class="leg-dot" style="background:var(--blue)"></div>In pipeline</div>
+        <div class="leg-item"><div class="leg-dot" style="background:var(--amber)"></div>Major gift</div>
+        <div class="leg-item"><div class="leg-dot" style="background:var(--rose)"></div>Lapsed donor</div>
+        <div class="leg-item"><div class="leg-dot" style="background:var(--green)"></div>New donor</div>
+        <div class="leg-item"><div style="width:10px;height:10px;border:2px solid var(--green);border-radius:50%;flex-shrink:0"></div>In route</div>
+      </div>
+
+    </div>
+
+    <!-- ── ROUTE PANEL ── -->
+    <div class="route-panel" id="route-panel">
+      <div class="rp-head">
+        <div class="rp-title">Planned route</div>
+        <div class="rp-sub" id="rp-sub">0 stops · Est. 0 min drive</div>
+        <button class="rp-close" onclick="toggleRoutePanel()">✕</button>
+      </div>
+      <div class="route-stops" id="route-stops"></div>
+      <div class="rp-summary">
+        <div class="rp-stat"><span class="rp-stat-key">Total drive time</span><span class="rp-stat-val" id="rp-time">—</span></div>
+        <div class="rp-stat"><span class="rp-stat-key">Total distance</span><span class="rp-stat-val" id="rp-dist">—</span></div>
+        <div class="rp-stat"><span class="rp-stat-key">Stops</span><span class="rp-stat-val" id="rp-stops-count">0</span></div>
+      </div>
+      <div class="rp-actions">
+        <button class="btn" style="flex:1;justify-content:center;background:rgba(15,30,53,.06);border-color:var(--border);color:var(--text2)" onclick="clearRoute()">Clear route</button>
+        <button class="btn btn-primary" style="flex:1;justify-content:center" onclick="openInMaps()">
+          <svg viewBox="0 0 11 11" fill="none" stroke="white" stroke-width="1.3" stroke-linecap="round"><path d="M5.5 1C4 1 3 2 3 3.5c0 2 2.5 5.5 2.5 5.5s2.5-3.5 2.5-5.5C8 2 7 1 5.5 1z"/><circle cx="5.5" cy="3.5" r="1"/></svg>
+          Open in Maps
+        </button>
+      </div>
+    </div>
+
+    <!-- Popup card -->
+    <div class="popup" id="popup">
+      <div class="popup-head">
+        <div class="popup-av" id="popup-av">?</div>
+        <div>
+          <div class="popup-name" id="popup-name">—</div>
+          <div class="popup-addr" id="popup-addr">—</div>
+        </div>
+        <button class="popup-close" onclick="closePopup()">×</button>
+      </div>
+      <div class="popup-body" id="popup-body"></div>
+      <div class="popup-tags" id="popup-tags"></div>
+      <div class="popup-actions" id="popup-actions"></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────
+const ORIGIN = { id:'origin', name:"James & Patricia O'Brien", addr:"14 Bayshore Blvd, Rocky River", x:280, y:290 };
+
+const DONORS = [
+  { id:1, name:"David Harrington",       addr:"92 Lake Ave, Rocky River",       x:200, y:260, dist:1.2, type:'pipeline', last:"$5,000 · Apr 2025",  capacity:88, stage:"Cultivation",   initials:"DH", color:"#2563EB" },
+  { id:2, name:"Margaret Sullivan",      addr:"318 Wagar Rd, Rocky River",      x:340, y:240, dist:2.1, type:'major',    last:"$12,500 · Jan 2026", capacity:95, stage:"Major gift",    initials:"MS", color:"#D97706" },
+  { id:3, name:"Robert Callahan",        addr:"40 Wooster Rd, Westlake",        x:430, y:270, dist:3.4, type:'pipeline', last:"$2,500 · Mar 2026",  capacity:72, stage:"Cultivation",   initials:"RC", color:"#2563EB" },
+  { id:4, name:"Elena & Frank Ramirez",  addr:"105 Hilliard Blvd, Westlake",    x:490, y:310, dist:4.2, type:'lapsed',   last:"$1,000 · Oct 2023",  capacity:64, stage:"Lapsed 18 mo",  initials:"ER", color:"#BE185D" },
+  { id:5, name:"Thomas & Anne Nguyen",   addr:"55 Lake Rd, Bay Village",        x:600, y:250, dist:5.8, type:'major',    last:"$8,000 · Dec 2025",  capacity:91, stage:"Stewardship",   initials:"TN", color:"#D97706" },
+  { id:6, name:"Patricia Kim",           addr:"220 Bradley Rd, Westlake",       x:510, y:360, dist:5.1, type:'pipeline', last:"$3,000 · Feb 2026",  capacity:70, stage:"Qualification",  initials:"PK", color:"#2563EB" },
+  { id:7, name:"Barbara Costello",       addr:"14 Cahoon Rd, Bay Village",      x:670, y:280, dist:6.9, type:'lapsed',   last:"$500 · Jun 2023",    capacity:48, stage:"Lapsed 2 yrs",  initials:"BC", color:"#BE185D" },
+  { id:8, name:"Susan Walsh",            addr:"88 Electric Blvd, Avon Lake",    x:750, y:340, dist:8.3, type:'lapsed',   last:"$250 · Mar 2024",    capacity:42, stage:"Lapsed 13 mo",  initials:"SW", color:"#BE185D" },
+  { id:9, name:"Michael & Carol Grant",  addr:"191 Dover Center Rd, Westlake",  x:560, y:430, dist:6.4, type:'major',    last:"$15,000 · Nov 2025", capacity:97, stage:"Major gift",    initials:"MG", color:"#D97706" },
+  { id:10,name:"Carlos Mendez",          addr:"77 Lear Rd, Avon Lake",          x:700, y:420, dist:9.1, type:'new',      last:"$500 · Apr 2026",    capacity:55, stage:"New donor",     initials:"CM", color:"#15803D" },
+  { id:11,name:"Anne Fitzgerald",        addr:"33 Center St, Bay Village",      x:640, y:190, dist:7.5, type:'pipeline', last:"$2,000 · Mar 2026",  capacity:66, stage:"Identification", initials:"AF", color:"#2563EB" },
+];
+
+let routeSet = new Set();
+let activeFilter = 'all';
+let activePopupId = null;
+let radiusMiles = 10;
+let sortMode = 'distance';
+const MILE_TO_PX = 28; // approximate pixels per mile on this map
+
+// ── DONOR LIST ────────────────────────────────────────────────
+function getFilteredDonors() {
+  return DONORS.filter(d => {
+    if (d.dist > radiusMiles) return false;
+    if (activeFilter === 'all') return true;
+    return d.type === activeFilter;
+  }).sort((a,b) => {
+    if (sortMode === 'distance') return a.dist - b.dist;
+    if (sortMode === 'capacity') return b.capacity - a.capacity;
+    if (sortMode === 'name') return a.name.localeCompare(b.name);
+    return 0;
+  });
+}
+
+function renderList() {
+  const filtered = getFilteredDonors();
+  document.getElementById('result-count').textContent = filtered.length + ' donors';
+  const list = document.getElementById('donor-list');
+  list.innerHTML = filtered.map((d, i) => `
+    <div class="donor-row ${routeSet.has(d.id)?'in-route':''}" id="row-${d.id}" onclick="selectDonor(${d.id})">
+      <div class="dr-num" style="background:${d.color}20;color:${d.color}">${i+1}</div>
+      <div class="dr-body">
+        <div class="dr-name" style="color:var(--text)">${d.name}</div>
+        <div class="dr-addr">${d.addr}</div>
+        <div class="dr-tags">
+          <span class="dr-tag dt-${d.type}">${d.stage}</span>
+          <span class="dr-tag" style="background:var(--surf);color:var(--text3);border:1px solid var(--border)">Cap: ${d.capacity}</span>
+          <span class="dr-tag" style="background:var(--surf);color:var(--text3);border:1px solid var(--border)">${d.last.split(' · ')[1]||''}</span>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0">
+        <div class="dr-dist">${d.dist}mi</div>
+        <div class="dr-check ${routeSet.has(d.id)?'checked':''}" onclick="event.stopPropagation();toggleRoute(${d.id})" id="check-${d.id}">
+          <svg viewBox="0 0 10 10" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round"><path d="M1.5 5l2.5 2.5 5-5"/></svg>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ── PINS ──────────────────────────────────────────────────────
+function renderPins() {
+  const container = document.getElementById('pins-container');
+  container.innerHTML = '';
+
+  // Origin pin
+  const op = document.createElement('div');
+  op.className = 'map-pin pin-origin';
+  op.style.left = ORIGIN.x + 'px';
+  op.style.top  = ORIGIN.y + 'px';
+  op.innerHTML = `<div class="pin-body"><div class="pin-inner">★</div></div>`;
+  op.title = ORIGIN.name;
+  container.appendChild(op);
+
+  const filtered = getFilteredDonors();
+  filtered.forEach((d,i) => {
+    const pin = document.createElement('div');
+    pin.className = `map-pin pin-${d.type} ${routeSet.has(d.id)?'pin-route':''}`;
+    pin.style.left = d.x + 'px';
+    pin.style.top  = d.y + 'px';
+    pin.id = `pin-${d.id}`;
+    pin.innerHTML = `
+      <div class="pin-label">${d.initials}</div>
+      <div class="pin-body"><div class="pin-inner">${i+1}</div></div>
+    `;
+    pin.onclick = () => showPopup(d);
+    container.appendChild(pin);
+  });
+}
+
+// ── RADIUS ────────────────────────────────────────────────────
+function updateRadius(val) {
+  radiusMiles = parseInt(val);
+  document.getElementById('radius-label').textContent = val + ' mi';
+  const rx = radiusMiles * MILE_TO_PX;
+  const ry = rx * 0.82;
+  document.getElementById('radius-ellipse').setAttribute('rx', rx);
+  document.getElementById('radius-ellipse').setAttribute('ry', ry);
+  renderList();
+  renderPins();
+  renderRouteLines();
+}
+
+// ── FILTER ────────────────────────────────────────────────────
+function toggleFilter(el, type) {
+  document.querySelectorAll('.fp').forEach(f => f.classList.remove('active'));
+  el.classList.add('active');
+  activeFilter = type;
+  renderList();
+  renderPins();
+}
+
+// ── SORT ──────────────────────────────────────────────────────
+function sortDonors(val) {
+  sortMode = val;
+  renderList();
+}
+
+// ── SELECT DONOR ──────────────────────────────────────────────
+function selectDonor(id) {
+  document.querySelectorAll('.donor-row').forEach(r => r.classList.remove('selected'));
+  const row = document.getElementById('row-' + id);
+  if (row) row.classList.add('selected');
+  const donor = DONORS.find(d => d.id === id);
+  if (donor) showPopup(donor);
+  document.querySelectorAll('.map-pin').forEach(p => p.classList.remove('selected'));
+  const pin = document.getElementById('pin-' + id);
+  if (pin) pin.classList.add('selected');
+}
+
+// ── POPUP ─────────────────────────────────────────────────────
+function showPopup(donor) {
+  activePopupId = donor.id;
+  const popup = document.getElementById('popup');
+  const mapCanvas = document.getElementById('map-canvas');
+  const rect = mapCanvas.getBoundingClientRect();
+  
+  // Position popup near pin, keeping within canvas
+  let px = donor.x + 20;
+  let py = donor.y - 160;
+  if (px + 250 > rect.width) px = donor.x - 260;
+  if (py < 10) py = donor.y + 20;
+  popup.style.left = px + 'px';
+  popup.style.top  = py + 'px';
+
+  document.getElementById('popup-av').style.background = donor.color;
+  document.getElementById('popup-av').textContent = donor.initials;
+  document.getElementById('popup-name').textContent = donor.name;
+  document.getElementById('popup-addr').textContent = donor.addr;
+
+  document.getElementById('popup-body').innerHTML = `
+    <div class="pb-row"><span class="pb-key">Last gift</span><span class="pb-val">${donor.last}</span></div>
+    <div class="pb-row"><span class="pb-key">Capacity score</span><span class="pb-val" style="color:var(--amber)">${donor.capacity}/100</span></div>
+    <div class="pb-row"><span class="pb-key">Distance</span><span class="pb-val" style="color:var(--purp)">${donor.dist} miles away</span></div>
+    <div class="pb-row"><span class="pb-key">Drive time</span><span class="pb-val">~${Math.round(donor.dist * 2.8)} min</span></div>
+  `;
+  document.getElementById('popup-tags').innerHTML = `<span class="dr-tag dt-${donor.type}">${donor.stage}</span>`;
+  const inRoute = routeSet.has(donor.id);
+  document.getElementById('popup-actions').innerHTML = `
+    <button class="pa-btn pa-primary" onclick="viewDonor(${donor.id})">View record</button>
+    <button class="pa-btn ${inRoute?'pa-ghost':'pa-green'}" id="popup-route-btn" onclick="toggleRoute(${donor.id});updatePopupRouteBtn(${donor.id})">${inRoute?'Remove from route':'Add to route'}</button>
+  `;
+  popup.classList.add('show');
+}
+
+function updatePopupRouteBtn(id) {
+  const btn = document.getElementById('popup-route-btn');
+  if (!btn) return;
+  const inRoute = routeSet.has(id);
+  btn.textContent = inRoute ? 'Remove from route' : 'Add to route';
+  btn.className = `pa-btn ${inRoute ? 'pa-ghost' : 'pa-green'}`;
+}
+
+function closePopup() {
+  document.getElementById('popup').classList.remove('show');
+  activePopupId = null;
+  document.querySelectorAll('.map-pin').forEach(p => p.classList.remove('selected'));
+  document.querySelectorAll('.donor-row').forEach(r => r.classList.remove('selected'));
+}
+
+function viewDonor(id) { closePopup(); }
+
+// ── ROUTE ─────────────────────────────────────────────────────
+function toggleRoute(id) {
+  if (routeSet.has(id)) {
+    routeSet.delete(id);
+  } else {
+    routeSet.add(id);
+  }
+  updateRouteBadge();
+  renderList();
+  renderPins();
+  renderRouteLines();
+  if (activePopupId === id) updatePopupRouteBtn(id);
+}
+
+function updateRouteBadge() {
+  const n = routeSet.size;
+  document.getElementById('route-badge').textContent = n;
+  document.getElementById('route-count').textContent = n + ' stop' + (n!==1?'s':'') + ' selected';
+  const buildBtn = document.getElementById('btn-build-route');
+  if (n > 0) {
+    buildBtn.disabled = false;
+    buildBtn.style.opacity = '1';
+    buildBtn.style.cursor = 'pointer';
+  } else {
+    buildBtn.disabled = true;
+    buildBtn.style.opacity = '.5';
+    buildBtn.style.cursor = 'default';
+  }
+}
+
+function renderRouteLines() {
+  const svg = document.getElementById('route-lines-svg');
+  const stops = DONORS.filter(d => routeSet.has(d.id)).sort((a,b) => a.dist - b.dist);
+  if (stops.length < 1) { svg.innerHTML = ''; return; }
+
+  const pts = [ORIGIN, ...stops];
+  let html = '';
+  for (let i = 0; i < pts.length - 1; i++) {
+    const a = pts[i], b = pts[i+1];
+    const mx = (a.x + b.x) / 2;
+    const my = (a.y + b.y) / 2 - 30;
+    html += `<path d="M${a.x},${a.y} Q${mx},${my} ${b.x},${b.y}" fill="none" stroke="#7C3AED" stroke-width="2.5" stroke-dasharray="6 4" opacity=".8"/>`;
+    html += `<circle cx="${b.x}" cy="${b.y}" r="5" fill="var(--purp)" opacity=".6"/>`;
+  }
+  svg.innerHTML = html;
+}
+
+function toggleRoutePanel() {
+  const panel = document.getElementById('route-panel');
+  const open = panel.classList.toggle('open');
+  if (open) renderRoutePanel();
+}
+
+function renderRoutePanel() {
+  const stops = DONORS.filter(d => routeSet.has(d.id)).sort((a,b) => a.dist - b.dist);
+  const totalDist = stops.reduce((s,d) => s+d.dist, 0).toFixed(1);
+  const totalMin  = Math.round(stops.reduce((s,d) => s + d.dist*2.8, 0) + (stops.length * 20));
+
+  document.getElementById('rp-sub').textContent = `${stops.length} stop${stops.length!==1?'s':''} · Est. ${totalMin} min drive`;
+  document.getElementById('rp-time').textContent = totalMin + ' min';
+  document.getElementById('rp-dist').textContent = totalDist + ' miles';
+  document.getElementById('rp-stops-count').textContent = stops.length;
+
+  const allStops = [ORIGIN, ...stops];
+  const html = allStops.map((s, i) => {
+    const isOrigin = i === 0;
+    const bg = isOrigin ? '#7C3AED' : (i <= stops.length ? '#15803D' : '#64748B');
+    const driveTime = i > 0 ? `~${Math.round(stops[i-1].dist*2.8)} min from previous` : '';
+    const addr = isOrigin ? s.addr : s.addr;
+    return `
+      <div class="route-stop">
+        <div class="rs-line">
+          <div class="rs-dot" style="background:${bg}">${i}</div>
+          ${i < allStops.length-1 ? '<div class="rs-connector"></div>' : ''}
+        </div>
+        <div class="rs-body">
+          <div class="rs-name">${s.name}</div>
+          <div class="rs-addr">${addr}</div>
+          ${driveTime ? `<div class="rs-drive">${driveTime}</div>` : ''}
+        </div>
+      </div>`;
+  }).join('');
+  document.getElementById('route-stops').innerHTML = html;
+}
+
+function clearRoute() {
+  routeSet.clear();
+  updateRouteBadge();
+  renderList();
+  renderPins();
+  renderRouteLines();
+  renderRoutePanel();
+  document.getElementById('route-panel').classList.remove('open');
+}
+
+function openInMaps() {
+  const stops = DONORS.filter(d => routeSet.has(d.id)).sort((a,b) => a.dist-b.dist);
+  const addrs = [ORIGIN.addr, ...stops.map(s=>s.addr)].map(a => encodeURIComponent(a));
+  const url = 'https://www.google.com/maps/dir/' + addrs.join('/');
+  window.open(url, '_blank');
+}
+
+// ── ZOOM ──────────────────────────────────────────────────────
+let zoom = 1;
+function zoomIn()  { zoom = Math.min(zoom*1.2, 2.5); applyZoom(); }
+function zoomOut() { zoom = Math.max(zoom/1.2, 0.6); applyZoom(); }
+function applyZoom() {
+  const canvas = document.getElementById('map-canvas');
+  canvas.style.transformOrigin = 'center center';
+  // pins-container scales, SVG background stays full
+  document.getElementById('pins-container').style.transform = `scale(${zoom})`;
+  document.getElementById('pins-container').style.transformOrigin = '280px 290px';
+}
+
+// ── INIT ──────────────────────────────────────────────────────
+renderList();
+renderPins();
+updateRadius(10);
+</script>
+</body>
+</html>

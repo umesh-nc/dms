@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GiveCentral Atlas — Volunteer Management</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --navy:   #0E1E35; --navy2:  #152844; --navy3:  #1E3A5F;
+      --blue:   #2563EB; --bluem:  #3B82F6; --bluel:  #DBEAFE; --bluep: #EFF6FF;
+      --green:  #15803D; --greenl: #DCFCE7;
+      --amber:  #D97706; --amberl: #FEF3C7;
+      --rose:   #BE185D; --rosel:  #FCE7F3;
+      --teal:   #0D9488; --teall:  #CCFBF1;
+      --purple: #7C3AED; --purpl:  #EDE9FE;
+      --text:   #0F172A; --text2:  #334155; --text3:  #64748B;
+      --border: #E2E8F0; --surf:   #F8FAFC; --white:  #FFFFFF;
+    }
+    html { font-size: 14px; -webkit-font-smoothing: antialiased; }
+    body { font-family: 'DM Sans', sans-serif; background: #F0F4F8; color: var(--text); min-height: 100vh; display: flex; overflow: hidden; height: 100vh; }
+
+    /* ── SIDEBAR ── */
+    .sidebar { width: 220px; background: var(--navy); height: 100vh; display: flex; flex-direction: column; flex-shrink: 0; }
+    .sb-logo { padding: 18px 18px 14px; display: flex; align-items: center; gap: 9px; border-bottom: 1px solid rgba(255,255,255,.08); }
+    .sb-mark { width: 30px; height: 30px; background: var(--blue); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+    .sb-mark svg { width: 15px; height: 15px; }
+    .sb-name { font-family: 'DM Serif Display', serif; font-size: 15px; color: white; line-height: 1; }
+    .sb-sub  { font-size: 9px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.3); margin-top: 3px; }
+    .nav-group { padding: 10px 8px 0; }
+    .nav-label { font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.28); padding: 0 10px; margin-bottom: 4px; }
+    .nav-item  { display: flex; align-items: center; gap: 9px; padding: 8px 10px; border-radius: 7px; font-size: 12px; font-weight: 500; color: rgba(255,255,255,.55); cursor: pointer; transition: all .15s; margin-bottom: 1px; }
+    .nav-item:hover  { background: rgba(255,255,255,.07); color: rgba(255,255,255,.85); }
+    .nav-item.active { background: var(--green); color: white; }
+    .nav-item svg { width: 14px; height: 14px; flex-shrink: 0; }
+    .nav-badge { margin-left: auto; background: rgba(255,255,255,.15); color: rgba(255,255,255,.7); border-radius: 10px; padding: 1px 7px; font-size: 10px; font-weight: 600; }
+    .sb-user { margin-top: auto; padding: 12px; border-top: 1px solid rgba(255,255,255,.08); display: flex; align-items: center; gap: 9px; }
+    .u-av   { width: 30px; height: 30px; border-radius: 50%; background: var(--blue); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: white; }
+    .u-name { font-size: 12px; font-weight: 500; color: rgba(255,255,255,.75); }
+    .u-role { font-size: 10px; color: rgba(255,255,255,.35); margin-top: 1px; }
+
+    /* ── MAIN ── */
+    .main { flex: 1; min-width: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+    .topbar { background: white; border-bottom: 1px solid var(--border); padding: 0 24px; height: 52px; display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+    .tb-back { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text3); cursor: pointer; }
+    .tb-back svg { width: 14px; height: 14px; }
+    .tb-sep { width: 1px; height: 18px; background: var(--border); }
+    .tb-title { font-size: 15px; font-weight: 600; color: var(--text); }
+    .tb-sub   { font-size: 12px; color: var(--text3); }
+    .tb-right { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+    .tb-btn { padding: 6px 14px; border-radius: 7px; font-size: 12px; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .15s; display: flex; align-items: center; gap: 6px; border: 1px solid var(--border); background: none; color: var(--text2); }
+    .tb-btn:hover { background: var(--surf); }
+    .tb-btn-primary { background: var(--green); color: white; border: none; box-shadow: 0 1px 4px rgba(21,128,61,.3); }
+    .tb-btn-primary:hover { background: #126e31; }
+    .tb-btn svg { width: 12px; height: 12px; }
+
+    /* ── CONTENT ── */
+    .content { flex: 1; overflow-y: auto; padding: 20px 24px 32px; display: flex; flex-direction: column; gap: 16px; }
+
+    /* ── VOLUNTEER HERO ── */
+    .vol-hero { background: var(--navy); border-radius: 14px; padding: 22px 26px; position: relative; overflow: hidden; display: flex; gap: 24px; align-items: flex-start; }
+    .vh-bg { position: absolute; inset: 0; background: radial-gradient(circle at 90% 50%, rgba(21,128,61,.2) 0%, transparent 55%), radial-gradient(circle at 10% 80%, rgba(37,99,235,.12) 0%, transparent 50%); }
+    .vh-inner { position: relative; z-index: 1; flex: 1; }
+    .vh-eyebrow { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: rgba(255,255,255,.4); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+    .samaritan-badge { background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2); border-radius: 20px; padding: 2px 10px; font-size: 9px; font-weight: 700; color: rgba(255,255,255,.6); }
+    .vh-name { font-family: 'DM Serif Display', serif; font-size: 24px; color: white; letter-spacing: -.01em; margin-bottom: 4px; }
+    .vh-role { font-size: 13px; color: rgba(255,255,255,.55); margin-bottom: 16px; }
+    .vh-meta { display: flex; flex-wrap: wrap; gap: 8px; }
+    .meta-chip { display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 20px; padding: 5px 12px; font-size: 12px; color: rgba(255,255,255,.75); }
+    .meta-chip svg { width: 12px; height: 12px; opacity: .6; }
+    .vh-stats { display: flex; gap: 0; flex-shrink: 0; background: rgba(0,0,0,.2); border-radius: 10px; overflow: hidden; }
+    .vhs { padding: 14px 18px; border-right: 1px solid rgba(255,255,255,.08); text-align: center; position: relative; z-index: 1; }
+    .vhs:last-child { border-right: none; }
+    .vhs-val { font-family: 'DM Serif Display', serif; font-size: 22px; color: white; line-height: 1; margin-bottom: 4px; }
+    .vhs-val.green { color: #86EFAC; }
+    .vhs-val.amber { color: #FCD34D; }
+    .vhs-lbl { font-size: 9px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: rgba(255,255,255,.4); }
+
+    /* ── CROSSOVER ALERT ── */
+    .crossover-alert { background: white; border: 1.5px solid var(--amber); border-radius: 12px; padding: 14px 18px; display: flex; gap: 14px; align-items: flex-start; }
+    .ca-icon { width: 34px; height: 34px; background: var(--amberl); border-radius: 9px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .ca-icon svg { width: 15px; height: 15px; color: var(--amber); }
+    .ca-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+    .ca-body  { font-size: 12px; color: var(--text2); line-height: 1.6; }
+    .ca-actions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+    .ca-btn { padding: 6px 14px; border-radius: 7px; font-size: 11px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .15s; }
+    .ca-btn-primary { background: var(--amber); color: white; border: none; }
+    .ca-btn-primary:hover { background: #b45309; }
+    .ca-btn-ghost { background: none; border: 1px solid var(--border); color: var(--text2); }
+    .ca-btn-ghost:hover { background: var(--surf); }
+
+    /* ── MAIN GRID ── */
+    .main-grid { display: grid; grid-template-columns: 1fr 340px; gap: 14px; }
+
+    /* ── SAMARITAN EMBED PANEL ── */
+    .samaritan-panel { background: white; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    .sp-header { background: var(--navy3); padding: 12px 16px; display: flex; align-items: center; gap: 10px; }
+    .sp-logo { width: 28px; height: 28px; background: white; border-radius: 7px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .sp-logo svg { width: 14px; height: 14px; color: var(--green); }
+    .sp-title { font-size: 13px; font-weight: 600; color: white; flex: 1; }
+    .sp-badge { font-size: 9px; font-weight: 700; background: rgba(255,255,255,.15); color: rgba(255,255,255,.75); padding: 2px 8px; border-radius: 20px; }
+    .sp-open-btn { display: flex; align-items: center; gap: 5px; padding: 5px 12px; background: var(--green); color: white; border: none; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+    .sp-open-btn svg { width: 10px; height: 10px; }
+
+    /* Simulated Samaritan embed */
+    .sam-embed { padding: 0; }
+    .sam-tabs  { display: flex; border-bottom: 1px solid var(--border); }
+    .sam-tab   { padding: 10px 16px; font-size: 12px; font-weight: 500; color: var(--text3); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all .15s; }
+    .sam-tab.active { color: var(--green); border-bottom-color: var(--green); font-weight: 600; }
+    .sam-body  { padding: 14px 16px; }
+
+    /* Upcoming shifts table */
+    .shifts-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .shifts-table th { text-align: left; font-size: 10px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--text3); padding: 6px 10px; background: var(--surf); border-bottom: 1px solid var(--border); }
+    .shifts-table td { padding: 9px 10px; border-bottom: .5px solid var(--border); color: var(--text2); }
+    .shifts-table tr:last-child td { border-bottom: none; }
+    .shifts-table tr:hover td { background: var(--surf); }
+    .shift-status { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 20px; font-size: 10px; font-weight: 700; }
+    .ss-confirmed { background: var(--greenl); color: var(--green); }
+    .ss-pending   { background: var(--amberl); color: var(--amber); }
+    .ss-completed { background: var(--bluel); color: #1D4ED8; }
+
+    /* Hours log */
+    .hours-bar { height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; margin-top: 4px; }
+    .hours-fill { height: 100%; border-radius: 3px; background: var(--green); }
+    .hours-goal { font-size: 10px; color: var(--text3); }
+
+    /* Open opportunities */
+    .opp-list { display: flex; flex-direction: column; gap: 8px; }
+    .opp-item { padding: 10px 12px; background: var(--surf); border-radius: 8px; border: 1px solid var(--border); display: flex; align-items: center; gap: 10px; cursor: pointer; transition: all .15s; }
+    .opp-item:hover { background: white; border-color: #94A3B8; }
+    .opp-dot  { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .opp-name { font-size: 12px; font-weight: 500; color: var(--text); flex: 1; }
+    .opp-date { font-size: 11px; color: var(--text3); }
+    .opp-slots { font-size: 10px; font-weight: 700; color: var(--green); }
+
+    /* ── RIGHT PANEL ── */
+    .right-panel { display: flex; flex-direction: column; gap: 12px; }
+
+    /* Atlas-native volunteer card */
+    .atlas-card { background: white; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    .ac-head { padding: 12px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
+    .ac-icon { width: 26px; height: 26px; border-radius: 7px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .ac-icon svg { width: 12px; height: 12px; }
+    .ac-title { font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--text3); }
+    .ac-body  { padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; }
+    .kv-row   { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: .5px solid var(--border); }
+    .kv-row:last-child { border-bottom: none; }
+    .kv-key   { font-size: 12px; color: var(--text3); }
+    .kv-val   { font-size: 12px; font-weight: 600; color: var(--text); text-align: right; }
+    .kv-val.green { color: var(--green); }
+    .kv-val.amber { color: var(--amber); }
+    .kv-val.rose  { color: var(--rose); }
+
+    /* Background check card */
+    .bg-check-card { background: white; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    .bgc-status-bar { padding: 14px 16px; display: flex; align-items: center; gap: 12px; }
+    .bgc-indicator { width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .bgc-indicator svg { width: 18px; height: 18px; }
+    .bgc-status-label { font-size: 14px; font-weight: 600; }
+    .bgc-status-sub   { font-size: 11px; color: var(--text3); margin-top: 2px; }
+    .bgc-detail       { padding: 0 16px 14px; }
+    .bgc-row { display: flex; justify-content: space-between; font-size: 12px; color: var(--text2); padding: 5px 0; border-bottom: .5px solid var(--border); }
+    .bgc-row:last-child { border-bottom: none; }
+    .bgc-provider { display: flex; gap: 6px; align-items: center; }
+    .bgc-provider-badge { font-size: 10px; font-weight: 700; background: var(--navy); color: white; padding: 1px 8px; border-radius: 20px; }
+    .bgc-warning { margin: 10px 16px 14px; background: var(--amberl); border: 1px solid #FCD34D; border-radius: 8px; padding: 10px 12px; display: flex; gap: 8px; }
+    .bgcw-icon { flex-shrink: 0; margin-top: 1px; }
+    .bgcw-icon svg { width: 13px; height: 13px; color: var(--amber); }
+    .bgcw-text { font-size: 11px; color: #78350F; line-height: 1.55; }
+
+    /* Donor-volunteer crossover */
+    .dvc-card { background: white; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    .dvc-head { padding: 12px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
+    .dvc-icon { width: 26px; height: 26px; border-radius: 7px; background: var(--purpl); display: flex; align-items: center; justify-content: center; }
+    .dvc-icon svg { width: 12px; height: 12px; color: var(--purple); }
+    .dvc-title { font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--text3); }
+    .dvc-body  { padding: 14px 16px; }
+    .dvc-row   { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 10px; }
+    .dvc-dot   { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
+    .dvc-text  { font-size: 12px; color: var(--text2); line-height: 1.55; }
+    .dvc-text strong { color: var(--text); font-weight: 600; }
+    .dvc-action { margin-top: 12px; }
+    .dvc-action button { width: 100%; padding: 8px; background: var(--purpl); color: var(--purple); border: 1px solid rgba(124,58,237,.3); border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .15s; }
+    .dvc-action button:hover { background: var(--purple); color: white; }
+
+    /* Roles & committees */
+    .role-list { display: flex; flex-direction: column; gap: 6px; }
+    .role-item { display: flex; align-items: center; gap: 9px; padding: 8px 10px; background: var(--surf); border-radius: 8px; }
+    .role-badge { font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 20px; white-space: nowrap; }
+    .rb-active   { background: var(--greenl); color: var(--green); }
+    .rb-past     { background: var(--surf); color: var(--text3); border: 1px solid var(--border); }
+    .role-name   { font-size: 12px; font-weight: 500; color: var(--text); flex: 1; }
+    .role-since  { font-size: 11px; color: var(--text3); }
+
+    /* Sync status footer */
+    .sync-footer { display: flex; align-items: center; gap: 8px; padding: 10px 16px; background: var(--surf); border-top: 1px solid var(--border); font-size: 11px; color: var(--text3); }
+    .sync-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); }
+    .sync-dot.stale { background: var(--amber); }
+
+    /* Tabs for Samaritan embed */
+    #sam-tab-upcoming, #sam-tab-hours, #sam-tab-opps { display: none; }
+    #sam-tab-upcoming.visible, #sam-tab-hours.visible, #sam-tab-opps.visible { display: block; }
+  </style>
+</head>
+<body>
+
+<!-- ── SIDEBAR ── -->
+<aside class="sidebar">
+  <div class="sb-logo">
+    <div class="sb-mark"><svg viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7.5" stroke="white" stroke-width="1.5"/><path d="M5.5 9.5C6.5 11.5 9 13 9 13s2.5-1.5 3.5-3.5S12 5 9 5 4.5 7.5 5.5 9.5z" fill="white" fill-opacity=".9"/></svg></div>
+    <div><div class="sb-name">GiveCentral</div><div class="sb-sub">Atlas CRM</div></div>
+  </div>
+  <div class="nav-group">
+    <div class="nav-label">Main</div>
+    <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><rect x="1.5" y="1.5" width="4" height="4" rx="1.2"/><rect x="8.5" y="1.5" width="4" height="4" rx="1.2"/><rect x="1.5" y="8.5" width="4" height="4" rx="1.2"/><rect x="8.5" y="8.5" width="4" height="4" rx="1.2"/></svg>Dashboard</div>
+    <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="6" cy="4.5" r="3"/><path d="M1 13c0-2.8 2.2-5 5-5h1c2.8 0 5 2.2 5 5"/></svg>Donors</div>
+    <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M7 1.5v11M2 6.5h10"/></svg>Gifts &amp; pledges</div>
+    <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M1.5 8.5l2.5-2.5 2 2 2.5-2.5 2 2"/><rect x="1.5" y="1.5" width="11" height="11" rx="2"/></svg>Campaigns</div>
+  </div>
+  <div class="nav-group" style="margin-top:8px">
+    <div class="nav-label">Community</div>
+    <div class="nav-item active"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="5" cy="4" r="2.5"/><circle cx="10" cy="5" r="2"/><path d="M1 12.5c0-2.2 1.8-4 4-4s4 1.8 4 4"/><path d="M10 9.5c1.4.4 2.5 1.6 2.5 3"/></svg>Volunteers<span class="nav-badge">284</span></div>
+    <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><rect x="1.5" y="3" width="11" height="9" rx="1.5"/><path d="M1.5 6.5h11M5 3v2M9 3v2"/></svg>Events<span class="nav-badge">12</span></div>
+  </div>
+  <div class="nav-group" style="margin-top:8px">
+    <div class="nav-label">Intelligence</div>
+    <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="7" cy="5" r="3.5"/><path d="M5 10c0 2 4 2 4 0M4.5 8.5c-2 1-3 3.5-3 4.5M9.5 8.5c2 1 3 3.5 3 4.5"/></svg>Guru AI</div>
+  </div>
+  <div class="sb-user">
+    <div class="u-av">SR</div>
+    <div><div class="u-name">Sarah Reynolds</div><div class="u-role">Development Director</div></div>
+  </div>
+</aside>
+
+<!-- ── MAIN ── -->
+<div class="main">
+  <div class="topbar">
+    <div class="tb-back"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M9 2L4 7l5 5"/></svg>All volunteers</div>
+    <div class="tb-sep"></div>
+    <span class="tb-title">Thomas &amp; Angela Kowalski</span>
+    <div class="tb-sep"></div>
+    <span class="tb-sub">Volunteer profile</span>
+    <div class="tb-right">
+      <button class="tb-btn"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><circle cx="6" cy="4" r="2.5"/><path d="M1 11c0-2.8 2.2-5 5-5s5 2.2 5 5"/></svg>View donor record</button>
+      <button class="tb-btn tb-btn-primary"><svg viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="1.4" stroke-linecap="round"><path d="M6 1v10M1 6h10"/></svg>Add action</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- Volunteer hero -->
+    <div class="vol-hero">
+      <div class="vh-bg"></div>
+      <div class="vh-inner">
+        <div class="vh-eyebrow">
+          Volunteer profile
+          <span class="samaritan-badge">Samaritan synced</span>
+        </div>
+        <div class="vh-name">Thomas &amp; Angela Kowalski</div>
+        <div class="vh-role">Holy Cross Parish · Diocese of St. Petersburg · Volunteer since 2018</div>
+        <div class="vh-meta">
+          <div class="meta-chip">
+            <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M6 1C4.3 1 3 2.3 3 4c0 2.3 3 6 3 6s3-3.7 3-6c0-1.7-1.3-3-3-3z"/><circle cx="6" cy="4" r="1.2"/></svg>
+            Rocky River, OH
+          </div>
+          <div class="meta-chip">
+            <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><rect x="1.5" y="2.5" width="9" height="8" rx="1.3"/><path d="M1.5 5.5h9M4 2.5v2M8 2.5v2"/></svg>
+            Next shift: May 3 — Gala setup
+          </div>
+          <div class="meta-chip">
+            <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M2 9l2-2 2 2 2-2.5 2 2.5"/></svg>
+            47 lifetime events
+          </div>
+        </div>
+      </div>
+      <div class="vh-stats">
+        <div class="vhs"><div class="vhs-val green">312</div><div class="vhs-lbl">Volunteer hrs</div></div>
+        <div class="vhs"><div class="vhs-val">47</div><div class="vhs-lbl">Events</div></div>
+        <div class="vhs"><div class="vhs-val amber">3</div><div class="vhs-lbl">Upcoming</div></div>
+        <div class="vhs"><div class="vhs-val">6 yrs</div><div class="vhs-lbl">Tenure</div></div>
+      </div>
+    </div>
+
+    <!-- Donor-volunteer crossover alert -->
+    <div class="crossover-alert">
+      <div class="ca-icon"><svg viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M7.5 1.5v4.5M7.5 10v.5"/><path d="M1.5 13L7.5 1.5 13.5 13H1.5z"/></svg></div>
+      <div style="flex:1">
+        <div class="ca-title">Guru AI — donor-volunteer crossover alert</div>
+        <div class="ca-body">Thomas &amp; Angela Kowalski have volunteered at <strong>47 events over 6 years</strong> but their last direct donation was <strong>18 months ago ($2,500 to the Annual Appeal)</strong>. They have never been personally solicited. Based on volunteer engagement and giving capacity score of 81, this is a high-priority re-engagement opportunity. Suggested ask: $5,000 to the Annual Appeal with a volunteer recognition element.</div>
+        <div class="ca-actions">
+          <button class="ca-btn ca-btn-primary">Create outreach task for Mike</button>
+          <button class="ca-btn ca-btn-ghost">View full donor record</button>
+          <button class="ca-btn ca-btn-ghost">Dismiss</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main grid -->
+    <div class="main-grid">
+
+      <!-- Samaritan embed panel -->
+      <div class="samaritan-panel">
+        <div class="sp-header">
+          <div class="sp-logo"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="5" cy="4" r="2.5"/><circle cx="10" cy="5" r="2"/><path d="M1 12.5c0-2.2 1.8-4 4-4s4 1.8 4 4"/><path d="M10 9.5c1.4.4 2.5 1.6 2.5 3"/></svg></div>
+          <span class="sp-title">Samaritan — volunteer scheduling</span>
+          <span class="sp-badge">Live sync</span>
+          <button class="sp-open-btn" onclick="window.open('https://samaritan.com','_blank')">
+            Open in Samaritan
+            <svg viewBox="0 0 10 10" fill="none" stroke="white" stroke-width="1.4" stroke-linecap="round"><path d="M2 8L8 2M5 2h3v3"/></svg>
+          </button>
+        </div>
+
+        <div class="sam-embed">
+          <div class="sam-tabs">
+            <div class="sam-tab active" onclick="switchSamTab('upcoming',this)">Upcoming shifts</div>
+            <div class="sam-tab" onclick="switchSamTab('hours',this)">Hours log</div>
+            <div class="sam-tab" onclick="switchSamTab('opps',this)">Open opportunities</div>
+          </div>
+
+          <div class="sam-body">
+            <!-- Upcoming shifts -->
+            <div id="sam-tab-upcoming" class="visible">
+              <table class="shifts-table">
+                <thead>
+                  <tr>
+                    <th>Event</th>
+                    <th>Date</th>
+                    <th>Role</th>
+                    <th>Hours</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style="font-weight:500;color:var(--text)">Bishop's Golf Classic — Setup</td>
+                    <td>May 3, 2026</td>
+                    <td>Setup crew</td>
+                    <td>4h</td>
+                    <td><span class="shift-status ss-confirmed">Confirmed</span></td>
+                  </tr>
+                  <tr>
+                    <td style="font-weight:500;color:var(--text)">CMA Phone-a-thon</td>
+                    <td>May 14, 2026</td>
+                    <td>Caller</td>
+                    <td>3h</td>
+                    <td><span class="shift-status ss-confirmed">Confirmed</span></td>
+                  </tr>
+                  <tr>
+                    <td style="font-weight:500;color:var(--text)">Cathedral Groundbreaking</td>
+                    <td>Jun 8, 2026</td>
+                    <td>Hospitality</td>
+                    <td>2h</td>
+                    <td><span class="shift-status ss-pending">Pending</span></td>
+                  </tr>
+                  <tr>
+                    <td style="font-weight:500;color:var(--text)">Summer Youth Camp</td>
+                    <td>Jul 12, 2026</td>
+                    <td>Activity leader</td>
+                    <td>8h</td>
+                    <td><span class="shift-status ss-pending">Pending</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Hours log -->
+            <div id="sam-tab-hours" style="display:none">
+              <div style="margin-bottom:16px">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+                  <span style="font-size:12px;font-weight:600;color:var(--text)">2026 volunteer hours</span>
+                  <span style="font-size:12px;font-weight:700;color:var(--green)">28h of 50h goal</span>
+                </div>
+                <div class="hours-bar"><div class="hours-fill" style="width:56%"></div></div>
+                <div class="hours-goal" style="margin-top:4px">56% of annual goal · on pace</div>
+              </div>
+              <table class="shifts-table">
+                <thead><tr><th>Event</th><th>Date</th><th>Role</th><th>Hours</th></tr></thead>
+                <tbody>
+                  <tr><td style="font-weight:500;color:var(--text)">Lenten Mission</td><td>Mar 15</td><td>Usher</td><td>2h</td></tr>
+                  <tr><td style="font-weight:500;color:var(--text)">Holy Thursday Mass</td><td>Apr 17</td><td>Hospitality</td><td>3h</td></tr>
+                  <tr><td style="font-weight:500;color:var(--text)">Easter Vigil</td><td>Apr 19</td><td>Setup / breakdown</td><td>6h</td></tr>
+                  <tr><td style="font-weight:500;color:var(--text)">Diocese Gala — Setup</td><td>Apr 24</td><td>Setup crew lead</td><td>8h</td></tr>
+                  <tr><td style="font-weight:500;color:var(--text)">Catholic Schools Week</td><td>Feb 3</td><td>Presenter</td><td>4h</td></tr>
+                  <tr><td style="font-weight:500;color:var(--text)">Winter Coat Drive</td><td>Jan 18</td><td>Sorter</td><td>5h</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Open opportunities -->
+            <div id="sam-tab-opps" style="display:none">
+              <div style="font-size:12px;color:var(--text3);margin-bottom:12px">Volunteer opportunities matching Thomas &amp; Angela's history and parish</div>
+              <div class="opp-list">
+                <div class="opp-item"><div class="opp-dot" style="background:var(--blue)"></div><span class="opp-name">Bishop's Gala — Day-of crew</span><span class="opp-date">Aug 4</span><span class="opp-slots">6 slots left</span></div>
+                <div class="opp-item"><div class="opp-dot" style="background:var(--green)"></div><span class="opp-name">Back to School Supply Drive</span><span class="opp-date">Aug 10</span><span class="opp-slots">12 slots left</span></div>
+                <div class="opp-item"><div class="opp-dot" style="background:var(--amber)"></div><span class="opp-name">CMA Leadership Circle Dinner</span><span class="opp-date">Sep 18</span><span class="opp-slots">3 slots left</span></div>
+                <div class="opp-item"><div class="opp-dot" style="background:var(--teal)"></div><span class="opp-name">Cathedral Open House Tour Guide</span><span class="opp-date">Oct 5</span><span class="opp-slots">8 slots left</span></div>
+                <div class="opp-item"><div class="opp-dot" style="background:var(--purple)"></div><span class="opp-name">Diocesan Assembly — Hospitality</span><span class="opp-date">Nov 2</span><span class="opp-slots">15 slots left</span></div>
+              </div>
+              <div style="margin-top:14px;text-align:center">
+                <button style="padding:8px 20px;background:var(--greenl);color:var(--green);border:1px solid rgba(21,128,61,.3);border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif" onclick="window.open('https://samaritan.com','_blank')">View all opportunities in Samaritan →</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sync footer -->
+          <div class="sync-footer">
+            <div class="sync-dot"></div>
+            <span>Samaritan sync · Last updated 12 minutes ago</span>
+            <span style="margin-left:auto;cursor:pointer;color:var(--blue)">Refresh</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right panel -->
+      <div class="right-panel">
+
+        <!-- Background check -->
+        <div class="bg-check-card">
+          <div class="ac-head" style="border-bottom:1px solid var(--border)">
+            <div class="ac-icon" style="background:var(--greenl)"><svg viewBox="0 0 12 12" fill="none" stroke="var(--green)" stroke-width="1.4" stroke-linecap="round"><path d="M6 1L2 3v4c0 2 1.6 3.5 4 4 2.4-.5 4-2 4-4V3L6 1z"/><path d="M4 6l1.5 1.5 3-3"/></svg></div>
+            <span class="ac-title">Safe environment — background check</span>
+          </div>
+          <div class="bgc-status-bar">
+            <div class="bgc-indicator" style="background:var(--greenl)">
+              <svg viewBox="0 0 18 18" fill="none" stroke="var(--green)" stroke-width="1.8" stroke-linecap="round"><path d="M4 9l3.5 3.5 7-7"/></svg>
+            </div>
+            <div>
+              <div class="bgc-status-label" style="color:var(--green)">Current — cleared</div>
+              <div class="bgc-status-sub">Expires December 14, 2026</div>
+            </div>
+          </div>
+          <div class="bgc-detail">
+            <div class="bgc-row">
+              <span>Provider</span>
+              <div class="bgc-provider"><span class="bgc-provider-badge">VIRTUS</span></div>
+            </div>
+            <div class="bgc-row"><span>Last check date</span><span style="font-weight:600">Dec 14, 2024</span></div>
+            <div class="bgc-row"><span>Renewal due</span><span style="font-weight:600;color:var(--amber)">Dec 14, 2026</span></div>
+            <div class="bgc-row"><span>NCSI secondary</span><span style="font-weight:600;color:var(--green)">Current</span></div>
+            <div class="bgc-row"><span>Event clearance</span><span style="font-weight:600;color:var(--green)">Approved</span></div>
+          </div>
+        </div>
+
+        <!-- Atlas volunteer fields -->
+        <div class="atlas-card">
+          <div class="ac-head">
+            <div class="ac-icon" style="background:var(--bluel)"><svg viewBox="0 0 12 12" fill="none" stroke="#1D4ED8" stroke-width="1.4" stroke-linecap="round"><circle cx="6" cy="4" r="2.5"/><path d="M1 11c0-2.8 2.2-5 5-5s5 2.2 5 5"/></svg></div>
+            <span class="ac-title">Atlas volunteer record</span>
+          </div>
+          <div class="ac-body">
+            <div class="kv-row"><span class="kv-key">Volunteer since</span><span class="kv-val">2018</span></div>
+            <div class="kv-row"><span class="kv-key">Parish</span><span class="kv-val">Holy Cross</span></div>
+            <div class="kv-row"><span class="kv-key">Samaritan ID</span><span class="kv-val" style="font-family:monospace;font-size:11px">SAM-00847</span></div>
+            <div class="kv-row"><span class="kv-key">Availability</span><span class="kv-val">Weekends</span></div>
+            <div class="kv-row"><span class="kv-key">Skills</span><span class="kv-val">Event logistics, calling</span></div>
+            <div class="kv-row"><span class="kv-key">Lifetime hours</span><span class="kv-val green">312 hrs</span></div>
+            <div class="kv-row"><span class="kv-key">Do not contact</span><span class="kv-val green">No restrictions</span></div>
+          </div>
+        </div>
+
+        <!-- Roles & committees -->
+        <div class="atlas-card">
+          <div class="ac-head">
+            <div class="ac-icon" style="background:var(--purpl)"><svg viewBox="0 0 12 12" fill="none" stroke="var(--purple)" stroke-width="1.4" stroke-linecap="round"><path d="M1 9l2-2 2 2 2-2.5 2 2.5M5 4h5M5 6.5h3"/></svg></div>
+            <span class="ac-title">Roles &amp; committees</span>
+          </div>
+          <div class="ac-body">
+            <div class="role-list">
+              <div class="role-item"><span class="role-badge rb-active">Active</span><span class="role-name">Diocesan Gala Committee</span><span class="role-since">Since 2022</span></div>
+              <div class="role-item"><span class="role-badge rb-active">Active</span><span class="role-name">Holy Cross Parish Council</span><span class="role-since">Since 2020</span></div>
+              <div class="role-item"><span class="role-badge rb-active">Active</span><span class="role-name">Assembly of Catholic Professionals</span><span class="role-since">Since 2021</span></div>
+              <div class="role-item"><span class="role-badge rb-past">Past</span><span class="role-name">CMA Phone-a-thon Coordinator</span><span class="role-since">2019–2021</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Donor-volunteer intelligence -->
+        <div class="dvc-card">
+          <div class="dvc-head">
+            <div class="dvc-icon"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><circle cx="6" cy="4" r="2.5"/><path d="M3.5 8c0 2 5 2 5 0M1.5 6c-1 .5-1.5 1.7-1.5 2.5M10.5 6c1 .5 1.5 1.7 1.5 2.5"/></svg></div>
+            <span class="ac-title">Guru AI — donor intelligence</span>
+          </div>
+          <div class="dvc-body">
+            <div class="dvc-row"><div class="dvc-dot" style="background:var(--amber)"></div><div class="dvc-text"><strong>Lapsed donor alert</strong> — last gift was 18 months ago. 6-year volunteer relationship makes personal re-engagement highly likely to succeed.</div></div>
+            <div class="dvc-row"><div class="dvc-dot" style="background:var(--purple)"></div><div class="dvc-text"><strong>Never personally solicited</strong> — all prior gifts were in response to mailings. Major gift potential untapped.</div></div>
+            <div class="dvc-row"><div class="dvc-dot" style="background:var(--blue)"></div><div class="dvc-text"><strong>Capacity score: 81/100</strong> — WealthEngine estimate $15K–$25K. Suggested ask: $5,000 Annual Appeal with volunteer recognition.</div></div>
+            <div class="dvc-row"><div class="dvc-dot" style="background:var(--green)"></div><div class="dvc-text"><strong>Gala committee member</strong> — already deeply engaged with the mission. Use committee relationship as the personal ask context.</div></div>
+            <div class="dvc-action"><button onclick="">Create cultivation task for Sarah →</button></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function switchSamTab(tab, el) {
+  document.querySelectorAll('.sam-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('sam-tab-upcoming').style.display = 'none';
+  document.getElementById('sam-tab-hours').style.display = 'none';
+  document.getElementById('sam-tab-opps').style.display = 'none';
+  document.getElementById('sam-tab-' + tab).style.display = 'block';
+}
+</script>
+</body>
+</html>

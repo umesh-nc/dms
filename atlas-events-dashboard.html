@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GiveCentral Atlas — Events</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --navy:  #0E1E35; --navy2: #152844; --navy3: #1E3A5F;
+      --blue:  #2563EB; --bluel: #DBEAFE; --bluep: #EFF6FF;
+      --green: #15803D; --greenl:#DCFCE7;
+      --amber: #D97706; --amberl:#FEF3C7;
+      --rose:  #BE185D; --rosel: #FCE7F3;
+      --teal:  #0D9488; --teall: #CCFBF1;
+      --purp:  #7C3AED; --purpl: #EDE9FE;
+      --text:  #0F172A; --text2: #334155; --text3: #64748B;
+      --border:#E2E8F0; --surf:  #F8FAFC; --white: #FFFFFF;
+    }
+    html { font-size: 14px; -webkit-font-smoothing: antialiased; }
+    body { font-family: 'DM Sans', sans-serif; background: #F0F4F8; color: var(--text); display: flex; height: 100vh; overflow: hidden; }
+
+    /* ── SIDEBAR ── */
+    .sidebar { width: 220px; background: var(--navy); display: flex; flex-direction: column; flex-shrink: 0; height: 100vh; }
+    .sb-logo { padding: 18px 18px 14px; display: flex; align-items: center; gap: 9px; border-bottom: 1px solid rgba(255,255,255,.08); }
+    .sb-mark { width: 30px; height: 30px; background: var(--blue); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+    .sb-mark svg { width: 15px; height: 15px; }
+    .sb-name { font-family: 'DM Serif Display', serif; font-size: 15px; color: white; line-height: 1; }
+    .sb-sub  { font-size: 9px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.3); margin-top: 3px; }
+    .nav-group { padding: 10px 8px 0; }
+    .nav-label { font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.28); padding: 0 10px; margin-bottom: 4px; }
+    .nav-item  { display: flex; align-items: center; gap: 9px; padding: 8px 10px; border-radius: 7px; font-size: 12px; font-weight: 500; color: rgba(255,255,255,.55); cursor: pointer; transition: all .15s; margin-bottom: 1px; }
+    .nav-item:hover  { background: rgba(255,255,255,.07); color: rgba(255,255,255,.85); }
+    .nav-item.active { background: var(--teal); color: white; }
+    .nav-item svg    { width: 14px; height: 14px; flex-shrink: 0; }
+    .nav-badge { margin-left: auto; background: rgba(255,255,255,.15); color: rgba(255,255,255,.7); border-radius: 10px; padding: 1px 7px; font-size: 10px; font-weight: 600; }
+    .sb-user { margin-top: auto; padding: 12px; border-top: 1px solid rgba(255,255,255,.08); display: flex; align-items: center; gap: 9px; }
+    .u-av { width: 30px; height: 30px; border-radius: 50%; background: var(--blue); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: white; }
+
+    /* ── MAIN ── */
+    .main { flex: 1; min-width: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+
+    /* Topbar */
+    .topbar { background: white; border-bottom: 1px solid var(--border); padding: 0 24px; height: 52px; display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+    .tb-icon { width: 28px; height: 28px; background: var(--teall); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+    .tb-icon svg { width: 14px; height: 14px; color: var(--teal); }
+    .tb-title { font-size: 15px; font-weight: 600; color: var(--text); }
+    .tb-sep   { width: 1px; height: 18px; background: var(--border); }
+    .tb-sub   { font-size: 12px; color: var(--text3); }
+    .tb-right { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+    .btn { padding: 6px 14px; border-radius: 7px; font-size: 12px; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .15s; display: flex; align-items: center; gap: 6px; border: 1px solid var(--border); background: none; color: var(--text2); white-space: nowrap; }
+    .btn:hover { background: var(--surf); }
+    .btn svg { width: 12px; height: 12px; }
+    .btn-primary { background: var(--teal); color: white; border: none; box-shadow: 0 1px 4px rgba(13,148,136,.3); }
+    .btn-primary:hover { background: #0a7a6c; }
+
+    /* ── CONTENT ── */
+    .content { flex: 1; overflow-y: auto; padding: 20px 24px 48px; display: flex; flex-direction: column; gap: 16px; }
+
+    /* ── SUMMARY STATS ── */
+    .stats-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+    .stat-card { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+    .sc-val  { font-family: 'DM Serif Display', serif; font-size: 26px; color: var(--text); line-height: 1; margin-bottom: 3px; }
+    .sc-lbl  { font-size: 11px; color: var(--text3); }
+    .sc-sub  { font-size: 11px; font-weight: 600; margin-top: 4px; }
+
+    /* ── CONTROLS BAR ── */
+    .controls-bar { display: flex; gap: 10px; align-items: center; background: white; border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; }
+    .search-wrap { flex: 1; position: relative; }
+    .search-wrap svg { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); width: 13px; height: 13px; color: var(--text3); pointer-events: none; }
+    .search-wrap input { width: 100%; padding: 6px 12px 6px 30px; border: 1px solid var(--border); border-radius: 7px; font-size: 12px; font-family: 'DM Sans', sans-serif; color: var(--text); background: var(--surf); outline: none; }
+    .search-wrap input:focus { border-color: var(--teal); background: white; }
+    .filter-tabs { display: flex; gap: 4px; }
+    .ft { padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 500; border: 1px solid var(--border); color: var(--text3); cursor: pointer; transition: all .15s; user-select: none; }
+    .ft:hover { border-color: #94A3B8; color: var(--text2); }
+    .ft.active { background: var(--navy); color: white; border-color: var(--navy); font-weight: 600; }
+    .view-toggle { display: flex; border: 1px solid var(--border); border-radius: 7px; overflow: hidden; }
+    .vt-btn { padding: 5px 10px; background: none; border: none; cursor: pointer; color: var(--text3); display: flex; align-items: center; font-family: 'DM Sans', sans-serif; transition: all .12s; }
+    .vt-btn:hover { background: var(--surf); }
+    .vt-btn.active { background: var(--navy); color: white; }
+    .vt-btn svg { width: 13px; height: 13px; }
+
+    /* ── EVENT CARDS GRID ── */
+    .events-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+
+    .event-card { background: white; border: 1px solid var(--border); border-radius: 14px; overflow: hidden; transition: box-shadow .15s, transform .15s; cursor: pointer; display: flex; flex-direction: column; }
+    .event-card:hover { box-shadow: 0 6px 24px rgba(15,30,53,.1); transform: translateY(-2px); }
+
+    /* Card top color bar by type */
+    .ec-bar { height: 4px; flex-shrink: 0; }
+    .bar-gala       { background: linear-gradient(90deg, var(--amber), #F59E0B); }
+    .bar-conference { background: linear-gradient(90deg, var(--blue), var(--teal)); }
+    .bar-retreat    { background: linear-gradient(90deg, var(--purp), var(--teal)); }
+    .bar-workshop   { background: linear-gradient(90deg, var(--green), var(--teal)); }
+    .bar-dinner     { background: linear-gradient(90deg, var(--rose), var(--amber)); }
+
+    .ec-body { padding: 16px; flex: 1; display: flex; flex-direction: column; }
+    .ec-head { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; }
+    .ec-type-icon { width: 34px; height: 34px; border-radius: 9px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .ec-type-icon svg { width: 15px; height: 15px; }
+    .ec-title { font-size: 14px; font-weight: 600; color: var(--text); line-height: 1.35; flex: 1; }
+    .ec-status-pill { display: flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 20px; font-size: 10px; font-weight: 700; white-space: nowrap; flex-shrink: 0; }
+    .esp-dot { width: 5px; height: 5px; border-radius: 50%; }
+    .esp-open      { background: var(--greenl); color: var(--green); }
+    .esp-upcoming  { background: var(--bluep);  color: var(--blue); }
+    .esp-past      { background: var(--surf);   color: var(--text3); border: 1px solid var(--border); }
+    .esp-soldout   { background: var(--rosel);  color: var(--rose); }
+    .esp-draft     { background: var(--amberl); color: var(--amber); }
+
+    .ec-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+    .ec-chip { display: flex; align-items: center; gap: 4px; font-size: 11px; color: var(--text3); }
+    .ec-chip svg { width: 11px; height: 11px; flex-shrink: 0; }
+
+    /* Revenue progress */
+    .ec-revenue { margin-bottom: 10px; }
+    .er-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 5px; }
+    .er-label { font-size: 11px; color: var(--text3); }
+    .er-val   { font-size: 13px; font-weight: 700; color: var(--text); }
+    .er-goal  { font-size: 11px; color: var(--text3); }
+    .progress-track { height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; }
+    .progress-fill  { height: 100%; border-radius: 3px; transition: width .4s ease; }
+
+    /* Capacity bar */
+    .ec-capacity { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+    .cap-label { font-size: 11px; color: var(--text3); white-space: nowrap; }
+    .cap-track { flex: 1; height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; }
+    .cap-fill  { height: 100%; border-radius: 3px; }
+    .cap-count { font-size: 11px; font-weight: 600; color: var(--text2); white-space: nowrap; }
+
+    /* Alerts row */
+    .ec-alerts { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px; }
+    .ec-alert  { display: flex; align-items: center; gap: 4px; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 20px; }
+    .ea-warn { background: var(--amberl); color: var(--amber); }
+    .ea-info { background: var(--bluep);  color: var(--blue); }
+    .ea-ok   { background: var(--greenl); color: var(--green); }
+    .ea-rose { background: var(--rosel);  color: var(--rose); }
+    .ec-alert svg { width: 9px; height: 9px; }
+
+    /* Quick actions */
+    .ec-actions { display: flex; gap: 6px; margin-top: auto; padding-top: 10px; border-top: 1px solid var(--border); }
+    .ea-btn { flex: 1; padding: 6px 0; border-radius: 7px; font-size: 11px; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; text-align: center; transition: all .12s; }
+    .eab-ghost { background: none; border: 1px solid var(--border); color: var(--text2); }
+    .eab-ghost:hover { background: var(--surf); }
+    .eab-teal { background: var(--teal); color: white; border: none; }
+    .eab-teal:hover { background: #0a7a6c; }
+    .eab-amber { background: var(--amber); color: white; border: none; }
+    .eab-amber:hover { background: #b45309; }
+
+    /* ── LIST VIEW ── */
+    .events-table { background: white; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; display: none; }
+    .et-table { width: 100%; border-collapse: collapse; }
+    .et-table th { font-size: 10px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--text3); padding: 10px 14px; text-align: left; background: var(--surf); border-bottom: 1px solid var(--border); white-space: nowrap; }
+    .et-table td { padding: 12px 14px; border-bottom: .5px solid var(--border); vertical-align: middle; }
+    .et-table tr:last-child td { border-bottom: none; }
+    .et-table tr:hover td { background: var(--surf); }
+    .et-name { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+    .et-type { font-size: 11px; color: var(--text3); }
+    .mini-bar { height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; width: 100px; margin-top: 4px; }
+    .mini-fill { height: 100%; border-radius: 3px; }
+
+    /* ── CALENDAR STRIP ── */
+    .cal-strip { background: white; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    .cs-head { padding: 12px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+    .cs-title { font-size: 13px; font-weight: 600; color: var(--text); flex: 1; }
+    .cs-nav { display: flex; gap: 4px; }
+    .cs-nav-btn { width: 26px; height: 26px; border: 1px solid var(--border); border-radius: 6px; background: none; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .cs-nav-btn svg { width: 11px; height: 11px; color: var(--text3); }
+    .cs-nav-btn:hover { background: var(--surf); }
+    .cal-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 0; }
+    .cal-month { padding: 10px 8px; border-right: .5px solid var(--border); }
+    .cal-month:last-child { border-right: none; }
+    .cm-label { font-size: 9px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--text3); margin-bottom: 8px; }
+    .cal-event-dot { margin-bottom: 4px; padding: 4px 6px; border-radius: 5px; font-size: 9px; font-weight: 600; line-height: 1.3; cursor: pointer; transition: opacity .12s; }
+    .cal-event-dot:hover { opacity: .8; }
+    .ced-gala       { background: var(--amberl); color: var(--amber); }
+    .ced-conference { background: var(--bluep); color: var(--blue); }
+    .ced-retreat    { background: var(--purpl); color: var(--purp); }
+    .ced-workshop   { background: var(--greenl); color: var(--green); }
+    .ced-dinner     { background: var(--rosel); color: var(--rose); }
+
+    /* ── NEW EVENT MODAL ── */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(15,30,53,.55); z-index: 200; display: none; align-items: center; justify-content: center; padding: 20px; }
+    .modal-overlay.show { display: flex; }
+    .modal { background: white; border-radius: 16px; width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,.2); }
+    .modal-head { padding: 20px 24px 14px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; }
+    .modal-icon { width: 36px; height: 36px; background: var(--teall); border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+    .modal-icon svg { width: 16px; height: 16px; color: var(--teal); }
+    .modal-title { font-family: 'DM Serif Display', serif; font-size: 19px; color: var(--text); flex: 1; }
+    .modal-close { width: 28px; height: 28px; border: 1px solid var(--border); border-radius: 7px; background: none; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .modal-close svg { width: 12px; height: 12px; color: var(--text3); }
+    .modal-body { padding: 20px 24px; display: flex; flex-direction: column; gap: 14px; }
+    .form-row { display: flex; flex-direction: column; gap: 5px; }
+    .form-label { font-size: 12px; font-weight: 600; color: var(--text2); }
+    .form-label span { color: var(--rose); }
+    .form-input { padding: 9px 12px; border: 1px solid var(--border); border-radius: 7px; font-size: 13px; font-family: 'DM Sans', sans-serif; color: var(--text); background: var(--surf); outline: none; width: 100%; }
+    .form-input:focus { border-color: var(--teal); background: white; }
+    .form-select { padding: 9px 12px; border: 1px solid var(--border); border-radius: 7px; font-size: 13px; font-family: 'DM Sans', sans-serif; color: var(--text); background: var(--surf); outline: none; width: 100%; cursor: pointer; }
+    .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .type-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .type-card { border: 1.5px solid var(--border); border-radius: 9px; padding: 11px; cursor: pointer; transition: all .15s; text-align: center; }
+    .type-card:hover { border-color: #94A3B8; }
+    .type-card.selected { border-color: var(--teal); background: var(--teall); }
+    .tc-icon { width: 28px; height: 28px; border-radius: 7px; display: flex; align-items: center; justify-content: center; margin: 0 auto 7px; }
+    .tc-icon svg { width: 13px; height: 13px; }
+    .tc-name { font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+    .tc-desc { font-size: 10px; color: var(--text3); }
+    .modal-foot { padding: 14px 24px; border-top: 1px solid var(--border); display: flex; gap: 10px; justify-content: flex-end; }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+    .event-card { animation: fadeUp .2s ease both; }
+  </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sb-logo">
+    <div class="sb-mark"><svg viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7.5" stroke="white" stroke-width="1.5"/><path d="M5.5 9.5C6.5 11.5 9 13 9 13s2.5-1.5 3.5-3.5S12 5 9 5 4.5 7.5 5.5 9.5z" fill="white" fill-opacity=".9"/></svg></div>
+    <div><div class="sb-name">GiveCentral</div><div class="sb-sub">Atlas CRM</div></div>
+  </div>
+  <div class="nav-group">
+    <div class="nav-label">Main</div>
+    <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><rect x="1.5" y="1.5" width="4" height="4" rx="1.2"/><rect x="8.5" y="1.5" width="4" height="4" rx="1.2"/><rect x="1.5" y="8.5" width="4" height="4" rx="1.2"/><rect x="8.5" y="8.5" width="4" height="4" rx="1.2"/></svg>Dashboard</div>
+    <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="6" cy="4.5" r="3"/><path d="M1 13c0-2.8 2.2-5 5-5h1c2.8 0 5 2.2 5 5"/></svg>Donors</div>
+    <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M7 1.5v11M2 6.5h10"/></svg>Gifts &amp; pledges</div>
+  </div>
+  <div class="nav-group" style="margin-top:8px">
+    <div class="nav-label">Community</div>
+    <div class="nav-item active"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><rect x="1.5" y="3" width="11" height="9" rx="1.5"/><path d="M1.5 6.5h11M5 3v2M9 3v2"/></svg>Events<span class="nav-badge">7</span></div>
+    <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="5" cy="4" r="2.5"/><circle cx="10" cy="5" r="2"/><path d="M1 12.5c0-2.2 1.8-4 4-4s4 1.8 4 4"/><path d="M10 9.5c1.4.4 2.5 1.6 2.5 3"/></svg>Volunteers</div>
+  </div>
+  <div class="nav-group" style="margin-top:8px">
+    <div class="nav-label">Intelligence</div>
+    <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="7" cy="5" r="3.5"/><path d="M5 10c0 2 4 2 4 0M4.5 8.5c-2 1-3 3.5-3 4.5M9.5 8.5c2 1 3 3.5 3 4.5"/></svg>Guru AI</div>
+  </div>
+  <div class="sb-user">
+    <div class="u-av">SR</div>
+    <div><div style="font-size:12px;font-weight:500;color:rgba(255,255,255,.75)">Sarah Reynolds</div><div style="font-size:10px;color:rgba(255,255,255,.35)">Development Director</div></div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="tb-icon"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><rect x="1.5" y="3" width="11" height="9" rx="1.5"/><path d="M1.5 6.5h11M5 3v2M9 3v2"/></svg></div>
+    <span class="tb-title">Events</span>
+    <div class="tb-sep"></div>
+    <span class="tb-sub">Diocese of St. Petersburg · 2026</span>
+    <div class="tb-right">
+      <button class="btn">
+        <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M6 1v10M1 6h10"/></svg>
+        New event
+      </button>
+      <button class="btn btn-primary" onclick="openModal()">
+        <svg viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="1.4" stroke-linecap="round"><path d="M6 1v10M1 6h10"/></svg>
+        Create event
+      </button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- Stats row -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="sc-val">7</div>
+        <div class="sc-lbl">Events in 2026</div>
+        <div class="sc-sub" style="color:var(--blue)">3 upcoming</div>
+      </div>
+      <div class="stat-card">
+        <div class="sc-val" style="color:var(--green)">$1.24M</div>
+        <div class="sc-lbl">Revenue raised YTD</div>
+        <div class="sc-sub" style="color:var(--green)">78% of $1.59M goal</div>
+      </div>
+      <div class="stat-card">
+        <div class="sc-val">2,184</div>
+        <div class="sc-lbl">Total attendees YTD</div>
+        <div class="sc-sub" style="color:var(--text3)">across all events</div>
+      </div>
+      <div class="stat-card">
+        <div class="sc-val" style="color:var(--amber)">94</div>
+        <div class="sc-lbl">Seats still available</div>
+        <div class="sc-sub" style="color:var(--amber)">across open events</div>
+      </div>
+      <div class="stat-card">
+        <div class="sc-val" style="color:var(--rose)">31</div>
+        <div class="sc-lbl">Missing guest names</div>
+        <div class="sc-sub" style="color:var(--rose)">need follow-up</div>
+      </div>
+    </div>
+
+    <!-- Calendar strip -->
+    <div class="cal-strip">
+      <div class="cs-head">
+        <div class="cs-title">2026 event calendar</div>
+        <div class="cs-nav">
+          <button class="cs-nav-btn"><svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M7 2L3 5.5 7 9"/></svg></button>
+          <button class="cs-nav-btn"><svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M4 2l4 3.5L4 9"/></svg></button>
+        </div>
+      </div>
+      <div class="cal-grid" id="cal-grid"></div>
+    </div>
+
+    <!-- Controls bar -->
+    <div class="controls-bar">
+      <div class="search-wrap">
+        <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><circle cx="5.5" cy="5.5" r="4"/><path d="M9 9l2.5 2.5"/></svg>
+        <input type="text" placeholder="Search events…" oninput="filterEvents(this.value)">
+      </div>
+      <div class="filter-tabs">
+        <div class="ft active" onclick="setFilter('all',this)">All (7)</div>
+        <div class="ft" onclick="setFilter('gala',this)">Galas &amp; dinners (3)</div>
+        <div class="ft" onclick="setFilter('conference',this)">Conferences (2)</div>
+        <div class="ft" onclick="setFilter('retreat',this)">Retreats (1)</div>
+        <div class="ft" onclick="setFilter('workshop',this)">Workshops (1)</div>
+      </div>
+      <div class="view-toggle">
+        <button class="vt-btn active" id="vt-card" onclick="setView('card',this)" title="Card view">
+          <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><rect x="1" y="1" width="4.5" height="4.5" rx="1"/><rect x="7.5" y="1" width="4.5" height="4.5" rx="1"/><rect x="1" y="7.5" width="4.5" height="4.5" rx="1"/><rect x="7.5" y="7.5" width="4.5" height="4.5" rx="1"/></svg>
+        </button>
+        <button class="vt-btn" id="vt-list" onclick="setView('list',this)" title="List view">
+          <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M4 2.5h7.5M4 6.5h7.5M4 10.5h7.5M1.5 2.5h.5M1.5 6.5h.5M1.5 10.5h.5"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Card grid -->
+    <div class="events-grid" id="events-grid"></div>
+
+    <!-- List view -->
+    <div class="events-table" id="events-table">
+      <table class="et-table" id="et-table"></table>
+    </div>
+
+  </div>
+</div>
+
+<!-- NEW EVENT MODAL -->
+<div class="modal-overlay" id="modal-overlay" onclick="handleOverlayClick(event)">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-icon"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><rect x="1.5" y="3" width="11" height="9" rx="1.5"/><path d="M1.5 6.5h11M5 3v2M9 3v2"/></svg></div>
+      <div class="modal-title">Create new event</div>
+      <button class="modal-close" onclick="closeModal()"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 2l8 8M10 2l-8 8"/></svg></button>
+    </div>
+    <div class="modal-body">
+
+      <!-- Event type selector -->
+      <div class="form-row">
+        <label class="form-label">Event type <span>*</span></label>
+        <div class="type-grid">
+          <div class="type-card selected" onclick="selectType(this)">
+            <div class="tc-icon" style="background:var(--amberl)"><svg viewBox="0 0 13 13" fill="none" stroke="var(--amber)" stroke-width="1.4" stroke-linecap="round"><path d="M6.5 1l1.6 3.2 3.6.5-2.6 2.5.6 3.6L6.5 9.1l-3.2 1.7.6-3.6L1.3 4.7l3.6-.5z"/></svg></div>
+            <div class="tc-name">Gala / Dinner</div>
+            <div class="tc-desc">Paid fundraising, tables &amp; sponsorships</div>
+          </div>
+          <div class="type-card" onclick="selectType(this)">
+            <div class="tc-icon" style="background:var(--bluep)"><svg viewBox="0 0 13 13" fill="none" stroke="var(--blue)" stroke-width="1.4" stroke-linecap="round"><path d="M1.5 10l2-2 2 2 2-2.5 2 2.5"/><rect x="1.5" y="1.5" width="10" height="10" rx="1.5"/></svg></div>
+            <div class="tc-name">Conference</div>
+            <div class="tc-desc">Multi-session, speakers, tracks</div>
+          </div>
+          <div class="type-card" onclick="selectType(this)">
+            <div class="tc-icon" style="background:var(--purpl)"><svg viewBox="0 0 13 13" fill="none" stroke="var(--purp)" stroke-width="1.4" stroke-linecap="round"><path d="M6.5 1C5.1 1 4 2.1 4 3.5c0 2.1 2.5 6.5 2.5 6.5s2.5-4.4 2.5-6.5C9 2.1 7.9 1 6.5 1z"/></svg></div>
+            <div class="tc-name">Retreat</div>
+            <div class="tc-desc">Overnight, lodging, meals</div>
+          </div>
+          <div class="type-card" onclick="selectType(this)">
+            <div class="tc-icon" style="background:var(--greenl)"><svg viewBox="0 0 13 13" fill="none" stroke="var(--green)" stroke-width="1.4" stroke-linecap="round"><circle cx="6.5" cy="4.5" r="2.5"/><path d="M2 11c0-2.5 2-4.5 4.5-4.5s4.5 2 4.5 4.5"/></svg></div>
+            <div class="tc-name">Workshop</div>
+            <div class="tc-desc">Smaller, skills-focused</div>
+          </div>
+          <div class="type-card" onclick="selectType(this)">
+            <div class="tc-icon" style="background:var(--rosel)"><svg viewBox="0 0 13 13" fill="none" stroke="var(--rose)" stroke-width="1.4" stroke-linecap="round"><path d="M2 10.5V5.5L6.5 1.5l4.5 4V10.5H2z"/><rect x="4.5" y="7" width="4" height="3.5"/></svg></div>
+            <div class="tc-name">Mass / Liturgy</div>
+            <div class="tc-desc">Free, registration optional</div>
+          </div>
+          <div class="type-card" onclick="selectType(this)">
+            <div class="tc-icon" style="background:var(--teall)"><svg viewBox="0 0 13 13" fill="none" stroke="var(--teal)" stroke-width="1.4" stroke-linecap="round"><rect x="1.5" y="3" width="10" height="8" rx="1.3"/><path d="M1.5 6.5h10M4.5 3V1.5M8.5 3V1.5"/></svg></div>
+            <div class="tc-name">Other</div>
+            <div class="tc-desc">Custom event type</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label class="form-label">Event name <span>*</span></label>
+        <input class="form-input" placeholder="e.g. Bishop's Annual Gala 2026">
+      </div>
+
+      <div class="form-row-2">
+        <div class="form-row">
+          <label class="form-label">Event date <span>*</span></label>
+          <input class="form-input" type="date">
+        </div>
+        <div class="form-row">
+          <label class="form-label">End date (multi-day)</label>
+          <input class="form-input" type="date">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label class="form-label">Location / Venue</label>
+        <input class="form-input" placeholder="Venue name and address">
+      </div>
+
+      <div class="form-row-2">
+        <div class="form-row">
+          <label class="form-label">Total capacity</label>
+          <input class="form-input" type="number" placeholder="e.g. 500">
+        </div>
+        <div class="form-row">
+          <label class="form-label">Revenue goal</label>
+          <input class="form-input" placeholder="e.g. $250,000">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label class="form-label">Assigned staff</label>
+        <select class="form-select">
+          <option>Sarah Reynolds — Development Director</option>
+          <option>Mike Donovan — Major Gifts Officer</option>
+          <option>Janet Williams — Gift Entry Clerk</option>
+        </select>
+      </div>
+
+    </div>
+    <div class="modal-foot">
+      <button class="btn" onclick="closeModal()">Cancel</button>
+      <button class="btn" onclick="closeModal()" style="border-color:var(--border);color:var(--text2)">Save as draft</button>
+      <button class="btn btn-primary" onclick="closeModal()">
+        <svg viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="1.4" stroke-linecap="round"><path d="M2 6l3 3 6-6"/></svg>
+        Create event
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── DATA ─────────────────────────────────────────────────────
+const EVENTS = [
+  {
+    id: 1,
+    title: "Bishop's Annual Gala",
+    type: "gala",
+    status: "open",
+    date: "May 16, 2026",
+    venue: "Marriott Downtown",
+    month: 5,
+    capacity: 500,
+    registered: 468,
+    revenue: 387500,
+    goal: 450000,
+    solicitor: "Mike Donovan",
+    missingNames: 14,
+    alerts: [
+      { type: "warn", text: "14 guest names missing" },
+      { type: "warn", text: "3 tables not yet assigned" },
+    ],
+    actions: ["Manage tables", "Guest list", "Check-in"],
+    waitlist: 12,
+    description: "Annual black-tie fundraising gala. 50 tables of 10.",
+  },
+  {
+    id: 2,
+    title: "Vianney Dinner",
+    type: "dinner",
+    status: "open",
+    date: "Jun 12, 2026",
+    venue: "Cathedral Hall",
+    month: 6,
+    capacity: 300,
+    registered: 187,
+    revenue: 142000,
+    goal: 250000,
+    solicitor: "Sarah Reynolds",
+    missingNames: 9,
+    alerts: [
+      { type: "info", text: "37% of goal reached" },
+      { type: "warn", text: "9 guest names missing" },
+    ],
+    actions: ["Manage tables", "Guest list", "Sponsorships"],
+    waitlist: 0,
+    description: "Annual dinner for priests and benefactors.",
+  },
+  {
+    id: 3,
+    title: "Diocese Leadership Conference",
+    type: "conference",
+    status: "open",
+    date: "Jul 22–24, 2026",
+    venue: "Convention Center",
+    month: 7,
+    capacity: 400,
+    registered: 271,
+    revenue: 54200,
+    goal: 80000,
+    solicitor: "Sarah Reynolds",
+    missingNames: 0,
+    alerts: [
+      { type: "ok", text: "On track — 68% capacity" },
+      { type: "info", text: "4 breakout sessions" },
+    ],
+    actions: ["Manage sessions", "Registrations", "Reports"],
+    waitlist: 0,
+    description: "3-day leadership formation conference with breakout tracks.",
+  },
+  {
+    id: 4,
+    title: "Men's Ignatian Retreat",
+    type: "retreat",
+    status: "soldout",
+    date: "Aug 7–10, 2026",
+    venue: "Jesuit Retreat House",
+    month: 8,
+    capacity: 40,
+    registered: 40,
+    revenue: 12000,
+    goal: 12000,
+    solicitor: "Fr. Thomas Kelly",
+    missingNames: 0,
+    alerts: [
+      { type: "rose", text: "Sold out · 6 on waitlist" },
+      { type: "ok", text: "Goal reached" },
+    ],
+    actions: ["Room assignment", "Waitlist", "Communications"],
+    waitlist: 6,
+    description: "4-day silent retreat. Includes lodging and meals.",
+  },
+  {
+    id: 5,
+    title: "Catholic Education Workshop",
+    type: "workshop",
+    status: "upcoming",
+    date: "Sep 9, 2026",
+    venue: "Diocesan Offices",
+    month: 9,
+    capacity: 80,
+    registered: 22,
+    revenue: 1100,
+    goal: 4000,
+    solicitor: "Janet Williams",
+    missingNames: 0,
+    alerts: [
+      { type: "info", text: "Registration opens Jun 1" },
+    ],
+    actions: ["Edit event", "Preview page", "Registrations"],
+    waitlist: 0,
+    description: "Half-day workshop for Catholic school administrators.",
+  },
+  {
+    id: 6,
+    title: "Cabrini Gala",
+    type: "gala",
+    status: "past",
+    date: "Mar 8, 2026",
+    venue: "Grand Hyatt",
+    month: 3,
+    capacity: 450,
+    registered: 448,
+    revenue: 412000,
+    goal: 400000,
+    solicitor: "Mike Donovan",
+    missingNames: 0,
+    alerts: [
+      { type: "ok", text: "Goal exceeded by 3%" },
+      { type: "ok", text: "448 attended" },
+    ],
+    actions: ["View report", "Gift records", "Thank-you letters"],
+    waitlist: 0,
+    description: "Spring fundraising gala. Goal exceeded. 448 attendees.",
+  },
+  {
+    id: 7,
+    title: "Young Adults Conference",
+    type: "conference",
+    status: "draft",
+    date: "Oct 17–18, 2026",
+    venue: "TBD",
+    month: 10,
+    capacity: 250,
+    registered: 0,
+    revenue: 0,
+    goal: 35000,
+    solicitor: "—",
+    missingNames: 0,
+    alerts: [
+      { type: "warn", text: "Draft — not yet published" },
+    ],
+    actions: ["Complete setup", "Preview page", "Publish"],
+    waitlist: 0,
+    description: "Annual young adults gathering. Planning in progress.",
+  },
+];
+
+const TYPE_COLORS = {
+  gala: { icon: "var(--amber)", iconBg: "var(--amberl)", barClass: "bar-gala", calClass: "ced-gala" },
+  dinner: { icon: "var(--rose)", iconBg: "var(--rosel)", barClass: "bar-dinner", calClass: "ced-dinner" },
+  conference: { icon: "var(--blue)", iconBg: "var(--bluep)", barClass: "bar-conference", calClass: "ced-conference" },
+  retreat: { icon: "var(--purp)", iconBg: "var(--purpl)", barClass: "bar-retreat", calClass: "ced-retreat" },
+  workshop: { icon: "var(--green)", iconBg: "var(--greenl)", barClass: "bar-workshop", calClass: "ced-workshop" },
+};
+const TYPE_ICONS = {
+  gala:     `<svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M6.5 1l1.6 3.2 3.6.5-2.6 2.5.6 3.6L6.5 9.1l-3.2 1.7.6-3.6L1.3 4.7l3.6-.5z"/></svg>`,
+  dinner:   `<svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M2 10.5V5.5L6.5 1.5l4.5 4V10.5H2z"/><rect x="4.5" y="7" width="4" height="3.5"/></svg>`,
+  conference:`<svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M1.5 10l2-2 2 2 2-2.5 2 2.5"/><rect x="1.5" y="1.5" width="10" height="10" rx="1.5"/></svg>`,
+  retreat:  `<svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M6.5 1C5.1 1 4 2.1 4 3.5c0 2.1 2.5 6.5 2.5 6.5s2.5-4.4 2.5-6.5C9 2.1 7.9 1 6.5 1z"/></svg>`,
+  workshop: `<svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="6.5" cy="4.5" r="2.5"/><path d="M2 11c0-2.5 2-4.5 4.5-4.5s4.5 2 4.5 4.5"/></svg>`,
+};
+const STATUS_LABELS = { open:"Open", upcoming:"Upcoming", past:"Completed", soldout:"Sold out", draft:"Draft" };
+const STATUS_CLASSES = { open:"esp-open", upcoming:"esp-upcoming", past:"esp-past", soldout:"esp-soldout", draft:"esp-draft" };
+const STATUS_DOTS = { open:"var(--green)", upcoming:"var(--blue)", past:"var(--border)", soldout:"var(--rose)", draft:"var(--amber)" };
+
+const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+// ── RENDER CALENDAR ──────────────────────────────────────────
+function renderCalendar() {
+  const grid = document.getElementById('cal-grid');
+  grid.innerHTML = MONTHS.map((m, mi) => {
+    const evs = EVENTS.filter(e => e.month === mi+1);
+    const dots = evs.map(e => {
+      const c = TYPE_COLORS[e.type] || TYPE_COLORS.conference;
+      return `<div class="cal-event-dot ${c.calClass}">${e.title.split(' ').slice(0,3).join(' ')}</div>`;
+    }).join('');
+    const isNow = mi+1 === 5; // May = current
+    return `<div class="cal-month" ${isNow?'style="background:var(--bluep)"':''}>
+      <div class="cm-label" ${isNow?'style="color:var(--blue)"':''}>${m}</div>
+      ${dots || '<div style="height:4px"></div>'}
+    </div>`;
+  }).join('');
+}
+
+// ── RENDER CARDS ─────────────────────────────────────────────
+let currentFilter = 'all';
+let searchTerm    = '';
+
+function getActionBtnClass(action, i) {
+  if (i === 0) return 'eab-teal';
+  return 'eab-ghost';
+}
+
+function renderCard(e) {
+  const c = TYPE_COLORS[e.type] || TYPE_COLORS.conference;
+  const icon = TYPE_ICONS[e.type] || TYPE_ICONS.conference;
+  const revPct = Math.min(100, Math.round(e.revenue / e.goal * 100));
+  const capPct = Math.min(100, Math.round(e.registered / e.capacity * 100));
+  const revColor = revPct >= 100 ? 'var(--green)' : revPct >= 75 ? 'var(--amber)' : 'var(--blue)';
+  const capColor = capPct >= 95 ? 'var(--rose)' : capPct >= 75 ? 'var(--amber)' : 'var(--green)';
+  const alertsHtml = e.alerts.map(a =>
+    `<div class="ec-alert ea-${a.type}">
+      <svg viewBox="0 0 9 9" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" width="9" height="9">
+        <circle cx="4.5" cy="4.5" r="3.5"/>
+      </svg>
+      ${a.text}
+    </div>`
+  ).join('');
+  const actionsHtml = e.actions.map((a,i) =>
+    `<button class="ea-btn ${getActionBtnClass(a,i)}">${a}</button>`
+  ).join('');
+
+  const revenueRow = e.type !== 'workshop' && e.type !== 'retreat' || e.revenue > 0
+    ? `<div class="ec-revenue">
+        <div class="er-row">
+          <span class="er-label">Revenue</span>
+          <span style="display:flex;align-items:baseline;gap:5px">
+            <span class="er-val" style="color:${revColor}">$${(e.revenue/1000).toFixed(0)}K</span>
+            <span class="er-goal">/ $${(e.goal/1000).toFixed(0)}K goal</span>
+          </span>
+        </div>
+        <div class="progress-track"><div class="progress-fill" style="width:${revPct}%;background:${revColor}"></div></div>
+      </div>`
+    : '';
+
+  return `<div class="event-card" style="animation-delay:${EVENTS.indexOf(e)*0.04}s">
+    <div class="ec-bar ${c.barClass}"></div>
+    <div class="ec-body">
+      <div class="ec-head">
+        <div class="ec-type-icon" style="background:${c.iconBg};color:${c.icon}">${icon}</div>
+        <span class="ec-title">${e.title}</span>
+        <span class="ec-status-pill ${STATUS_CLASSES[e.status]}">
+          <span class="esp-dot" style="background:${STATUS_DOTS[e.status]}"></span>
+          ${STATUS_LABELS[e.status]}
+        </span>
+      </div>
+      <div class="ec-meta">
+        <div class="ec-chip">
+          <svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><rect x="1" y="2" width="9" height="8" rx="1.2"/><path d="M1 5h9M3.5 2v2M7.5 2v2"/></svg>
+          ${e.date}
+        </div>
+        <div class="ec-chip">
+          <svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M5.5 1C4 1 3 2 3 3.5c0 2 2.5 5 2.5 5s2.5-3 2.5-5C8 2 7 1 5.5 1z"/></svg>
+          ${e.venue}
+        </div>
+        ${e.waitlist > 0 ? `<div class="ec-chip" style="color:var(--rose)"><svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><circle cx="5.5" cy="4" r="2.5"/><path d="M1 10c0-2.5 2-4.5 4.5-4.5s4.5 2 4.5 4.5"/></svg>${e.waitlist} on waitlist</div>` : ''}
+      </div>
+      ${revenueRow}
+      <div class="ec-capacity">
+        <span class="cap-label">Capacity</span>
+        <div class="cap-track"><div class="cap-fill" style="width:${capPct}%;background:${capColor}"></div></div>
+        <span class="cap-count">${e.registered} / ${e.capacity}</span>
+      </div>
+      <div class="ec-alerts">${alertsHtml}</div>
+      <div class="ec-actions">${actionsHtml}</div>
+    </div>
+  </div>`;
+}
+
+function renderGrid() {
+  const filtered = EVENTS.filter(e => {
+    const matchType = currentFilter === 'all' ||
+      (currentFilter === 'gala' && (e.type === 'gala' || e.type === 'dinner')) ||
+      e.type === currentFilter;
+    const matchSearch = !searchTerm || e.title.toLowerCase().includes(searchTerm) || e.venue.toLowerCase().includes(searchTerm);
+    return matchType && matchSearch;
+  });
+  document.getElementById('events-grid').innerHTML = filtered.map(renderCard).join('');
+}
+
+// ── RENDER TABLE ─────────────────────────────────────────────
+function renderTable() {
+  const filtered = EVENTS.filter(e => {
+    const matchType = currentFilter === 'all' ||
+      (currentFilter === 'gala' && (e.type === 'gala' || e.type === 'dinner')) ||
+      e.type === currentFilter;
+    const matchSearch = !searchTerm || e.title.toLowerCase().includes(searchTerm);
+    return matchType && matchSearch;
+  });
+  const rows = filtered.map((e, i) => {
+    const c = TYPE_COLORS[e.type] || TYPE_COLORS.conference;
+    const revPct = Math.min(100, Math.round(e.revenue / e.goal * 100));
+    const capPct = Math.min(100, Math.round(e.registered / e.capacity * 100));
+    const revColor = revPct >= 100 ? 'var(--green)' : revPct >= 75 ? 'var(--amber)' : 'var(--blue)';
+    return `<tr>
+      <td>
+        <div class="et-name">${e.title}</div>
+        <div class="et-type" style="text-transform:capitalize">${e.type} · ${e.venue}</div>
+      </td>
+      <td style="font-size:12px;color:var(--text2)">${e.date}</td>
+      <td>
+        <span class="ec-status-pill ${STATUS_CLASSES[e.status]}" style="font-size:10px">
+          <span class="esp-dot" style="background:${STATUS_DOTS[e.status]}"></span>
+          ${STATUS_LABELS[e.status]}
+        </span>
+      </td>
+      <td>
+        <div style="font-size:12px;font-weight:600;color:${revColor}">$${(e.revenue/1000).toFixed(0)}K <span style="color:var(--text3);font-weight:400">/ $${(e.goal/1000).toFixed(0)}K</span></div>
+        <div class="mini-bar"><div class="mini-fill" style="width:${revPct}%;background:${revColor}"></div></div>
+      </td>
+      <td>
+        <div style="font-size:12px;color:var(--text2)">${e.registered} / ${e.capacity}</div>
+        <div class="mini-bar"><div class="mini-fill" style="width:${capPct}%;background:var(--teal)"></div></div>
+      </td>
+      <td style="font-size:12px;color:${e.missingNames>0?'var(--rose)':'var(--green)'}">
+        ${e.missingNames > 0 ? e.missingNames + ' missing' : '✓ Complete'}
+      </td>
+      <td style="font-size:11px;color:var(--text3)">${e.solicitor}</td>
+      <td>
+        <div style="display:flex;gap:5px">
+          <button class="ea-btn eab-teal" style="padding:4px 10px">${e.actions[0]}</button>
+          <button class="ea-btn eab-ghost" style="padding:4px 10px">${e.actions[1]||'View'}</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+  document.getElementById('et-table').innerHTML = `
+    <thead><tr>
+      <th>Event</th><th>Date</th><th>Status</th><th>Revenue vs goal</th><th>Capacity</th><th>Guest names</th><th>Solicitor</th><th>Actions</th>
+    </tr></thead>
+    <tbody>${rows}</tbody>`;
+}
+
+// ── CONTROLS ─────────────────────────────────────────────────
+function setFilter(f, el) {
+  currentFilter = f;
+  document.querySelectorAll('.ft').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  renderGrid();
+  renderTable();
+}
+
+function filterEvents(v) {
+  searchTerm = v.toLowerCase();
+  renderGrid();
+  renderTable();
+}
+
+let currentView = 'card';
+function setView(v, el) {
+  currentView = v;
+  document.querySelectorAll('.vt-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('events-grid').style.display   = v === 'card' ? 'grid' : 'none';
+  document.getElementById('events-table').style.display  = v === 'list' ? 'block' : 'none';
+  if (v === 'list') renderTable();
+}
+
+// ── MODAL ─────────────────────────────────────────────────────
+function openModal()  { document.getElementById('modal-overlay').classList.add('show'); }
+function closeModal() { document.getElementById('modal-overlay').classList.remove('show'); }
+function handleOverlayClick(e) { if (e.target === document.getElementById('modal-overlay')) closeModal(); }
+function selectType(card) {
+  document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
+  card.classList.add('selected');
+}
+
+// ── INIT ──────────────────────────────────────────────────────
+renderCalendar();
+renderGrid();
+</script>
+</body>
+</html>

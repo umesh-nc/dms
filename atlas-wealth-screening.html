@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GiveCentral Atlas — Wealth Screening</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --navy:  #0E1E35; --navy2: #152844; --navy3: #1E3A5F;
+      --blue:  #2563EB; --bluel: #DBEAFE; --bluep: #EFF6FF; --bluem: #3B82F6;
+      --green: #15803D; --greenl:#DCFCE7;
+      --amber: #D97706; --amberl:#FEF3C7;
+      --rose:  #BE185D; --rosel: #FCE7F3;
+      --teal:  #0D9488; --teall: #CCFBF1;
+      --purp:  #7C3AED; --purpl: #EDE9FE;
+      --text:  #0F172A; --text2: #334155; --text3: #64748B;
+      --border:#E2E8F0; --surf:  #F8FAFC; --white: #FFFFFF;
+      --gold:  #D97706; --goldl: #FEF3C7;
+    }
+    html { font-size: 14px; -webkit-font-smoothing: antialiased; }
+    body { font-family:'DM Sans',sans-serif; background:#F0F4F8; color:var(--text); min-height:100vh; display:flex; overflow:hidden; height:100vh; }
+
+    /* ── SIDEBAR ── */
+    .sidebar { width:220px; background:var(--navy); height:100vh; display:flex; flex-direction:column; flex-shrink:0; }
+    .sb-logo { padding:18px 18px 14px; display:flex; align-items:center; gap:9px; border-bottom:1px solid rgba(255,255,255,.08); }
+    .sb-mark { width:30px; height:30px; background:var(--blue); border-radius:8px; display:flex; align-items:center; justify-content:center; }
+    .sb-mark svg { width:15px; height:15px; }
+    .sb-name { font-family:'DM Serif Display',serif; font-size:15px; color:white; line-height:1; }
+    .sb-sub  { font-size:9px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:rgba(255,255,255,.3); margin-top:3px; }
+    .nav-group { padding:10px 8px 0; }
+    .nav-label { font-size:9px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:rgba(255,255,255,.28); padding:0 10px; margin-bottom:4px; }
+    .nav-item  { display:flex; align-items:center; gap:9px; padding:8px 10px; border-radius:7px; font-size:12px; font-weight:500; color:rgba(255,255,255,.55); cursor:pointer; transition:all .15s; margin-bottom:1px; }
+    .nav-item:hover  { background:rgba(255,255,255,.07); color:rgba(255,255,255,.85); }
+    .nav-item.active { background:var(--amber); color:white; }
+    .nav-item svg { width:14px; height:14px; flex-shrink:0; }
+    .nav-badge { margin-left:auto; background:rgba(255,255,255,.15); color:rgba(255,255,255,.7); border-radius:10px; padding:1px 7px; font-size:10px; font-weight:600; }
+    .sb-user { margin-top:auto; padding:12px; border-top:1px solid rgba(255,255,255,.08); display:flex; align-items:center; gap:9px; }
+    .u-av { width:30px; height:30px; border-radius:50%; background:var(--blue); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; color:white; }
+
+    /* ── MAIN ── */
+    .main { flex:1; min-width:0; display:flex; flex-direction:column; height:100vh; overflow:hidden; }
+    .topbar { background:white; border-bottom:1px solid var(--border); padding:0 24px; height:52px; display:flex; align-items:center; gap:10px; flex-shrink:0; }
+    .tb-back { display:flex; align-items:center; gap:5px; font-size:12px; color:var(--text3); cursor:pointer; }
+    .tb-back svg { width:14px; height:14px; }
+    .tb-sep  { width:1px; height:18px; background:var(--border); }
+    .tb-title{ font-size:15px; font-weight:600; color:var(--text); }
+    .tb-sub  { font-size:12px; color:var(--text3); }
+    .tb-right{ margin-left:auto; display:flex; gap:8px; }
+    .btn { padding:6px 14px; border-radius:7px; font-size:12px; font-weight:500; cursor:pointer; font-family:'DM Sans',sans-serif; transition:all .15s; display:flex; align-items:center; gap:6px; border:1px solid var(--border); background:none; color:var(--text2); }
+    .btn:hover { background:var(--surf); }
+    .btn svg { width:12px; height:12px; }
+    .btn-primary { background:var(--blue); color:white; border:none; box-shadow:0 1px 4px rgba(37,99,235,.3); }
+    .btn-primary:hover { background:#1D4ED8; }
+    .btn-amber { background:var(--amber); color:white; border:none; }
+    .btn-amber:hover { background:#b45309; }
+
+    /* ── CONTENT ── */
+    .content { flex:1; overflow-y:auto; padding:20px 24px 40px; display:flex; flex-direction:column; gap:14px; }
+
+    /* ── DONOR HERO ── */
+    .donor-hero { background:var(--navy); border-radius:14px; padding:20px 26px; position:relative; overflow:hidden; display:flex; align-items:center; gap:20px; }
+    .dh-bg { position:absolute; inset:0; background:radial-gradient(circle at 85% 50%, rgba(124,58,237,.2) 0%,transparent 55%), radial-gradient(circle at 10% 80%, rgba(37,99,235,.12) 0%,transparent 50%); }
+    .dh-av { width:52px; height:52px; background:var(--purp); border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:'DM Serif Display',serif; font-size:20px; color:white; flex-shrink:0; position:relative; z-index:1; }
+    .dh-info { flex:1; position:relative; z-index:1; }
+    .dh-name { font-family:'DM Serif Display',serif; font-size:22px; color:white; letter-spacing:-.01em; margin-bottom:4px; }
+    .dh-meta { font-size:12px; color:rgba(255,255,255,.55); display:flex; gap:14px; flex-wrap:wrap; }
+    .dh-meta span { display:flex; align-items:center; gap:5px; }
+    .dh-meta svg { width:11px; height:11px; opacity:.6; }
+    .dh-scores { display:flex; gap:0; position:relative; z-index:1; background:rgba(0,0,0,.2); border-radius:10px; overflow:hidden; }
+    .dhs { padding:12px 16px; border-right:1px solid rgba(255,255,255,.08); text-align:center; }
+    .dhs:last-child { border-right:none; }
+    .dhs-val { font-family:'DM Serif Display',serif; font-size:22px; color:white; line-height:1; margin-bottom:3px; }
+    .dhs-val.gold { color:#FCD34D; }
+    .dhs-val.green { color:#86EFAC; }
+    .dhs-val.teal  { color:#5EEAD4; }
+    .dhs-lbl { font-size:9px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:rgba(255,255,255,.4); }
+
+    /* ── TABS ── */
+    .tab-bar { display:flex; gap:6px; background:white; border:1px solid var(--border); border-radius:10px; padding:6px; }
+    .tab-btn { flex:1; padding:7px 12px; border-radius:7px; font-size:12px; font-weight:500; color:var(--text3); cursor:pointer; transition:all .15s; text-align:center; border:none; background:none; font-family:'DM Sans',sans-serif; }
+    .tab-btn:hover { background:var(--surf); color:var(--text2); }
+    .tab-btn.active { background:var(--navy); color:white; font-weight:600; }
+    .tab-panel { display:none; }
+    .tab-panel.active { display:contents; }
+
+    /* ── GRID LAYOUT ── */
+    .two-col { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+    .three-col { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+    .full-col { display:grid; grid-template-columns:1fr; gap:14px; }
+
+    /* ── CARD ── */
+    .card { background:white; border:1px solid var(--border); border-radius:12px; overflow:hidden; }
+    .card-head { padding:12px 16px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:8px; }
+    .card-icon { width:26px; height:26px; border-radius:7px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .card-icon svg { width:13px; height:13px; }
+    .card-title { font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:var(--text3); flex:1; }
+    .card-badge { font-size:9px; font-weight:700; padding:2px 8px; border-radius:20px; }
+    .cb-we { background:#1B2FE8; color:white; }
+    .cb-rs { background:#0F172A; color:#94A3B8; }
+    .cb-stale { background:var(--amberl); color:var(--amber); }
+    .card-body { padding:16px; }
+
+    /* ── LAI GAUGES ── */
+    .lai-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+    .lai-card { background:var(--surf); border-radius:10px; padding:14px; text-align:center; }
+    .lai-ring { position:relative; width:80px; height:80px; margin:0 auto 10px; }
+    .lai-ring svg { transform:rotate(-90deg); }
+    .lai-ring-label { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+    .lai-score { font-family:'DM Serif Display',serif; font-size:22px; line-height:1; }
+    .lai-max   { font-size:9px; color:var(--text3); margin-top:1px; }
+    .lai-name  { font-size:12px; font-weight:600; color:var(--text); margin-bottom:3px; }
+    .lai-desc  { font-size:10px; color:var(--text3); line-height:1.5; }
+
+    /* ── CAPACITY BAR ── */
+    .cap-wrap { margin-bottom:14px; }
+    .cap-label { font-size:11px; color:var(--text3); margin-bottom:6px; display:flex; justify-content:space-between; }
+    .cap-track { height:8px; background:var(--border); border-radius:4px; overflow:hidden; position:relative; }
+    .cap-fill  { height:100%; border-radius:4px; position:absolute; top:0; }
+    .cap-range-label { display:flex; justify-content:space-between; font-size:10px; color:var(--text3); margin-top:5px; }
+
+    /* ── DATA ROWS ── */
+    .data-list { display:flex; flex-direction:column; }
+    .dr { display:flex; align-items:flex-start; gap:10px; padding:9px 0; border-bottom:.5px solid var(--border); }
+    .dr:last-child { border-bottom:none; }
+    .dr-key { font-size:12px; color:var(--text3); min-width:130px; flex-shrink:0; }
+    .dr-val { font-size:12px; color:var(--text); font-weight:500; flex:1; line-height:1.5; }
+    .dr-val.green { color:var(--green); }
+    .dr-val.amber { color:var(--amber); }
+
+    /* ── RELSCI CONNECTIONS ── */
+    .conn-list { display:flex; flex-direction:column; gap:8px; }
+    .conn-item { display:flex; align-items:flex-start; gap:11px; padding:11px 13px; background:var(--surf); border-radius:9px; cursor:pointer; transition:background .12s; }
+    .conn-item:hover { background:var(--bluep); }
+    .conn-av { width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; flex-shrink:0; }
+    .conn-info { flex:1; min-width:0; }
+    .conn-name { font-size:12px; font-weight:600; color:var(--text); margin-bottom:2px; }
+    .conn-role { font-size:11px; color:var(--text3); margin-bottom:4px; }
+    .conn-tags { display:flex; gap:5px; flex-wrap:wrap; }
+    .conn-tag  { font-size:9px; font-weight:700; padding:2px 7px; border-radius:20px; }
+    .ct-board    { background:var(--purpl); color:var(--purp); }
+    .ct-donor    { background:var(--greenl); color:var(--green); }
+    .ct-peer     { background:var(--bluel); color:#1D4ED8; }
+    .ct-clergy   { background:var(--teall); color:var(--teal); }
+    .conn-strength { font-size:10px; color:var(--text3); flex-shrink:0; display:flex; flex-direction:column; align-items:flex-end; gap:4px; }
+    .cs-bar { display:flex; gap:2px; }
+    .cs-dot { width:6px; height:6px; border-radius:50%; }
+
+    /* ── REAL ESTATE ── */
+    .re-list { display:flex; flex-direction:column; gap:8px; }
+    .re-item { background:var(--surf); border-radius:9px; padding:11px 13px; display:flex; gap:12px; }
+    .re-icon { width:30px; height:30px; background:var(--amberl); border-radius:8px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .re-icon svg { width:13px; height:13px; color:var(--amber); }
+    .re-addr { font-size:12px; font-weight:500; color:var(--text); margin-bottom:3px; }
+    .re-val  { font-size:13px; font-weight:700; color:var(--amber); margin-bottom:2px; font-family:'DM Serif Display',serif; }
+    .re-meta { font-size:10px; color:var(--text3); }
+
+    /* ── BUSINESS AFFILIATIONS ── */
+    .biz-list { display:flex; flex-direction:column; gap:7px; }
+    .biz-item { display:flex; align-items:center; gap:10px; padding:9px 12px; background:var(--surf); border-radius:8px; }
+    .biz-initial { width:28px; height:28px; border-radius:7px; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:700; flex-shrink:0; }
+    .biz-name { font-size:12px; font-weight:500; color:var(--text); flex:1; }
+    .biz-role { font-size:11px; color:var(--text3); }
+    .biz-val  { font-size:12px; font-weight:600; color:var(--green); }
+
+    /* ── VERSION HISTORY ── */
+    .vh-timeline { display:flex; flex-direction:column; gap:0; }
+    .vh-item { display:flex; gap:14px; padding:12px 0; border-bottom:.5px solid var(--border); cursor:pointer; transition:background .1s; }
+    .vh-item:last-child { border-bottom:none; }
+    .vh-item.current .vh-dot-wrap::before { border-color:var(--blue); }
+    .vh-dot-wrap { display:flex; flex-direction:column; align-items:center; gap:0; flex-shrink:0; padding-top:3px; }
+    .vh-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+    .vh-line { width:2px; flex:1; background:var(--border); margin-top:4px; min-height:20px; }
+    .vh-item:last-child .vh-line { display:none; }
+    .vh-body { flex:1; }
+    .vh-date { font-size:11px; font-weight:600; color:var(--text); margin-bottom:3px; }
+    .vh-vendor { font-size:10px; font-weight:700; padding:1px 7px; border-radius:20px; margin-left:6px; }
+    .vv-we { background:#1B2FE8; color:white; font-size:9px; }
+    .vv-rs { background:var(--navy); color:#94A3B8; font-size:9px; }
+    .vv-m  { background:var(--surf); color:var(--text3); border:1px solid var(--border); font-size:9px; }
+    .vh-changes { display:flex; flex-wrap:wrap; gap:5px; margin-top:5px; }
+    .vh-change { font-size:10px; color:var(--text2); background:var(--surf); border:1px solid var(--border); border-radius:5px; padding:1px 7px; }
+    .vh-change.up   { color:var(--green); background:var(--greenl); border-color:#BBF7D0; }
+    .vh-change.down { color:var(--rose);  background:var(--rosel);  border-color:#FBCFE8; }
+    .vh-staff { font-size:10px; color:var(--text3); margin-top:4px; }
+
+    /* ── REFRESH FOOTER ── */
+    .refresh-footer { background:white; border:1px solid var(--border); border-radius:10px; padding:12px 18px; display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
+    .rf-sync-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+    .rf-text { font-size:12px; color:var(--text2); flex:1; }
+    .rf-actions { display:flex; gap:8px; }
+
+    /* ── STALE BANNER ── */
+    .stale-banner { display:none; background:var(--amberl); border:1px solid #FDE68A; border-radius:9px; padding:10px 15px; font-size:12px; color:#78350F; display:flex; align-items:center; gap:10px; }
+    .stale-banner svg { width:14px; height:14px; color:var(--amber); flex-shrink:0; }
+
+    /* ── CHANGE DELTA BADGES ── */
+    .delta { display:inline-flex; align-items:center; gap:3px; font-size:10px; font-weight:700; padding:1px 6px; border-radius:10px; margin-left:6px; }
+    .delta.up   { background:var(--greenl); color:var(--green); }
+    .delta.down { background:var(--rosel);  color:var(--rose); }
+    .delta.same { background:var(--surf); color:var(--text3); border:1px solid var(--border); }
+
+    /* ── REFRESH ANIMATION ── */
+    @keyframes spin { to { transform:rotate(360deg); } }
+    .spinning { animation:spin .6s linear infinite; }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+    .fade-in { animation:fadeUp .3s ease forwards; }
+  </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sb-logo">
+    <div class="sb-mark"><svg viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7.5" stroke="white" stroke-width="1.5"/><path d="M5.5 9.5C6.5 11.5 9 13 9 13s2.5-1.5 3.5-3.5S12 5 9 5 4.5 7.5 5.5 9.5z" fill="white" fill-opacity=".9"/></svg></div>
+    <div><div class="sb-name">GiveCentral</div><div class="sb-sub">Atlas CRM</div></div>
+  </div>
+  <div class="nav-group">
+    <div class="nav-label">Main</div>
+    <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><rect x="1.5" y="1.5" width="4" height="4" rx="1.2"/><rect x="8.5" y="1.5" width="4" height="4" rx="1.2"/><rect x="1.5" y="8.5" width="4" height="4" rx="1.2"/><rect x="8.5" y="8.5" width="4" height="4" rx="1.2"/></svg>Dashboard</div>
+    <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="6" cy="4.5" r="3"/><path d="M1 13c0-2.8 2.2-5 5-5h1c2.8 0 5 2.2 5 5"/></svg>Donors</div>
+  </div>
+  <div class="nav-group" style="margin-top:8px">
+    <div class="nav-label">Intelligence</div>
+    <div class="nav-item active"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M2 11l2.5-2.5 2 2 2.5-2.5 2 2"/><circle cx="11.5" cy="4" r="2"/><path d="M4.5 3.5h5"/></svg>Wealth screening<span class="nav-badge">47</span></div>
+    <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="7" cy="5" r="3.5"/><path d="M5 10c0 2 4 2 4 0M4.5 8.5c-2 1-3 3.5-3 4.5M9.5 8.5c2 1 3 3.5 3 4.5"/></svg>Guru AI</div>
+    <div class="nav-item"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="7" cy="7" r="5.5"/><path d="M7 4v4M7 10v.5"/></svg>Prospect pipeline</div>
+  </div>
+  <div class="sb-user">
+    <div class="u-av">SR</div>
+    <div><div style="font-size:12px;font-weight:500;color:rgba(255,255,255,.75)">Sarah Reynolds</div><div style="font-size:10px;color:rgba(255,255,255,.35)">Development Director</div></div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="tb-back"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M9 2L4 7l5 5"/></svg>Donor record</div>
+    <div class="tb-sep"></div>
+    <span class="tb-title">James &amp; Patricia O'Brien</span>
+    <div class="tb-sep"></div>
+    <span class="tb-sub">Wealth screening &amp; relationship intelligence</span>
+    <div class="tb-right">
+      <button class="btn" onclick="runRefresh()">
+        <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" id="refresh-icon"><path d="M10.5 3A5 5 0 1 0 11 6"/><path d="M10.5 1v2h-2"/></svg>
+        Refresh screening
+      </button>
+      <button class="btn btn-primary">
+        <svg viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="1.4" stroke-linecap="round"><path d="M6 1v7M3 5.5l3 3 3-3"/><path d="M1.5 10.5h9"/></svg>
+        Export profile
+      </button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- Donor hero -->
+    <div class="donor-hero">
+      <div class="dh-bg"></div>
+      <div class="dh-av">JO</div>
+      <div class="dh-info">
+        <div class="dh-name">James &amp; Patricia O'Brien</div>
+        <div class="dh-meta">
+          <span><svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M5.5 1C4 1 2.5 2.5 2.5 4c0 2.3 3 6 3 6s3-3.7 3-6C8.5 2.5 7 1 5.5 1z"/></svg>Rocky River, OH 44116</span>
+          <span><svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><circle cx="5.5" cy="4" r="2.5"/><path d="M1 10c0-2.5 2-4.5 4.5-4.5S10 7.5 10 10"/></svg>Major gift prospect · Stage 3 Cultivation</span>
+          <span><svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><rect x="1" y="2" width="9" height="8" rx="1.2"/><path d="M1 5h9"/></svg>Last screened: Jan 14, 2026 · WealthEngine + RelSci</span>
+        </div>
+      </div>
+      <div class="dh-scores">
+        <div class="dhs"><div class="dhs-val gold">95</div><div class="dhs-lbl">Capacity score</div></div>
+        <div class="dhs"><div class="dhs-val green">82</div><div class="dhs-lbl">Linkage</div></div>
+        <div class="dhs"><div class="dhs-val">78</div><div class="dhs-lbl">Interest</div></div>
+        <div class="dhs"><div class="dhs-val teal">$40K</div><div class="dhs-lbl">Ask range</div></div>
+      </div>
+    </div>
+
+    <!-- Stale data banner (shown after refresh simulate) -->
+    <div class="stale-banner" id="stale-banner" style="display:none">
+      <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M7 2v4.5M7 10v.5"/><path d="M1.5 13L7 1.5 12.5 13H1.5z"/></svg>
+      Screening data is over 90 days old. Capacity estimates may be outdated. <button onclick="runRefresh()" style="margin-left:10px;padding:3px 10px;background:var(--amber);color:white;border:none;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif">Refresh now</button>
+    </div>
+
+    <!-- Tab bar -->
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab('scores',this)">LAI scores &amp; capacity</button>
+      <button class="tab-btn" onclick="switchTab('relsci',this)">RelSci connections</button>
+      <button class="tab-btn" onclick="switchTab('assets',this)">Assets &amp; affiliations</button>
+      <button class="tab-btn" onclick="switchTab('history',this)">Version history</button>
+    </div>
+
+    <!-- ── TAB: SCORES ── -->
+    <div class="tab-panel active" id="tab-scores">
+
+      <!-- LAI gauges -->
+      <div class="card">
+        <div class="card-head">
+          <div class="card-icon" style="background:#EFF6FF"><svg viewBox="0 0 13 13" fill="none" stroke="#1D4ED8" stroke-width="1.4" stroke-linecap="round"><path d="M1.5 10l3-3 2 2 3-3 2 2"/></svg></div>
+          <span class="card-title">LAI rating — Linkage · Ability · Interest</span>
+          <span class="card-badge cb-we">WealthEngine</span>
+          <span style="font-size:11px;color:var(--text3);margin-left:8px">Last updated Jan 14, 2026</span>
+        </div>
+        <div class="card-body">
+          <div class="lai-grid">
+            <!-- Linkage -->
+            <div class="lai-card">
+              <div class="lai-ring">
+                <svg width="80" height="80" viewBox="0 0 80 80">
+                  <circle cx="40" cy="40" r="32" fill="none" stroke="#E2E8F0" stroke-width="8"/>
+                  <circle cx="40" cy="40" r="32" fill="none" stroke="#2563EB" stroke-width="8"
+                    stroke-dasharray="201" stroke-dashoffset="36" stroke-linecap="round"/>
+                </svg>
+                <div class="lai-ring-label">
+                  <span class="lai-score" style="color:#2563EB">82</span>
+                  <span class="lai-max">/100</span>
+                </div>
+              </div>
+              <div class="lai-name">Linkage</div>
+              <div class="lai-desc">Strong relationship to diocese leadership. Board-adjacent via Catholic Foundation. Personal introduction from Bishop.</div>
+            </div>
+            <!-- Ability -->
+            <div class="lai-card">
+              <div class="lai-ring">
+                <svg width="80" height="80" viewBox="0 0 80 80">
+                  <circle cx="40" cy="40" r="32" fill="none" stroke="#E2E8F0" stroke-width="8"/>
+                  <circle cx="40" cy="40" r="32" fill="none" stroke="#D97706" stroke-width="8"
+                    stroke-dasharray="201" stroke-dashoffset="11" stroke-linecap="round"/>
+                </svg>
+                <div class="lai-ring-label">
+                  <span class="lai-score" style="color:#D97706">95</span>
+                  <span class="lai-max">/100</span>
+                </div>
+              </div>
+              <div class="lai-name">Ability</div>
+              <div class="lai-desc">High capacity. Real estate holdings $2.1M. Business partner at First Catholic Bank. SEC filings indicate equity position.</div>
+            </div>
+            <!-- Interest -->
+            <div class="lai-card">
+              <div class="lai-ring">
+                <svg width="80" height="80" viewBox="0 0 80 80">
+                  <circle cx="40" cy="40" r="32" fill="none" stroke="#E2E8F0" stroke-width="8"/>
+                  <circle cx="40" cy="40" r="32" fill="none" stroke="#0D9488" stroke-width="8"
+                    stroke-dasharray="201" stroke-dashoffset="44" stroke-linecap="round"/>
+                </svg>
+                <div class="lai-ring-label">
+                  <span class="lai-score" style="color:#0D9488">78</span>
+                  <span class="lai-max">/100</span>
+                </div>
+              </div>
+              <div class="lai-name">Interest</div>
+              <div class="lai-desc">Active parishioner. CMA donor 8 consecutive years. Gala committee member. Named scholarship fund at Holy Cross.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <!-- Capacity estimate -->
+        <div class="card">
+          <div class="card-head">
+            <div class="card-icon" style="background:#FEF3C7"><svg viewBox="0 0 13 13" fill="none" stroke="#B45309" stroke-width="1.4" stroke-linecap="round"><path d="M6.5 1.5v9M3 5l3.5-3.5L10 5"/></svg></div>
+            <span class="card-title">Giving capacity estimate</span>
+            <span class="card-badge cb-we">WealthEngine</span>
+          </div>
+          <div class="card-body">
+            <div style="text-align:center;margin-bottom:16px">
+              <div style="font-family:'DM Serif Display',serif;font-size:36px;color:var(--text);letter-spacing:-.02em;line-height:1">$25K–$50K</div>
+              <div style="font-size:11px;color:var(--text3);margin-top:4px">Estimated annual giving capacity</div>
+            </div>
+            <div class="cap-wrap">
+              <div class="cap-label"><span>Range</span><span style="font-weight:600;color:var(--text)">$25,000 — $50,000</span></div>
+              <div class="cap-track" style="height:10px">
+                <div class="cap-fill" style="left:20%;width:40%;background:linear-gradient(90deg,#FCD34D,#D97706)"></div>
+              </div>
+              <div class="cap-range-label"><span>$0</span><span>$25K</span><span>$50K</span><span>$100K+</span></div>
+            </div>
+            <div class="data-list">
+              <div class="dr"><span class="dr-key">Lifetime capacity</span><span class="dr-val">$500K–$1M (WealthEngine model)</span></div>
+              <div class="dr"><span class="dr-key">Current ask range</span><span class="dr-val green">$40,000 — Cathedral Capital</span></div>
+              <div class="dr"><span class="dr-key">Confidence</span><span class="dr-val">High (87/100)</span></div>
+              <div class="dr"><span class="dr-key">Percentile</span><span class="dr-val">Top 8% of portfolio</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Guru AI ask recommendation -->
+        <div class="card" style="border-color:rgba(124,58,237,.3)">
+          <div class="card-head" style="background:#0E1E35">
+            <div class="card-icon" style="background:var(--purp)"><svg viewBox="0 0 13 13" fill="none" stroke="white" stroke-width="1.3" stroke-linecap="round"><circle cx="6.5" cy="4.5" r="3.5"/><path d="M4.5 9c0 2 4 2 4 0M3.5 8c-2 1-3 3.5-3 4.5M9.5 8c2 1 3 3.5 3 4.5"/></svg></div>
+            <span class="card-title" style="color:white">Guru AI ask strategy</span>
+            <span style="font-size:10px;color:rgba(255,255,255,.4);margin-left:auto">Updated today</span>
+          </div>
+          <div class="card-body" style="background:#0E1E35">
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div style="background:rgba(255,255,255,.07);border-radius:8px;padding:11px 13px">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:5px">Primary ask</div>
+                <div style="font-size:14px;font-weight:600;color:white;margin-bottom:3px">$40,000 — Cathedral Capital Fund</div>
+                <div style="font-size:11px;color:rgba(255,255,255,.6);line-height:1.55">Naming opportunity available at $25K threshold. Patricia mentioned legacy interest on Mar 28 call. Timing is optimal — Q2 cultivation complete.</div>
+              </div>
+              <div style="background:rgba(255,255,255,.07);border-radius:8px;padding:11px 13px">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:5px">Secondary ask</div>
+                <div style="font-size:13px;font-weight:500;color:rgba(255,255,255,.85);margin-bottom:3px">$5,000 DAF — clear overdue pledge installment</div>
+                <div style="font-size:11px;color:rgba(255,255,255,.5);line-height:1.55">Remove friction on $12,500 pledge. Tax-efficient via DAF. Opens conversation about planned giving.</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;padding:9px 11px;background:rgba(124,58,237,.2);border-radius:7px">
+                <div style="width:30px;height:30px;background:rgba(255,255,255,.12);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                  <svg viewBox="0 0 13 13" fill="none" stroke="#C4B5FD" stroke-width="1.3" stroke-linecap="round" width="13" height="13"><path d="M2 9.5l3-3 2 2 3-3 2 2.5"/></svg>
+                </div>
+                <div style="font-size:11px;color:#C4B5FD;line-height:1.5">Propensity score <strong style="color:white">95/100</strong> — highest-probability ask in pipeline for Q2 2026</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── TAB: RELSCI ── -->
+    <div class="tab-panel" id="tab-relsci">
+      <div class="two-col">
+        <div class="card">
+          <div class="card-head">
+            <div class="card-icon" style="background:#0F172A"><svg viewBox="0 0 13 13" fill="none" stroke="#94A3B8" stroke-width="1.3" stroke-linecap="round"><circle cx="3" cy="3" r="1.8"/><circle cx="10" cy="3" r="1.8"/><circle cx="6.5" cy="10" r="1.8"/><path d="M4.7 3.5h3.6M4.2 3.7L5.8 9M8.8 3.7L7.2 9"/></svg></div>
+            <span class="card-title">RelSci relationship map</span>
+            <span class="card-badge cb-rs">RelSci</span>
+            <span style="font-size:11px;color:var(--text3);margin-left:8px">Jan 14, 2026</span>
+          </div>
+          <div class="card-body">
+            <div style="font-size:12px;color:var(--text3);margin-bottom:12px">15 connections identified · 4 have existing relationship to GiveCentral or Diocese</div>
+            <div class="conn-list">
+              <div class="conn-item">
+                <div class="conn-av" style="background:#EDE9FE;color:#7C3AED">BK</div>
+                <div class="conn-info">
+                  <div class="conn-name">Bishop Michael Kelly</div>
+                  <div class="conn-role">Bishop, Diocese of St. Petersburg</div>
+                  <div class="conn-tags">
+                    <span class="conn-tag ct-clergy">Clergy</span>
+                    <span class="conn-tag ct-peer">Personal introduction</span>
+                  </div>
+                </div>
+                <div class="conn-strength">
+                  <div style="font-size:10px;color:var(--text3)">Strength</div>
+                  <div class="cs-bar">
+                    <div class="cs-dot" style="background:var(--green)"></div>
+                    <div class="cs-dot" style="background:var(--green)"></div>
+                    <div class="cs-dot" style="background:var(--green)"></div>
+                    <div class="cs-dot" style="background:var(--green)"></div>
+                    <div class="cs-dot" style="background:var(--border)"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="conn-item">
+                <div class="conn-av" style="background:#DCFCE7;color:#15803D">DH</div>
+                <div class="conn-info">
+                  <div class="conn-name">David Harrington</div>
+                  <div class="conn-role">Chair, Catholic Foundation Board · Gala Committee</div>
+                  <div class="conn-tags">
+                    <span class="conn-tag ct-board">Board</span>
+                    <span class="conn-tag ct-donor">Existing donor</span>
+                  </div>
+                </div>
+                <div class="conn-strength">
+                  <div style="font-size:10px;color:var(--text3)">Strength</div>
+                  <div class="cs-bar">
+                    <div class="cs-dot" style="background:var(--green)"></div>
+                    <div class="cs-dot" style="background:var(--green)"></div>
+                    <div class="cs-dot" style="background:var(--green)"></div>
+                    <div class="cs-dot" style="background:var(--green)"></div>
+                    <div class="cs-dot" style="background:var(--green)"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="conn-item">
+                <div class="conn-av" style="background:#EFF6FF;color:#1D4ED8">RC</div>
+                <div class="conn-info">
+                  <div class="conn-name">Robert Callahan</div>
+                  <div class="conn-role">Partner, O'Brien &amp; Callahan LLP · Holy Cross Parish Council</div>
+                  <div class="conn-tags">
+                    <span class="conn-tag ct-peer">Business partner</span>
+                    <span class="conn-tag ct-donor">Existing donor</span>
+                  </div>
+                </div>
+                <div class="conn-strength">
+                  <div style="font-size:10px;color:var(--text3)">Strength</div>
+                  <div class="cs-bar">
+                    <div class="cs-dot" style="background:var(--green)"></div>
+                    <div class="cs-dot" style="background:var(--green)"></div>
+                    <div class="cs-dot" style="background:var(--green)"></div>
+                    <div class="cs-dot" style="background:var(--border)"></div>
+                    <div class="cs-dot" style="background:var(--border)"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="conn-item">
+                <div class="conn-av" style="background:#FEF3C7;color:#B45309">TS</div>
+                <div class="conn-info">
+                  <div class="conn-name">Thomas Sullivan</div>
+                  <div class="conn-role">CEO, First Catholic Bank · Known O'Brien family — college peers</div>
+                  <div class="conn-tags">
+                    <span class="conn-tag ct-peer">Peer</span>
+                    <span class="conn-tag ct-donor">Existing donor</span>
+                  </div>
+                </div>
+                <div class="conn-strength">
+                  <div style="font-size:10px;color:var(--text3)">Strength</div>
+                  <div class="cs-bar">
+                    <div class="cs-dot" style="background:var(--green)"></div>
+                    <div class="cs-dot" style="background:var(--green)"></div>
+                    <div class="cs-dot" style="background:var(--green)"></div>
+                    <div class="cs-dot" style="background:var(--border)"></div>
+                    <div class="cs-dot" style="background:var(--border)"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="conn-item">
+                <div class="conn-av" style="background:#F8FAFC;color:#475569">MG</div>
+                <div class="conn-info">
+                  <div class="conn-name">Margaret Grant</div>
+                  <div class="conn-role">VP Development, Catholic University · Gala attendee 2024</div>
+                  <div class="conn-tags">
+                    <span class="conn-tag ct-peer">Peer</span>
+                  </div>
+                </div>
+                <div class="conn-strength">
+                  <div style="font-size:10px;color:var(--text3)">Strength</div>
+                  <div class="cs-bar">
+                    <div class="cs-dot" style="background:var(--amber)"></div>
+                    <div class="cs-dot" style="background:var(--amber)"></div>
+                    <div class="cs-dot" style="background:var(--border)"></div>
+                    <div class="cs-dot" style="background:var(--border)"></div>
+                    <div class="cs-dot" style="background:var(--border)"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div style="text-align:center;margin-top:12px;font-size:12px;color:var(--blue);cursor:pointer">View all 15 RelSci connections →</div>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <!-- Linkage pathways -->
+          <div class="card">
+            <div class="card-head">
+              <div class="card-icon" style="background:var(--purpl)"><svg viewBox="0 0 13 13" fill="none" stroke="var(--purp)" stroke-width="1.3" stroke-linecap="round"><path d="M2 7.5l1.5-1.5 1.5 1.5 2-2 1.5 1.5 2-2 1.5 1.5"/></svg></div>
+              <span class="card-title">Top linkage pathways</span>
+            </div>
+            <div class="card-body">
+              <div class="data-list">
+                <div class="dr">
+                  <span class="dr-key">Strongest path</span>
+                  <span class="dr-val">James → David Harrington → Bishop Kelly → Diocese (2 hops)</span>
+                </div>
+                <div class="dr">
+                  <span class="dr-key">Direct connection</span>
+                  <span class="dr-val">Bishop Kelly — personal introduction on file</span>
+                </div>
+                <div class="dr">
+                  <span class="dr-key">Board overlap</span>
+                  <span class="dr-val">Catholic Foundation Board (via Harrington)</span>
+                </div>
+                <div class="dr">
+                  <span class="dr-key">Alumni network</span>
+                  <span class="dr-val green">Notre Dame '89 — shared with 6 other top donors</span>
+                </div>
+                <div class="dr">
+                  <span class="dr-key">Mutual donors</span>
+                  <span class="dr-val">Shares giving history with 4 existing $10K+ donors</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Life events -->
+          <div class="card">
+            <div class="card-head">
+              <div class="card-icon" style="background:var(--bluel)"><svg viewBox="0 0 13 13" fill="none" stroke="#1D4ED8" stroke-width="1.3" stroke-linecap="round"><rect x="1.5" y="2.5" width="10" height="9" rx="1.5"/><path d="M1.5 6h10M5 2.5v2M8 2.5v2"/></svg></div>
+              <span class="card-title">Recent life events — RelSci alerts</span>
+            </div>
+            <div class="card-body" style="padding:12px">
+              <div style="display:flex;flex-direction:column;gap:7px">
+                <div style="display:flex;gap:10px;padding:9px 11px;background:var(--greenl);border-radius:8px;align-items:flex-start">
+                  <div style="width:6px;height:6px;border-radius:50%;background:var(--green);flex-shrink:0;margin-top:5px"></div>
+                  <div>
+                    <div style="font-size:12px;font-weight:500;color:#14532D">Promoted to Managing Partner — O'Brien &amp; Callahan LLP</div>
+                    <div style="font-size:10px;color:var(--green);margin-top:2px">Mar 2026 · Significant compensation event likely</div>
+                  </div>
+                </div>
+                <div style="display:flex;gap:10px;padding:9px 11px;background:var(--surf);border-radius:8px;align-items:flex-start">
+                  <div style="width:6px;height:6px;border-radius:50%;background:var(--blue);flex-shrink:0;margin-top:5px"></div>
+                  <div>
+                    <div style="font-size:12px;font-weight:500;color:var(--text)">First Catholic Bank — new board member appointment</div>
+                    <div style="font-size:10px;color:var(--text3);margin-top:2px">Jan 2026 · Increases financial sector network</div>
+                  </div>
+                </div>
+                <div style="display:flex;gap:10px;padding:9px 11px;background:var(--surf);border-radius:8px;align-items:flex-start">
+                  <div style="width:6px;height:6px;border-radius:50%;background:var(--amber);flex-shrink:0;margin-top:5px"></div>
+                  <div>
+                    <div style="font-size:12px;font-weight:500;color:var(--text)">Son Sean O'Brien — accepted to Notre Dame Law</div>
+                    <div style="font-size:10px;color:var(--text3);margin-top:2px">Dec 2025 · Catholic education connection strengthened</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── TAB: ASSETS ── -->
+    <div class="tab-panel" id="tab-assets">
+      <div class="two-col">
+        <!-- Real estate -->
+        <div class="card">
+          <div class="card-head">
+            <div class="card-icon" style="background:var(--amberl)"><svg viewBox="0 0 13 13" fill="none" stroke="var(--amber)" stroke-width="1.4" stroke-linecap="round"><path d="M2 12V5.5L6.5 1.5 11 5.5V12H2z"/><rect x="4.5" y="8" width="4" height="4"/></svg></div>
+            <span class="card-title">Real estate holdings</span>
+            <span class="card-badge cb-we">WealthEngine</span>
+          </div>
+          <div class="card-body">
+            <div style="font-family:'DM Serif Display',serif;font-size:28px;color:var(--amber);margin-bottom:14px">$2,100,000 <span style="font-size:14px;color:var(--text3);font-family:'DM Sans',sans-serif;font-weight:400">estimated total</span></div>
+            <div class="re-list">
+              <div class="re-item">
+                <div class="re-icon"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M2 12V5.5L6.5 1.5 11 5.5V12H2z"/></svg></div>
+                <div>
+                  <div class="re-addr">14 Bayshore Blvd, Rocky River OH</div>
+                  <div class="re-val">$1,450,000</div>
+                  <div class="re-meta">Primary residence · Purchased 2014 · Cuyahoga County</div>
+                </div>
+              </div>
+              <div class="re-item">
+                <div class="re-icon"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M2 12V5.5L6.5 1.5 11 5.5V12H2z"/></svg></div>
+                <div>
+                  <div class="re-addr">244 Lakewood Pkwy, Naples FL</div>
+                  <div class="re-val">$650,000</div>
+                  <div class="re-meta">Secondary residence · Purchased 2019 · Collier County</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Business affiliations -->
+        <div class="card">
+          <div class="card-head">
+            <div class="card-icon" style="background:var(--surf)"><svg viewBox="0 0 13 13" fill="none" stroke="var(--text2)" stroke-width="1.4" stroke-linecap="round"><rect x="1.5" y="4.5" width="10" height="7" rx="1.3"/><path d="M4.5 4.5V3a2 2 0 014 0v1.5"/></svg></div>
+            <span class="card-title">Business affiliations</span>
+            <span class="card-badge cb-we">WealthEngine</span>
+          </div>
+          <div class="card-body">
+            <div class="biz-list">
+              <div class="biz-item">
+                <div class="biz-initial" style="background:#EFF6FF;color:#1D4ED8">OC</div>
+                <div>
+                  <div class="biz-name">O'Brien &amp; Callahan LLP</div>
+                  <div class="biz-role">Managing Partner (Mar 2026)</div>
+                </div>
+                <div class="biz-val">Primary</div>
+              </div>
+              <div class="biz-item">
+                <div class="biz-initial" style="background:var(--greenl);color:var(--green)">FC</div>
+                <div>
+                  <div class="biz-name">First Catholic Bank</div>
+                  <div class="biz-role">Board Member (Jan 2026)</div>
+                </div>
+                <div class="biz-val">Board</div>
+              </div>
+              <div class="biz-item">
+                <div class="biz-initial" style="background:var(--purpl);color:var(--purp)">CF</div>
+                <div>
+                  <div class="biz-name">Catholic Foundation</div>
+                  <div class="biz-role">Advisory Board (2022–present)</div>
+                </div>
+                <div class="biz-val">Advisory</div>
+              </div>
+              <div class="biz-item">
+                <div class="biz-initial" style="background:var(--amberl);color:var(--amber)">CU</div>
+                <div>
+                  <div class="biz-name">Catholic University of America</div>
+                  <div class="biz-role">Alumni Board (2018–present)</div>
+                </div>
+                <div class="biz-val">Alumni</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Additional financial indicators -->
+        <div class="card" style="grid-column:1/-1">
+          <div class="card-head">
+            <div class="card-icon" style="background:var(--greenl)"><svg viewBox="0 0 13 13" fill="none" stroke="var(--green)" stroke-width="1.4" stroke-linecap="round"><path d="M1.5 9.5l3-3 2 2 3-3 2 2"/><circle cx="11" cy="3" r="1.5"/></svg></div>
+            <span class="card-title">Additional wealth indicators</span>
+            <span class="card-badge cb-we">WealthEngine</span>
+          </div>
+          <div class="card-body">
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px">
+              <div class="data-list">
+                <div class="dr"><span class="dr-key">Political giving</span><span class="dr-val">$18,500 (2020–2024)</span></div>
+                <div class="dr"><span class="dr-key">Charitable giving</span><span class="dr-val green">$47,000 est. annually</span></div>
+              </div>
+              <div class="data-list">
+                <div class="dr"><span class="dr-key">SEC equity</span><span class="dr-val">Reported interest in 2 companies</span></div>
+                <div class="dr"><span class="dr-key">Pension / retirement</span><span class="dr-val">Not publicly available</span></div>
+              </div>
+              <div class="data-list">
+                <div class="dr"><span class="dr-key">Yacht / aircraft</span><span class="dr-val amber">1 vessel registered (FAA)</span></div>
+                <div class="dr"><span class="dr-key">Foundation</span><span class="dr-val">O'Brien Family Fund — not public</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── TAB: HISTORY ── -->
+    <div class="tab-panel" id="tab-history">
+      <div class="two-col">
+        <div class="card">
+          <div class="card-head">
+            <div class="card-icon" style="background:var(--bluel)"><svg viewBox="0 0 13 13" fill="none" stroke="#1D4ED8" stroke-width="1.3" stroke-linecap="round"><circle cx="6.5" cy="6.5" r="5"/><path d="M6.5 4v3.5h2.5"/></svg></div>
+            <span class="card-title">Screening version history</span>
+            <span style="font-size:11px;color:var(--text3);margin-left:auto">4 screens on record</span>
+          </div>
+          <div class="card-body" style="padding:14px 16px">
+            <div class="vh-timeline">
+
+              <div class="vh-item">
+                <div class="vh-dot-wrap">
+                  <div class="vh-dot" style="background:var(--blue)"></div>
+                  <div class="vh-line"></div>
+                </div>
+                <div class="vh-body">
+                  <div style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:5px">
+                    <span class="vh-date">Jan 14, 2026</span>
+                    <span class="vh-vendor vv-we">WealthEngine</span>
+                    <span class="vh-vendor vv-rs">RelSci</span>
+                    <span style="font-size:10px;background:var(--bluel);color:#1D4ED8;padding:1px 8px;border-radius:20px;font-weight:700">Current</span>
+                  </div>
+                  <div class="vh-changes">
+                    <span class="vh-change up">Capacity ↑ $25K→$50K</span>
+                    <span class="vh-change up">Linkage ↑ 74→82</span>
+                    <span class="vh-change">Interest = 78</span>
+                    <span class="vh-change up">+2 RelSci connections</span>
+                    <span class="vh-change up">Life event: promoted Managing Partner</span>
+                  </div>
+                  <div class="vh-staff">Scheduled quarterly refresh · System automated</div>
+                </div>
+              </div>
+
+              <div class="vh-item">
+                <div class="vh-dot-wrap">
+                  <div class="vh-dot" style="background:var(--border)"></div>
+                  <div class="vh-line"></div>
+                </div>
+                <div class="vh-body">
+                  <div style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:5px">
+                    <span class="vh-date">Oct 3, 2025</span>
+                    <span class="vh-vendor vv-we">WealthEngine</span>
+                    <span class="vh-vendor vv-m">Manual</span>
+                  </div>
+                  <div class="vh-changes">
+                    <span class="vh-change">Capacity = $25K–$40K</span>
+                    <span class="vh-change">Linkage = 74</span>
+                    <span class="vh-change up">Interest ↑ 68→78</span>
+                    <span class="vh-change up">New RE: Naples property added</span>
+                  </div>
+                  <div class="vh-staff">Manual refresh requested by Sarah Reynolds · Pre-cultivation meeting</div>
+                </div>
+              </div>
+
+              <div class="vh-item">
+                <div class="vh-dot-wrap">
+                  <div class="vh-dot" style="background:var(--border)"></div>
+                  <div class="vh-line"></div>
+                </div>
+                <div class="vh-body">
+                  <div style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:5px">
+                    <span class="vh-date">Apr 8, 2025</span>
+                    <span class="vh-vendor vv-we">WealthEngine</span>
+                    <span class="vh-vendor vv-rs">RelSci</span>
+                  </div>
+                  <div class="vh-changes">
+                    <span class="vh-change">Capacity = $25K–$40K</span>
+                    <span class="vh-change down">Linkage ↓ 79→74</span>
+                    <span class="vh-change">Interest = 68</span>
+                    <span class="vh-change">13 RelSci connections</span>
+                  </div>
+                  <div class="vh-staff">Scheduled quarterly refresh · System automated</div>
+                </div>
+              </div>
+
+              <div class="vh-item">
+                <div class="vh-dot-wrap">
+                  <div class="vh-dot" style="background:var(--border)"></div>
+                  <div class="vh-line"></div>
+                </div>
+                <div class="vh-body">
+                  <div style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:5px">
+                    <span class="vh-date">Jan 10, 2025</span>
+                    <span class="vh-vendor vv-we">WealthEngine</span>
+                  </div>
+                  <div class="vh-changes">
+                    <span class="vh-change">Initial screen</span>
+                    <span class="vh-change">Capacity $20K–$35K</span>
+                    <span class="vh-change">Linkage 79</span>
+                    <span class="vh-change">Interest 62</span>
+                  </div>
+                  <div class="vh-staff">First screen · Prospect added to pipeline by Mike Donovan</div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- Refresh settings -->
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div class="card">
+            <div class="card-head">
+              <div class="card-icon" style="background:var(--surf)"><svg viewBox="0 0 13 13" fill="none" stroke="var(--text3)" stroke-width="1.3" stroke-linecap="round"><path d="M11 3.5A5 5 0 1 0 11.5 6.5"/><path d="M11 1.5v2h-2"/></svg></div>
+              <span class="card-title">Refresh schedule</span>
+            </div>
+            <div class="card-body">
+              <div class="data-list">
+                <div class="dr"><span class="dr-key">Frequency</span><span class="dr-val">Quarterly (auto)</span></div>
+                <div class="dr"><span class="dr-key">Next scheduled</span><span class="dr-val green">Apr 14, 2026</span></div>
+                <div class="dr"><span class="dr-key">Providers</span><span class="dr-val">WealthEngine + RelSci</span></div>
+                <div class="dr"><span class="dr-key">Alert on change</span><span class="dr-val green">Yes — capacity change ≥10%</span></div>
+                <div class="dr"><span class="dr-key">Credits used</span><span class="dr-val">4 of 100 annual allocation</span></div>
+              </div>
+              <div style="margin-top:14px;display:flex;gap:8px">
+                <button class="btn btn-amber" onclick="runRefresh()" style="flex:1;justify-content:center">
+                  <svg viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="1.4" stroke-linecap="round" id="refresh-icon2"><path d="M10.5 3A5 5 0 1 0 11 6"/><path d="M10.5 1v2h-2"/></svg>
+                  Refresh now
+                </button>
+                <button class="btn" style="flex:1;justify-content:center">Edit schedule</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <div class="card-icon" style="background:var(--greenl)"><svg viewBox="0 0 13 13" fill="none" stroke="var(--green)" stroke-width="1.3" stroke-linecap="round"><path d="M2 7.5l1.5-1.5 1.5 1.5 4-4 1.5 1.5"/></svg></div>
+              <span class="card-title">Data confidence</span>
+            </div>
+            <div class="card-body">
+              <div class="data-list">
+                <div class="dr"><span class="dr-key">Overall confidence</span><span class="dr-val green">87 / 100 — High</span></div>
+                <div class="dr"><span class="dr-key">Real estate</span><span class="dr-val green">Public records — verified</span></div>
+                <div class="dr"><span class="dr-key">Business affiliations</span><span class="dr-val green">SEC + press — verified</span></div>
+                <div class="dr"><span class="dr-key">Income estimate</span><span class="dr-val amber">Modelled — not verified</span></div>
+                <div class="dr"><span class="dr-key">Charitable giving</span><span class="dr-val amber">Estimated from IRS data</span></div>
+                <div class="dr"><span class="dr-key">RelSci connections</span><span class="dr-val green">15 verified relationships</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Refresh footer -->
+    <div class="refresh-footer">
+      <div class="rf-sync-dot" style="background:var(--green)" id="sync-dot"></div>
+      <span class="rf-text" id="sync-text">WealthEngine + RelSci · Last refreshed Jan 14, 2026 · Next scheduled Apr 14, 2026 · 4 screens on record</span>
+      <div class="rf-actions">
+        <button class="btn">Screening history</button>
+        <button class="btn btn-primary" onclick="runRefresh()">
+          <svg viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="1.4" stroke-linecap="round" id="refresh-icon3"><path d="M10.5 3A5 5 0 1 0 11 6"/><path d="M10.5 1v2h-2"/></svg>
+          Refresh screening
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function switchTab(id, el) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+}
+
+function runRefresh() {
+  const icons = ['refresh-icon','refresh-icon2','refresh-icon3'];
+  icons.forEach(id => { const el = document.getElementById(id); if(el) el.classList.add('spinning'); });
+  const dot  = document.getElementById('sync-dot');
+  const text = document.getElementById('sync-text');
+  dot.style.background  = 'var(--amber)';
+  text.textContent = 'Refreshing screening data from WealthEngine + RelSci…';
+  setTimeout(() => {
+    icons.forEach(id => { const el = document.getElementById(id); if(el) el.classList.remove('spinning'); });
+    dot.style.background  = 'var(--green)';
+    text.textContent = 'Refresh complete · WealthEngine + RelSci · Updated just now · No significant capacity changes detected';
+  }, 2400);
+}
+</script>
+</body>
+</html>

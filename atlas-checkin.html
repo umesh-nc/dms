@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Atlas Check-In — Bishop's Annual Gala 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --navy:   #0E1E35;
+      --navy2:  #152844;
+      --blue:   #2563EB;
+      --bluel:  #DBEAFE;
+      --bluep:  #EFF6FF;
+      --green:  #15803D;
+      --greenl: #DCFCE7;
+      --amber:  #D97706;
+      --amberl: #FEF3C7;
+      --rose:   #BE185D;
+      --rosel:  #FCE7F3;
+      --teal:   #0D9488;
+      --teall:  #CCFBF1;
+      --text:   #0F172A;
+      --text2:  #334155;
+      --text3:  #64748B;
+      --border: #E2E8F0;
+      --surf:   #F8FAFC;
+    }
+    html { font-size: 15px; -webkit-font-smoothing: antialiased; height: 100%; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--navy); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; }
+
+    /* ── TOP BAR ── */
+    .topbar { background: var(--navy2); border-bottom: 1px solid rgba(255,255,255,.08); padding: 0 24px; height: 56px; display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
+    .tb-logo { display: flex; align-items: center; gap: 9px; }
+    .tb-mark { width: 30px; height: 30px; background: var(--blue); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+    .tb-mark svg { width: 14px; height: 14px; }
+    .tb-name { font-family: 'DM Serif Display', serif; font-size: 15px; color: white; }
+    .tb-sep  { width: 1px; height: 20px; background: rgba(255,255,255,.12); }
+    .tb-event { font-size: 13px; font-weight: 600; color: rgba(255,255,255,.8); }
+    .tb-date  { font-size: 12px; color: rgba(255,255,255,.4); }
+    .tb-right { margin-left: auto; display: flex; gap: 10px; align-items: center; }
+    .tb-stat  { text-align: right; }
+    .tb-stat-val { font-family: 'DM Serif Display', serif; font-size: 20px; line-height: 1; }
+    .tb-stat-lbl { font-size: 9px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: rgba(255,255,255,.4); margin-top: 1px; }
+    .live-badge { display: flex; align-items: center; gap: 6px; background: rgba(21,128,61,.25); border: 1px solid rgba(21,128,61,.4); border-radius: 20px; padding: 4px 12px; }
+    .live-dot { width: 7px; height: 7px; border-radius: 50%; background: #4ADE80; }
+    .live-dot { animation: pulse 1.8s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+    .live-text { font-size: 11px; font-weight: 700; color: #4ADE80; }
+    .clock-text { font-size: 13px; color: rgba(255,255,255,.5); }
+
+    /* ── MAIN BODY ── */
+    .body-wrap { flex: 1; display: flex; gap: 0; overflow: hidden; height: calc(100vh - 56px); }
+
+    /* ── LEFT: SEARCH + QUEUE ── */
+    .left-col { width: 400px; flex-shrink: 0; background: var(--navy2); border-right: 1px solid rgba(255,255,255,.08); display: flex; flex-direction: column; overflow: hidden; }
+
+    /* Search */
+    .search-section { padding: 16px; border-bottom: 1px solid rgba(255,255,255,.08); }
+    .search-label { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: rgba(255,255,255,.35); margin-bottom: 8px; }
+    .search-box { position: relative; }
+    .search-box svg { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: rgba(255,255,255,.35); pointer-events: none; }
+    .search-input { width: 100%; padding: 12px 14px 12px 42px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 10px; font-size: 15px; font-family: 'DM Sans', sans-serif; color: white; outline: none; transition: all .15s; }
+    .search-input::placeholder { color: rgba(255,255,255,.3); }
+    .search-input:focus { background: rgba(255,255,255,.12); border-color: var(--amber); }
+    .search-hints { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+    .sh { padding: 4px 10px; background: rgba(255,255,255,.06); border-radius: 20px; font-size: 10px; color: rgba(255,255,255,.4); cursor: pointer; transition: all .12s; }
+    .sh:hover { background: rgba(255,255,255,.12); color: rgba(255,255,255,.7); }
+
+    /* Filter tabs */
+    .queue-tabs { display: flex; border-bottom: 1px solid rgba(255,255,255,.08); }
+    .qt { flex: 1; padding: 10px 0; text-align: center; font-size: 12px; font-weight: 500; color: rgba(255,255,255,.45); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all .15s; }
+    .qt:hover { color: rgba(255,255,255,.7); }
+    .qt.active { color: white; border-bottom-color: var(--amber); font-weight: 600; }
+    .qt-badge { display: inline-block; background: var(--rose); color: white; border-radius: 10px; padding: 0 6px; font-size: 9px; font-weight: 700; margin-left: 4px; }
+    .qt-badge-ok { background: var(--green); }
+
+    /* Guest queue list */
+    .queue-list { flex: 1; overflow-y: auto; }
+    .queue-list::-webkit-scrollbar { width: 3px; }
+    .queue-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,.1); border-radius: 2px; }
+
+    .guest-row { padding: 12px 16px; border-bottom: 1px solid rgba(255,255,255,.06); cursor: pointer; transition: background .12s; display: flex; align-items: center; gap: 12px; }
+    .guest-row:hover { background: rgba(255,255,255,.05); }
+    .guest-row.selected { background: rgba(217,119,6,.15); border-left: 3px solid var(--amber); }
+    .guest-row.checked-in { opacity: .55; }
+    .gr-av { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; color: white; }
+    .gr-body { flex: 1; min-width: 0; }
+    .gr-name { font-size: 13px; font-weight: 600; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .gr-sub  { font-size: 11px; color: rgba(255,255,255,.45); margin-top: 1px; }
+    .gr-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
+    .badge-num { font-family: 'DM Serif Display', serif; font-size: 16px; color: var(--amber); line-height: 1; }
+    .status-dot-wrap { display: flex; align-items: center; gap: 4px; }
+    .sdot { width: 7px; height: 7px; border-radius: 50%; }
+    .sdot-in   { background: #4ADE80; }
+    .sdot-pend { background: var(--amber); }
+    .sdot-miss { background: var(--rose); }
+    .sdot-lbl  { font-size: 9px; font-weight: 700; }
+    .sdot-in   + .sdot-lbl  { color: #4ADE80; }
+    .sdot-pend + .sdot-lbl  { color: var(--amber); }
+    .sdot-miss + .sdot-lbl  { color: var(--rose); }
+
+    /* ── RIGHT: CHECK-IN PANEL ── */
+    .right-col { flex: 1; background: #F0F4F8; display: flex; flex-direction: column; overflow-y: auto; }
+
+    /* Empty state */
+    .empty-state { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 40px; }
+    .es-icon { width: 72px; height: 72px; background: white; border-radius: 20px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 20px rgba(15,30,53,.1); }
+    .es-icon svg { width: 32px; height: 32px; color: var(--text3); }
+    .es-title { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--text); }
+    .es-sub   { font-size: 14px; color: var(--text3); text-align: center; max-width: 340px; line-height: 1.6; }
+
+    /* Check-in detail panel */
+    .checkin-panel { padding: 20px 24px 40px; display: flex; flex-direction: column; gap: 16px; }
+
+    /* Donor card */
+    .donor-card { background: var(--navy); border-radius: 14px; padding: 20px 22px; position: relative; overflow: hidden; }
+    .dc-bg { position: absolute; inset: 0; background: radial-gradient(circle at 90% 50%, rgba(217,119,6,.2) 0%,transparent 55%); }
+    .dc-inner { position: relative; z-index: 1; }
+    .dc-top { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 14px; }
+    .dc-av { width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'DM Serif Display', serif; font-size: 20px; color: white; flex-shrink: 0; }
+    .dc-name { font-family: 'DM Serif Display', serif; font-size: 22px; color: white; line-height: 1.2; margin-bottom: 4px; }
+    .dc-tier { display: inline-flex; align-items: center; gap: 6px; background: rgba(217,119,6,.3); border: 1px solid rgba(217,119,6,.5); border-radius: 20px; padding: 3px 10px; font-size: 11px; font-weight: 700; color: #FCD34D; }
+    .dc-meta { display: flex; flex-wrap: wrap; gap: 8px; }
+    .dc-chip { display: flex; align-items: center; gap: 5px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.1); border-radius: 20px; padding: 4px 10px; font-size: 11px; color: rgba(255,255,255,.7); }
+    .dc-chip svg { width: 10px; height: 10px; opacity: .6; }
+
+    /* Badge assignment */
+    .badge-card { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; display: flex; align-items: center; gap: 16px; }
+    .badge-display { width: 80px; height: 80px; border: 3px solid var(--amber); border-radius: 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--amberl); flex-shrink: 0; position: relative; }
+    .badge-label { font-size: 9px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--amber); }
+    .badge-number { font-family: 'DM Serif Display', serif; font-size: 32px; color: var(--amber); line-height: 1; }
+    .badge-assign-row { display: flex; flex-direction: column; gap: 8px; flex: 1; }
+    .badge-input-row { display: flex; gap: 8px; align-items: center; }
+    .badge-input { width: 100px; padding: 8px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 18px; font-weight: 700; font-family: 'DM Serif Display', serif; color: var(--text); text-align: center; outline: none; background: var(--surf); }
+    .badge-input:focus { border-color: var(--amber); background: white; }
+    .badge-hint { font-size: 11px; color: var(--text3); }
+    .badge-auto-btn { padding: 7px 14px; background: none; border: 1px solid var(--border); border-radius: 7px; font-size: 12px; color: var(--text2); cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .12s; }
+    .badge-auto-btn:hover { background: var(--surf); }
+
+    /* Guest name panel */
+    .guest-panel { background: white; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    .gp-head { padding: 12px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+    .gp-title { font-size: 12px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--text3); flex: 1; }
+    .missing-alert { display: flex; align-items: center; gap: 6px; background: var(--rosel); border: 1px solid #FBCFE8; border-radius: 20px; padding: 3px 10px; font-size: 10px; font-weight: 700; color: var(--rose); }
+    .missing-alert svg { width: 10px; height: 10px; }
+    .guest-rows { padding: 8px; display: flex; flex-direction: column; gap: 4px; }
+    .gr2 { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 8px; background: var(--surf); transition: background .12s; }
+    .gr2:hover { background: #F0FDF4; }
+    .gr2.missing-guest { background: #FFF5F5; }
+    .gr2-num { width: 22px; height: 22px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; background: white; border: 1px solid var(--border); color: var(--text3); flex-shrink: 0; }
+    .gr2-name { flex: 1; }
+    .gr2-name input { width: 100%; border: none; background: none; font-size: 13px; font-weight: 500; color: var(--text); font-family: 'DM Sans', sans-serif; outline: none; }
+    .gr2-name input::placeholder { color: var(--rose); font-style: italic; }
+    .gr2-name input.missing { color: var(--rose); }
+    .gr2-diet { flex-shrink: 0; }
+    .diet-pill { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 20px; }
+    .dp-gf  { background: var(--teall); color: var(--teal); }
+    .dp-veg { background: var(--greenl); color: var(--green); }
+    .dp-all { background: var(--rosel); color: var(--rose); }
+    .dp-none{ background: var(--surf); color: var(--text3); border: 1px solid var(--border); }
+    .gr2-check { width: 24px; height: 24px; border: 1.5px solid var(--border); border-radius: 7px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .15s; flex-shrink: 0; }
+    .gr2-check.arrived { background: var(--green); border-color: var(--green); }
+    .gr2-check.arrived svg { display: block; }
+    .gr2-check svg { display: none; width: 12px; height: 12px; }
+    .add-guest-row { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 8px; cursor: pointer; color: var(--text3); font-size: 12px; transition: all .12s; }
+    .add-guest-row:hover { background: var(--amberl); color: var(--amber); }
+    .add-guest-row svg { width: 12px; height: 12px; }
+
+    /* Check-in actions */
+    .action-row { display: flex; gap: 10px; }
+    .ci-btn { flex: 1; padding: 14px; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .ci-btn svg { width: 16px; height: 16px; }
+    .cib-checkin { background: var(--green); color: white; border: none; box-shadow: 0 4px 16px rgba(21,128,61,.35); }
+    .cib-checkin:hover { background: #126e31; transform: translateY(-1px); }
+    .cib-partial { background: var(--amber); color: white; border: none; box-shadow: 0 4px 16px rgba(217,119,6,.3); }
+    .cib-partial:hover { background: #b45309; transform: translateY(-1px); }
+    .cib-noshow { background: none; border: 1.5px solid var(--border); color: var(--text3); }
+    .cib-noshow:hover { background: var(--surf); }
+
+    /* Success flash */
+    .success-flash { display: none; position: fixed; inset: 0; background: rgba(21,128,61,.15); z-index: 300; align-items: center; justify-content: center; }
+    .success-flash.show { display: flex; }
+    .sf-card { background: white; border-radius: 20px; padding: 36px 48px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,.2); }
+    .sf-icon { width: 72px; height: 72px; background: var(--greenl); border-radius: 50%; margin: 0 auto 16px; display: flex; align-items: center; justify-content: center; }
+    .sf-icon svg { width: 32px; height: 32px; color: var(--green); }
+    .sf-name { font-family: 'DM Serif Display', serif; font-size: 24px; color: var(--text); margin-bottom: 6px; }
+    .sf-detail { font-size: 14px; color: var(--text3); margin-bottom: 20px; line-height: 1.6; }
+    .sf-badge { display: inline-flex; align-items: center; gap: 8px; background: var(--amberl); border: 1px solid #FDE68A; border-radius: 30px; padding: 6px 18px; font-size: 13px; font-weight: 700; color: var(--amber); margin-bottom: 20px; }
+    .sf-close { padding: 10px 28px; background: var(--navy); color: white; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+
+    /* Notes row */
+    .notes-card { background: white; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    .nc-head { padding: 10px 16px; border-bottom: 1px solid var(--border); display: flex; gap: 10px; }
+    .nc-tab { padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 500; color: var(--text3); cursor: pointer; transition: all .12s; }
+    .nc-tab.active { background: var(--navy); color: white; font-weight: 600; }
+    .nc-body { padding: 12px 16px; }
+    .note-text { font-size: 12px; color: var(--text2); line-height: 1.7; }
+    .note-text.internal { color: var(--rose); font-style: italic; background: #FFF5F5; border-radius: 6px; padding: 8px 10px; }
+
+    /* Stats section at bottom of right column */
+    .event-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+    .es-stat { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; }
+    .es-val { font-family: 'DM Serif Display', serif; font-size: 26px; color: var(--text); line-height: 1; margin-bottom: 3px; }
+    .es-lbl { font-size: 10px; color: var(--text3); }
+
+    /* Search results dropdown */
+    .search-results { position: absolute; top: 100%; left: 0; right: 0; background: var(--navy); border: 1px solid rgba(255,255,255,.15); border-radius: 10px; z-index: 50; margin-top: 4px; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,.4); display: none; }
+    .search-results.show { display: block; }
+    .sr-row { padding: 10px 14px; display: flex; align-items: center; gap: 10px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,.06); transition: background .1s; }
+    .sr-row:last-child { border-bottom: none; }
+    .sr-row:hover { background: rgba(255,255,255,.08); }
+    .sr-av { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: white; flex-shrink: 0; }
+    .sr-name { font-size: 13px; font-weight: 600; color: white; }
+    .sr-sub  { font-size: 11px; color: rgba(255,255,255,.45); margin-top: 1px; }
+    .sr-badge{ font-size: 10px; font-weight: 700; color: var(--amber); margin-left: auto; }
+  </style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="tb-logo">
+    <div class="tb-mark"><svg viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7.5" stroke="white" stroke-width="1.5"/><path d="M5.5 9.5C6.5 11.5 9 13 9 13s2.5-1.5 3.5-3.5S12 5 9 5 4.5 7.5 5.5 9.5z" fill="white" fill-opacity=".9"/></svg></div>
+    <div class="tb-name">Atlas</div>
+  </div>
+  <div class="tb-sep"></div>
+  <div>
+    <div class="tb-event">Bishop's Annual Gala 2026</div>
+    <div class="tb-date">Friday May 16, 2026 · Marriott Downtown</div>
+  </div>
+  <div class="tb-right">
+    <div class="live-badge"><div class="live-dot"></div><span class="live-text">LIVE CHECK-IN</span></div>
+    <div class="tb-sep"></div>
+    <div class="tb-stat">
+      <div class="tb-stat-val" style="color:#4ADE80" id="stat-checked">0</div>
+      <div class="tb-stat-lbl">Checked in</div>
+    </div>
+    <div class="tb-sep"></div>
+    <div class="tb-stat">
+      <div class="tb-stat-val" style="color:var(--amber)" id="stat-pending">468</div>
+      <div class="tb-stat-lbl">Expected</div>
+    </div>
+    <div class="tb-sep"></div>
+    <div class="tb-stat">
+      <div class="tb-stat-val" style="color:#FDA4AF" id="stat-noshow">0</div>
+      <div class="tb-stat-lbl">No-show</div>
+    </div>
+    <div class="tb-sep"></div>
+    <div class="clock-text" id="clock">—</div>
+  </div>
+</div>
+
+<!-- BODY -->
+<div class="body-wrap">
+
+  <!-- LEFT: SEARCH + LIST -->
+  <div class="left-col">
+    <div class="search-section">
+      <div class="search-label">Find guest</div>
+      <div class="search-box" style="position:relative">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="6.5" cy="6.5" r="5"/><path d="M11 11l3 3"/></svg>
+        <input class="search-input" id="search-input" type="text" placeholder="Name, badge #, or table…" oninput="handleSearch(this.value)" onfocus="showSearchResults()" onblur="setTimeout(hideSearchResults,200)" autocomplete="off">
+        <div class="search-results" id="search-results"></div>
+      </div>
+      <div class="search-hints">
+        <span class="sh" onclick="quickSearch('O\'Brien')">O'Brien</span>
+        <span class="sh" onclick="quickSearch('Table 1')">Table 1</span>
+        <span class="sh" onclick="quickSearch('Diamond')">Diamond</span>
+        <span class="sh" onclick="quickSearch('badge 1')">Badge #1</span>
+        <span class="sh" onclick="setQueueFilter('missing')">Missing names</span>
+      </div>
+    </div>
+
+    <div class="queue-tabs">
+      <div class="qt active" id="qt-all" onclick="setQueueFilter('all',this)">All <span class="qt-badge" id="qb-all">468</span></div>
+      <div class="qt" id="qt-pending" onclick="setQueueFilter('pending',this)">Pending <span class="qt-badge" id="qb-pend">468</span></div>
+      <div class="qt" id="qt-checkedin" onclick="setQueueFilter('checkedin',this)">Checked in <span class="qt-badge qt-badge-ok" id="qb-in">0</span></div>
+      <div class="qt" id="qt-missing" onclick="setQueueFilter('missing',this)">Missing <span class="qt-badge" id="qb-miss">14</span></div>
+    </div>
+
+    <div class="queue-list" id="queue-list"></div>
+  </div>
+
+  <!-- RIGHT: CHECK-IN DETAIL -->
+  <div class="right-col" id="right-col">
+
+    <!-- Empty state -->
+    <div class="empty-state" id="empty-state">
+      <div class="es-icon"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="8" r="5"/><path d="M2 28c0-5.5 4.5-10 10-10h1"/><rect x="18" y="18" width="12" height="12" rx="2"/><path d="M22 24h4M24 22v4"/></svg></div>
+      <div class="es-title">Select a guest to check in</div>
+      <div class="es-sub">Search by name, badge number, or table — or tap any name in the queue on the left.</div>
+    </div>
+
+    <!-- Check-in panel (hidden until selected) -->
+    <div class="checkin-panel" id="checkin-panel" style="display:none">
+
+      <!-- Donor card -->
+      <div class="donor-card">
+        <div class="dc-bg"></div>
+        <div class="dc-inner">
+          <div class="dc-top">
+            <div class="dc-av" id="dc-av">JO</div>
+            <div>
+              <div class="dc-name" id="dc-name">James & Patricia O'Brien</div>
+              <div style="margin-top:5px"><span class="dc-tier" id="dc-tier">★ Presenting Sponsor</span></div>
+            </div>
+            <div style="margin-left:auto;text-align:right;position:relative;z-index:1">
+              <div style="font-size:11px;color:rgba(255,255,255,.4);margin-bottom:2px">Table</div>
+              <div style="font-family:'DM Serif Display',serif;font-size:28px;color:#FCD34D;line-height:1" id="dc-table">1</div>
+            </div>
+          </div>
+          <div class="dc-meta" id="dc-meta"></div>
+        </div>
+      </div>
+
+      <!-- Badge assignment -->
+      <div class="badge-card">
+        <div class="badge-display">
+          <div class="badge-label">BADGE</div>
+          <div class="badge-number" id="badge-display-num">—</div>
+        </div>
+        <div class="badge-assign-row">
+          <div style="font-size:13px;font-weight:600;color:var(--text)">Auction &amp; badge number</div>
+          <div class="badge-input-row">
+            <input class="badge-input" id="badge-input" type="text" placeholder="—" oninput="updateBadge(this.value)" maxlength="4">
+            <button class="badge-auto-btn" onclick="autoAssignBadge()">Auto-assign next</button>
+          </div>
+          <div class="badge-hint" id="badge-hint">Enter badge number or auto-assign the next available</div>
+        </div>
+        <div style="margin-left:auto;text-align:right;flex-shrink:0">
+          <div style="font-size:10px;color:var(--text3);margin-bottom:4px">Solicitor</div>
+          <div style="font-size:12px;font-weight:600;color:var(--text)" id="dc-solicitor">Mike Donovan</div>
+        </div>
+      </div>
+
+      <!-- Guest names -->
+      <div class="guest-panel">
+        <div class="gp-head">
+          <span class="gp-title">Guest names & attendance</span>
+          <span id="missing-count-badge" style="display:none" class="missing-alert">
+            <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M5 2v3.5M5 8v.3"/><path d="M1 9.5L5 1l4 8.5H1z"/></svg>
+            <span id="missing-count-text">names needed</span>
+          </span>
+          <button style="padding:4px 11px;border:1px solid var(--border);border-radius:7px;background:none;font-size:11px;color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif" onclick="markAllPresent()">Mark all present</button>
+        </div>
+        <div class="guest-rows" id="guest-rows"></div>
+        <div class="add-guest-row" onclick="addGuestRow()">
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M6 1v10M1 6h10"/></svg>
+          Add walk-in guest
+        </div>
+      </div>
+
+      <!-- Notes -->
+      <div class="notes-card">
+        <div class="nc-head">
+          <div class="nc-tab active" id="ntab-staff" onclick="switchNote('staff',this)">Staff note (internal)</div>
+          <div class="nc-tab" id="ntab-donor" onclick="switchNote('donor',this)">Donor preference</div>
+        </div>
+        <div class="nc-body">
+          <div id="note-staff" class="note-text internal">Seat Patricia near Bishop's table — she is hard of hearing. James has mobility issues, needs aisle seat. VIP — flag for Bishop greeting.</div>
+          <div id="note-donor" class="note-text" style="display:none">"We'd prefer to be near the Harrington table if possible. Appreciate proximity to the stage."</div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="action-row" id="action-row">
+        <button class="ci-btn cib-checkin" id="btn-checkin" onclick="doCheckIn()">
+          <svg viewBox="0 0 16 16" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M3 8l3.5 3.5 7-7"/></svg>
+          Check in all guests
+        </button>
+        <button class="ci-btn cib-partial" onclick="doPartialCheckIn()">
+          <svg viewBox="0 0 16 16" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round"><circle cx="8" cy="8" r="6.5"/><path d="M5.5 8h5"/></svg>
+          Partial check-in
+        </button>
+        <button class="ci-btn cib-noshow" onclick="doNoShow()">No-show</button>
+      </div>
+
+      <!-- Separator -->
+      <div style="border-top:1px solid var(--border);padding-top:16px">
+        <div class="event-stats">
+          <div class="es-stat"><div class="es-val" style="color:#4ADE80" id="p-checked">0</div><div class="es-lbl">Checked in</div></div>
+          <div class="es-stat"><div class="es-val" style="color:var(--amber)" id="p-expected">468</div><div class="es-lbl">Expected</div></div>
+          <div class="es-stat"><div class="es-val" style="color:var(--rose)" id="p-noshow">0</div><div class="es-lbl">No-show</div></div>
+          <div class="es-stat"><div class="es-val" style="color:var(--purp,#7C3AED)" id="p-walkin">0</div><div class="es-lbl">Walk-ins</div></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SUCCESS FLASH -->
+<div class="success-flash" id="success-flash" onclick="closeFlash()">
+  <div class="sf-card">
+    <div class="sf-icon"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M4 16l8 8 16-16"/></svg></div>
+    <div class="sf-name" id="sf-name">Checked in!</div>
+    <div class="sf-detail" id="sf-detail">12 guests · Table 1</div>
+    <div class="sf-badge" id="sf-badge">🏷 Badge #001</div>
+    <button class="sf-close" onclick="closeFlash()">Done — next guest</button>
+  </div>
+</div>
+
+<script>
+// ── DATA ─────────────────────────────────────────────────────
+const GUESTS = [
+  { id:1,  name:"James & Patricia O'Brien", first:"JO", color:"#7C3AED", tier:"Presenting",  table:1,  badge:"001", seats:12, solicitor:"Mike Donovan",
+    guests:[
+      {name:"James O'Brien",    diet:"gf",   arrived:false},
+      {name:"Patricia O'Brien", diet:"gf",   arrived:false},
+      {name:"Colleen O'Brien",  diet:"none", arrived:false},
+      {name:"Thomas O'Brien",   diet:"none", arrived:false},
+      {name:"Bishop Williams",  diet:"none", arrived:false},
+      {name:"Fr. Matthew Kelly",diet:"none", arrived:false},
+      {name:"Sr. Agnes Murphy", diet:"veg",  arrived:false},
+      {name:"Dr. Robert Chen",  diet:"none", arrived:false},
+      {name:"",                 diet:"none", arrived:false},
+      {name:"",                 diet:"none", arrived:false},
+      {name:"Sarah Reynolds",   diet:"none", arrived:false, staff:true},
+      {name:"Mike Donovan",     diet:"none", arrived:false, staff:true},
+    ],
+    staffNote:"Seat Patricia near Bishop's table — hard of hearing. James has mobility issues, needs aisle seat. VIP — flag for Bishop greeting.",
+    donorNote:"\"We'd prefer to be near the Harrington table if possible. Appreciate proximity to the stage.\"",
+    status:"pending", missingNames:2 },
+
+  { id:2,  name:"Catholic Community Foundation", first:"CC", color:"#0D9488", tier:"Diamond", table:2, badge:"002", seats:10, solicitor:"Mike Donovan",
+    guests:[
+      {name:"Margaret Fitzpatrick",diet:"none",arrived:false},
+      {name:"Fr. Thomas Brady",    diet:"none",arrived:false},
+      {name:"Helen Sullivan",      diet:"veg", arrived:false},
+      {name:"David Walsh",         diet:"none",arrived:false},
+      {name:"Anne Costello",       diet:"gf",  arrived:false},
+      {name:"Robert Morrison",     diet:"none",arrived:false},
+      {name:"Patricia Ryan",       diet:"none",arrived:false},
+      {name:"Michael Burns",       diet:"all", arrived:false},
+      {name:"Carol Hennessy",      diet:"none",arrived:false},
+      {name:"James Doyle",         diet:"none",arrived:false},
+    ],
+    staffNote:"Foundation table — Executive Director is Margaret Fitzpatrick. Fr. Brady should be greeted by Bishop.",
+    donorNote:"\"Please seat Fr. Brady in a central location if possible.\"",
+    status:"pending", missingNames:0 },
+
+  { id:3,  name:"David & Susan Harrington", first:"DH", color:"#2563EB", tier:"Diamond", table:3, badge:"003", seats:10, solicitor:"Mike Donovan",
+    guests:[
+      {name:"David Harrington",  diet:"none",arrived:false},
+      {name:"Susan Harrington",  diet:"veg", arrived:false},
+      {name:"",                  diet:"none",arrived:false},
+      {name:"",                  diet:"none",arrived:false},
+      {name:"James Harrington Jr.",diet:"none",arrived:false},
+      {name:"Catherine Walsh",   diet:"none",arrived:false},
+      {name:"Dr. Robert Walsh",  diet:"none",arrived:false},
+      {name:"Anne Marie Sullivan",diet:"gf", arrived:false},
+      {name:"Patrick O'Malley",  diet:"none",arrived:false},
+      {name:"Grace O'Malley",    diet:"none",arrived:false},
+    ],
+    staffNote:"David is Chair of Catholic Foundation Board — acknowledge publicly during program.",
+    donorNote:"\"Near the Fitzpatrick table please.\"",
+    status:"pending", missingNames:2 },
+
+  { id:4,  name:"Sullivan Family Foundation", first:"SF", color:"#D97706", tier:"Gold",  table:8,  badge:"012", seats:10, solicitor:"Mike Donovan",
+    guests:[
+      {name:"Thomas Sullivan",   diet:"none",arrived:false},
+      {name:"Margaret Sullivan", diet:"gf",  arrived:false},
+      {name:"William Sullivan",  diet:"none",arrived:false},
+      {name:"Catherine Sullivan",diet:"none",arrived:false},
+      {name:"Fr. William Jones", diet:"none",arrived:false},
+      {name:"Anne Fitzgerald",   diet:"veg", arrived:false},
+      {name:"Robert Fitzgerald", diet:"none",arrived:false},
+      {name:"Mary Costello",     diet:"none",arrived:false},
+      {name:"John Costello",     diet:"none",arrived:false},
+      {name:"Helen Morrison",    diet:"none",arrived:false},
+    ],
+    staffNote:"DAF distribution + tickets purchased separately. Thomas wants to discuss endowment naming. Good time for Mike to introduce new campaign.",
+    donorNote:"\"Looking forward to meeting the Bishop.\"",
+    status:"pending", missingNames:0 },
+
+  { id:5,  name:"Dr. Patricia Kim", first:"PK", color:"#BE185D", tier:"Gold", table:12, badge:"014", seats:10, solicitor:"Janet Williams",
+    guests:[
+      {name:"Patricia Kim",   diet:"veg",arrived:false},
+      {name:"",               diet:"none",arrived:false},
+      {name:"",               diet:"none",arrived:false},
+      {name:"",               diet:"none",arrived:false},
+      {name:"",               diet:"none",arrived:false},
+      {name:"",               diet:"none",arrived:false},
+    ],
+    staffNote:"6 names still outstanding — contact Kim office before event.",
+    donorNote:"",
+    status:"pending", missingNames:6 },
+
+  { id:6,  name:"Thomas & Angela Kowalski", first:"TK", color:"#15803D", tier:"Individual", table:20, badge:"088", seats:2, solicitor:"Sarah Reynolds",
+    guests:[
+      {name:"Thomas Kowalski", diet:"none",arrived:false},
+      {name:"Angela Kowalski", diet:"gf",  arrived:false},
+    ],
+    staffNote:"Long-time volunteers — donor-volunteer crossover. Good re-engagement prospect.",
+    donorNote:"",
+    status:"pending", missingNames:0 },
+
+  { id:7,  name:"Fr. Joseph Williams", first:"FW", color:"#334155", tier:"Complimentary", table:4, badge:"—", seats:2, solicitor:"—",
+    guests:[
+      {name:"Fr. Joseph Williams", diet:"none",arrived:false},
+      {name:"Fr. Patrick Collins", diet:"none",arrived:false},
+    ],
+    staffNote:"Diocesan clergy — complimentary. No ticket payment.",
+    donorNote:"",
+    status:"pending", missingNames:0 },
+];
+
+let selectedId = null;
+let checkedInCount = 0;
+let noShowCount = 0;
+let walkInCount = 0;
+let nextBadge = 100;
+let queueFilter = 'all';
+let guestData = JSON.parse(JSON.stringify(GUESTS)); // deep copy
+
+// ── CLOCK ─────────────────────────────────────────────────────
+function updateClock() {
+  const now = new Date();
+  const h = String(now.getHours()).padStart(2,'0');
+  const m = String(now.getMinutes()).padStart(2,'0');
+  const s = String(now.getSeconds()).padStart(2,'0');
+  document.getElementById('clock').textContent = `${h}:${m}:${s}`;
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// ── QUEUE ─────────────────────────────────────────────────────
+function getFiltered() {
+  return guestData.filter(g => {
+    if (queueFilter === 'checkedin') return g.status === 'checkedin';
+    if (queueFilter === 'pending')   return g.status === 'pending' || g.status === 'partial';
+    if (queueFilter === 'missing')   return g.missingNames > 0;
+    return true;
+  });
+}
+
+function renderQueue() {
+  const filtered = getFiltered();
+  const list = document.getElementById('queue-list');
+  list.innerHTML = filtered.map(g => {
+    const isSelected = g.id === selectedId;
+    const statusDot = g.status === 'checkedin' ? 'sdot-in' : g.missingNames > 0 ? 'sdot-miss' : 'sdot-pend';
+    const statusLbl = g.status === 'checkedin' ? 'In' : g.status === 'noshow' ? 'No-show' : g.missingNames > 0 ? 'Missing' : 'Pending';
+    return `<div class="guest-row ${isSelected?'selected':''} ${g.status==='checkedin'?'checked-in':''}" onclick="selectGuest(${g.id})">
+      <div class="gr-av" style="background:${g.color}">${g.first}</div>
+      <div class="gr-body">
+        <div class="gr-name">${g.name}</div>
+        <div class="gr-sub">${g.tier} · Table ${g.table} · ${g.seats} seats</div>
+      </div>
+      <div class="gr-right">
+        <div class="badge-num">#${g.badge}</div>
+        <div class="status-dot-wrap">
+          <div class="sdot ${statusDot}"></div>
+          <span class="sdot-lbl">${statusLbl}</span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  updateBadgeCounts();
+}
+
+function updateBadgeCounts() {
+  const pending  = guestData.filter(g => g.status==='pending'||g.status==='partial').length;
+  const checked  = guestData.filter(g => g.status==='checkedin').length;
+  const missing  = guestData.filter(g => g.missingNames>0).length;
+  document.getElementById('qb-all').textContent  = guestData.length;
+  document.getElementById('qb-pend').textContent = pending;
+  document.getElementById('qb-in').textContent   = checked;
+  document.getElementById('qb-miss').textContent = missing;
+  document.getElementById('stat-checked').textContent = checkedInCount;
+  document.getElementById('stat-pending').textContent  = pending * 10; // approx
+  document.getElementById('stat-noshow').textContent   = noShowCount;
+  document.getElementById('p-checked').textContent = checkedInCount;
+  document.getElementById('p-noshow').textContent  = noShowCount;
+  document.getElementById('p-walkin').textContent  = walkInCount;
+}
+
+function setQueueFilter(f, el) {
+  queueFilter = f;
+  document.querySelectorAll('.qt').forEach(t => t.classList.remove('active'));
+  if (el) el.classList.add('active');
+  renderQueue();
+}
+
+// ── SELECT GUEST ──────────────────────────────────────────────
+function selectGuest(id) {
+  selectedId = id;
+  const g = guestData.find(x => x.id === id);
+  if (!g) return;
+
+  document.getElementById('empty-state').style.display = 'none';
+  document.getElementById('checkin-panel').style.display = 'flex';
+  document.getElementById('checkin-panel').style.flexDirection = 'column';
+  document.getElementById('checkin-panel').style.gap = '16px';
+
+  // Donor card
+  document.getElementById('dc-av').textContent = g.first;
+  document.getElementById('dc-av').style.background = g.color;
+  document.getElementById('dc-name').textContent = g.name;
+  document.getElementById('dc-tier').textContent = `★ ${g.tier}`;
+  document.getElementById('dc-table').textContent = g.table;
+  document.getElementById('dc-solicitor').textContent = g.solicitor;
+  document.getElementById('dc-meta').innerHTML = `
+    <div class="dc-chip"><svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><rect x="1" y="2" width="9" height="8" rx="1.2"/><path d="M1 5h9"/></svg>${g.seats} seats</div>
+    <div class="dc-chip"><svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M5.5 1C4 1 3 2 3 3.5c0 2 2.5 5 2.5 5s2.5-3 2.5-5C8 2 7 1 5.5 1z"/></svg>Table ${g.table}</div>
+    ${g.missingNames>0?`<div class="dc-chip" style="background:rgba(190,24,93,.2);border-color:rgba(190,24,93,.4);color:#FDA4AF"><svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><circle cx="5.5" cy="5.5" r="4"/><path d="M5.5 3.5v2.5M5.5 8v.3"/></svg>${g.missingNames} names missing</div>`:''}
+    ${g.status==='checkedin'?'<div class="dc-chip" style="background:rgba(21,128,61,.3);border-color:rgba(21,128,61,.5);color:#4ADE80">✓ Already checked in</div>':''}
+  `;
+
+  // Badge
+  document.getElementById('badge-input').value = g.badge !== '—' ? g.badge : '';
+  document.getElementById('badge-display-num').textContent = g.badge;
+
+  // Missing
+  const miss = g.missingNames;
+  const mb = document.getElementById('missing-count-badge');
+  if (miss > 0) {
+    mb.style.display = 'flex';
+    document.getElementById('missing-count-text').textContent = `${miss} name${miss>1?'s':''} needed`;
+  } else {
+    mb.style.display = 'none';
+  }
+
+  // Notes
+  document.getElementById('note-staff').textContent = g.staffNote || 'No internal notes.';
+  document.getElementById('note-donor').textContent = g.donorNote || 'No donor preference noted.';
+
+  // Guest rows
+  renderGuestRows(id);
+  renderQueue();
+}
+
+function renderGuestRows(id) {
+  const g = guestData.find(x => x.id === id);
+  if (!g) return;
+  const dietClasses = {gf:'dp-gf',veg:'dp-veg',all:'dp-all',none:'dp-none'};
+  const dietLabels  = {gf:'GF',veg:'Veg',all:'Allergy',none:'—'};
+  document.getElementById('guest-rows').innerHTML = g.guests.map((gu,i) => {
+    const isMissing = !gu.name;
+    return `<div class="gr2 ${isMissing?'missing-guest':''}" id="guestrow-${g.id}-${i}">
+      <div class="gr2-num">${i+1}</div>
+      <div class="gr2-name">
+        <input type="text" value="${gu.name}" placeholder="Guest name needed…"
+          class="${isMissing?'missing':''}"
+          onchange="updateGuestName(${g.id},${i},this.value)"
+          onfocus="this.style.background='var(--amberl)'"
+          onblur="this.style.background=''">
+      </div>
+      ${gu.staff?'<span style="font-size:10px;color:var(--blue);font-weight:600;flex-shrink:0">Staff</span>':''}
+      <div class="gr2-diet">
+        <select class="diet-pill ${dietClasses[gu.diet]}" onchange="updateGuestDiet(${g.id},${i},this.value)" style="border:none;cursor:pointer;font-family:\'DM Sans\',sans-serif;font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px">
+          <option value="none" ${gu.diet==='none'?'selected':''}>—</option>
+          <option value="gf"   ${gu.diet==='gf'?'selected':''}>GF</option>
+          <option value="veg"  ${gu.diet==='veg'?'selected':''}>Veg</option>
+          <option value="all"  ${gu.diet==='all'?'selected':''}>Allergy</option>
+        </select>
+      </div>
+      <div class="gr2-check ${gu.arrived?'arrived':''}" onclick="toggleArrived(${g.id},${i})" id="arrcheck-${g.id}-${i}">
+        <svg viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" width="12" height="12"><path d="M2 6l3 3 6-6"/></svg>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function updateGuestName(gid, idx, val) {
+  const g = guestData.find(x => x.id === gid);
+  if (!g) return;
+  g.guests[idx].name = val;
+  g.missingNames = g.guests.filter(gu => !gu.name).length;
+  const mb = document.getElementById('missing-count-badge');
+  if (g.missingNames > 0) {
+    mb.style.display = 'flex';
+    document.getElementById('missing-count-text').textContent = `${g.missingNames} name${g.missingNames>1?'s':''} needed`;
+  } else {
+    mb.style.display = 'none';
+  }
+  updateBadgeCounts();
+}
+
+function updateGuestDiet(gid, idx, val) {
+  const g = guestData.find(x => x.id === gid);
+  if (g) g.guests[idx].diet = val;
+}
+
+function toggleArrived(gid, idx) {
+  const g = guestData.find(x => x.id === gid);
+  if (!g) return;
+  g.guests[idx].arrived = !g.guests[idx].arrived;
+  const el = document.getElementById(`arrcheck-${gid}-${idx}`);
+  if (el) el.classList.toggle('arrived');
+}
+
+function markAllPresent() {
+  const g = guestData.find(x => x.id === selectedId);
+  if (!g) return;
+  g.guests.forEach((gu,i) => {
+    gu.arrived = true;
+    const el = document.getElementById(`arrcheck-${g.id}-${i}`);
+    if (el) el.classList.add('arrived');
+  });
+}
+
+function addGuestRow() {
+  const g = guestData.find(x => x.id === selectedId);
+  if (!g) return;
+  g.guests.push({name:'',diet:'none',arrived:false});
+  walkInCount++;
+  document.getElementById('p-walkin').textContent = walkInCount;
+  renderGuestRows(selectedId);
+}
+
+// ── BADGE ─────────────────────────────────────────────────────
+function updateBadge(val) {
+  document.getElementById('badge-display-num').textContent = val || '—';
+  document.getElementById('badge-hint').textContent = val ? `Badge #${val} assigned` : 'Enter badge number or auto-assign';
+  const g = guestData.find(x => x.id === selectedId);
+  if (g) g.badge = val;
+}
+
+function autoAssignBadge() {
+  const num = String(nextBadge).padStart(3,'0');
+  nextBadge++;
+  document.getElementById('badge-input').value = num;
+  updateBadge(num);
+}
+
+// ── CHECK-IN ACTIONS ──────────────────────────────────────────
+function doCheckIn() {
+  const g = guestData.find(x => x.id === selectedId);
+  if (!g) return;
+  g.status = 'checkedin';
+  g.guests.forEach(gu => gu.arrived = true);
+  checkedInCount += g.guests.length;
+  showFlash(g, 'all');
+  renderGuestRows(selectedId);
+  renderQueue();
+  updateBadgeCounts();
+}
+
+function doPartialCheckIn() {
+  const g = guestData.find(x => x.id === selectedId);
+  if (!g) return;
+  const count = g.guests.filter(gu => gu.arrived).length;
+  g.status = 'partial';
+  checkedInCount += count;
+  showFlash(g, 'partial', count);
+  renderQueue();
+  updateBadgeCounts();
+}
+
+function doNoShow() {
+  const g = guestData.find(x => x.id === selectedId);
+  if (!g) return;
+  g.status = 'noshow';
+  noShowCount += g.seats;
+  document.getElementById('stat-noshow').textContent = noShowCount;
+  document.getElementById('p-noshow').textContent = noShowCount;
+  renderQueue();
+}
+
+function showFlash(g, type, count) {
+  const flash = document.getElementById('success-flash');
+  document.getElementById('sf-name').textContent = type === 'partial' ? `${count} of ${g.guests.length} checked in` : `Checked in!`;
+  document.getElementById('sf-detail').textContent = `${g.name} · Table ${g.table} · ${type==='partial'?count:g.guests.length} guests`;
+  document.getElementById('sf-badge').textContent = `🏷 Badge #${g.badge}`;
+  flash.classList.add('show');
+  setTimeout(closeFlash, 3500);
+}
+
+function closeFlash() {
+  document.getElementById('success-flash').classList.remove('show');
+}
+
+// ── SEARCH ────────────────────────────────────────────────────
+function handleSearch(val) {
+  const q = val.toLowerCase();
+  const res = document.getElementById('search-results');
+  if (!q) { res.classList.remove('show'); return; }
+  const matches = guestData.filter(g =>
+    g.name.toLowerCase().includes(q) ||
+    g.badge.toLowerCase().includes(q) ||
+    String(g.table).includes(q) ||
+    g.tier.toLowerCase().includes(q)
+  );
+  if (matches.length === 0) { res.classList.remove('show'); return; }
+  res.innerHTML = matches.slice(0,6).map(g => `
+    <div class="sr-row" onmousedown="selectGuest(${g.id});document.getElementById('search-input').value='${g.name}';hideSearchResults()">
+      <div class="sr-av" style="background:${g.color}">${g.first}</div>
+      <div>
+        <div class="sr-name">${g.name}</div>
+        <div class="sr-sub">${g.tier} · Table ${g.table}</div>
+      </div>
+      <span class="sr-badge">#${g.badge}</span>
+    </div>
+  `).join('');
+  res.classList.add('show');
+}
+
+function showSearchResults() {
+  const val = document.getElementById('search-input').value;
+  if (val) handleSearch(val);
+}
+
+function hideSearchResults() {
+  document.getElementById('search-results').classList.remove('show');
+}
+
+function quickSearch(q) {
+  document.getElementById('search-input').value = q;
+  handleSearch(q);
+  showSearchResults();
+}
+
+// ── NOTES ─────────────────────────────────────────────────────
+function switchNote(type, el) {
+  document.querySelectorAll('.nc-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('note-staff').style.display = type === 'staff' ? 'block' : 'none';
+  document.getElementById('note-donor').style.display = type === 'donor' ? 'block' : 'none';
+}
+
+// ── INIT ──────────────────────────────────────────────────────
+renderQueue();
+// Pre-select first guest for demo
+setTimeout(() => selectGuest(1), 100);
+</script>
+</body>
+</html>
