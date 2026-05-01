@@ -1,0 +1,2016 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GiveCentral Atlas — Donor 360 Profile</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:       #0E1E35;
+      --navy-2:     #152844;
+      --navy-3:     #1E3A5F;
+      --blue:       #2563EB;
+      --blue-mid:   #3B82F6;
+      --blue-light: #DBEAFE;
+      --blue-pale:  #EFF6FF;
+      --gold:       #B45309;
+      --gold-light: #FEF3C7;
+      --teal:       #0D9488;
+      --teal-light: #CCFBF1;
+      --rose:       #BE185D;
+      --rose-light: #FCE7F3;
+      --green:      #15803D;
+      --green-light:#DCFCE7;
+      --amber:      #D97706;
+      --amber-light:#FEF3C7;
+      --text:       #0F172A;
+      --text-2:     #334155;
+      --text-3:     #64748B;
+      --border:     #E2E8F0;
+      --surface:    #F8FAFC;
+      --white:      #FFFFFF;
+      --sidebar-w:  220px;
+    }
+
+    html { font-size: 14px; -webkit-font-smoothing: antialiased; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--surface); color: var(--text); min-height: 100vh; display: flex; }
+
+    /* ── Sidebar nav ── */
+    .sidebar {
+      width: var(--sidebar-w);
+      background: var(--navy);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+    }
+
+    .sidebar-logo {
+      padding: 18px 18px 14px;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+    }
+    .sidebar-logo-mark {
+      width: 30px; height: 30px;
+      background: var(--blue);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .sidebar-logo-mark svg { width: 15px; height: 15px; }
+    .sidebar-logo-text { display: flex; flex-direction: column; }
+    .sidebar-logo-name { font-family: 'DM Serif Display', serif; font-size: 15px; color: white; line-height: 1; }
+    .sidebar-logo-sub { font-size: 9px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.35); margin-top: 3px; }
+
+    .sidebar-search {
+      margin: 12px 12px 6px;
+      background: rgba(255,255,255,.07);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 8px;
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 12px;
+    }
+    .sidebar-search svg { width: 13px; height: 13px; color: rgba(255,255,255,.35); flex-shrink: 0; }
+    .sidebar-search input {
+      background: none; border: none; outline: none;
+      font-size: 12px; color: rgba(255,255,255,.6);
+      font-family: 'DM Sans', sans-serif; width: 100%;
+    }
+    .sidebar-search input::placeholder { color: rgba(255,255,255,.3); }
+
+    .nav-group { padding: 8px 8px 0; }
+    .nav-group-label { font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.3); padding: 0 10px; margin-bottom: 4px; }
+    .nav-item {
+      display: flex; align-items: center; gap: 9px;
+      padding: 8px 10px; border-radius: 7px;
+      font-size: 12px; font-weight: 500; color: rgba(255,255,255,.55);
+      cursor: pointer; transition: all .15s; margin-bottom: 1px;
+    }
+    .nav-item:hover { background: rgba(255,255,255,.07); color: rgba(255,255,255,.85); }
+    .nav-item.active { background: var(--blue); color: white; }
+    .nav-item svg { width: 14px; height: 14px; flex-shrink: 0; }
+    .nav-badge {
+      margin-left: auto; background: rgba(255,255,255,.12);
+      color: rgba(255,255,255,.6); border-radius: 10px;
+      padding: 1px 7px; font-size: 10px; font-weight: 600;
+    }
+    .nav-item.active .nav-badge { background: rgba(255,255,255,.2); color: white; }
+
+    .sidebar-user {
+      margin-top: auto;
+      padding: 12px;
+      border-top: 1px solid rgba(255,255,255,.08);
+      display: flex; align-items: center; gap: 9px;
+    }
+    .sidebar-avatar {
+      width: 30px; height: 30px; border-radius: 50%;
+      background: var(--blue); display: flex; align-items: center;
+      justify-content: center; font-size: 11px; font-weight: 700;
+      color: white; flex-shrink: 0;
+    }
+    .sidebar-user-name { font-size: 12px; font-weight: 500; color: rgba(255,255,255,.75); }
+    .sidebar-user-role { font-size: 10px; color: rgba(255,255,255,.35); margin-top: 1px; }
+
+    /* ── Main content ── */
+    .main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+
+    /* Topbar */
+    .topbar {
+      background: white;
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+      height: 52px;
+      display: flex; align-items: center; gap: 12px;
+      flex-shrink: 0;
+    }
+    .breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 12px; }
+    .breadcrumb a { color: var(--text-3); transition: color .15s; text-decoration: none; }
+    .breadcrumb a:hover { color: var(--blue); }
+    .breadcrumb svg { width: 10px; height: 10px; color: #CBD5E1; }
+    .breadcrumb span { color: var(--text); font-weight: 500; }
+    .topbar-actions { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+    .tb-btn {
+      padding: 6px 14px; border-radius: 7px;
+      font-size: 12px; font-weight: 500; cursor: pointer;
+      font-family: 'DM Sans', sans-serif; transition: all .15s;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .tb-btn svg { width: 12px; height: 12px; }
+    .tb-ghost { background: none; border: 1px solid var(--border); color: var(--text-2); }
+    .tb-ghost:hover { border-color: #94A3B8; background: var(--surface); }
+    .tb-primary { background: var(--blue); border: none; color: white; box-shadow: 0 1px 4px rgba(37,99,235,.3); }
+    .tb-primary:hover { background: #1D4ED8; }
+
+    /* Profile layout */
+    .profile-wrap { flex: 1; display: grid; grid-template-columns: 1fr 300px; gap: 0; min-height: 0; }
+
+    /* Profile main */
+    .profile-main { padding: 24px; overflow-y: auto; }
+
+    /* Hero card */
+    .hero-card {
+      background: white; border: 1px solid var(--border);
+      border-radius: 14px; overflow: hidden; margin-bottom: 18px;
+    }
+    .hero-banner {
+      height: 72px;
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-3) 100%);
+      position: relative;
+    }
+    .hero-banner-pattern {
+      position: absolute; inset: 0; opacity: .15;
+      background-image: radial-gradient(circle at 20% 50%, rgba(255,255,255,.4) 0%, transparent 60%),
+                        radial-gradient(circle at 80% 20%, rgba(59,130,246,.6) 0%, transparent 50%);
+    }
+    .hero-body { padding: 0 22px 20px; }
+    .hero-identity { display: flex; align-items: flex-end; gap: 16px; margin-bottom: 16px; margin-top: 16px; }
+    .donor-avatar {
+      width: 60px; height: 60px; border-radius: 50%;
+      background: var(--blue); border: 3px solid white;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'DM Serif Display', serif; font-size: 22px; color: white;
+      flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,.15);
+    }
+    .hero-name-wrap { padding-bottom: 4px; }
+    .donor-name { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--text); letter-spacing: -.01em; }
+    .donor-sub { font-size: 12px; color: var(--text-3); margin-top: 2px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .donor-tag {
+      display: inline-flex; align-items: center; gap: 4px;
+      background: var(--blue-light); color: #1D4ED8;
+      border-radius: 20px; padding: 2px 9px;
+      font-size: 10px; font-weight: 700; letter-spacing: .04em;
+    }
+
+    .hero-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+    .hero-stat { background: var(--surface); padding: 12px 14px; }
+    .hero-stat-label { font-size: 10px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--text-3); margin-bottom: 4px; }
+    .hero-stat-value { font-size: 20px; font-weight: 600; color: var(--text); font-family: 'DM Serif Display', serif; letter-spacing: -.02em; }
+    .hero-stat-sub { font-size: 10px; color: var(--text-3); margin-top: 2px; }
+    .hero-stat-value.green { color: var(--green); }
+    .hero-stat-value.blue { color: var(--blue); }
+
+    /* Tabs */
+    .profile-tabs { display: flex; gap: 0; border-bottom: 1px solid var(--border); margin-bottom: 18px; }
+    .profile-tab {
+      padding: 10px 16px; font-size: 12px; font-weight: 500;
+      color: var(--text-3); cursor: pointer; border-bottom: 2px solid transparent;
+      transition: all .15s; white-space: nowrap; margin-bottom: -1px;
+    }
+    .profile-tab:hover { color: var(--text-2); }
+    .profile-tab.active { color: var(--blue); border-bottom-color: var(--blue); font-weight: 600; }
+
+    /* Section */
+    .section { margin-bottom: 18px; }
+    .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .section-title { font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--text-3); }
+    .section-action { font-size: 11px; font-weight: 500; color: var(--blue); cursor: pointer; display: flex; align-items: center; gap: 4px; }
+    .section-action:hover { color: #1D4ED8; }
+    .section-action svg { width: 11px; height: 11px; }
+
+    /* Giving chart */
+    .chart-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+    .chart-bars { display: flex; align-items: flex-end; gap: 4px; height: 80px; margin-bottom: 6px; }
+    .chart-bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+    .chart-bar { width: 100%; border-radius: 3px 3px 0 0; min-height: 3px; transition: opacity .15s; cursor: pointer; }
+    .chart-bar:hover { opacity: .75; }
+    .chart-bar.current { background: var(--blue); }
+    .chart-bar.past { background: var(--blue-light); }
+    .chart-bar.zero { background: #F1F5F9; min-height: 6px; border-radius: 3px; }
+    .chart-label { font-size: 10px; color: var(--text-3); }
+    .chart-legend { display: flex; gap: 14px; font-size: 10px; color: var(--text-3); margin-top: 4px; }
+    .chart-legend-item { display: flex; align-items: center; gap: 5px; }
+    .chart-legend-dot { width: 8px; height: 8px; border-radius: 2px; }
+
+    /* Gift table */
+    .gift-table { width: 100%; border-collapse: collapse; }
+    .gift-table th { font-size: 10px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--text-3); padding: 6px 12px; text-align: left; background: var(--surface); border-bottom: 1px solid var(--border); }
+    .gift-table th:first-child { border-radius: 8px 0 0 0; }
+    .gift-table th:last-child { border-radius: 0 8px 0 0; }
+    .gift-table td { padding: 10px 12px; font-size: 12px; border-bottom: .5px solid var(--border); color: var(--text-2); vertical-align: middle; }
+    .gift-table tr:last-child td { border-bottom: none; }
+    .gift-table tr:hover td { background: var(--blue-pale); }
+    .gift-status { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 20px; font-size: 10px; font-weight: 600; }
+    .status-received { background: var(--green-light); color: var(--green); }
+    .status-pledge   { background: var(--amber-light); color: var(--amber); }
+    .status-recurring{ background: var(--blue-light); color: #1D4ED8; }
+    .status-dot { width: 5px; height: 5px; border-radius: 50%; }
+
+    /* Activity feed */
+    .activity-feed { display: flex; flex-direction: column; gap: 0; }
+    .activity-item {
+      display: flex; gap: 12px; padding: 10px 0;
+      border-bottom: .5px solid var(--border);
+    }
+    .activity-item:last-child { border-bottom: none; }
+    .activity-icon {
+      width: 28px; height: 28px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; margin-top: 1px;
+    }
+    .activity-icon svg { width: 13px; height: 13px; }
+    .ai-gift   { background: var(--green-light); color: var(--green); }
+    .ai-email  { background: var(--blue-light);  color: #1D4ED8; }
+    .ai-note   { background: var(--amber-light); color: var(--amber); }
+    .ai-task   { background: var(--teal-light);  color: var(--teal); }
+    .ai-pledge { background: var(--rose-light);  color: var(--rose); }
+    .activity-body { flex: 1; min-width: 0; }
+    .activity-text { font-size: 12px; color: var(--text-2); line-height: 1.5; }
+    .activity-text strong { color: var(--text); font-weight: 600; }
+    .activity-meta { font-size: 10px; color: var(--text-3); margin-top: 3px; }
+    .activity-amount { font-size: 13px; font-weight: 600; color: var(--green); flex-shrink: 0; align-self: flex-start; margin-top: 3px; }
+
+    /* Pledge progress */
+    .pledge-row { display: flex; flex-direction: column; gap: 6px; padding: 12px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 8px; }
+    .pledge-header { display: flex; justify-content: space-between; align-items: center; }
+    .pledge-name { font-size: 12px; font-weight: 500; color: var(--text); }
+    .pledge-meta { font-size: 11px; color: var(--text-3); }
+    .pledge-progress { height: 5px; background: #E2E8F0; border-radius: 3px; overflow: hidden; }
+    .pledge-fill { height: 100%; border-radius: 3px; background: var(--blue); }
+    .pledge-footer { display: flex; justify-content: space-between; font-size: 10px; color: var(--text-3); }
+
+    /* ── Right panel ── */
+    .profile-side {
+      background: white;
+      border-left: 1px solid var(--border);
+      padding: 20px;
+      overflow-y: auto;
+      display: flex; flex-direction: column; gap: 20px;
+    }
+
+    .side-section-title { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--text-3); margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; }
+    .side-edit { font-size: 10px; color: var(--blue); cursor: pointer; font-weight: 500; letter-spacing: 0; text-transform: none; }
+
+    /* Contact details */
+    .contact-list { display: flex; flex-direction: column; gap: 8px; }
+    .contact-item { display: flex; align-items: flex-start; gap: 9px; font-size: 12px; }
+    .contact-icon { width: 26px; height: 26px; background: var(--surface); border: 1px solid var(--border); border-radius: 7px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .contact-icon svg { width: 12px; height: 12px; color: var(--text-3); }
+    .contact-label { font-size: 10px; color: var(--text-3); }
+    .contact-value { color: var(--text-2); font-weight: 500; }
+    .contact-preferred { font-size: 9px; color: var(--teal); font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
+
+    /* Tags */
+    .tags-wrap { display: flex; flex-wrap: wrap; gap: 6px; }
+    .tag-pill {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 500;
+      border: 1px solid var(--border); color: var(--text-2); cursor: pointer;
+      transition: all .15s;
+    }
+    .tag-pill:hover { border-color: var(--blue-mid); color: var(--blue); background: var(--blue-pale); }
+    .tag-pill.major { background: var(--gold-light); color: var(--gold); border-color: rgba(180,83,9,.2); }
+    .tag-pill.recurring { background: var(--blue-light); color: #1D4ED8; border-color: rgba(37,99,235,.2); }
+    .tag-pill.faith { background: var(--teal-light); color: var(--teal); border-color: rgba(13,148,136,.2); }
+
+    /* Score card */
+    .score-card { background: var(--navy); border-radius: 10px; padding: 14px; }
+    .score-title { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: rgba(255,255,255,.45); margin-bottom: 12px; }
+    .score-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+    .score-row:last-child { margin-bottom: 0; }
+    .score-label { font-size: 11px; color: rgba(255,255,255,.6); flex: 1; }
+    .score-bar-wrap { flex: 2; height: 5px; background: rgba(255,255,255,.1); border-radius: 3px; overflow: hidden; }
+    .score-fill { height: 100%; border-radius: 3px; }
+    .sf-high { background: #34D399; }
+    .sf-mid  { background: #60A5FA; }
+    .sf-low  { background: #F59E0B; }
+    .score-num { font-size: 11px; font-weight: 700; color: white; min-width: 28px; text-align: right; }
+
+    /* Relationships */
+    .rel-list { display: flex; flex-direction: column; gap: 8px; }
+    .rel-item { display: flex; align-items: center; gap: 10px; padding: 8px 10px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; cursor: pointer; transition: border-color .15s; }
+    .rel-item:hover { border-color: var(--blue-mid); }
+    .rel-avatar { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+    .rel-name { font-size: 12px; font-weight: 500; color: var(--text); }
+    .rel-type { font-size: 10px; color: var(--text-3); }
+
+    /* Next actions */
+    .tasks-list { display: flex; flex-direction: column; gap: 6px; }
+    .task-item { display: flex; align-items: flex-start; gap: 9px; padding: 9px 11px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+    .task-check { width: 16px; height: 16px; border: 1.5px solid var(--border); border-radius: 4px; flex-shrink: 0; margin-top: 1px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .15s; }
+    .task-check:hover { border-color: var(--blue); }
+    .task-text { font-size: 12px; color: var(--text-2); line-height: 1.4; flex: 1; }
+    .task-due { font-size: 10px; margin-top: 3px; font-weight: 500; }
+    .due-soon { color: var(--amber); }
+    .due-ok   { color: var(--text-3); }
+    .task-overdue .task-text { color: var(--rose); }
+    .task-overdue .task-check { border-color: var(--rose); }
+
+    /* AI insight banner */
+    .ai-banner {
+      background: var(--navy); border-radius: 10px; padding: 13px 14px;
+      display: flex; gap: 10px;
+    }
+    .ai-icon {
+      width: 28px; height: 28px; background: var(--blue); border-radius: 8px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .ai-icon svg { width: 13px; height: 13px; }
+    .ai-title { font-size: 11px; font-weight: 600; color: white; margin-bottom: 3px; }
+    .ai-text { font-size: 11px; color: rgba(255,255,255,.6); line-height: 1.5; }
+    .ai-action { font-size: 10px; color: #60A5FA; font-weight: 600; cursor: pointer; margin-top: 6px; display: inline-block; }
+
+    /* Animations */
+    @keyframes fadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+    .hero-card  { animation: fadeUp .35s ease forwards; }
+    .section    { animation: fadeUp .35s ease .05s forwards; opacity: 0; }
+    .section:nth-child(3) { animation-delay: .1s; }
+    .section:nth-child(4) { animation-delay: .15s; }
+    .section:nth-child(5) { animation-delay: .2s; }
+    .profile-side > * { animation: fadeUp .3s ease .08s forwards; opacity: 0; }
+    .profile-side > *:nth-child(2) { animation-delay: .12s; }
+    .profile-side > *:nth-child(3) { animation-delay: .16s; }
+    .profile-side > *:nth-child(4) { animation-delay: .2s; }
+    .profile-side > *:nth-child(5) { animation-delay: .24s; }
+    .profile-side > *:nth-child(6) { animation-delay: .28s; }
+
+    /* Panel tabs */
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* ── MODALS ── */
+    .modal-overlay {
+      display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,.4); z-index: 1000; align-items: center; justify-content: center;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal {
+      background: white; border-radius: 12px; box-shadow: 0 20px 60px rgba(0,0,0,.2);
+      width: 90%; max-width: 480px; max-height: 85vh; overflow-y: auto; animation: slideUp .25s ease;
+    }
+    @keyframes slideUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+    .modal-header {
+      padding: 20px 24px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .modal-title { font-size: 16px; font-weight: 600; color: var(--text); }
+    .modal-close {
+      background: none; border: none; font-size: 20px; color: var(--text-3);
+      cursor: pointer; padding: 0; width: 28px; height: 28px; display: flex;
+      align-items: center; justify-content: center; border-radius: 6px;
+      transition: all .15s;
+    }
+    .modal-close:hover { background: var(--surface); color: var(--text); }
+    .modal-body { padding: 24px; }
+    .modal-footer {
+      padding: 16px 24px; border-top: 1px solid var(--border);
+      display: flex; gap: 10px; justify-content: flex-end;
+    }
+    .form-group { margin-bottom: 16px; }
+    .form-label { display: block; font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+    .form-input, .form-textarea, .form-select {
+      width: 100%; padding: 10px 12px; border: 1px solid var(--border);
+      border-radius: 8px; font-size: 13px; font-family: 'DM Sans', sans-serif;
+      color: var(--text); transition: border-color .15s;
+    }
+    .form-input:focus, .form-textarea:focus, .form-select:focus {
+      outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px var(--blue-pale);
+    }
+    .form-textarea { resize: vertical; min-height: 90px; }
+    .form-hint { font-size: 11px; color: var(--text-3); margin-top: 4px; }
+    .btn-cancel { padding: 10px 18px; border: 1px solid var(--border); background: white;
+      border-radius: 8px; font-size: 13px; font-weight: 500; color: var(--text);
+      cursor: pointer; transition: all .15s;
+    }
+    .btn-cancel:hover { border-color: #94A3B8; background: var(--surface); }
+    .btn-save { padding: 10px 18px; background: var(--blue); color: white;
+      border: none; border-radius: 8px; font-size: 13px; font-weight: 500;
+      cursor: pointer; transition: all .15s;
+    }
+    .btn-save:hover { background: #1D4ED8; }
+    .success-message {
+      display: none; position: fixed; top: 20px; right: 20px; background: var(--green);
+      color: white; padding: 14px 18px; border-radius: 8px; z-index: 2000;
+      font-size: 13px; font-weight: 500; animation: slideInRight .3s ease;
+    }
+    .success-message.show { display: block; }
+    @keyframes slideInRight { from{opacity:0;transform:translateX(300px)} to{opacity:1;transform:translateX(0)} }
+
+    .multi-field { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .tag-input-list { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+    .tag-input-item {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 10px; background: var(--blue-light); color: #1D4ED8;
+      border-radius: 20px; font-size: 12px;
+    }
+    .tag-input-remove { cursor: pointer; font-weight: 600; }
+    .section-action { cursor: pointer; }
+    .section-action:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+  <!-- ══════════════ SIDEBAR ══════════════ -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-mark">
+        <svg viewBox="0 0 18 18" fill="none">
+          <circle cx="9" cy="9" r="7.5" stroke="white" stroke-width="1.5"/>
+          <path d="M5.5 9.5C6.5 11.5 9 13 9 13s2.5-1.5 3.5-3.5S12 5 9 5 4.5 7.5 5.5 9.5z" fill="white" fill-opacity=".9"/>
+        </svg>
+      </div>
+      <div class="sidebar-logo-text">
+        <span class="sidebar-logo-name">GiveCentral</span>
+        <span class="sidebar-logo-sub">Atlas CRM</span>
+      </div>
+    </div>
+
+    <div class="sidebar-search">
+      <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+        <circle cx="6" cy="6" r="4.5"/><path d="M9.5 9.5l2.5 2.5"/>
+      </svg>
+      <input type="text" placeholder="Search donors…">
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-label">Main</div>
+      <div class="nav-item">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+          <rect x="1.5" y="1.5" width="4" height="4" rx="1.2"/><rect x="8.5" y="1.5" width="4" height="4" rx="1.2"/>
+          <rect x="1.5" y="8.5" width="4" height="4" rx="1.2"/><rect x="8.5" y="8.5" width="4" height="4" rx="1.2"/>
+        </svg>
+        Dashboard
+      </div>
+      <div class="nav-item active">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+          <circle cx="6" cy="4.5" r="3"/><path d="M1 13c0-2.8 2.2-5 5-5h1c2.8 0 5 2.2 5 5"/>
+        </svg>
+        Donors
+        <span class="nav-badge">3.8k</span>
+      </div>
+      <div class="nav-item">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+          <path d="M7 1.5v11M2 6.5h10"/>
+        </svg>
+        Gifts &amp; pledges
+        <span class="nav-badge">142</span>
+      </div>
+      <div class="nav-item">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+          <path d="M1.5 8.5l2.5-2.5 2 2 2.5-2.5 2 2"/>
+          <rect x="1.5" y="1.5" width="11" height="11" rx="2"/>
+        </svg>
+        Campaigns
+      </div>
+      <div class="nav-item">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+          <path d="M1.5 3h11M1.5 7h7M1.5 11h5"/>
+        </svg>
+        Reports
+      </div>
+    </div>
+
+    <div class="nav-group" style="margin-top:8px">
+      <div class="nav-group-label">Fundraising</div>
+      <div class="nav-item">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+          <circle cx="7" cy="7" r="5.5"/><path d="M7 4v4M7 10v.5"/>
+        </svg>
+        Prospect pipeline
+        <span class="nav-badge">28</span>
+      </div>
+      <div class="nav-item">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+          <rect x="1.5" y="2.5" width="11" height="9" rx="1.5"/>
+          <path d="M1.5 6h11M5 2.5v2M9 2.5v2"/>
+        </svg>
+        Tasks &amp; reminders
+        <span class="nav-badge">7</span>
+      </div>
+      <div class="nav-item">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+          <path d="M2 3.5h10v7H2zM2 6.5h10M5 3.5v3"/>
+        </svg>
+        Communications
+      </div>
+    </div>
+
+    <div class="nav-group" style="margin-top:8px">
+      <div class="nav-group-label">Intelligence</div>
+      <div class="nav-item">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+          <circle cx="7" cy="5" r="3.5"/>
+          <path d="M5 10c0 2 4 2 4 0M4.5 8.5c-2 1-3 3.5-3 4.5M9.5 8.5c2 1 3 3.5 3 4.5"/>
+        </svg>
+        Guru AI
+      </div>
+    </div>
+
+    <div class="sidebar-user">
+      <div class="sidebar-avatar">SR</div>
+      <div>
+        <div class="sidebar-user-name">Sarah Reynolds</div>
+        <div class="sidebar-user-role">Development Director</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ══════════════ MAIN ══════════════ -->
+  <div class="main">
+
+    <!-- Topbar -->
+    <div class="topbar">
+      <div class="breadcrumb">
+        <a href="atlas-donor-management-final.html">Donors</a>
+        <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 2l4 3-4 3"/></svg>
+        <span id="breadcrumb-name">Margaret T. Sullivan</span>
+      </div>
+      <div class="topbar-actions">
+        <button class="tb-btn tb-ghost" onclick="openModal('log-activity-modal')">
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M2 3.5h8M2 6h5M2 8.5h6"/></svg>
+          Log activity
+        </button>
+        <button class="tb-btn tb-ghost" onclick="openModal('add-task-modal')">
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><rect x="1.5" y="2.5" width="9" height="7" rx="1.2"/><path d="M1.5 5h9"/></svg>
+          Add task
+        </button>
+        <button class="tb-btn tb-ghost" onclick="openModal('schedule-modal')">
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><rect x="1.5" y="2" width="9" height="8" rx="1.2"/><path d="M1.5 5h9M4.5 2v2M7.5 2v2"/></svg>
+          Schedule
+        </button>
+        <button class="tb-btn tb-primary" onclick="openModal('record-gift-modal')">
+          <svg viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="1.4" stroke-linecap="round"><path d="M6 1v10M1 6h10"/></svg>
+          Record gift
+        </button>
+      </div>
+    </div>
+
+    <!-- Profile grid -->
+    <div class="profile-wrap">
+
+      <!-- ── MAIN COLUMN ── -->
+      <div class="profile-main">
+
+        <!-- Hero card -->
+        <div class="hero-card">
+          <div class="hero-body">
+            <div class="hero-identity">
+              <div class="donor-avatar" id="donor-avatar">MS</div>
+              <div class="hero-name-wrap">
+                <div class="donor-name" id="donor-name">Margaret T. Sullivan</div>
+                <div class="donor-sub">
+                  <span class="donor-tag" id="donor-tag">Major Donor</span>
+                  <span id="donor-org">St. Michael's Parish · Tampa, FL</span>
+                  <span>·</span>
+                  <span id="donor-since">Donor since 2011</span>
+                </div>
+              </div>
+            </div>
+            <div class="hero-stats">
+              <div class="hero-stat">
+                <div class="hero-stat-label">Lifetime giving</div>
+                <div class="hero-stat-value green" id="stat-lifetime">$84,250</div>
+                <div class="hero-stat-sub" id="stat-lifetime-sub">Since 2011</div>
+              </div>
+              <div class="hero-stat">
+                <div class="hero-stat-label">This fiscal year</div>
+                <div class="hero-stat-value blue" id="stat-fiscal">$12,500</div>
+                <div class="hero-stat-sub">3 gifts · on track</div>
+              </div>
+              <div class="hero-stat">
+                <div class="hero-stat-label">Open pledge</div>
+                <div class="hero-stat-value" id="stat-pledge">$5,000</div>
+                <div class="hero-stat-sub">CMA 2026 · 62% paid</div>
+              </div>
+              <div class="hero-stat">
+                <div class="hero-stat-label">Last gift</div>
+                <div class="hero-stat-value" id="stat-lastgift">$2,500</div>
+                <div class="hero-stat-sub" id="stat-lastgift-date">Mar 15, 2026</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Profile tabs -->
+        <div class="profile-tabs">
+          <div class="profile-tab active" onclick="switchTab('overview',this)">Overview</div>
+          <div class="profile-tab" onclick="switchTab('gifts',this)">Gifts &amp; pledges</div>
+          <div class="profile-tab" onclick="switchTab('comms',this)">Communications</div>
+          <div class="profile-tab" onclick="switchTab('relationships',this)">Relationships</div>
+        </div>
+
+        <!-- OVERVIEW TAB -->
+        <div class="tab-content active" id="tab-overview">
+
+          <!-- Giving history chart -->
+          <div class="section">
+            <div class="section-header">
+              <span class="section-title">Giving history</span>
+              <span class="section-action" onclick="openModal('view-all-gifts-modal')">View all gifts <svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 5.5h7M6 2.5l3 3-3 3"/></svg></span>
+            </div>
+            <div class="chart-wrap">
+              <div class="chart-bars" id="giving-chart">
+                <!-- JS fills this -->
+              </div>
+              <div class="chart-legend">
+                <div class="chart-legend-item"><div class="chart-legend-dot" style="background:var(--blue)"></div>This year</div>
+                <div class="chart-legend-item"><div class="chart-legend-dot" style="background:var(--blue-light)"></div>Prior years</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent gifts -->
+          <div class="section">
+            <div class="section-header">
+              <span class="section-title">Recent gifts</span>
+              <span class="section-action" onclick="openModal('view-all-gifts-modal')">All gifts <svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 5.5h7M6 2.5l3 3-3 3"/></svg></span>
+            </div>
+            <table class="gift-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Campaign / fund</th>
+                  <th>Type</th>
+                  <th>Amount</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Mar 15, 2026</td>
+                  <td>Catholic Ministry Appeal</td>
+                  <td>Online gift</td>
+                  <td style="font-weight:600;color:var(--text)">$2,500.00</td>
+                  <td><span class="gift-status status-received"><span class="status-dot" style="background:var(--green)"></span>Received</span></td>
+                </tr>
+                <tr>
+                  <td>Jan 3, 2026</td>
+                  <td>CMA 2026 Pledge — installment 2</td>
+                  <td>Pledge payment</td>
+                  <td style="font-weight:600;color:var(--text)">$1,000.00</td>
+                  <td><span class="gift-status status-received"><span class="status-dot" style="background:var(--green)"></span>Received</span></td>
+                </tr>
+                <tr>
+                  <td>Nov 28, 2025</td>
+                  <td>Giving Tuesday · St. Michael's</td>
+                  <td>Online gift</td>
+                  <td style="font-weight:600;color:var(--text)">$500.00</td>
+                  <td><span class="gift-status status-received"><span class="status-dot" style="background:var(--green)"></span>Received</span></td>
+                </tr>
+                <tr>
+                  <td>Sep 10, 2025</td>
+                  <td>CMA 2026 Pledge — installment 1</td>
+                  <td>Pledge payment</td>
+                  <td style="font-weight:600;color:var(--text)">$2,100.00</td>
+                  <td><span class="gift-status status-received"><span class="status-dot" style="background:var(--green)"></span>Received</span></td>
+                </tr>
+                <tr>
+                  <td>Jun 15, 2026</td>
+                  <td>CMA 2026 Pledge — installment 3</td>
+                  <td>Pledge</td>
+                  <td style="font-weight:600;color:var(--amber)">$1,900.00</td>
+                  <td><span class="gift-status status-pledge"><span class="status-dot" style="background:var(--amber)"></span>Pending</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Open pledge -->
+          <div class="section">
+            <div class="section-header">
+              <span class="section-title">Open pledges</span>
+              <span class="section-action" onclick="openModal('manage-pledges-modal')">Manage pledges <svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 5.5h7M6 2.5l3 3-3 3"/></svg></span>
+            </div>
+            <div class="pledge-row">
+              <div class="pledge-header">
+                <div class="pledge-name">Catholic Ministry Appeal 2026</div>
+                <div style="font-size:12px;font-weight:600;color:var(--text)">$3,100 / $5,000</div>
+              </div>
+              <div class="pledge-progress"><div class="pledge-fill" style="width:62%"></div></div>
+              <div class="pledge-footer">
+                <span>62% paid · 2 installments remaining</span>
+                <span style="color:var(--amber);font-weight:500">Next: $1,900 due Jun 15</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Activity timeline -->
+          <div class="section">
+            <div class="section-header">
+              <span class="section-title">Activity timeline</span>
+              <span class="section-action" onclick="openModal('all-activity-modal')">All activity <svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 5.5h7M6 2.5l3 3-3 3"/></svg></span>
+            </div>
+            <div class="activity-feed">
+              <div class="activity-item">
+                <div class="activity-icon ai-gift">
+                  <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M6.5 1v11M1.5 6.5h10"/></svg>
+                </div>
+                <div class="activity-body">
+                  <div class="activity-text"><strong>Gift received</strong> — $2,500 to Catholic Ministry Appeal via GiveCentral online</div>
+                  <div class="activity-meta">Mar 15, 2026 · Auto-synced from GiveCentral</div>
+                </div>
+                <div class="activity-amount">+$2,500</div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-icon ai-note">
+                  <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M2 2.5h9v8H2z"/><path d="M4 5h5M4 7.5h3"/></svg>
+                </div>
+                <div class="activity-body">
+                  <div class="activity-text"><strong>Note added</strong> — Called to thank for gift. Margaret mentioned interest in the new capital campaign for the Cathedral. Follow up in Q3.</div>
+                  <div class="activity-meta">Mar 16, 2026 · Added by Sarah Reynolds</div>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-icon ai-email">
+                  <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><rect x="1.5" y="3" width="10" height="7.5" rx="1.2"/><path d="M1.5 5l5 3.5 5-3.5"/></svg>
+                </div>
+                <div class="activity-body">
+                  <div class="activity-text"><strong>Email sent</strong> — Thank you letter + 2025 tax summary delivered to margaret.sullivan@gmail.com</div>
+                  <div class="activity-meta">Jan 12, 2026 · Auto-generated</div>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-icon ai-task">
+                  <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="6.5" cy="6.5" r="5"/><path d="M4.5 6.5l1.5 1.5 3-3"/></svg>
+                </div>
+                <div class="activity-body">
+                  <div class="activity-text"><strong>Task completed</strong> — Year-end stewardship call completed. Discussed diocesan programs she supports.</div>
+                  <div class="activity-meta">Dec 18, 2025 · Completed by Sarah Reynolds</div>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-icon ai-pledge">
+                  <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M2 10.5l2.5-2.5 2 2 2.5-2.5 2 2"/><rect x="2" y="2.5" width="9" height="8" rx="1.2"/></svg>
+                </div>
+                <div class="activity-body">
+                  <div class="activity-text"><strong>Pledge created</strong> — $5,000 pledge to CMA 2026, 3 annual installments. Signed pledge card received.</div>
+                  <div class="activity-meta">Aug 22, 2025 · Added by Sarah Reynolds</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /tab-overview -->
+
+        <!-- GIFTS & PLEDGES TAB -->
+        <div class="tab-content" id="tab-gifts">
+          <div class="section">
+            <div class="section-header">
+              <span class="section-title">Gift Summary</span>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px">
+              <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px">
+                <div style="font-size:10px;color:var(--text-3);font-weight:600;margin-bottom:6px">Total Gifts</div>
+                <div style="font-size:20px;font-weight:600;color:var(--text)">$12,250</div>
+                <div style="font-size:10px;color:var(--text-3);margin-top:4px">7 gifts received</div>
+              </div>
+              <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px">
+                <div style="font-size:10px;color:var(--text-3);font-weight:600;margin-bottom:6px">Pledges</div>
+                <div style="font-size:20px;font-weight:600;color:var(--text)">$5,000</div>
+                <div style="font-size:10px;color:var(--text-3);margin-top:4px">1 active pledge</div>
+              </div>
+              <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px">
+                <div style="font-size:10px;color:var(--text-3);font-weight:600;margin-bottom:6px">Avg Gift</div>
+                <div style="font-size:20px;font-weight:600;color:var(--text)">$1,750</div>
+                <div style="font-size:10px;color:var(--text-3);margin-top:4px">Per transaction</div>
+              </div>
+              <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px">
+                <div style="font-size:10px;color:var(--text-3);font-weight:600;margin-bottom:6px">Last Gift</div>
+                <div style="font-size:20px;font-weight:600;color:var(--text)">$2,500</div>
+                <div style="font-size:10px;color:var(--text-3);margin-top:4px">Mar 15, 2026</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-header">
+              <span class="section-title">Complete Gift Ledger</span>
+            </div>
+            <table class="gift-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Campaign / Fund</th>
+                  <th>Type</th>
+                  <th>Amount</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Mar 15, 2026</td>
+                  <td>Catholic Ministry Appeal</td>
+                  <td>Online gift</td>
+                  <td style="font-weight:600;color:var(--text)">$2,500.00</td>
+                  <td><span class="gift-status status-received"><span class="status-dot" style="background:var(--green)"></span>Received</span></td>
+                </tr>
+                <tr>
+                  <td>Jan 3, 2026</td>
+                  <td>CMA 2026 Pledge — installment 2</td>
+                  <td>Pledge payment</td>
+                  <td style="font-weight:600;color:var(--text)">$1,000.00</td>
+                  <td><span class="gift-status status-received"><span class="status-dot" style="background:var(--green)"></span>Received</span></td>
+                </tr>
+                <tr>
+                  <td>Nov 28, 2025</td>
+                  <td>Giving Tuesday · St. Michael's</td>
+                  <td>Online gift</td>
+                  <td style="font-weight:600;color:var(--text)">$500.00</td>
+                  <td><span class="gift-status status-received"><span class="status-dot" style="background:var(--green)"></span>Received</span></td>
+                </tr>
+                <tr>
+                  <td>Sep 10, 2025</td>
+                  <td>CMA 2026 Pledge — installment 1</td>
+                  <td>Pledge payment</td>
+                  <td style="font-weight:600;color:var(--text)">$2,100.00</td>
+                  <td><span class="gift-status status-received"><span class="status-dot" style="background:var(--green)"></span>Received</span></td>
+                </tr>
+                <tr>
+                  <td>Jun 15, 2026</td>
+                  <td>CMA 2026 Pledge — installment 3</td>
+                  <td>Pledge</td>
+                  <td style="font-weight:600;color:var(--amber)">$1,900.00</td>
+                  <td><span class="gift-status status-pledge"><span class="status-dot" style="background:var(--amber)"></span>Pending</span></td>
+                </tr>
+                <tr>
+                  <td>May 1, 2025</td>
+                  <td>Annual Fund</td>
+                  <td>Online gift</td>
+                  <td style="font-weight:600;color:var(--text)">$1,250.00</td>
+                  <td><span class="gift-status status-received"><span class="status-dot" style="background:var(--green)"></span>Received</span></td>
+                </tr>
+                <tr>
+                  <td>Feb 14, 2025</td>
+                  <td>Valentine's Day Campaign</td>
+                  <td>Online gift</td>
+                  <td style="font-weight:600;color:var(--text)">$750.00</td>
+                  <td><span class="gift-status status-received"><span class="status-dot" style="background:var(--green)"></span>Received</span></td>
+                </tr>
+                <tr>
+                  <td>Dec 5, 2024</td>
+                  <td>Year-End Campaign</td>
+                  <td>Check</td>
+                  <td style="font-weight:600;color:var(--text)">$3,400.00</td>
+                  <td><span class="gift-status status-received"><span class="status-dot" style="background:var(--green)"></span>Received</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="section">
+            <div class="section-header">
+              <span class="section-title">Active Pledges</span>
+            </div>
+            <div class="pledge-row">
+              <div class="pledge-header">
+                <div class="pledge-name">Catholic Ministry Appeal 2026</div>
+                <div style="font-size:12px;font-weight:600;color:var(--text)">$3,100 / $5,000</div>
+              </div>
+              <div class="pledge-progress"><div class="pledge-fill" style="width:62%"></div></div>
+              <div class="pledge-footer">
+                <span>62% paid · 2 installments remaining</span>
+                <span style="color:var(--amber);font-weight:500">Next: $1,900 due Jun 15</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- COMMUNICATIONS TAB -->
+        <div class="tab-content" id="tab-comms">
+          <div class="section">
+            <div class="section-header">
+              <span class="section-title">Communication Summary</span>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px">
+              <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px">
+                <div style="font-size:10px;color:var(--text-3);font-weight:600;margin-bottom:6px">Emails</div>
+                <div style="font-size:20px;font-weight:600;color:var(--text)">12</div>
+                <div style="font-size:10px;color:var(--text-3);margin-top:4px">Sent & received</div>
+              </div>
+              <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px">
+                <div style="font-size:10px;color:var(--text-3);font-weight:600;margin-bottom:6px">Calls</div>
+                <div style="font-size:20px;font-weight:600;color:var(--text)">4</div>
+                <div style="font-size:10px;color:var(--text-3);margin-top:4px">Completed calls</div>
+              </div>
+              <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px">
+                <div style="font-size:10px;color:var(--text-3);font-weight:600;margin-bottom:6px">Last Contact</div>
+                <div style="font-size:20px;font-weight:600;color:var(--text)">3 days</div>
+                <div style="font-size:10px;color:var(--text-3);margin-top:4px">Mar 27, 2026</div>
+              </div>
+              <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px">
+                <div style="font-size:10px;color:var(--text-3);font-weight:600;margin-bottom:6px">Preferred</div>
+                <div style="font-size:20px;font-weight:600;color:var(--text)">Email</div>
+                <div style="font-size:10px;color:var(--text-3);margin-top:4px">margaret.sullivan@gmail.com</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-header">
+              <span class="section-title">Communication History</span>
+            </div>
+            <div class="activity-feed">
+              <div class="activity-item">
+                <div class="activity-icon ai-email">
+                  <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><rect x="1.5" y="3" width="10" height="7.5" rx="1.2"/><path d="M1.5 5l5 3.5 5-3.5"/></svg>
+                </div>
+                <div class="activity-body">
+                  <div class="activity-text"><strong>Email sent</strong> — Thank you letter for $2,500 gift</div>
+                  <div class="activity-meta">Mar 16, 2026 · 9:30 AM</div>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-icon" style="background:#E0E7FF;color:#4F46E5">
+                  <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M2 2.5s1.2-.8 2 .8l.8 1.6s.4.8-.4 1.6l-.4.4s1.6 2.4 4 3.6l.4-.4s.8-.8 1.6-.4l1.6.8s1.6.8.8 2c0 0-1.2 2-4 .8S1.6 10 .8 7.6 2 2.5 2 2.5z"/></svg>
+                </div>
+                <div class="activity-body">
+                  <div class="activity-text"><strong>Call completed</strong> — Stewardship call. Discussed Cathedral capital campaign interest.</div>
+                  <div class="activity-meta">Mar 16, 2026 · 2:00 PM · 18 minutes</div>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-icon ai-email">
+                  <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><rect x="1.5" y="3" width="10" height="7.5" rx="1.2"/><path d="M1.5 5l5 3.5 5-3.5"/></svg>
+                </div>
+                <div class="activity-body">
+                  <div class="activity-text"><strong>Email received</strong> — Margaret confirmed attendance at Spring Gala event</div>
+                  <div class="activity-meta">Mar 10, 2026 · 1:45 PM</div>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-icon ai-email">
+                  <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><rect x="1.5" y="3" width="10" height="7.5" rx="1.2"/><path d="M1.5 5l5 3.5 5-3.5"/></svg>
+                </div>
+                <div class="activity-body">
+                  <div class="activity-text"><strong>Email sent</strong> — Spring Gala invitation and sponsorship opportunities</div>
+                  <div class="activity-meta">Mar 3, 2026 · 10:15 AM</div>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-icon" style="background:#E0E7FF;color:#4F46E5">
+                  <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M2 2.5s1.2-.8 2 .8l.8 1.6s.4.8-.4 1.6l-.4.4s1.6 2.4 4 3.6l.4-.4s.8-.8 1.6-.4l1.6.8s1.6.8.8 2c0 0-1.2 2-4 .8S1.6 10 .8 7.6 2 2.5 2 2.5z"/></svg>
+                </div>
+                <div class="activity-body">
+                  <div class="activity-text"><strong>Call completed</strong> — Year-end stewardship call</div>
+                  <div class="activity-meta">Dec 18, 2025 · 10:00 AM · 22 minutes</div>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-icon ai-email">
+                  <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><rect x="1.5" y="3" width="10" height="7.5" rx="1.2"/><path d="M1.5 5l5 3.5 5-3.5"/></svg>
+                </div>
+                <div class="activity-body">
+                  <div class="activity-text"><strong>Email sent</strong> — 2025 Tax summary and giving report</div>
+                  <div class="activity-meta">Jan 12, 2026 · 3:20 PM</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RELATIONSHIPS TAB -->
+        <div class="tab-content" id="tab-relationships">
+          <div class="section">
+            <div class="section-header">
+              <span class="section-title">Relationship Network</span>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px">
+              <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px">
+                <div style="font-size:10px;color:var(--text-3);font-weight:600;margin-bottom:6px">Connected Relationships</div>
+                <div style="font-size:20px;font-weight:600;color:var(--text)">3</div>
+                <div style="font-size:10px;color:var(--text-3);margin-top:4px">People & organizations</div>
+              </div>
+              <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px">
+                <div style="font-size:10px;color:var(--text-3);font-weight:600;margin-bottom:6px">Related Giving</div>
+                <div style="font-size:20px;font-weight:600;color:var(--text)">$31,200</div>
+                <div style="font-size:10px;color:var(--text-3);margin-top:4px">From relationships</div>
+              </div>
+              <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px">
+                <div style="font-size:10px;color:var(--text-3);font-weight:600;margin-bottom:6px">Network Strength</div>
+                <div style="font-size:20px;font-weight:600;color:var(--green)">Strong</div>
+                <div style="font-size:10px;color:var(--text-3);margin-top:4px">High engagement</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-header">
+              <span class="section-title">Connected Relationships</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:12px">
+              <div style="border:1px solid var(--border);border-radius:10px;padding:16px">
+                <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:12px">
+                  <div class="rel-avatar" style="background:#DBEAFE;color:#1D4ED8;width:40px;height:40px;font-size:14px">TS</div>
+                  <div style="flex:1">
+                    <div style="font-size:14px;font-weight:600;color:var(--text)">Thomas Sullivan</div>
+                    <div style="font-size:12px;color:var(--text-3);margin-top:2px">Spouse</div>
+                    <div style="display:flex;gap:8px;margin-top:8px">
+                      <span style="display:inline-block;background:var(--blue-light);color:#1D4ED8;padding:3px 8px;border-radius:12px;font-size:10px;font-weight:500">Co-donor</span>
+                      <span style="display:inline-block;background:var(--green-light);color:var(--green);padding:3px 8px;border-radius:12px;font-size:10px;font-weight:500">Active</span>
+                    </div>
+                  </div>
+                  <div style="text-align:right">
+                    <div style="font-size:12px;font-weight:600;color:var(--text)">$31,200</div>
+                    <div style="font-size:10px;color:var(--text-3)">lifetime giving</div>
+                  </div>
+                </div>
+                <div style="background:var(--surface);border-radius:8px;padding:10px;font-size:12px;color:var(--text-2)">
+                  <strong>Recent interaction:</strong> Attended Spring Gala together on Mar 10, 2026. Both received thank you call.
+                </div>
+              </div>
+
+              <div style="border:1px solid var(--border);border-radius:10px;padding:16px">
+                <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:12px">
+                  <div class="rel-avatar" style="background:#DCFCE7;color:#15803D;width:40px;height:40px;font-size:14px">SM</div>
+                  <div style="flex:1">
+                    <div style="font-size:14px;font-weight:600;color:var(--text)">St. Michael's Parish</div>
+                    <div style="font-size:12px;color:var(--text-3);margin-top:2px">Parish Community</div>
+                    <div style="display:flex;gap:8px;margin-top:8px">
+                      <span style="display:inline-block;background:var(--teal-light);color:var(--teal);padding:3px 8px;border-radius:12px;font-size:10px;font-weight:500">Organization</span>
+                      <span style="display:inline-block;background:var(--green-light);color:var(--green);padding:3px 8px;border-radius:12px;font-size:10px;font-weight:500">Active</span>
+                    </div>
+                  </div>
+                  <div style="text-align:right">
+                    <div style="font-size:12px;font-weight:600;color:var(--text)">14 years</div>
+                    <div style="font-size:10px;color:var(--text-3)">member since 2012</div>
+                  </div>
+                </div>
+                <div style="background:var(--surface);border-radius:8px;padding:10px;font-size:12px;color:var(--text-2)">
+                  <strong>Leadership role:</strong> Parish Finance Committee member. Leads major gift outreach for Cathedral campaign.
+                </div>
+              </div>
+
+              <div style="border:1px solid var(--border);border-radius:10px;padding:16px">
+                <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:12px">
+                  <div class="rel-avatar" style="background:#FEF3C7;color:#B45309;width:40px;height:40px;font-size:14px">JS</div>
+                  <div style="flex:1">
+                    <div style="font-size:14px;font-weight:600;color:var(--text)">Jennifer Sullivan</div>
+                    <div style="font-size:12px;color:var(--text-3);margin-top:2px">Daughter</div>
+                    <div style="display:flex;gap:8px;margin-top:8px">
+                      <span style="display:inline-block;background:var(--gold-light);color:var(--gold);padding:3px 8px;border-radius:12px;font-size:10px;font-weight:500">Soft-credited</span>
+                      <span style="display:inline-block;background:var(--amber-light);color:var(--amber);padding:3px 8px;border-radius:12px;font-size:10px;font-weight:500">Prospect</span>
+                    </div>
+                  </div>
+                  <div style="text-align:right">
+                    <div style="font-size:12px;font-weight:600;color:var(--text)">$0</div>
+                    <div style="font-size:10px;color:var(--text-3)">no direct gifts</div>
+                  </div>
+                </div>
+                <div style="background:var(--surface);border-radius:8px;padding:10px;font-size:12px;color:var(--text-2)">
+                  <strong>Engagement:</strong> Attending university. Show interest in educational ministry programs. Consider for future cultivation.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-header">
+              <span class="section-title">Relationship Timeline</span>
+            </div>
+            <div class="activity-feed">
+              <div class="activity-item">
+                <div class="activity-icon ai-gift">
+                  <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M6.5 1v11M1.5 6.5h10"/></svg>
+                </div>
+                <div class="activity-body">
+                  <div class="activity-text"><strong>Joint gift received</strong> — Margaret & Thomas gave $2,500 together</div>
+                  <div class="activity-meta">Mar 15, 2026</div>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-icon ai-note">
+                  <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M2 2.5h9v8H2z"/><path d="M4 5h5M4 7.5h3"/></svg>
+                </div>
+                <div class="activity-body">
+                  <div class="activity-text"><strong>Relationship note</strong> — Jennifer joined parents at parish event for first time</div>
+                  <div class="activity-meta">Mar 10, 2026</div>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-icon ai-task">
+                  <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="6.5" cy="6.5" r="5"/><path d="M4.5 6.5l1.5 1.5 3-3"/></svg>
+                </div>
+                <div class="activity-body">
+                  <div class="activity-text"><strong>Task completed</strong> — Stewardship call with Margaret and Thomas together</div>
+                  <div class="activity-meta">Dec 18, 2025</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /profile-main -->
+
+      <!-- ── RIGHT PANEL ── -->
+      <div class="profile-side">
+
+        <!-- AI Insight -->
+        <div>
+          <div class="ai-banner">
+            <div class="ai-icon">
+              <svg viewBox="0 0 13 13" fill="none" stroke="white" stroke-width="1.3" stroke-linecap="round">
+                <circle cx="6.5" cy="4.5" r="3.5"/>
+                <path d="M4.5 9c0 2 4 2 4 0M3.5 8c-2 1-3 3.5-3 4.5M9.5 8c2 1 3 3.5 3 4.5"/>
+              </svg>
+            </div>
+            <div>
+              <div class="ai-title">Guru AI insight</div>
+              <div class="ai-text">Margaret's giving is up 18% vs. last year and she mentioned Cathedral interest. Strong upgrade candidate for a $10k ask in Q3 before the capital campaign launch.</div>
+              <span class="ai-action" onclick="openModal('ai-insight-modal')">Ask Guru AI about Margaret →</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contact -->
+        <div>
+          <div class="side-section-title">Contact <span class="side-edit" onclick="openModal('edit-contact-modal')">Edit</span></div>
+          <div class="contact-list" id="contact-list">
+            <div class="contact-item">
+              <div class="contact-icon"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><rect x="1.5" y="2" width="9" height="8" rx="1.2"/><path d="M1.5 5l4.5 3 4.5-3"/></svg></div>
+              <div>
+                <div class="contact-label">Email <span class="contact-preferred">preferred</span></div>
+                <div class="contact-value" id="contact-email">margaret.sullivan@gmail.com</div>
+              </div>
+            </div>
+            <div class="contact-item">
+              <div class="contact-icon"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M2 2.5s1.2-.8 2 .8l.8 1.6s.4.8-.4 1.6l-.4.4s1.6 2.4 4 3.6l.4-.4s.8-.8 1.6-.4l1.6.8s1.6.8.8 2c0 0-1.2 2-4 .8S1.6 10 .8 7.6 2 2.5 2 2.5z"/></svg></div>
+              <div>
+                <div class="contact-label">Mobile</div>
+                <div class="contact-value" id="contact-phone">(727) 555-0142</div>
+              </div>
+            </div>
+            <div class="contact-item">
+              <div class="contact-icon"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M6 1C4 1 2.5 2.5 2.5 4.5c0 2.7 3.5 6.5 3.5 6.5s3.5-3.8 3.5-6.5C9.5 2.5 8 1 6 1z"/><circle cx="6" cy="4.5" r="1.2"/></svg></div>
+              <div>
+                <div class="contact-label">Address</div>
+                <div class="contact-value" id="contact-address">14 Bayshore Blvd, Tampa FL 33606</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tags / segments -->
+        <div>
+          <div class="side-section-title">Segments &amp; tags <span class="side-edit" onclick="openModal('manage-tags-modal')">Manage</span></div>
+          <div class="tags-wrap" id="tags-wrap">
+            <span class="tag-pill major">Major donor</span>
+            <span class="tag-pill recurring">Recurring</span>
+            <span class="tag-pill faith">Faith leader</span>
+            <span class="tag-pill">Capital campaign</span>
+            <span class="tag-pill">Education</span>
+            <span class="tag-pill">LYBUNT</span>
+          </div>
+        </div>
+
+        <!-- Donor scores -->
+        <div>
+          <div class="score-card">
+            <div class="score-title">Donor intelligence · Guru AI</div>
+            <div class="score-row">
+              <span class="score-label">Retention likelihood</span>
+              <div class="score-bar-wrap"><div class="score-fill sf-high" style="width:92%"></div></div>
+              <span class="score-num">92</span>
+            </div>
+            <div class="score-row">
+              <span class="score-label">Upgrade propensity</span>
+              <div class="score-bar-wrap"><div class="score-fill sf-mid" style="width:78%"></div></div>
+              <span class="score-num">78</span>
+            </div>
+            <div class="score-row">
+              <span class="score-label">Wealth capacity</span>
+              <div class="score-bar-wrap"><div class="score-fill sf-mid" style="width:70%"></div></div>
+              <span class="score-num">70</span>
+            </div>
+            <div class="score-row">
+              <span class="score-label">Engagement score</span>
+              <div class="score-bar-wrap"><div class="score-fill sf-low" style="width:55%"></div></div>
+              <span class="score-num">55</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Relationships -->
+        <div>
+          <div class="side-section-title">Relationships <span class="side-edit" onclick="openModal('add-relationship-modal')">Add</span></div>
+          <div class="rel-list">
+            <div class="rel-item">
+              <div class="rel-avatar" style="background:#DBEAFE;color:#1D4ED8">TS</div>
+              <div>
+                <div class="rel-name">Thomas Sullivan</div>
+                <div class="rel-type">Spouse · $31,200 lifetime</div>
+              </div>
+            </div>
+            <div class="rel-item">
+              <div class="rel-avatar" style="background:#DCFCE7;color:#15803D">St</div>
+              <div>
+                <div class="rel-name">St. Michael's Parish</div>
+                <div class="rel-type">Parish · 14 year member</div>
+              </div>
+            </div>
+            <div class="rel-item">
+              <div class="rel-avatar" style="background:#FEF3C7;color:#B45309">JS</div>
+              <div>
+                <div class="rel-name">Jennifer Sullivan</div>
+                <div class="rel-type">Daughter · Soft-credited</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Upcoming tasks -->
+        <div>
+          <div class="side-section-title">Tasks <span class="side-edit" onclick="openModal('add-task-modal')">Add</span></div>
+          <div class="tasks-list">
+            <div class="task-item task-overdue">
+              <div class="task-check">
+                <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" style="display:none"><path d="M2 5l2 2 4-4"/></svg>
+              </div>
+              <div>
+                <div class="task-text">Follow up on Cathedral campaign interest — mentioned in Mar 16 call note</div>
+                <div class="task-due due-soon">Due Apr 1 · Overdue</div>
+              </div>
+            </div>
+            <div class="task-item">
+              <div class="task-check"></div>
+              <div>
+                <div class="task-text">Send pledge reminder for Jun 15 installment ($1,900)</div>
+                <div class="task-due due-ok">Due May 28</div>
+              </div>
+            </div>
+            <div class="task-item">
+              <div class="task-check"></div>
+              <div>
+                <div class="task-text">Q3 major gift cultivation call — propose $10k Cathedral ask</div>
+                <div class="task-due due-ok">Due Jul 15</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /profile-side -->
+
+    </div><!-- /profile-wrap -->
+  </div><!-- /main -->
+
+  <!-- ══════════════ MODALS ══════════════ -->
+  <div class="success-message" id="success-msg"></div>
+
+  <!-- Log Activity Modal -->
+  <div class="modal-overlay" id="log-activity-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">Log Activity</div>
+        <button class="modal-close" onclick="closeModal('log-activity-modal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Activity Type</label>
+          <select class="form-select">
+            <option>Note</option>
+            <option>Email sent</option>
+            <option>Call made</option>
+            <option>Meeting</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Description</label>
+          <textarea class="form-textarea" placeholder="Describe the activity..."></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Date</label>
+          <input type="date" class="form-input" value="2026-04-30">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" onclick="closeModal('log-activity-modal')">Cancel</button>
+        <button class="btn-save" onclick="saveLogActivity()">Save Activity</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Task Modal -->
+  <div class="modal-overlay" id="add-task-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">Add Task</div>
+        <button class="modal-close" onclick="closeModal('add-task-modal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Task Description</label>
+          <input type="text" class="form-input" placeholder="What needs to be done?" id="task-description">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Due Date</label>
+          <input type="date" class="form-input" id="task-due-date">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Priority</label>
+          <select class="form-select" id="task-priority">
+            <option>Normal</option>
+            <option>High</option>
+            <option>Urgent</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Assigned to</label>
+          <input type="text" class="form-input" placeholder="Team member name">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" onclick="closeModal('add-task-modal')">Cancel</button>
+        <button class="btn-save" onclick="saveTask()">Create Task</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Schedule Modal -->
+  <div class="modal-overlay" id="schedule-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">Schedule Interaction</div>
+        <button class="modal-close" onclick="closeModal('schedule-modal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Interaction Type</label>
+          <select class="form-select">
+            <option>Call</option>
+            <option>Meeting</option>
+            <option>Email</option>
+            <option>Visit</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Scheduled Date</label>
+          <input type="date" class="form-input" id="schedule-date">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Time</label>
+          <input type="time" class="form-input" id="schedule-time">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Notes</label>
+          <textarea class="form-textarea" placeholder="Any notes or preparation items..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" onclick="closeModal('schedule-modal')">Cancel</button>
+        <button class="btn-save" onclick="saveSchedule()">Schedule</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Record Gift Modal -->
+  <div class="modal-overlay" id="record-gift-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">Record Gift</div>
+        <button class="modal-close" onclick="closeModal('record-gift-modal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Gift Amount</label>
+          <input type="number" class="form-input" placeholder="$0.00" id="gift-amount" step="0.01">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Date Received</label>
+          <input type="date" class="form-input" id="gift-date" value="2026-04-30">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Campaign / Fund</label>
+          <select class="form-select">
+            <option>Catholic Ministry Appeal</option>
+            <option>Capital Campaign</option>
+            <option>Unrestricted</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Gift Type</label>
+          <select class="form-select">
+            <option>Online gift</option>
+            <option>Check</option>
+            <option>Wire transfer</option>
+            <option>Pledge</option>
+            <option>Stock</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Notes</label>
+          <textarea class="form-textarea" placeholder="Any additional notes..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" onclick="closeModal('record-gift-modal')">Cancel</button>
+        <button class="btn-save" onclick="saveGift()">Record Gift</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Contact Modal -->
+  <div class="modal-overlay" id="edit-contact-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">Edit Contact Information</div>
+        <button class="modal-close" onclick="closeModal('edit-contact-modal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-input" id="edit-email" placeholder="email@example.com">
+          <div class="form-hint">Mark as preferred for communications</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phone</label>
+          <input type="tel" class="form-input" id="edit-phone" placeholder="(555) 000-0000">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Address</label>
+          <input type="text" class="form-input" id="edit-address" placeholder="Street address">
+        </div>
+        <div class="multi-field">
+          <div class="form-group">
+            <label class="form-label">City</label>
+            <input type="text" class="form-input" placeholder="City">
+          </div>
+          <div class="form-group">
+            <label class="form-label">State/Province</label>
+            <input type="text" class="form-input" placeholder="State">
+          </div>
+        </div>
+        <div class="multi-field">
+          <div class="form-group">
+            <label class="form-label">ZIP/Postal Code</label>
+            <input type="text" class="form-input" placeholder="12345">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Country</label>
+            <input type="text" class="form-input" placeholder="Country">
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" onclick="closeModal('edit-contact-modal')">Cancel</button>
+        <button class="btn-save" onclick="saveContact()">Update Contact</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Manage Tags Modal -->
+  <div class="modal-overlay" id="manage-tags-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">Manage Segments & Tags</div>
+        <button class="modal-close" onclick="closeModal('manage-tags-modal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Current Tags</label>
+          <div class="tag-input-list" id="current-tags">
+            <div class="tag-input-item">Major donor <span class="tag-input-remove" onclick="removeTag(this)">✕</span></div>
+            <div class="tag-input-item">Recurring <span class="tag-input-remove" onclick="removeTag(this)">✕</span></div>
+            <div class="tag-input-item">Faith leader <span class="tag-input-remove" onclick="removeTag(this)">✕</span></div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Add New Tag</label>
+          <input type="text" class="form-input" placeholder="Type tag name..." id="new-tag-input">
+          <div class="form-hint">Press Enter or click Add to create a new tag</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Available Tags</label>
+          <div style="display:flex;flex-wrap:wrap;gap:8px">
+            <span class="tag-pill" style="cursor:pointer;border:2px dashed var(--border)" onclick="addExistingTag(this)">+ Capital campaign</span>
+            <span class="tag-pill" style="cursor:pointer;border:2px dashed var(--border)" onclick="addExistingTag(this)">+ Education</span>
+            <span class="tag-pill" style="cursor:pointer;border:2px dashed var(--border)" onclick="addExistingTag(this)">+ LYBUNT</span>
+            <span class="tag-pill" style="cursor:pointer;border:2px dashed var(--border)" onclick="addExistingTag(this)">+ Planned giving</span>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" onclick="closeModal('manage-tags-modal')">Cancel</button>
+        <button class="btn-save" onclick="saveTags()">Save Tags</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Relationship Modal -->
+  <div class="modal-overlay" id="add-relationship-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">Add Relationship</div>
+        <button class="modal-close" onclick="closeModal('add-relationship-modal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Related Person / Organization</label>
+          <input type="text" class="form-input" placeholder="Name" id="rel-name">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Relationship Type</label>
+          <select class="form-select" id="rel-type">
+            <option>Spouse</option>
+            <option>Family member</option>
+            <option>Business associate</option>
+            <option>Friend</option>
+            <option>Organization</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-input" placeholder="email@example.com">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phone</label>
+          <input type="tel" class="form-input" placeholder="(555) 000-0000">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Notes</label>
+          <textarea class="form-textarea" placeholder="Additional relationship details..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" onclick="closeModal('add-relationship-modal')">Cancel</button>
+        <button class="btn-save" onclick="saveRelationship()">Add Relationship</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- View All Gifts Modal -->
+  <div class="modal-overlay" id="view-all-gifts-modal">
+    <div class="modal" style="max-width:600px">
+      <div class="modal-header">
+        <div class="modal-title">All Gifts & Pledges</div>
+        <button class="modal-close" onclick="closeModal('view-all-gifts-modal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <table class="gift-table" style="font-size:12px">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Campaign</th>
+              <th>Amount</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Mar 15, 2026</td>
+              <td>Catholic Ministry Appeal</td>
+              <td style="font-weight:600">$2,500.00</td>
+              <td><span class="gift-status status-received"><span class="status-dot" style="background:var(--green)"></span>Received</span></td>
+            </tr>
+            <tr>
+              <td>Jan 3, 2026</td>
+              <td>CMA 2026 - Installment 2</td>
+              <td style="font-weight:600">$1,000.00</td>
+              <td><span class="gift-status status-received"><span class="status-dot" style="background:var(--green)"></span>Received</span></td>
+            </tr>
+            <tr>
+              <td>Nov 28, 2025</td>
+              <td>Giving Tuesday</td>
+              <td style="font-weight:600">$500.00</td>
+              <td><span class="gift-status status-received"><span class="status-dot" style="background:var(--green)"></span>Received</span></td>
+            </tr>
+            <tr>
+              <td>Sep 10, 2025</td>
+              <td>CMA 2026 - Installment 1</td>
+              <td style="font-weight:600">$2,100.00</td>
+              <td><span class="gift-status status-received"><span class="status-dot" style="background:var(--green)"></span>Received</span></td>
+            </tr>
+            <tr>
+              <td>Jun 15, 2026</td>
+              <td>CMA 2026 - Installment 3</td>
+              <td style="font-weight:600;color:var(--amber)">$1,900.00</td>
+              <td><span class="gift-status status-pledge"><span class="status-dot" style="background:var(--amber)"></span>Pending</span></td>
+            </tr>
+            <tr>
+              <td>May 1, 2025</td>
+              <td>Annual Fund</td>
+              <td style="font-weight:600">$1,250.00</td>
+              <td><span class="gift-status status-received"><span class="status-dot" style="background:var(--green)"></span>Received</span></td>
+            </tr>
+            <tr>
+              <td>Feb 14, 2025</td>
+              <td>Valentine's Day Campaign</td>
+              <td style="font-weight:600">$750.00</td>
+              <td><span class="gift-status status-received"><span class="status-dot" style="background:var(--green)"></span>Received</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" onclick="closeModal('view-all-gifts-modal')">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Manage Pledges Modal -->
+  <div class="modal-overlay" id="manage-pledges-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">Manage Pledges</div>
+        <button class="modal-close" onclick="closeModal('manage-pledges-modal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Pledge Name</label>
+          <input type="text" class="form-input" value="Catholic Ministry Appeal 2026" id="pledge-name">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Total Amount</label>
+          <input type="number" class="form-input" value="5000" id="pledge-total" step="0.01">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Received to Date</label>
+          <input type="number" class="form-input" value="3100" id="pledge-received" step="0.01">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Number of Installments</label>
+          <input type="number" class="form-input" value="3" min="1">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Next Payment Due</label>
+          <input type="date" class="form-input" value="2026-06-15">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Next Payment Amount</label>
+          <input type="number" class="form-input" value="1900" step="0.01">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" onclick="closeModal('manage-pledges-modal')">Cancel</button>
+        <button class="btn-save" onclick="savePledge()">Update Pledge</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- All Activity Modal -->
+  <div class="modal-overlay" id="all-activity-modal">
+    <div class="modal" style="max-width:600px">
+      <div class="modal-header">
+        <div class="modal-title">Complete Activity Timeline</div>
+        <button class="modal-close" onclick="closeModal('all-activity-modal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div style="max-height:400px;overflow-y:auto">
+          <div class="activity-feed">
+            <div class="activity-item">
+              <div class="activity-icon ai-gift">
+                <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M6.5 1v11M1.5 6.5h10"/></svg>
+              </div>
+              <div class="activity-body">
+                <div class="activity-text"><strong>Gift received</strong> — $2,500 to Catholic Ministry Appeal</div>
+                <div class="activity-meta">Mar 15, 2026 · Auto-synced</div>
+              </div>
+              <div class="activity-amount">+$2,500</div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-icon ai-note">
+                <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M2 2.5h9v8H2z"/><path d="M4 5h5M4 7.5h3"/></svg>
+              </div>
+              <div class="activity-body">
+                <div class="activity-text"><strong>Note added</strong> — Margaret mentioned Cathedral interest. Follow up in Q3.</div>
+                <div class="activity-meta">Mar 16, 2026 · Added by Sarah Reynolds</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-icon ai-email">
+                <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><rect x="1.5" y="3" width="10" height="7.5" rx="1.2"/><path d="M1.5 5l5 3.5 5-3.5"/></svg>
+              </div>
+              <div class="activity-body">
+                <div class="activity-text"><strong>Email sent</strong> — Thank you letter + 2025 tax summary</div>
+                <div class="activity-meta">Jan 12, 2026 · Auto-generated</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-icon ai-task">
+                <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="6.5" cy="6.5" r="5"/><path d="M4.5 6.5l1.5 1.5 3-3"/></svg>
+              </div>
+              <div class="activity-body">
+                <div class="activity-text"><strong>Task completed</strong> — Year-end stewardship call</div>
+                <div class="activity-meta">Dec 18, 2025 · Completed by Sarah Reynolds</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-icon ai-pledge">
+                <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M2 10.5l2.5-2.5 2 2 2.5-2.5 2 2"/><rect x="2" y="2.5" width="9" height="8" rx="1.2"/></svg>
+              </div>
+              <div class="activity-body">
+                <div class="activity-text"><strong>Pledge created</strong> — $5,000 pledge, 3 annual installments</div>
+                <div class="activity-meta">Aug 22, 2025 · Added by Sarah Reynolds</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" onclick="closeModal('all-activity-modal')">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI Insight Modal -->
+  <div class="modal-overlay" id="ai-insight-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">Guru AI Analysis</div>
+        <button class="modal-close" onclick="closeModal('ai-insight-modal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div style="background:var(--blue-pale);border:1px solid var(--blue-light);border-radius:10px;padding:16px;margin-bottom:16px">
+          <div style="font-weight:600;color:var(--blue);margin-bottom:8px">📊 Key Insights</div>
+          <ul style="margin:0;padding-left:20px;font-size:13px;color:var(--text);line-height:1.6">
+            <li>Giving is up 18% vs. last year — strong retention signal</li>
+            <li>Gift frequency increasing — 3 gifts this year vs. 2 last year</li>
+            <li>Average gift size up to $2,500 — shows capacity for larger ask</li>
+            <li>Expressed interest in Cathedral capital campaign</li>
+            <li>Strong engagement with stewardship communications</li>
+          </ul>
+        </div>
+        <div style="background:var(--green-light);border:1px solid #A7D8DE;border-radius:10px;padding:16px;margin-bottom:16px">
+          <div style="font-weight:600;color:var(--green);margin-bottom:8px">🎯 Recommended Actions</div>
+          <ul style="margin:0;padding-left:20px;font-size:13px;color:var(--text);line-height:1.6">
+            <li><strong>Schedule major gift conversation</strong> — Target $10,000 ask for Cathedral campaign before Q3</li>
+            <li><strong>Send personalized Cathedral campaign materials</strong> — She mentioned specific interest</li>
+            <li><strong>Plan cultivation event invitation</strong> — Upgrade to VIP donor event</li>
+            <li><strong>Consider planned giving discussion</strong> — Wealth capacity score is 70/100</li>
+          </ul>
+        </div>
+        <div style="padding:16px;background:var(--surface);border-radius:10px">
+          <div style="font-weight:600;color:var(--text);margin-bottom:6px">📈 Probability Scores (Guru AI)</div>
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;font-size:13px">
+            <span style="width:120px">Retention likelihood:</span>
+            <div style="flex:1;background:#E2E8F0;height:6px;border-radius:3px"><div style="width:92%;height:100%;background:var(--green);border-radius:3px"></div></div>
+            <span style="font-weight:600">92%</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;font-size:13px">
+            <span style="width:120px">Upgrade propensity:</span>
+            <div style="flex:1;background:#E2E8F0;height:6px;border-radius:3px"><div style="width:78%;height:100%;background:var(--blue);border-radius:3px"></div></div>
+            <span style="font-weight:600">78%</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;font-size:13px">
+            <span style="width:120px">Capacity score:</span>
+            <div style="flex:1;background:#E2E8F0;height:6px;border-radius:3px"><div style="width:70%;height:100%;background:var(--amber);border-radius:3px"></div></div>
+            <span style="font-weight:600">70%</span>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" onclick="closeModal('ai-insight-modal')">Close</button>
+        <button class="btn-save" onclick="applyAIRecommendation()">Create Tasks from Recommendations</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ── Load donor data from sessionStorage ── */
+    function loadDonorData() {
+      const donor = JSON.parse(sessionStorage.getItem('selectedDonor'));
+      if (!donor) {
+        alert('No donor selected. Please go back and select a donor.');
+        window.location.href = 'atlas-donor-management-final.html';
+        return;
+      }
+
+      // Update donor name and avatar
+      const initials = (donor.firstName[0] + donor.lastName[0]).toUpperCase();
+      document.getElementById('donor-avatar').textContent = initials;
+      document.getElementById('donor-name').textContent = donor.firstName + ' ' + donor.lastName;
+      document.getElementById('breadcrumb-name').textContent = donor.firstName + ' ' + donor.lastName;
+
+      // Update stats
+      document.getElementById('stat-lifetime').textContent = '$' + donor.amount.toLocaleString();
+      document.getElementById('stat-fiscal').textContent = '$' + Math.round(donor.amount * 0.15).toLocaleString();
+      document.getElementById('stat-pledge').textContent = '$' + Math.round(donor.amount * 0.06).toLocaleString();
+      document.getElementById('stat-lastgift').textContent = '$' + Math.round(donor.amount * 0.03).toLocaleString();
+
+      // Update contact info
+      document.getElementById('contact-email').textContent = donor.email;
+      document.getElementById('contact-phone').textContent = donor.phone;
+      document.getElementById('contact-address').textContent = donor.address || 'Not provided';
+
+      // Update tags
+      if (donor.tags && donor.tags.length > 0) {
+        const tagsHtml = donor.tags.map(tag => `<span class="tag-pill">${tag}</span>`).join('');
+        document.getElementById('tags-wrap').innerHTML = tagsHtml;
+      }
+
+      // Update donor tag
+      const statusTag = donor.status.charAt(0).toUpperCase() + donor.status.slice(1);
+      document.getElementById('donor-tag').textContent = statusTag + ' Donor';
+    }
+
+    /* ── Giving history chart ── */
+    const years = ['2017','2018','2019','2020','2021','2022','2023','2024','2025','2026'];
+    const amounts = [3200, 4500, 5000, 2800, 6500, 7200, 9000, 11200, 10500, 12500];
+    const maxAmt = Math.max(...amounts);
+    const chartEl = document.getElementById('giving-chart');
+
+    years.forEach((yr, i) => {
+      const pct = (amounts[i] / maxAmt) * 100;
+      const isCurrent = i === years.length - 1;
+      const wrap = document.createElement('div');
+      wrap.className = 'chart-bar-wrap';
+      wrap.title = `${yr}: $${amounts[i].toLocaleString()}`;
+      const bar = document.createElement('div');
+      bar.className = 'chart-bar ' + (pct < 5 ? 'zero' : isCurrent ? 'current' : 'past');
+      bar.style.height = Math.max(pct, 4) + '%';
+      const lbl = document.createElement('div');
+      lbl.className = 'chart-label';
+      lbl.textContent = yr.slice(2);
+      wrap.appendChild(bar);
+      wrap.appendChild(lbl);
+      chartEl.appendChild(wrap);
+    });
+
+    /* ── Tab switcher ── */
+    function switchTab(id, el) {
+      document.querySelectorAll('.profile-tab').forEach(t => t.classList.remove('active'));
+      el.classList.add('active');
+      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+      document.getElementById('tab-' + id).classList.add('active');
+    }
+
+    /* ── Task check toggle ── */
+    document.querySelectorAll('.task-check').forEach(cb => {
+      cb.addEventListener('click', function() {
+        const isChecked = this.style.background === 'var(--blue)';
+        this.style.background = isChecked ? '' : 'var(--blue)';
+        this.style.borderColor = isChecked ? 'var(--border)' : 'var(--blue)';
+
+        const svg = this.querySelector('svg');
+        svg.style.display = isChecked ? 'none' : 'block';
+
+        this.parentElement.parentElement.classList.toggle('task-completed');
+        showSuccess(isChecked ? 'Task uncompleted' : 'Task marked complete');
+      });
+    });
+
+    /* ── Modal functions ── */
+    function openModal(modalId) {
+      document.getElementById(modalId).classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal(modalId) {
+      document.getElementById(modalId).classList.remove('active');
+      document.body.style.overflow = 'auto';
+    }
+
+    function showSuccess(message) {
+      const msgEl = document.getElementById('success-msg');
+      msgEl.textContent = message;
+      msgEl.classList.add('show');
+      setTimeout(() => msgEl.classList.remove('show'), 3000);
+    }
+
+    /* ── Action handlers ── */
+    function saveLogActivity() {
+      showSuccess('Activity logged successfully');
+      closeModal('log-activity-modal');
+    }
+
+    function saveTask() {
+      const description = document.getElementById('task-description').value;
+      if (!description.trim()) {
+        alert('Please enter a task description');
+        return;
+      }
+      showSuccess('Task created: ' + description);
+      closeModal('add-task-modal');
+      document.getElementById('task-description').value = '';
+    }
+
+    function saveSchedule() {
+      showSuccess('Interaction scheduled successfully');
+      closeModal('schedule-modal');
+    }
+
+    function saveGift() {
+      const amount = document.getElementById('gift-amount').value;
+      if (!amount) {
+        alert('Please enter a gift amount');
+        return;
+      }
+      showSuccess('Gift recorded: $' + parseFloat(amount).toLocaleString());
+      closeModal('record-gift-modal');
+      document.getElementById('gift-amount').value = '';
+    }
+
+    function saveContact() {
+      const email = document.getElementById('edit-email').value;
+      const phone = document.getElementById('edit-phone').value;
+      const address = document.getElementById('edit-address').value;
+
+      if (email) document.getElementById('contact-email').textContent = email;
+      if (phone) document.getElementById('contact-phone').textContent = phone;
+      if (address) document.getElementById('contact-address').textContent = address;
+
+      showSuccess('Contact information updated');
+      closeModal('edit-contact-modal');
+    }
+
+    function saveTags() {
+      showSuccess('Tags updated successfully');
+      closeModal('manage-tags-modal');
+    }
+
+    function removeTag(el) {
+      el.parentElement.remove();
+    }
+
+    function addExistingTag(el) {
+      const tagText = el.textContent.replace('+ ', '').trim();
+      const currentTags = document.getElementById('current-tags');
+
+      const isDuplicate = Array.from(currentTags.children).some(tag =>
+        tag.textContent.includes(tagText)
+      );
+
+      if (!isDuplicate) {
+        const tagEl = document.createElement('div');
+        tagEl.className = 'tag-input-item';
+        tagEl.innerHTML = tagText + ' <span class="tag-input-remove" onclick="removeTag(this)">✕</span>';
+        currentTags.appendChild(tagEl);
+      }
+    }
+
+    function saveRelationship() {
+      const name = document.getElementById('rel-name').value;
+      if (!name.trim()) {
+        alert('Please enter a name');
+        return;
+      }
+      showSuccess('Relationship added: ' + name);
+      closeModal('add-relationship-modal');
+      document.getElementById('rel-name').value = '';
+    }
+
+    function savePledge() {
+      showSuccess('Pledge updated successfully');
+      closeModal('manage-pledges-modal');
+    }
+
+    function applyAIRecommendation() {
+      showSuccess('AI recommendations converted to tasks');
+      closeModal('ai-insight-modal');
+    }
+
+    /* ── Close modal on overlay click ── */
+    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+      overlay.addEventListener('click', function(e) {
+        if (e.target === this) {
+          this.classList.remove('active');
+          document.body.style.overflow = 'auto';
+        }
+      });
+    });
+
+    /* ── Initialize ── */
+    loadDonorData();
+  </script>
+
+</body>
+</html>
