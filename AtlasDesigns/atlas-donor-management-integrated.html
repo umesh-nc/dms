@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GiveCentral Atlas — Donor Management System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:       #0E1E35;
+      --navy-2:     #152844;
+      --navy-3:     #1E3A5F;
+      --blue:       #2563EB;
+      --blue-mid:   #3B82F6;
+      --blue-light: #DBEAFE;
+      --blue-pale:  #EFF6FF;
+      --gold:       #B45309;
+      --gold-light: #FEF3C7;
+      --teal:       #0D9488;
+      --teal-light: #CCFBF1;
+      --rose:       #BE185D;
+      --rose-light: #FCE7F3;
+      --green:      #15803D;
+      --green-light:#DCFCE7;
+      --amber:      #D97706;
+      --amber-light:#FEF3C7;
+      --text:       #0F172A;
+      --text-2:     #334155;
+      --text-3:     #64748B;
+      --border:     #E2E8F0;
+      --surface:    #F8FAFC;
+      --white:      #FFFFFF;
+      --sidebar-w:  220px;
+    }
+
+    html { font-size: 14px; -webkit-font-smoothing: antialiased; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--surface); color: var(--text); min-height: 100vh; display: flex; overflow: hidden; }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: var(--sidebar-w);
+      background: var(--navy);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      overflow-y: auto;
+      z-index: 100;
+    }
+
+    .sidebar-logo {
+      padding: 18px 18px 14px;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+    }
+    .sidebar-logo-mark {
+      width: 30px; height: 30px;
+      background: var(--blue);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .sidebar-logo-mark svg { width: 15px; height: 15px; }
+    .sidebar-logo-text { display: flex; flex-direction: column; }
+    .sidebar-logo-name { font-family: 'DM Serif Display', serif; font-size: 15px; color: white; line-height: 1; }
+    .sidebar-logo-sub { font-size: 9px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.35); margin-top: 3px; }
+
+    .sidebar-search {
+      margin: 12px 12px 6px;
+      background: rgba(255,255,255,.07);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 8px;
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 12px;
+    }
+    .sidebar-search svg { width: 13px; height: 13px; color: rgba(255,255,255,.35); flex-shrink: 0; }
+    .sidebar-search input {
+      background: none; border: none; outline: none;
+      font-size: 12px; color: rgba(255,255,255,.6);
+      font-family: 'DM Sans', sans-serif; width: 100%;
+    }
+    .sidebar-search input::placeholder { color: rgba(255,255,255,.3); }
+
+    .nav-group { padding: 8px 8px 0; }
+    .nav-group-label { font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.3); padding: 0 10px; margin-bottom: 4px; }
+    .nav-item {
+      display: flex; align-items: center; gap: 9px;
+      padding: 8px 10px; border-radius: 7px;
+      font-size: 12px; font-weight: 500; color: rgba(255,255,255,.55);
+      cursor: pointer; transition: all .15s; margin-bottom: 1px;
+    }
+    .nav-item:hover { background: rgba(255,255,255,.07); color: rgba(255,255,255,.85); }
+    .nav-item.active { background: var(--blue); color: white; }
+    .nav-item svg { width: 14px; height: 14px; flex-shrink: 0; }
+    .nav-badge {
+      margin-left: auto; background: rgba(255,255,255,.12);
+      color: rgba(255,255,255,.6); border-radius: 10px;
+      padding: 1px 7px; font-size: 10px; font-weight: 600;
+    }
+    .nav-item.active .nav-badge { background: rgba(255,255,255,.2); color: white; }
+
+    .sidebar-user {
+      margin-top: auto;
+      padding: 12px;
+      border-top: 1px solid rgba(255,255,255,.08);
+      display: flex; align-items: center; gap: 9px;
+    }
+    .sidebar-avatar {
+      width: 30px; height: 30px; border-radius: 50%;
+      background: var(--blue); display: flex; align-items: center;
+      justify-content: center; font-size: 11px; font-weight: 700;
+      color: white; flex-shrink: 0;
+    }
+    .sidebar-user-name { font-size: 12px; font-weight: 500; color: rgba(255,255,255,.75); }
+    .sidebar-user-role { font-size: 10px; color: rgba(255,255,255,.35); margin-top: 1px; }
+
+    /* ── MAIN LAYOUT ── */
+    .main-container {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Topbar */
+    .topbar {
+      background: white;
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+      height: 52px;
+      display: flex; align-items: center; gap: 12px;
+      flex-shrink: 0;
+    }
+    .breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 12px; }
+    .breadcrumb span { color: var(--text); font-weight: 500; }
+    .topbar-actions { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+    .tb-btn {
+      padding: 6px 14px; border-radius: 7px;
+      font-size: 12px; font-weight: 500; cursor: pointer;
+      font-family: 'DM Sans', sans-serif; transition: all .15s;
+      display: flex; align-items: center; gap: 6px; border: none;
+    }
+    .tb-btn svg { width: 12px; height: 12px; }
+    .tb-ghost { background: none; border: 1px solid var(--border); color: var(--text-2); }
+    .tb-ghost:hover { border-color: #94A3B8; background: var(--surface); }
+    .tb-primary { background: var(--blue); border: none; color: white; box-shadow: 0 1px 4px rgba(37,99,235,.3); }
+    .tb-primary:hover { background: #1D4ED8; }
+
+    /* ── DONOR LIST SCREEN ── */
+    .donor-list-wrap { padding: 24px; flex: 1; overflow-y: auto; }
+    .list-header { margin-bottom: 24px; }
+    .list-title { font-family: 'DM Serif Display', serif; font-size: 28px; color: var(--text); margin-bottom: 4px; }
+    .list-subtitle { font-size: 13px; color: var(--text-3); }
+
+    /* Dashboard Stats */
+    .dashboard-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .stat-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      transition: all .2s;
+    }
+    .stat-card:hover { border-color: var(--blue); box-shadow: 0 4px 12px rgba(37,99,235,.1); }
+    .stat-label { font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--text-3); margin-bottom: 8px; }
+    .stat-value { font-size: 28px; font-weight: 700; color: var(--text); font-family: 'DM Serif Display', serif; margin-bottom: 4px; }
+    .stat-detail { font-size: 12px; color: var(--text-2); }
+    .stat-icon { width: 48px; height: 48px; background: var(--blue-pale); border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; font-size: 24px; }
+
+    /* Filter Bar */
+    .filters-section { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+    .filters-title { font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--text-3); margin-bottom: 12px; }
+    .filters-bar {
+      display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 16px;
+    }
+    .search-wrap { flex: 1; min-width: 250px; display: flex; align-items: center; gap: 8px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; }
+    .search-wrap input { background: none; border: none; outline: none; font-size: 12px; flex: 1; font-family: 'DM Sans', sans-serif; }
+    .search-wrap svg { width: 13px; height: 13px; color: var(--text-3); flex-shrink: 0; }
+
+    .filter-group { display: flex; align-items: center; gap: 8px; }
+    .filter-label { font-size: 11px; font-weight: 600; color: var(--text-3); text-transform: uppercase; white-space: nowrap; }
+    .filter-select {
+      padding: 6px 12px; border: 1px solid var(--border); border-radius: 7px;
+      font-size: 12px; font-family: 'DM Sans', sans-serif; background: white; cursor: pointer;
+    }
+    .filter-select:focus { outline: none; border-color: var(--blue); }
+
+    .filter-sep { width: 1px; height: 20px; background: var(--border); }
+
+    .advanced-filters-toggle {
+      padding: 6px 12px; border: 1px solid var(--border); border-radius: 7px;
+      font-size: 11px; font-weight: 600; color: var(--text-3); cursor: pointer;
+      background: white; transition: all .15s; font-family: 'DM Sans', sans-serif;
+    }
+    .advanced-filters-toggle:hover { border-color: var(--blue); color: var(--blue); }
+
+    .advanced-filters {
+      border-top: 1px solid var(--border); padding-top: 16px; margin-top: 16px; display: none;
+    }
+    .advanced-filters.active { display: block; }
+    .advanced-filters-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+
+    /* Table */
+    .donor-list-table { width: 100%; border-collapse: collapse; background: white; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    .donor-list-table th {
+      font-size: 10px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase;
+      color: var(--text-3); padding: 12px 14px; text-align: left; background: var(--surface);
+      border-bottom: 1px solid var(--border); cursor: pointer; user-select: none; position: relative;
+    }
+    .donor-list-table th:hover { color: var(--blue); }
+    .sort-indicator { font-size: 10px; margin-left: 4px; }
+    .donor-list-table td { padding: 12px 14px; font-size: 12px; border-bottom: .5px solid var(--border); vertical-align: middle; }
+    .donor-list-table tr:last-child td { border-bottom: none; }
+    .donor-list-table tr:hover { background: var(--blue-pale); }
+
+    .donor-name-cell { display: flex; align-items: center; gap: 10px; }
+    .donor-avatar-sm {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: var(--blue); display: flex; align-items: center;
+      justify-content: center; font-size: 11px; font-weight: 700; color: white; flex-shrink: 0;
+    }
+    .donor-name-info { display: flex; flex-direction: column; }
+    .donor-name-text { font-weight: 500; color: var(--text); }
+    .donor-email-text { font-size: 11px; color: var(--text-3); }
+
+    .donor-status { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: 600; }
+    .status-active { background: var(--green-light); color: var(--green); }
+    .status-inactive { background: var(--amber-light); color: var(--amber); }
+    .status-prospect { background: var(--rose-light); color: var(--rose); }
+    .status-dot { width: 5px; height: 5px; border-radius: 50%; }
+
+    .actions-cell { display: flex; gap: 6px; }
+    .action-btn {
+      padding: 5px 10px; border: 1px solid var(--border); border-radius: 6px;
+      font-size: 11px; cursor: pointer; transition: all .15s; background: white; color: var(--text-2);
+      font-family: 'DM Sans', sans-serif; font-weight: 500;
+    }
+    .action-btn:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-pale); }
+    .action-btn.danger { color: var(--rose); border-color: var(--rose-light); }
+    .action-btn.danger:hover { border-color: var(--rose); background: var(--rose-light); }
+
+    .table-footer { display: flex; align-items: center; justify-content: space-between; padding: 16px 14px; border-top: 1px solid var(--border); background: var(--surface); }
+    .table-count { font-size: 11px; color: var(--text-3); }
+    .table-pagination { display: flex; gap: 4px; }
+    .page-btn { padding: 4px 8px; border: 1px solid var(--border); border-radius: 5px; background: white; cursor: pointer; font-size: 10px; font-weight: 600; transition: all .15s; }
+    .page-btn:hover { border-color: var(--blue); color: var(--blue); }
+    .page-btn.active { background: var(--blue); color: white; border-color: var(--blue); }
+
+    .empty-state { text-align: center; padding: 60px 20px; color: var(--text-3); }
+    .empty-state-icon { font-size: 48px; margin-bottom: 12px; }
+    .empty-state-title { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+
+    /* ── MODALS ── */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 200; align-items: center; justify-content: center; }
+    .modal-overlay.active { display: flex; }
+    .modal { background: white; border-radius: 14px; max-width: 700px; width: 90%; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,.3); }
+    .modal-header { padding: 24px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .modal-title { font-family: 'DM Serif Display', serif; font-size: 20px; color: var(--text); }
+    .modal-close { width: 28px; height: 28px; border: 1px solid var(--border); border-radius: 7px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all .15s; flex-shrink: 0; background: white; }
+    .modal-close:hover { background: var(--surface); border-color: var(--blue); }
+    .modal-close svg { width: 12px; height: 12px; }
+    .modal-body { padding: 24px; }
+    .modal-footer { padding: 20px 24px; border-top: 1px solid var(--border); display: flex; gap: 12px; justify-content: flex-end; background: var(--surface); }
+
+    /* ── ENTRY CHOICE SCREEN ── */
+    .entry-choice-container { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100%; padding: 40px 20px; }
+    .entry-header { text-align: center; margin-bottom: 40px; }
+    .entry-title { font-family: 'DM Serif Display', serif; font-size: 28px; color: var(--text); margin-bottom: 8px; }
+    .entry-subtitle { font-size: 14px; color: var(--text-3); }
+    .entry-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; max-width: 700px; margin-bottom: 20px; }
+    .entry-option {
+      background: white; border: 2px solid var(--border); border-radius: 12px; padding: 32px;
+      text-align: center; cursor: pointer; transition: all .2s;
+    }
+    .entry-option:hover { border-color: var(--blue); box-shadow: 0 12px 32px rgba(37,99,235,.15); transform: translateY(-4px); }
+    .entry-icon { width: 60px; height: 60px; background: var(--blue-pale); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; }
+    .entry-icon svg { width: 28px; height: 28px; color: var(--blue); }
+    .entry-option-title { font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
+    .entry-option-desc { font-size: 13px; color: var(--text-3); line-height: 1.5; }
+
+    /* ── FORM ── */
+    .form-section { margin-bottom: 28px; }
+    .form-section-title { font-size: 13px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--text-3); margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+    .form-section-content { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+    .form-group { display: flex; flex-direction: column; }
+    .form-label { font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+    .form-label.required::after { content: ' *'; color: var(--rose); }
+    .form-input { padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 12px; font-family: 'DM Sans', sans-serif; background: white; }
+    .form-input:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px var(--blue-pale); }
+
+    /* Tags */
+    .tags-container { border: 1px solid var(--border); border-radius: 8px; padding: 8px; background: white; min-height: 40px; }
+    .tags-display { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; min-height: 24px; }
+    .tag-badge { display: inline-flex; align-items: center; gap: 6px; background: var(--blue-light); color: #1D4ED8; padding: 4px 10px; border-radius: 16px; font-size: 11px; font-weight: 600; }
+    .tag-remove { cursor: pointer; font-weight: 700; }
+    .tag-input { flex: 1; min-width: 120px; border: none; outline: none; font-size: 12px; font-family: 'DM Sans', sans-serif; background: none; padding: 2px 4px; }
+
+    /* Relationships */
+    .relationship-item { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 12px; }
+    .relationship-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .remove-rel-btn { padding: 4px 8px; color: var(--rose); font-size: 11px; cursor: pointer; border: none; background: none; font-weight: 600; font-family: 'DM Sans', sans-serif; }
+    .relationship-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+    .add-more-btn { padding: 10px 12px; border: 1px dashed var(--border); border-radius: 8px; background: transparent; color: var(--blue); font-size: 12px; font-weight: 600; cursor: pointer; transition: all .15s; font-family: 'DM Sans', sans-serif; }
+    .add-more-btn:hover { border-color: var(--blue); background: var(--blue-pale); }
+
+    /* View Donor Modal */
+    .donor-detail-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 24px; }
+    .donor-detail-item { }
+    .donor-detail-label { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-3); margin-bottom: 6px; }
+    .donor-detail-value { font-size: 13px; color: var(--text); font-weight: 500; }
+
+    @keyframes fadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+    .modal { animation: fadeUp .3s ease forwards; }
+  </style>
+</head>
+<body>
+
+  <!-- ══════════════ SIDEBAR ══════════════ -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-mark">
+        <svg viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7.5" stroke="white" stroke-width="1.5"/><path d="M5.5 9.5C6.5 11.5 9 13 9 13s2.5-1.5 3.5-3.5S12 5 9 5 4.5 7.5 5.5 9.5z" fill="white" fill-opacity=".9"/></svg>
+      </div>
+      <div class="sidebar-logo-text">
+        <span class="sidebar-logo-name">GiveCentral</span>
+        <span class="sidebar-logo-sub">Atlas CRM</span>
+      </div>
+    </div>
+    <div class="sidebar-search">
+      <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+        <circle cx="6" cy="6" r="4.5"/><path d="M9.5 9.5l2.5 2.5"/>
+      </svg>
+      <input type="text" placeholder="Search donors…">
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-label">Main</div>
+      <div class="nav-item active">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+          <circle cx="6" cy="4.5" r="3"/><path d="M1 13c0-2.8 2.2-5 5-5h1c2.8 0 5 2.2 5 5"/>
+        </svg>
+        Donors
+        <span class="nav-badge" id="donor-count">75</span>
+      </div>
+    </div>
+    <div class="sidebar-user">
+      <div class="sidebar-avatar">SR</div>
+      <div>
+        <div class="sidebar-user-name">Sarah Reynolds</div>
+        <div class="sidebar-user-role">Development Director</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ══════════════ MAIN CONTAINER ══════════════ -->
+  <div class="main-container">
+    <div class="topbar">
+      <div class="breadcrumb">
+        <span>Donors</span>
+      </div>
+      <div class="topbar-actions">
+        <button class="tb-btn tb-primary" onclick="openAddDonorEntry()">
+          <svg viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="1.4" stroke-linecap="round"><path d="M6 1v10M1 6h10"/></svg>
+          Add donor
+        </button>
+      </div>
+    </div>
+
+    <!-- DONOR LIST SCREEN -->
+    <div class="donor-list-wrap">
+      <div class="list-header">
+        <h1 class="list-title">Donor Directory</h1>
+        <p class="list-subtitle">Manage and view all donors in your system</p>
+      </div>
+
+      <!-- DASHBOARD STATS -->
+      <div class="dashboard-stats">
+        <div class="stat-card">
+          <div class="stat-icon">👥</div>
+          <div class="stat-label">Total Donors</div>
+          <div class="stat-value" id="stat-total">75</div>
+          <div class="stat-detail">Active and prospects</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">💰</div>
+          <div class="stat-label">Total Giving</div>
+          <div class="stat-value" id="stat-total-giving">$4.2M</div>
+          <div class="stat-detail">Lifetime value</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">✓</div>
+          <div class="stat-label">Active Donors</div>
+          <div class="stat-value" id="stat-active">52</div>
+          <div class="stat-detail">Currently engaged</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">⭐</div>
+          <div class="stat-label">Major Donors</div>
+          <div class="stat-value" id="stat-major">8</div>
+          <div class="stat-detail">$100K+</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">📊</div>
+          <div class="stat-label">Avg Gift</div>
+          <div class="stat-value" id="stat-avg">$56K</div>
+          <div class="stat-detail">Per donor</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🔄</div>
+          <div class="stat-label">Recurring</div>
+          <div class="stat-value" id="stat-recurring">18</div>
+          <div class="stat-detail">Regular givers</div>
+        </div>
+      </div>
+
+      <!-- FILTERS SECTION -->
+      <div class="filters-section">
+        <div class="filters-title">Search & Filters</div>
+        <div class="filters-bar">
+          <div class="search-wrap" style="flex: 1; min-width: 300px;">
+            <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+              <circle cx="6" cy="6" r="4.5"/><path d="M9.5 9.5l2.5 2.5"/>
+            </svg>
+            <input type="text" placeholder="Search by name, ID, email, phone…" id="search-input" onkeyup="applyFilters()">
+          </div>
+
+          <div class="filter-sep"></div>
+
+          <div class="filter-group">
+            <label class="filter-label">Status</label>
+            <select class="filter-select" id="filter-status" onchange="applyFilters()">
+              <option value="">All</option>
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+              <option value="prospect">Prospect</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label">Giving</label>
+            <select class="filter-select" id="filter-amount" onchange="applyFilters()">
+              <option value="">All amounts</option>
+              <option value="0-5000">$0 - $5K</option>
+              <option value="5000-25000">$5K - $25K</option>
+              <option value="25000-100000">$25K - $100K</option>
+              <option value="100000">$100K+</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label">Type</label>
+            <select class="filter-select" id="filter-type" onchange="applyFilters()">
+              <option value="">All types</option>
+              <option value="individual">Individual</option>
+              <option value="business">Business</option>
+            </select>
+          </div>
+
+          <button class="advanced-filters-toggle" onclick="toggleAdvancedFilters()">⚙️ Advanced</button>
+        </div>
+
+        <!-- ADVANCED FILTERS -->
+        <div class="advanced-filters" id="advanced-filters">
+          <div class="advanced-filters-grid">
+            <div class="form-group">
+              <label class="form-label">Last Gift From</label>
+              <input type="date" class="form-input" id="filter-date-from" onchange="applyFilters()">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Last Gift To</label>
+              <input type="date" class="form-input" id="filter-date-to" onchange="applyFilters()">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Donor Type</label>
+              <select class="filter-select" id="filter-donor-type" onchange="applyFilters()">
+                <option value="">Any</option>
+                <option value="major">Major Donor</option>
+                <option value="recurring">Recurring</option>
+                <option value="faith">Faith Leader</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Segment</label>
+              <select class="filter-select" id="filter-segment" onchange="applyFilters()">
+                <option value="">All segments</option>
+                <option value="capital">Capital Campaign</option>
+                <option value="education">Education</option>
+                <option value="lybunt">LYBUNT</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TABLE -->
+      <table class="donor-list-table">
+        <thead>
+          <tr>
+            <th onclick="sortTable('name')">Name <span class="sort-indicator">↕</span></th>
+            <th onclick="sortTable('id')">Donor ID <span class="sort-indicator">↕</span></th>
+            <th onclick="sortTable('email')">Email <span class="sort-indicator">↕</span></th>
+            <th onclick="sortTable('phone')">Phone <span class="sort-indicator">↕</span></th>
+            <th onclick="sortTable('amount')">Lifetime Giving <span class="sort-indicator">↕</span></th>
+            <th onclick="sortTable('status')">Status <span class="sort-indicator">↕</span></th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="donors-tbody"></tbody>
+      </table>
+      <div class="table-footer">
+        <div class="table-count">Showing <span id="showing-count">0</span> of <span id="total-count">75</span> donors</div>
+        <div class="table-pagination" id="pagination"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════ MODALS ══════════════ -->
+
+  <!-- ENTRY CHOICE MODAL -->
+  <div class="modal-overlay" id="entry-choice-modal">
+    <div class="modal" style="max-width: 700px; width: 95%;">
+      <div class="modal-header">
+        <h2 class="modal-title">Add New Donor</h2>
+        <div class="modal-close" onclick="closeEntryChoice()">
+          <svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 2l7 7M9 2l-7 7"/></svg>
+        </div>
+      </div>
+      <div class="modal-body">
+        <div class="entry-header">
+          <p class="entry-subtitle">Choose how you'd like to add donors to your system</p>
+        </div>
+        <div class="entry-options">
+          <div class="entry-option" onclick="selectEntry('bulk')">
+            <div class="entry-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+              </svg>
+            </div>
+            <h3 class="entry-option-title">Upload CSV</h3>
+            <p class="entry-option-desc">Add multiple donors at once with a CSV file. Perfect for bulk imports.</p>
+          </div>
+          <div class="entry-option" onclick="selectEntry('single')">
+            <div class="entry-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/><line x1="12" y1="12" x2="12" y2="18"/><line x1="9" y1="15" x2="15" y2="15"/>
+              </svg>
+            </div>
+            <h3 class="entry-option-title">Add Single Donor</h3>
+            <p class="entry-option-desc">Manually enter donor information with full details and relationships.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VIEW DONOR MODAL -->
+  <div class="modal-overlay" id="view-donor-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title" id="view-donor-name">Donor Profile</h2>
+        <div class="modal-close" onclick="closeViewDonor()">
+          <svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 2l7 7M9 2l-7 7"/></svg>
+        </div>
+      </div>
+      <div class="modal-body">
+        <div class="donor-detail-grid">
+          <div class="donor-detail-item">
+            <div class="donor-detail-label">First Name</div>
+            <div class="donor-detail-value" id="view-first-name"></div>
+          </div>
+          <div class="donor-detail-item">
+            <div class="donor-detail-label">Last Name</div>
+            <div class="donor-detail-value" id="view-last-name"></div>
+          </div>
+          <div class="donor-detail-item">
+            <div class="donor-detail-label">Email</div>
+            <div class="donor-detail-value" id="view-email"></div>
+          </div>
+          <div class="donor-detail-item">
+            <div class="donor-detail-label">Phone</div>
+            <div class="donor-detail-value" id="view-phone"></div>
+          </div>
+          <div class="donor-detail-item">
+            <div class="donor-detail-label">Donor Type</div>
+            <div class="donor-detail-value" id="view-type"></div>
+          </div>
+          <div class="donor-detail-item">
+            <div class="donor-detail-label">Status</div>
+            <div class="donor-detail-value" id="view-status"></div>
+          </div>
+          <div class="donor-detail-item">
+            <div class="donor-detail-label">Lifetime Giving</div>
+            <div class="donor-detail-value" id="view-amount"></div>
+          </div>
+          <div class="donor-detail-item">
+            <div class="donor-detail-label">Last Gift</div>
+            <div class="donor-detail-value" id="view-lastgift"></div>
+          </div>
+          <div style="grid-column: 1 / -1;">
+            <div class="donor-detail-label">Address</div>
+            <div class="donor-detail-value" id="view-address"></div>
+          </div>
+          <div style="grid-column: 1 / -1;">
+            <div class="donor-detail-label">Tags</div>
+            <div class="donor-detail-value" id="view-tags"></div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="tb-btn tb-ghost" onclick="closeViewDonor()">Close</button>
+        <button class="tb-btn tb-primary" onclick="editCurrentDonor()">Edit Donor</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- EDIT DONOR MODAL -->
+  <div class="modal-overlay" id="edit-donor-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title">Edit Donor</h2>
+        <div class="modal-close" onclick="closeEditDonor()">
+          <svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 2l7 7M9 2l-7 7"/></svg>
+        </div>
+      </div>
+      <div class="modal-body">
+        <div class="form-section">
+          <h3 class="form-section-title">Basic Information</h3>
+          <div class="form-section-content">
+            <div class="form-group">
+              <label class="form-label required">First Name</label>
+              <input type="text" class="form-input" id="edit-first-name" placeholder="John">
+            </div>
+            <div class="form-group">
+              <label class="form-label required">Last Name</label>
+              <input type="text" class="form-input" id="edit-last-name" placeholder="Doe">
+            </div>
+            <div class="form-group" style="grid-column: 1 / -1;">
+              <label class="form-label required">Email Address</label>
+              <input type="email" class="form-input" id="edit-email" placeholder="john.doe@example.com">
+            </div>
+            <div class="form-group" style="grid-column: 1 / -1;">
+              <label class="form-label">Mobile Number</label>
+              <input type="tel" class="form-input" id="edit-phone" placeholder="(727) 555-0142">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h3 class="form-section-title">Address</h3>
+          <div class="form-section-content">
+            <div class="form-group" style="grid-column: 1 / -1;">
+              <label class="form-label">Full Address</label>
+              <textarea style="padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 12px; font-family: 'DM Sans', sans-serif; resize: vertical; min-height: 60px;" id="edit-address" placeholder="123 Main Street, City, State ZIP"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h3 class="form-section-title">Status</h3>
+          <div class="form-section-content">
+            <div class="form-group">
+              <label class="form-label">Donor Status</label>
+              <select class="form-input" id="edit-status">
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+                <option value="prospect">Prospect</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="tb-btn tb-ghost" onclick="closeEditDonor()">Cancel</button>
+        <button class="tb-btn tb-primary" onclick="saveEditDonor()">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD SINGLE DONOR MODAL -->
+  <div class="modal-overlay" id="add-donor-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title">Add New Donor</h2>
+        <div class="modal-close" onclick="closeAddDonor()">
+          <svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 2l7 7M9 2l-7 7"/></svg>
+        </div>
+      </div>
+      <div class="modal-body">
+        <div class="form-section">
+          <h3 class="form-section-title">Basic Information</h3>
+          <div class="form-section-content">
+            <div class="form-group">
+              <label class="form-label required">First Name</label>
+              <input type="text" class="form-input" id="first-name" placeholder="John">
+            </div>
+            <div class="form-group">
+              <label class="form-label required">Last Name</label>
+              <input type="text" class="form-input" id="last-name" placeholder="Doe">
+            </div>
+            <div class="form-group" style="grid-column: 1 / -1;">
+              <label class="form-label required">Email Address</label>
+              <input type="email" class="form-input" id="email" placeholder="john.doe@example.com">
+            </div>
+            <div class="form-group" style="grid-column: 1 / -1;">
+              <label class="form-label">Mobile Number</label>
+              <input type="tel" class="form-input" id="phone" placeholder="(727) 555-0142">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h3 class="form-section-title">Address</h3>
+          <div class="form-section-content">
+            <div class="form-group" style="grid-column: 1 / -1;">
+              <label class="form-label">Full Address</label>
+              <textarea style="padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 12px; font-family: 'DM Sans', sans-serif; resize: vertical; min-height: 60px;" id="address" placeholder="123 Main Street, City, State ZIP"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h3 class="form-section-title">Donor Details</h3>
+          <div class="form-section-content">
+            <div class="form-group">
+              <label class="form-label">Donor Since (Year)</label>
+              <input type="number" class="form-input" id="donor-since" min="1900" max="2100" placeholder="2020">
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="tb-btn tb-ghost" onclick="closeAddDonor()">Cancel</button>
+        <button class="tb-btn tb-primary" onclick="saveSingleDonor()">Add Donor</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ── DATA ── */
+    let DONORS = [
+      { id: 'DID-001', firstName: 'Margaret', lastName: 'Sullivan', email: 'margaret.sullivan@gmail.com', phone: '(727) 555-0142', address: '14 Bayshore Blvd, Tampa FL 33606', type: 'individual', status: 'active', amount: 84250, lastGift: '2026-03-15', tags: ['Major Donor', 'Recurring'] },
+      { id: 'DID-002', firstName: 'James', lastName: 'Morrison', email: 'james.morrison@corp.com', phone: '(727) 555-0189', address: '', type: 'business', status: 'active', amount: 125000, lastGift: '2026-02-20', tags: ['Major Donor'] },
+      { id: 'DID-003', firstName: 'Patricia', lastName: 'Chen', email: 'patricia.chen@email.com', phone: '(727) 555-0156', address: '', type: 'individual', status: 'active', amount: 45500, lastGift: '2026-01-10', tags: ['Faith Leader'] },
+      { id: 'DID-004', firstName: 'Michael', lastName: 'Kowalski', email: 'mkowalski@outlook.com', phone: '(727) 555-0173', address: '', type: 'individual', status: 'active', amount: 32000, lastGift: '2025-11-05', tags: [] },
+      { id: 'DID-005', firstName: 'Elena', lastName: 'Ramirez', email: 'elena.r@email.com', phone: '(727) 555-0198', address: '', type: 'individual', status: 'active', amount: 28500, lastGift: '2026-03-01', tags: ['Recurring'] },
+      { id: 'DID-006', firstName: 'Thomas', lastName: 'Sullivan', email: 'tom.sullivan@email.com', phone: '(727) 555-0167', address: '', type: 'individual', status: 'active', amount: 31200, lastGift: '2025-12-15', tags: [] },
+      { id: 'DID-007', firstName: 'Barbara', lastName: 'Costello', email: 'bcostello@gmail.com', phone: '(727) 555-0145', address: '', type: 'individual', status: 'inactive', amount: 12400, lastGift: '2024-06-20', tags: [] },
+      { id: 'DID-008', firstName: 'Robert', lastName: 'Davidson', email: 'rdavidson@business.com', phone: '(727) 555-0134', address: '', type: 'business', status: 'active', amount: 75000, lastGift: '2026-02-14', tags: [] },
+      { id: 'DID-009', firstName: 'Carol', lastName: 'Martinez', email: 'carol.m@email.com', phone: '(727) 555-0176', address: '', type: 'individual', status: 'prospect', amount: 0, lastGift: null, tags: [] },
+      { id: 'DID-010', firstName: 'David', lastName: 'Ng', email: 'dng@email.com', phone: '(727) 555-0189', address: '', type: 'individual', status: 'active', amount: 18500, lastGift: '2026-01-05', tags: [] },
+      { id: 'DID-011', firstName: 'Susan', lastName: 'White', email: 'swhite@email.com', phone: '(727) 555-0167', address: '', type: 'individual', status: 'active', amount: 22000, lastGift: '2025-11-30', tags: ['Faith Leader'] },
+      { id: 'DID-012', firstName: 'Christopher', lastName: 'Lee', email: 'clee@email.com', phone: '(727) 555-0145', address: '', type: 'individual', status: 'inactive', amount: 8500, lastGift: '2023-04-15', tags: [] },
+      { id: 'DID-013', firstName: 'Jennifer', lastName: 'Sullivan', email: 'jsullivan@email.com', phone: '(727) 555-0123', address: '', type: 'individual', status: 'prospect', amount: 0, lastGift: null, tags: [] },
+      { id: 'DID-014', firstName: 'Andrew', lastName: 'Harris', email: 'aharris@business.com', phone: '(727) 555-0198', address: '', type: 'business', status: 'active', amount: 95000, lastGift: '2026-01-22', tags: [] },
+      { id: 'DID-015', firstName: 'Victoria', lastName: 'Brown', email: 'vbrown@email.com', phone: '(727) 555-0134', address: '', type: 'individual', status: 'active', amount: 19200, lastGift: '2025-12-10', tags: [] },
+      { id: 'DID-016', firstName: 'William', lastName: 'Garcia', email: 'wgarcia@email.com', phone: '(727) 555-0167', address: '', type: 'individual', status: 'active', amount: 35800, lastGift: '2026-02-05', tags: ['Recurring'] },
+      { id: 'DID-017', firstName: 'Rachel', lastName: 'Johnson', email: 'rjohnson@email.com', phone: '(727) 555-0156', address: '', type: 'individual', status: 'active', amount: 15400, lastGift: '2026-03-08', tags: [] },
+      { id: 'DID-018', firstName: 'Kevin', lastName: 'Taylor', email: 'ktaylor@email.com', phone: '(727) 555-0189', address: '', type: 'individual', status: 'prospect', amount: 0, lastGift: null, tags: [] },
+      { id: 'DID-019', firstName: 'Lisa', lastName: 'Anderson', email: 'landerson@email.com', phone: '(727) 555-0145', address: '', type: 'individual', status: 'active', amount: 42300, lastGift: '2025-11-20', tags: ['Faith Leader'] },
+      { id: 'DID-020', firstName: 'Daniel', lastName: 'Thompson', email: 'dthompson@business.com', phone: '(727) 555-0134', address: '', type: 'business', status: 'active', amount: 68500, lastGift: '2026-01-30', tags: [] },
+      { id: 'DID-021', firstName: 'Monica', lastName: 'Jackson', email: 'mjackson@email.com', phone: '(727) 555-0167', address: '', type: 'individual', status: 'active', amount: 11800, lastGift: '2026-02-28', tags: [] },
+      { id: 'DID-022', firstName: 'Steven', lastName: 'White', email: 'swhite2@email.com', phone: '(727) 555-0156', address: '', type: 'individual', status: 'inactive', amount: 6200, lastGift: '2022-08-15', tags: [] },
+      { id: 'DID-023', firstName: 'Amanda', lastName: 'Harris', email: 'aharris2@email.com', phone: '(727) 555-0123', address: '', type: 'individual', status: 'prospect', amount: 0, lastGift: null, tags: [] },
+      { id: 'DID-024', firstName: 'Paul', lastName: 'Martin', email: 'pmartin@email.com', phone: '(727) 555-0189', address: '', type: 'individual', status: 'active', amount: 29500, lastGift: '2025-10-12', tags: ['Recurring'] },
+      { id: 'DID-025', firstName: 'Sarah', lastName: 'Evans', email: 'sevans@email.com', phone: '(727) 555-0145', address: '', type: 'individual', status: 'active', amount: 17600, lastGift: '2026-03-05', tags: [] },
+      { id: 'DID-026', firstName: 'Marcus', lastName: 'Robinson', email: 'mrobinson@business.com', phone: '(727) 555-0167', address: '', type: 'business', status: 'active', amount: 110000, lastGift: '2026-02-01', tags: ['Major Donor'] },
+      { id: 'DID-027', firstName: 'Nicole', lastName: 'Campbell', email: 'ncampbell@email.com', phone: '(727) 555-0134', address: '', type: 'individual', status: 'active', amount: 24800, lastGift: '2025-12-22', tags: ['Faith Leader'] },
+      { id: 'DID-028', firstName: 'Brandon', lastName: 'Phillips', email: 'bphillips@email.com', phone: '(727) 555-0156', address: '', type: 'individual', status: 'prospect', amount: 0, lastGift: null, tags: [] },
+      { id: 'DID-029', firstName: 'Jessica', lastName: 'Parker', email: 'jparker@email.com', phone: '(727) 555-0123', address: '', type: 'individual', status: 'active', amount: 13200, lastGift: '2026-01-20', tags: [] },
+      { id: 'DID-030', firstName: 'Christopher', lastName: 'Mitchell', email: 'cmitchell@business.com', phone: '(727) 555-0189', address: '', type: 'business', status: 'active', amount: 52000, lastGift: '2026-03-01', tags: [] },
+      { id: 'DID-031', firstName: 'Deborah', lastName: 'Walker', email: 'dwalker@email.com', phone: '(727) 555-0145', address: '', type: 'individual', status: 'active', amount: 19900, lastGift: '2025-11-15', tags: [] },
+      { id: 'DID-032', firstName: 'Eric', lastName: 'Hall', email: 'ehall@email.com', phone: '(727) 555-0134', address: '', type: 'individual', status: 'inactive', amount: 7800, lastGift: '2023-09-10', tags: [] },
+      { id: 'DID-033', firstName: 'Megan', lastName: 'Scott', email: 'mscott@email.com', phone: '(727) 555-0167', address: '', type: 'individual', status: 'prospect', amount: 0, lastGift: null, tags: [] },
+      { id: 'DID-034', firstName: 'Ryan', lastName: 'Green', email: 'rgreen@email.com', phone: '(727) 555-0156', address: '', type: 'individual', status: 'active', amount: 21400, lastGift: '2026-02-10', tags: [] },
+      { id: 'DID-035', firstName: 'Heather', lastName: 'Adams', email: 'hadams@email.com', phone: '(727) 555-0123', address: '', type: 'individual', status: 'active', amount: 16700, lastGift: '2025-12-05', tags: ['Recurring'] },
+      { id: 'DID-036', firstName: 'Justin', lastName: 'Nelson', email: 'jnelson@business.com', phone: '(727) 555-0189', address: '', type: 'business', status: 'active', amount: 78500, lastGift: '2026-01-15', tags: [] },
+      { id: 'DID-037', firstName: 'Olivia', lastName: 'Carter', email: 'ocarter@email.com', phone: '(727) 555-0145', address: '', type: 'individual', status: 'active', amount: 28300, lastGift: '2025-11-28', tags: ['Faith Leader'] },
+      { id: 'DID-038', firstName: 'Jacob', lastName: 'Roberts', email: 'jroberts@email.com', phone: '(727) 555-0134', address: '', type: 'individual', status: 'prospect', amount: 0, lastGift: null, tags: [] },
+      { id: 'DID-039', firstName: 'Emma', lastName: 'Phillips', email: 'ephillips@email.com', phone: '(727) 555-0167', address: '', type: 'individual', status: 'active', amount: 20100, lastGift: '2026-03-10', tags: [] },
+      { id: 'DID-040', firstName: 'Samuel', lastName: 'Edwards', email: 'sedwards@business.com', phone: '(727) 555-0156', address: '', type: 'business', status: 'active', amount: 95000, lastGift: '2026-02-20', tags: [] },
+      { id: 'DID-041', firstName: 'Sophia', lastName: 'Collins', email: 'scollins@email.com', phone: '(727) 555-0123', address: '', type: 'individual', status: 'active', amount: 15800, lastGift: '2025-12-18', tags: [] },
+      { id: 'DID-042', firstName: 'Benjamin', lastName: 'Stewart', email: 'bstewart@email.com', phone: '(727) 555-0189', address: '', type: 'individual', status: 'inactive', amount: 9300, lastGift: '2024-03-20', tags: [] },
+      { id: 'DID-043', firstName: 'Ava', lastName: 'Sanchez', email: 'asanchez@email.com', phone: '(727) 555-0145', address: '', type: 'individual', status: 'prospect', amount: 0, lastGift: null, tags: [] },
+      { id: 'DID-044', firstName: 'David', lastName: 'Morris', email: 'dmorris@email.com', phone: '(727) 555-0134', address: '', type: 'individual', status: 'active', amount: 33600, lastGift: '2026-01-05', tags: ['Recurring'] },
+      { id: 'DID-045', firstName: 'Isabella', lastName: 'Rogers', email: 'irogers@email.com', phone: '(727) 555-0167', address: '', type: 'individual', status: 'active', amount: 12900, lastGift: '2026-02-25', tags: [] },
+      { id: 'DID-046', firstName: 'Matthew', lastName: 'Reed', email: 'mreed@business.com', phone: '(727) 555-0156', address: '', type: 'business', status: 'active', amount: 82000, lastGift: '2026-03-05', tags: [] },
+      { id: 'DID-047', firstName: 'Abigail', lastName: 'Cook', email: 'acook@email.com', phone: '(727) 555-0123', address: '', type: 'individual', status: 'active', amount: 26400, lastGift: '2025-11-12', tags: ['Faith Leader'] },
+      { id: 'DID-048', firstName: 'Lucas', lastName: 'Morgan', email: 'lmorgan@email.com', phone: '(727) 555-0189', address: '', type: 'individual', status: 'prospect', amount: 0, lastGift: null, tags: [] },
+      { id: 'DID-049', firstName: 'Mia', lastName: 'Bell', email: 'mbell@email.com', phone: '(727) 555-0145', address: '', type: 'individual', status: 'active', amount: 18200, lastGift: '2026-01-30', tags: [] },
+      { id: 'DID-050', firstName: 'Ethan', lastName: 'Murphy', email: 'emurphy@business.com', phone: '(727) 555-0134', address: '', type: 'business', status: 'active', amount: 88000, lastGift: '2026-02-14', tags: [] },
+      { id: 'DID-051', firstName: 'Charlotte', lastName: 'Bailey', email: 'cbailey@email.com', phone: '(727) 555-0167', address: '', type: 'individual', status: 'active', amount: 21700, lastGift: '2025-12-20', tags: [] },
+      { id: 'DID-052', firstName: 'James', lastName: 'Wright', email: 'jwright@email.com', phone: '(727) 555-0156', address: '', type: 'individual', status: 'inactive', amount: 5600, lastGift: '2022-11-08', tags: [] },
+      { id: 'DID-053', firstName: 'Amelia', lastName: 'Lopez', email: 'alopez@email.com', phone: '(727) 555-0123', address: '', type: 'individual', status: 'prospect', amount: 0, lastGift: null, tags: [] },
+      { id: 'DID-054', firstName: 'Alexander', lastName: 'Hill', email: 'ahill@email.com', phone: '(727) 555-0189', address: '', type: 'individual', status: 'active', amount: 30200, lastGift: '2026-02-08', tags: ['Recurring'] },
+      { id: 'DID-055', firstName: 'Harper', lastName: 'Scott', email: 'hscott@email.com', phone: '(727) 555-0145', address: '', type: 'individual', status: 'active', amount: 14500, lastGift: '2025-11-25', tags: [] },
+      { id: 'DID-056', firstName: 'Michael', lastName: 'Green', email: 'mgreen@business.com', phone: '(727) 555-0134', address: '', type: 'business', status: 'active', amount: 105000, lastGift: '2026-03-01', tags: ['Major Donor'] },
+      { id: 'DID-057', firstName: 'Evelyn', lastName: 'Adams', email: 'eadams@email.com', phone: '(727) 555-0167', address: '', type: 'individual', status: 'active', amount: 23500, lastGift: '2025-12-30', tags: ['Faith Leader'] },
+      { id: 'DID-058', firstName: 'Henry', lastName: 'Nelson', email: 'hnelson@email.com', phone: '(727) 555-0156', address: '', type: 'individual', status: 'prospect', amount: 0, lastGift: null, tags: [] },
+      { id: 'DID-059', firstName: 'Grace', lastName: 'Carter', email: 'gcarter@email.com', phone: '(727) 555-0123', address: '', type: 'individual', status: 'active', amount: 17900, lastGift: '2026-01-10', tags: [] },
+      { id: 'DID-060', firstName: 'Oliver', lastName: 'Jackson', email: 'ojackson@business.com', phone: '(727) 555-0189', address: '', type: 'business', status: 'active', amount: 72000, lastGift: '2026-02-22', tags: [] },
+      { id: 'DID-061', firstName: 'Sophie', lastName: 'White', email: 'swhite3@email.com', phone: '(727) 555-0145', address: '', type: 'individual', status: 'active', amount: 19400, lastGift: '2025-11-08', tags: [] },
+      { id: 'DID-062', firstName: 'Liam', lastName: 'Harris', email: 'lharris@email.com', phone: '(727) 555-0134', address: '', type: 'individual', status: 'inactive', amount: 8200, lastGift: '2023-05-20', tags: [] },
+      { id: 'DID-063', firstName: 'Luna', lastName: 'Martin', email: 'lmartin@email.com', phone: '(727) 555-0167', address: '', type: 'individual', status: 'prospect', amount: 0, lastGift: null, tags: [] },
+      { id: 'DID-064', firstName: 'Mason', lastName: 'Thompson', email: 'mthompson@email.com', phone: '(727) 555-0156', address: '', type: 'individual', status: 'active', amount: 27800, lastGift: '2026-03-12', tags: ['Recurring'] },
+      { id: 'DID-065', firstName: 'Chloe', lastName: 'Garcia', email: 'cgarcia@email.com', phone: '(727) 555-0123', address: '', type: 'individual', status: 'active', amount: 13700, lastGift: '2025-12-28', tags: [] },
+      { id: 'DID-066', firstName: 'Logan', lastName: 'Martinez', email: 'lmartinez@business.com', phone: '(727) 555-0189', address: '', type: 'business', status: 'active', amount: 91000, lastGift: '2026-01-25', tags: [] },
+      { id: 'DID-067', firstName: 'Zoe', lastName: 'Robinson', email: 'zrobinson@email.com', phone: '(727) 555-0145', address: '', type: 'individual', status: 'active', amount: 25200, lastGift: '2025-11-05', tags: ['Faith Leader'] },
+      { id: 'DID-068', firstName: 'Aiden', lastName: 'Davis', email: 'adavis@email.com', phone: '(727) 555-0134', address: '', type: 'individual', status: 'prospect', amount: 0, lastGift: null, tags: [] },
+      { id: 'DID-069', firstName: 'Lily', lastName: 'Rodriguez', email: 'lrodriguez@email.com', phone: '(727) 555-0167', address: '', type: 'individual', status: 'active', amount: 20500, lastGift: '2026-02-18', tags: [] },
+      { id: 'DID-070', firstName: 'Noah', lastName: 'Anderson', email: 'nanderson@business.com', phone: '(727) 555-0156', address: '', type: 'business', status: 'active', amount: 98000, lastGift: '2026-03-08', tags: [] },
+      { id: 'DID-071', firstName: 'Emma', lastName: 'Wilson', email: 'ewilson@email.com', phone: '(727) 555-0123', address: '', type: 'individual', status: 'active', amount: 16200, lastGift: '2025-12-10', tags: [] },
+      { id: 'DID-072', firstName: 'Jackson', lastName: 'Thomas', email: 'jthomas@email.com', phone: '(727) 555-0189', address: '', type: 'individual', status: 'inactive', amount: 6700, lastGift: '2023-07-15', tags: [] },
+      { id: 'DID-073', firstName: 'Avery', lastName: 'Taylor', email: 'ataylor@email.com', phone: '(727) 555-0145', address: '', type: 'individual', status: 'prospect', amount: 0, lastGift: null, tags: [] },
+      { id: 'DID-074', firstName: 'Scarlett', lastName: 'Moore', email: 'smoore@email.com', phone: '(727) 555-0134', address: '', type: 'individual', status: 'active', amount: 31500, lastGift: '2026-01-12', tags: ['Recurring'] },
+      { id: 'DID-075', firstName: 'Wyatt', lastName: 'Jackson', email: 'wjackson@business.com', phone: '(727) 555-0167', address: '', type: 'business', status: 'active', amount: 115000, lastGift: '2026-02-28', tags: ['Major Donor'] },
+    ];
+
+    let currentViewDonor = null;
+    let currentEditDonorId = null;
+    let filteredDonors = [...DONORS];
+    let currentPage = 1;
+    let itemsPerPage = 15;
+    let sortColumn = 'name';
+    let sortOrder = 'asc';
+
+    /* ── CALCULATE STATS ── */
+    function updateStats() {
+      const total = DONORS.length;
+      const totalGiving = DONORS.reduce((sum, d) => sum + d.amount, 0);
+      const active = DONORS.filter(d => d.status === 'active').length;
+      const major = DONORS.filter(d => d.amount >= 100000).length;
+      const avg = Math.round(totalGiving / total);
+      const recurring = DONORS.filter(d => d.tags.includes('Recurring')).length;
+
+      document.getElementById('stat-total').textContent = total;
+      document.getElementById('stat-total-giving').textContent = '$' + (totalGiving / 1000000).toFixed(1) + 'M';
+      document.getElementById('stat-active').textContent = active;
+      document.getElementById('stat-major').textContent = major;
+      document.getElementById('stat-avg').textContent = '$' + (avg / 1000).toFixed(0) + 'K';
+      document.getElementById('stat-recurring').textContent = recurring;
+    }
+
+    /* ── RENDER TABLE ── */
+    function renderTable() {
+      const start = (currentPage - 1) * itemsPerPage;
+      const end = start + itemsPerPage;
+      const pageData = filteredDonors.slice(start, end);
+
+      const tbody = document.getElementById('donors-tbody');
+      tbody.innerHTML = pageData.length === 0 ?
+        '<tr><td colspan="7"><div class="empty-state"><div class="empty-state-icon">🔍</div><div class="empty-state-title">No donors found</div><p style="font-size:12px;color:var(--text-3)">Try adjusting your filters or search terms</p></div></td></tr>' :
+        pageData.map(d => `
+          <tr>
+            <td>
+              <div class="donor-name-cell">
+                <div class="donor-avatar-sm">${(d.firstName[0] + d.lastName[0]).toUpperCase()}</div>
+                <div class="donor-name-info">
+                  <div class="donor-name-text">${d.firstName} ${d.lastName}</div>
+                  <div class="donor-email-text">${d.email}</div>
+                </div>
+              </div>
+            </td>
+            <td><strong>${d.id}</strong></td>
+            <td>${d.email}</td>
+            <td>${d.phone}</td>
+            <td><strong>$${d.amount.toLocaleString()}</strong></td>
+            <td>
+              <span class="donor-status status-${d.status}">
+                <span class="status-dot"></span>
+                ${d.status.charAt(0).toUpperCase() + d.status.slice(1)}
+              </span>
+            </td>
+            <td>
+              <div class="actions-cell">
+                <button class="action-btn" onclick="viewDonor('${d.id}')">View</button>
+                <button class="action-btn" onclick="editDonor('${d.id}')">Edit</button>
+                <button class="action-btn danger" onclick="if(confirm('Delete ${d.firstName} ${d.lastName}?')) deleteDonor('${d.id}')">Delete</button>
+              </div>
+            </td>
+          </tr>
+        `).join('');
+
+      document.getElementById('showing-count').textContent = Math.min(end, filteredDonors.length);
+      document.getElementById('total-count').textContent = filteredDonors.length;
+      renderPagination();
+    }
+
+    function renderPagination() {
+      const totalPages = Math.ceil(filteredDonors.length / itemsPerPage);
+      const pagination = document.getElementById('pagination');
+      pagination.innerHTML = '';
+      for (let i = 1; i <= totalPages; i++) {
+        const btn = document.createElement('button');
+        btn.className = `page-btn ${i === currentPage ? 'active' : ''}`;
+        btn.textContent = i;
+        btn.onclick = () => { currentPage = i; renderTable(); };
+        pagination.appendChild(btn);
+      }
+    }
+
+    function applyFilters() {
+      const search = document.getElementById('search-input').value.toLowerCase();
+      const status = document.getElementById('filter-status').value;
+      const amount = document.getElementById('filter-amount').value;
+      const type = document.getElementById('filter-type').value;
+      const dateFrom = document.getElementById('filter-date-from').value;
+      const dateTo = document.getElementById('filter-date-to').value;
+
+      filteredDonors = DONORS.filter(d => {
+        const matchSearch = !search ||
+          d.firstName.toLowerCase().includes(search) ||
+          d.lastName.toLowerCase().includes(search) ||
+          d.email.toLowerCase().includes(search) ||
+          d.phone.includes(search) ||
+          d.id.toLowerCase().includes(search);
+
+        const matchStatus = !status || d.status === status;
+        const matchType = !type || d.type === type;
+
+        let matchAmount = true;
+        if (amount === '0-5000') matchAmount = d.amount > 0 && d.amount <= 5000;
+        else if (amount === '5000-25000') matchAmount = d.amount > 5000 && d.amount <= 25000;
+        else if (amount === '25000-100000') matchAmount = d.amount > 25000 && d.amount <= 100000;
+        else if (amount === '100000') matchAmount = d.amount > 100000;
+
+        let matchDate = true;
+        if (dateFrom || dateTo) {
+          if (!d.lastGift) matchDate = false;
+          else {
+            const giftDate = new Date(d.lastGift);
+            if (dateFrom && giftDate < new Date(dateFrom)) matchDate = false;
+            if (dateTo && giftDate > new Date(dateTo)) matchDate = false;
+          }
+        }
+
+        return matchSearch && matchStatus && matchType && matchAmount && matchDate;
+      });
+
+      currentPage = 1;
+      renderTable();
+    }
+
+    function sortTable(column) {
+      if (sortColumn === column) {
+        sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+      } else {
+        sortColumn = column;
+        sortOrder = 'asc';
+      }
+
+      filteredDonors.sort((a, b) => {
+        let aVal = a[column];
+        let bVal = b[column];
+
+        if (typeof aVal === 'string') {
+          aVal = aVal.toLowerCase();
+          bVal = bVal.toLowerCase();
+          return sortOrder === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+        } else {
+          return sortOrder === 'asc' ? aVal - bVal : bVal - aVal;
+        }
+      });
+
+      currentPage = 1;
+      renderTable();
+    }
+
+    function toggleAdvancedFilters() {
+      document.getElementById('advanced-filters').classList.toggle('active');
+    }
+
+    /* ── DONOR ACTIONS ── */
+    function viewDonor(id) {
+      const donor = DONORS.find(d => d.id === id);
+      if (donor) {
+        currentViewDonor = donor;
+        document.getElementById('view-donor-name').textContent = `${donor.firstName} ${donor.lastName}`;
+        document.getElementById('view-first-name').textContent = donor.firstName;
+        document.getElementById('view-last-name').textContent = donor.lastName;
+        document.getElementById('view-email').textContent = donor.email;
+        document.getElementById('view-phone').textContent = donor.phone || '-';
+        document.getElementById('view-type').textContent = donor.type.charAt(0).toUpperCase() + donor.type.slice(1);
+        document.getElementById('view-status').textContent = donor.status.charAt(0).toUpperCase() + donor.status.slice(1);
+        document.getElementById('view-amount').textContent = '$' + donor.amount.toLocaleString();
+        document.getElementById('view-lastgift').textContent = donor.lastGift ? new Date(donor.lastGift).toLocaleDateString() : '-';
+        document.getElementById('view-address').textContent = donor.address || '-';
+        document.getElementById('view-tags').textContent = donor.tags.length > 0 ? donor.tags.join(', ') : '-';
+        document.getElementById('view-donor-modal').classList.add('active');
+      }
+    }
+
+    function closeViewDonor() {
+      document.getElementById('view-donor-modal').classList.remove('active');
+      currentViewDonor = null;
+    }
+
+    function editCurrentDonor() {
+      if (currentViewDonor) {
+        closeViewDonor();
+        editDonor(currentViewDonor.id);
+      }
+    }
+
+    function editDonor(id) {
+      const donor = DONORS.find(d => d.id === id);
+      if (donor) {
+        currentEditDonorId = id;
+        document.getElementById('edit-first-name').value = donor.firstName;
+        document.getElementById('edit-last-name').value = donor.lastName;
+        document.getElementById('edit-email').value = donor.email;
+        document.getElementById('edit-phone').value = donor.phone || '';
+        document.getElementById('edit-address').value = donor.address || '';
+        document.getElementById('edit-status').value = donor.status;
+        document.getElementById('edit-donor-modal').classList.add('active');
+      }
+    }
+
+    function closeEditDonor() {
+      document.getElementById('edit-donor-modal').classList.remove('active');
+      currentEditDonorId = null;
+    }
+
+    function saveEditDonor() {
+      if (!currentEditDonorId) return;
+      const donor = DONORS.find(d => d.id === currentEditDonorId);
+      if (donor) {
+        donor.firstName = document.getElementById('edit-first-name').value.trim();
+        donor.lastName = document.getElementById('edit-last-name').value.trim();
+        donor.email = document.getElementById('edit-email').value.trim();
+        donor.phone = document.getElementById('edit-phone').value.trim();
+        donor.address = document.getElementById('edit-address').value.trim();
+        donor.status = document.getElementById('edit-status').value;
+        closeEditDonor();
+        applyFilters();
+        alert('Donor updated successfully!');
+      }
+    }
+
+    function deleteDonor(id) {
+      const index = DONORS.findIndex(d => d.id === id);
+      if (index !== -1) {
+        DONORS.splice(index, 1);
+        updateStats();
+        applyFilters();
+        document.getElementById('donor-count').textContent = DONORS.length;
+      }
+    }
+
+    /* ── ENTRY CHOICE MODAL ── */
+    function openAddDonorEntry() {
+      document.getElementById('entry-choice-modal').classList.add('active');
+    }
+
+    function closeEntryChoice() {
+      document.getElementById('entry-choice-modal').classList.remove('active');
+    }
+
+    function selectEntry(type) {
+      closeEntryChoice();
+      if (type === 'single') openAddDonor();
+    }
+
+    function openAddDonor() {
+      document.getElementById('first-name').value = '';
+      document.getElementById('last-name').value = '';
+      document.getElementById('email').value = '';
+      document.getElementById('phone').value = '';
+      document.getElementById('address').value = '';
+      document.getElementById('donor-since').value = '';
+      document.getElementById('add-donor-modal').classList.add('active');
+    }
+
+    function closeAddDonor() {
+      document.getElementById('add-donor-modal').classList.remove('active');
+    }
+
+    function saveSingleDonor() {
+      const firstName = document.getElementById('first-name').value.trim();
+      const lastName = document.getElementById('last-name').value.trim();
+      const email = document.getElementById('email').value.trim();
+
+      if (!firstName || !lastName || !email) {
+        alert('Please fill in all required fields');
+        return;
+      }
+
+      const newDonor = {
+        id: 'DID-' + String(DONORS.length + 1).padStart(3, '0'),
+        firstName,
+        lastName,
+        email,
+        phone: document.getElementById('phone').value.trim(),
+        address: document.getElementById('address').value.trim(),
+        type: 'individual',
+        status: 'active',
+        amount: 0,
+        lastGift: new Date().toISOString().split('T')[0],
+        tags: []
+      };
+
+      DONORS.push(newDonor);
+      updateStats();
+      applyFilters();
+      document.getElementById('donor-count').textContent = DONORS.length;
+      closeAddDonor();
+      alert(`Donor ${firstName} ${lastName} added successfully!`);
+    }
+
+    /* ── INIT ── */
+    updateStats();
+    renderTable();
+  </script>
+
+</body>
+</html>
