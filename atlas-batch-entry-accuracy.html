@@ -1,0 +1,1268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GiveCentral Atlas — Batch Entry</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --navy:#0E1E35;--navy2:#152844;--navy3:#1E3A5F;
+      --blue:#2563EB;--bluel:#DBEAFE;--bluep:#EFF6FF;
+      --green:#15803D;--greenl:#DCFCE7;
+      --amber:#D97706;--amberl:#FEF3C7;
+      --rose:#BE185D;--rosel:#FCE7F3;
+      --teal:#0D9488;--teall:#CCFBF1;
+      --purp:#7C3AED;--purpl:#EDE9FE;
+      --text:#0F172A;--text2:#334155;--text3:#64748B;
+      --border:#E2E8F0;--surf:#F8FAFC;
+    }
+    html{font-size:14px;-webkit-font-smoothing:antialiased}
+    body{font-family:'DM Sans',sans-serif;background:#F0F4F8;color:var(--text);display:flex;height:100vh;overflow:hidden}
+
+    /* ── SIDEBAR ── */
+    .sidebar{width:240px;background:var(--navy);display:flex;flex-direction:column;flex-shrink:0;height:100vh}
+    .sb-logo{padding:14px 16px 12px;display:flex;align-items:center;gap:9px;border-bottom:1px solid rgba(255,255,255,.08)}
+    .sb-mark{width:28px;height:28px;background:var(--blue);border-radius:7px;display:flex;align-items:center;justify-content:center}
+    .sb-mark svg{width:13px;height:13px}
+    .sb-name{font-family:'DM Serif Display',serif;font-size:14px;color:white}
+    .sb-sub{font-size:8px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-top:2px}
+    .lib-header{padding:11px 14px 6px;display:flex;align-items:center;gap:8px}
+    .lib-title{font-size:9px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:rgba(255,255,255,.4);flex:1}
+    .lib-new-btn{width:20px;height:20px;background:rgba(255,255,255,.1);border:none;border-radius:5px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.6)}
+    .lib-new-btn svg{width:10px;height:10px}
+    .folder-list{flex:1;overflow-y:auto;padding:0 8px 8px}
+    .folder-list::-webkit-scrollbar{width:3px}
+    .folder-list::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1)}
+    .folder-item{margin-bottom:1px}
+    .folder-row{display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:7px;cursor:pointer;transition:all .12s;user-select:none}
+    .folder-row:hover{background:rgba(255,255,255,.06)}
+    .folder-caret{width:11px;height:11px;color:rgba(255,255,255,.3);transition:transform .15s;flex-shrink:0}
+    .folder-caret.open{transform:rotate(90deg)}
+    .folder-icon{width:14px;height:14px;color:rgba(255,255,255,.45);flex-shrink:0}
+    .folder-name{font-size:11px;color:rgba(255,255,255,.65);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .folder-count{font-size:10px;color:rgba(255,255,255,.28);flex-shrink:0}
+    .folder-children{padding-left:18px}
+    .batch-item{display:flex;align-items:center;gap:7px;padding:5px 8px;border-radius:6px;cursor:pointer;transition:all .12s;margin-bottom:1px}
+    .batch-item:hover{background:rgba(255,255,255,.05)}
+    .batch-item.active{background:rgba(37,99,235,.3)}
+    .bi-icon{width:13px;height:13px;flex-shrink:0}
+    .bi-name{font-size:11px;color:rgba(255,255,255,.6);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .bi-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+    .bs-draft{background:var(--amber)}
+    .bs-posted{background:var(--green)}
+    .bs-template{background:var(--purp)}
+    .tpl-badge{font-size:8px;font-weight:700;background:rgba(124,58,237,.4);color:#C4B5FD;border-radius:4px;padding:1px 5px}
+    .sb-bottom{border-top:1px solid rgba(255,255,255,.08)}
+    .sb-action{display:flex;align-items:center;gap:8px;padding:9px 14px;cursor:pointer;font-size:11px;color:rgba(255,255,255,.45);transition:all .12s}
+    .sb-action:hover{color:white;background:rgba(255,255,255,.05)}
+    .sb-action svg{width:12px;height:12px}
+    .u-av-sm{width:24px;height:24px;border-radius:50%;background:var(--blue);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:white;flex-shrink:0}
+
+    /* ── MAIN ── */
+    .main{flex:1;min-width:0;display:flex;flex-direction:column;height:100vh;overflow:hidden}
+    .topbar{background:white;border-bottom:1px solid var(--border);height:50px;display:flex;align-items:center;gap:10px;padding:0 18px;flex-shrink:0}
+    .tb-crumb{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text3)}
+    .tb-crumb b{color:var(--text);font-weight:600}
+    .tb-pill{display:flex;align-items:center;gap:5px;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:700}
+    .tp-draft{background:var(--amberl);color:var(--amber)}
+    .tb-save{font-size:11px;color:var(--text3);display:flex;align-items:center;gap:4px}
+    .tb-save svg{width:10px;height:10px;color:var(--green)}
+    .tb-right{margin-left:auto;display:flex;gap:7px;align-items:center}
+    .btn{padding:5px 12px;border-radius:7px;font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;display:flex;align-items:center;gap:5px;white-space:nowrap}
+    .btn svg{width:11px;height:11px}
+    .btn-ghost{background:none;border:1px solid var(--border);color:var(--text2)}
+    .btn-ghost:hover{background:var(--surf)}
+    .btn-blue{background:var(--blue);color:white;border:none}
+    .btn-blue:hover{background:#1D4ED8}
+    .btn-green{background:var(--green);color:white;border:none}
+    .btn-green:hover{background:#126e31}
+    .btn-purp{background:var(--purp);color:white;border:none}
+    .btn-amber{background:var(--amber);color:white;border:none}
+
+    /* ── CONFIG BAR ── */
+    .config-bar{background:white;border-bottom:1px solid var(--border);padding:8px 18px;display:flex;gap:10px;align-items:center;flex-shrink:0;flex-wrap:wrap}
+    .cfg-field{display:flex;flex-direction:column;gap:3px}
+    .cfg-label{font-size:9px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text3)}
+    .cfg-input{padding:4px 8px;border:1px solid var(--border);border-radius:6px;font-size:12px;font-family:'DM Sans',sans-serif;color:var(--text);background:var(--surf);outline:none}
+    .cfg-input:focus{border-color:var(--blue);background:white}
+    .cfg-select{padding:4px 8px;border:1px solid var(--border);border-radius:6px;font-size:12px;font-family:'DM Sans',sans-serif;color:var(--text);background:var(--surf);outline:none;cursor:pointer}
+    .cfg-sep{width:1px;height:30px;background:var(--border)}
+
+    /* ── TIPS BAR ── */
+    .tips-bar{background:var(--navy2);padding:4px 18px;display:flex;gap:14px;align-items:center;flex-shrink:0}
+    .tip{display:flex;align-items:center;gap:4px;font-size:10px;color:rgba(255,255,255,.4)}
+    .kbd{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16);border-radius:3px;padding:0px 5px;font-size:9px;font-weight:700;color:rgba(255,255,255,.6);font-family:monospace}
+    .accuracy-btn{margin-left:auto;display:flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;background:rgba(124,58,237,.3);border:1px solid rgba(124,58,237,.5);color:#C4B5FD;font-size:10px;font-weight:700;cursor:pointer;transition:all .12s}
+    .accuracy-btn:hover{background:rgba(124,58,237,.45)}
+    .accuracy-dot{width:5px;height:5px;border-radius:50%;background:#C4B5FD}
+
+    /* ── STATS ROW ── */
+    .stats-row{display:flex;background:white;border-bottom:1px solid var(--border);flex-shrink:0}
+    .stat-cell{padding:8px 16px;border-right:1px solid var(--border);min-width:100px}
+    .stat-cell:last-child{border-right:none}
+    .sc-val{font-family:'DM Serif Display',serif;font-size:20px;color:var(--text);line-height:1}
+    .sc-val.green{color:var(--green)}
+    .sc-val.rose{color:var(--rose)}
+    .sc-val.amber{color:var(--amber)}
+    .sc-lbl{font-size:9px;color:var(--text3);margin-top:2px}
+    .fund-pills{display:flex;gap:4px;flex-wrap:wrap;padding:2px 0}
+    .fp{font-size:9px;font-weight:600;padding:1px 6px;border-radius:10px;background:var(--bluep);color:var(--blue)}
+    .recon-cell{padding:8px 16px;display:flex;align-items:center;gap:10px;margin-left:auto}
+    .recon-lbl{font-size:11px;color:var(--text3)}
+    .recon-input{width:100px;padding:4px 8px;border:1px solid var(--border);border-radius:6px;font-size:13px;font-weight:700;font-family:'DM Serif Display',serif;color:var(--text);text-align:right;background:var(--surf);outline:none}
+    .recon-input:focus{border-color:var(--blue);background:white}
+    .recon-badge{display:flex;align-items:center;gap:4px;font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;white-space:nowrap}
+    .rb-ok{background:var(--greenl);color:var(--green)}
+    .rb-diff{background:var(--rosel);color:var(--rose)}
+    .rb-na{background:var(--surf);color:var(--text3);border:1px solid var(--border)}
+
+    /* ── BATCH TABLE ── */
+    .batch-wrap{flex:1;overflow:auto;position:relative}
+    .batch-table{width:100%;border-collapse:collapse;table-layout:fixed}
+    .batch-table thead th{position:sticky;top:0;z-index:10;background:var(--navy);color:rgba(255,255,255,.7);font-size:9px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:7px 10px;text-align:left;border-right:1px solid rgba(255,255,255,.08);white-space:nowrap}
+    .batch-table thead th:last-child{border-right:none}
+    .col-n{width:38px}.col-donor{width:190px}.col-date{width:95px}.col-fund{width:165px}
+    .col-type{width:100px}.col-amt{width:100px}.col-pay{width:110px}.col-ref{width:95px}
+    .col-gl{width:80px}.col-note{width:150px}.col-status{width:130px}.col-act{width:52px}
+
+    /* Row states */
+    .batch-table tbody tr.r-valid td{background:white}
+    .batch-table tbody tr.r-valid:hover td{background:#F0FDF4}
+    .batch-table tbody tr.r-error td{background:#FFF5F5}
+    .batch-table tbody tr.r-error td:first-child{box-shadow:inset 3px 0 0 var(--rose)}
+    .batch-table tbody tr.r-warn td{background:#FFFBEB}
+    .batch-table tbody tr.r-warn td:first-child{box-shadow:inset 3px 0 0 var(--amber)}
+    .batch-table tbody tr.r-info td{background:#F0F9FF}
+    .batch-table tbody tr.r-info td:first-child{box-shadow:inset 3px 0 0 var(--blue)}
+    .batch-table tbody tr.r-posted td{background:var(--greenl);opacity:.6;pointer-events:none}
+    .batch-table td{padding:0;border-bottom:.5px solid var(--border);border-right:.5px solid var(--border)}
+    .batch-table td:last-child{border-right:none}
+
+    /* Cell inputs */
+    .ci{width:100%;padding:6px 9px;border:none;background:none;font-size:12px;font-family:'DM Sans',sans-serif;color:var(--text);outline:none}
+    .ci:focus{background:white;box-shadow:inset 0 0 0 2px var(--blue)}
+    .ci-amt{font-family:'DM Serif Display',serif;font-size:13px;text-align:right}
+    .cs{width:100%;padding:6px 7px;border:none;background:none;font-size:12px;font-family:'DM Sans',sans-serif;color:var(--text);outline:none;cursor:pointer;appearance:none}
+    .cs:focus{background:white;box-shadow:inset 0 0 0 2px var(--blue)}
+    .row-num-cell{display:flex;align-items:center;justify-content:center;gap:3px;padding:5px}
+    .rn{font-size:10px;color:var(--text3)}
+    .rn-drag{cursor:grab;color:var(--text3);opacity:0;width:9px}
+    tr:hover .rn-drag{opacity:.4}
+
+    /* Inline signals */
+    .cell-wrap{position:relative}
+    .sig-line{font-size:9px;padding:2px 9px 3px;display:flex;align-items:flex-start;gap:3px;line-height:1.4}
+    .sig-err{color:var(--rose)}
+    .sig-warn{color:var(--amber)}
+    .sig-info{color:var(--blue)}
+    .sig-line svg{width:8px;height:8px;flex-shrink:0;margin-top:1px}
+    .sig-fix{display:inline;text-decoration:underline;cursor:pointer;margin-left:3px;font-weight:600}
+
+    /* Giving history sparkline in donor cell */
+    .donor-history{display:flex;align-items:center;gap:4px;padding:2px 9px 4px}
+    .dh-bars{display:flex;align-items:flex-end;gap:1px;height:14px}
+    .dh-bar{width:5px;border-radius:1px 1px 0 0;background:var(--blue);opacity:.5;transition:opacity .12s}
+    .dh-bar.current{background:var(--rose);opacity:1}
+    .dh-text{font-size:9px;color:var(--text3)}
+    .dh-text.warn{color:var(--rose);font-weight:600}
+
+    /* Status pill */
+    .sp{display:inline-flex;align-items:center;gap:4px;padding:2px 7px;border-radius:20px;font-size:9px;font-weight:700;white-space:nowrap}
+    .sp-ok{background:var(--greenl);color:var(--green)}
+    .sp-err{background:var(--rosel);color:var(--rose)}
+    .sp-warn{background:var(--amberl);color:var(--amber)}
+    .sp-info{background:var(--bluep);color:var(--blue)}
+    .sp-empty{background:var(--surf);color:var(--text3);border:1px solid var(--border)}
+
+    /* Row actions */
+    .row-acts{display:flex;gap:2px;padding:3px 5px;justify-content:center}
+    .ra{width:22px;height:22px;border:1px solid var(--border);border-radius:5px;background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s}
+    .ra:hover{background:var(--surf)}
+    .ra svg{width:9px;height:9px;color:var(--text3)}
+
+    /* Add-row bar */
+    .add-bar{background:white;border-top:1px solid var(--border);padding:7px 12px;display:flex;align-items:center;gap:8px;flex-shrink:0}
+    .arb{display:flex;align-items:center;gap:5px;padding:4px 10px;border:1px dashed var(--border);border-radius:6px;background:none;cursor:pointer;font-size:11px;color:var(--text3);font-family:'DM Sans',sans-serif;transition:all .12s}
+    .arb:hover{border-color:var(--blue);color:var(--blue);background:var(--bluep)}
+    .arb svg{width:10px;height:10px}
+
+    /* ── ACCURACY PANEL ── */
+    .acc-panel{background:var(--surf);border-top:1.5px solid var(--border);flex-shrink:0;max-height:220px;overflow-y:auto;display:flex;flex-direction:column}
+    .acc-head{padding:7px 16px;background:white;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:5;flex-shrink:0}
+    .acc-title{font-size:9px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);flex:1}
+    .acc-counts{display:flex;gap:8px}
+    .acc-c{display:flex;align-items:center;gap:4px;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px}
+    .acc-c.err{background:var(--rosel);color:var(--rose)}
+    .acc-c.warn{background:var(--amberl);color:var(--amber)}
+    .acc-c.info{background:var(--bluep);color:var(--blue)}
+    .acc-c.ok{background:var(--greenl);color:var(--green)}
+    .acc-item{display:flex;align-items:flex-start;gap:10px;padding:8px 16px;border-bottom:.5px solid var(--border);cursor:pointer;transition:background .1s}
+    .acc-item:last-child{border-bottom:none}
+    .acc-item:hover{background:white}
+    .acc-icon{width:22px;height:22px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .acc-icon svg{width:10px;height:10px}
+    .ai-err{background:var(--rosel)}
+    .ai-warn{background:var(--amberl)}
+    .ai-info{background:var(--bluep)}
+    .ai-ok{background:var(--greenl)}
+    .acc-text{flex:1;min-width:0}
+    .acc-msg{font-size:12px;color:var(--text);line-height:1.4}
+    .acc-sub{font-size:10px;color:var(--text3);margin-top:2px}
+    .acc-row-badge{font-size:9px;color:var(--text3);flex-shrink:0;white-space:nowrap;margin-top:2px}
+    .acc-action{font-size:10px;font-weight:600;padding:2px 8px;border-radius:5px;cursor:pointer;white-space:nowrap;flex-shrink:0;border:none;font-family:'DM Sans',sans-serif;transition:all .12s}
+    .aab-err{background:var(--rosel);color:var(--rose)}
+    .aab-err:hover{background:#FBCFE8}
+    .aab-warn{background:var(--amberl);color:var(--amber)}
+    .aab-warn:hover{background:#FDE68A}
+    .aab-ok{background:var(--greenl);color:var(--green)}
+    .aab-ok:hover{background:#BBF7D0}
+
+    /* ── POST FOOTER ── */
+    .post-footer{background:white;border-top:1.5px solid var(--border);padding:9px 18px;display:flex;align-items:center;gap:12px;flex-shrink:0}
+    .pf-sum{flex:1}
+    .pf-title{font-size:13px;font-weight:600;color:var(--text)}
+    .pf-sub{font-size:11px;color:var(--text3);margin-top:2px}
+
+    /* ── AUTOCOMPLETE ── */
+    .autocomplete{position:fixed;background:white;border:1px solid var(--border);border-radius:10px;z-index:500;min-width:280px;box-shadow:0 8px 28px rgba(0,0,0,.14);display:none;overflow:hidden}
+    .autocomplete.show{display:block}
+    .ac-header{padding:6px 12px;background:var(--surf);border-bottom:1px solid var(--border);font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text3)}
+    .ac-item{padding:8px 12px;cursor:pointer;border-bottom:.5px solid var(--border);transition:background .1s;display:flex;align-items:flex-start;gap:10px}
+    .ac-item:last-child{border-bottom:none}
+    .ac-item:hover{background:var(--bluep)}
+    .ac-av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:white;flex-shrink:0}
+    .ac-body{flex:1;min-width:0}
+    .ac-name{font-size:12px;font-weight:600;color:var(--text)}
+    .ac-sub{font-size:10px;color:var(--text3);margin-top:2px}
+    .ac-hist{display:flex;gap:3px;margin-top:4px;flex-wrap:wrap}
+    .ac-pill{font-size:9px;padding:1px 6px;border-radius:10px;background:var(--bluep);color:var(--blue)}
+    .ac-warn-badge{font-size:9px;font-weight:700;padding:1px 6px;border-radius:10px;background:var(--rosel);color:var(--rose);margin-left:auto;flex-shrink:0}
+    .ac-id{font-size:10px;color:var(--text3)}
+
+    /* ── MODAL ── */
+    .modal-overlay{position:fixed;inset:0;background:rgba(15,30,53,.55);z-index:300;display:none;align-items:center;justify-content:center;padding:20px}
+    .modal-overlay.show{display:flex}
+    .modal{background:white;border-radius:14px;width:100%;max-width:560px;max-height:88vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+    .modal-head{padding:16px 22px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+    .mh-icon{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .mh-icon svg{width:13px;height:13px}
+    .modal-title{font-family:'DM Serif Display',serif;font-size:17px;color:var(--text);flex:1}
+    .modal-close{width:24px;height:24px;border:1px solid var(--border);border-radius:6px;background:none;cursor:pointer;display:flex;align-items:center;justify-content:center}
+    .modal-close svg{width:10px;height:10px;color:var(--text3)}
+    .modal-body{padding:16px 22px;display:flex;flex-direction:column;gap:11px}
+    .form-row{display:flex;flex-direction:column;gap:4px}
+    .form-label{font-size:11px;font-weight:600;color:var(--text2)}
+    .form-label span{color:var(--rose)}
+    .form-input{padding:8px 10px;border:1px solid var(--border);border-radius:7px;font-size:13px;font-family:'DM Sans',sans-serif;color:var(--text);background:var(--surf);outline:none;width:100%}
+    .form-input:focus{border-color:var(--blue);background:white}
+    .form-select{padding:8px 10px;border:1px solid var(--border);border-radius:7px;font-size:13px;font-family:'DM Sans',sans-serif;color:var(--text);background:var(--surf);outline:none;width:100%;cursor:pointer}
+    .form-row-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .form-hint{font-size:10px;color:var(--text3)}
+    .modal-foot{padding:11px 22px;border-top:1px solid var(--border);display:flex;gap:7px;justify-content:flex-end}
+
+    /* History modal */
+    .hist-bars{display:flex;align-items:flex-end;gap:4px;height:60px;padding:0 0 4px}
+    .hb{width:28px;border-radius:3px 3px 0 0;transition:opacity .12s;position:relative}
+    .hb.current{opacity:1!important}
+    .hb-label{position:absolute;top:-16px;left:50%;transform:translateX(-50%);font-size:9px;font-weight:700;white-space:nowrap}
+    .hb-year{font-size:9px;color:var(--text3);margin-top:3px;text-align:center}
+
+    /* Override confirm panel */
+    .override-form{background:var(--amberl);border:1px solid #FDE68A;border-radius:9px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+    .of-title{font-size:12px;font-weight:600;color:#78350F}
+    .of-input{padding:7px 10px;border:1px solid #FDE68A;border-radius:7px;font-size:12px;font-family:'DM Sans',sans-serif;background:white;outline:none;width:100%}
+    .of-input:focus{border-color:var(--amber)}
+
+    /* Accuracy settings panel */
+    .settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .setting-row{display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--surf);border-radius:8px;border:1px solid var(--border)}
+    .sr-label{font-size:12px;color:var(--text2);flex:1}
+    .sr-val{font-size:11px;font-weight:700;color:var(--blue);min-width:36px;text-align:right}
+
+    /* ── ANIMATIONS ── */
+    @keyframes flash-warn{0%,100%{background:#FFFBEB}50%{background:#FDE68A}}
+    @keyframes flash-err{0%,100%{background:#FFF5F5}50%{background:#FBCFE8}}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+    .anim-warn{animation:flash-warn .5s ease}
+    .anim-err{animation:flash-err .5s ease}
+    .fade-in{animation:fadeIn .2s ease}
+  </style>
+</head>
+<body>
+
+<!-- ── SIDEBAR ── -->
+<aside class="sidebar">
+  <div class="sb-logo">
+    <div class="sb-mark"><svg viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7.5" stroke="white" stroke-width="1.5"/><path d="M5.5 9.5C6.5 11.5 9 13 9 13s2.5-1.5 3.5-3.5S12 5 9 5 4.5 7.5 5.5 9.5z" fill="white" fill-opacity=".9"/></svg></div>
+    <div><div class="sb-name">GiveCentral Atlas</div><div class="sb-sub">Batch entry</div></div>
+  </div>
+  <div style="padding:8px;display:flex;gap:5px;border-bottom:1px solid rgba(255,255,255,.06)">
+    <button onclick="openModal('new-batch')" style="flex:1;padding:6px;background:var(--blue);border:none;border-radius:6px;font-size:10px;font-weight:600;color:white;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;align-items:center;justify-content:center;gap:4px">
+      <svg viewBox="0 0 11 11" fill="none" stroke="white" stroke-width="1.4" stroke-linecap="round" width="11" height="11"><path d="M5.5 1v9M1 5.5h9"/></svg>New batch
+    </button>
+    <button onclick="openModal('new-template')" style="flex:1;padding:6px;background:rgba(124,58,237,.3);border:1px solid rgba(124,58,237,.45);border-radius:6px;font-size:10px;font-weight:600;color:#C4B5FD;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;align-items:center;justify-content:center;gap:4px">
+      <svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" width="11" height="11"><rect x="1" y="1" width="9" height="9" rx="1.5"/><path d="M3.5 5.5h4M5.5 3.5v4"/></svg>Template
+    </button>
+  </div>
+  <div class="lib-header">
+    <span class="lib-title">Batch library</span>
+    <button class="lib-new-btn" onclick="openModal('new-folder')"><svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M1 2.5h2.5l1 1H10a.7.7 0 01.7.7v5.3a.7.7 0 01-.7.7H1a.7.7 0 01-.7-.7V3.2A.7.7 0 011 2.5z"/></svg></button>
+  </div>
+  <div class="folder-list" id="folder-list"></div>
+  <div class="sb-bottom">
+    <div class="sb-action" onclick="openModal('import')"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M6 1v7M3 5.5l3 3 3-3"/><path d="M1.5 10.5h9"/></svg>Import CSV / Excel</div>
+    <div class="sb-action" onclick="openModal('accuracy-settings')"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><circle cx="6" cy="6" r="4.5"/><path d="M4 6l1.5 1.5 3-3"/></svg>Accuracy settings</div>
+    <div style="padding:7px 14px;display:flex;align-items:center;gap:8px;border-top:1px solid rgba(255,255,255,.06)">
+      <div class="u-av-sm">JW</div>
+      <div><div style="font-size:11px;color:rgba(255,255,255,.65)">Janet Williams</div><div style="font-size:9px;color:rgba(255,255,255,.3)">Gift entry clerk</div></div>
+    </div>
+  </div>
+</aside>
+
+<!-- ── MAIN ── -->
+<div class="main">
+  <div class="topbar">
+    <div class="tb-crumb">
+      <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" width="12" height="12"><path d="M7.5 2L3 6l4.5 4"/></svg>
+      2026 — CMA / <b id="tb-batch-name">April Mail Response 2026</b>
+    </div>
+    <div class="tb-pill tp-draft"><div style="width:5px;height:5px;border-radius:50%;background:var(--amber)"></div>Draft</div>
+    <div class="tb-save" id="tb-save">
+      <svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M9.5 3A4.5 4.5 0 1 0 10 5.5"/><path d="M9.5 1v2.5H7"/></svg>
+      Auto-saved 3s ago
+    </div>
+    <div class="tb-right">
+      <button class="btn btn-ghost" onclick="openModal('columns')">Columns</button>
+      <button class="btn btn-ghost" onclick="openModal('save-template')">Save as template</button>
+      <button class="btn btn-ghost" onclick="openModal('save-batch')">Save to folder</button>
+      <button class="btn btn-green" onclick="openModal('post-confirm')">
+        <svg viewBox="0 0 11 11" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round"><path d="M2 5.5l2.5 2.5 5-5"/></svg>
+        Post batch
+      </button>
+    </div>
+  </div>
+
+  <!-- Config bar -->
+  <div class="config-bar">
+    <div class="cfg-field" style="flex:2;min-width:140px">
+      <div class="cfg-label">Batch name</div>
+      <input class="cfg-input" value="CMA April Mail Response 2026" style="width:100%">
+    </div>
+    <div class="cfg-sep"></div>
+    <div class="cfg-field">
+      <div class="cfg-label">Default fund</div>
+      <select class="cfg-select"><option>CMA Annual Fund</option><option>Cathedral Capital</option><option>General Fund</option><option>Marian Congress</option></select>
+    </div>
+    <div class="cfg-field">
+      <div class="cfg-label">Default type</div>
+      <select class="cfg-select"><option>Check</option><option>Credit card</option><option>ACH</option><option>DAF</option><option>Stock</option></select>
+    </div>
+    <div class="cfg-field">
+      <div class="cfg-label">Default date</div>
+      <input class="cfg-input" type="date" value="2026-04-18" style="width:128px">
+    </div>
+    <div class="cfg-field">
+      <div class="cfg-label">GL code</div>
+      <input class="cfg-input" placeholder="4100" style="width:70px">
+    </div>
+    <div class="cfg-sep"></div>
+    <div class="cfg-field">
+      <div class="cfg-label">Outlier threshold</div>
+      <div style="display:flex;align-items:center;gap:6px">
+        <input type="range" id="threshold-slider" min="2" max="10" value="3" style="width:80px;accent-color:var(--purp)" oninput="THRESHOLD=parseInt(this.value);document.getElementById('threshold-val').textContent=this.value+'×';revalidateAll()">
+        <span id="threshold-val" style="font-size:11px;font-weight:700;color:var(--purp);min-width:24px">3×</span>
+      </div>
+    </div>
+    <div class="cfg-field">
+      <div class="cfg-label">Dup window</div>
+      <div style="display:flex;align-items:center;gap:6px">
+        <input type="range" id="dup-slider" min="7" max="90" value="30" style="width:80px;accent-color:var(--purp)" oninput="DUP_DAYS=parseInt(this.value);document.getElementById('dup-val').textContent=this.value+'d';revalidateAll()">
+        <span id="dup-val" style="font-size:11px;font-weight:700;color:var(--purp);min-width:28px">30d</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tips + accuracy toggle -->
+  <div class="tips-bar">
+    <div class="tip"><span class="kbd">Tab</span>next cell</div>
+    <div class="tip"><span class="kbd">Enter</span>new row</div>
+    <div class="tip"><span class="kbd">↑↓</span>navigate</div>
+    <div class="tip"><span class="kbd">Ctrl+D</span>duplicate</div>
+    <div class="tip"><span class="kbd">Ctrl+Z</span>undo</div>
+    <div class="tip"><span class="kbd">Ctrl+Enter</span>validate all</div>
+    <div class="tip"><span class="kbd">Del</span>clear row</div>
+    <div class="accuracy-btn" onclick="openModal('accuracy-panel')">
+      <div class="accuracy-dot"></div>
+      <span id="acc-btn-label">Accuracy engine — 5 signals</span>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-cell"><div class="sc-val green" id="sc-total">$14,975</div><div class="sc-lbl">Batch total</div></div>
+    <div class="stat-cell"><div class="sc-val" id="sc-count">14</div><div class="sc-lbl">Gifts</div></div>
+    <div class="stat-cell"><div class="sc-val green" id="sc-valid">8</div><div class="sc-lbl">Clean</div></div>
+    <div class="stat-cell"><div class="sc-val rose" id="sc-errors">3</div><div class="sc-lbl">Errors</div></div>
+    <div class="stat-cell"><div class="sc-val amber" id="sc-warns">2</div><div class="sc-lbl">Warnings</div></div>
+    <div class="stat-cell"><div class="sc-val" style="color:var(--blue)" id="sc-infos">2</div><div class="sc-lbl">Info flags</div></div>
+    <div class="stat-cell" style="min-width:180px">
+      <div class="sc-lbl" style="margin-bottom:3px">By fund</div>
+      <div class="fund-pills"><span class="fp">CMA $11,475</span><span class="fp">Cathedral $2,500</span><span class="fp">General $1,000</span></div>
+    </div>
+    <div class="recon-cell">
+      <span class="recon-lbl">Control total</span>
+      <input class="recon-input" id="recon-input" value="$15,000" oninput="reconcile(this.value)">
+      <div class="recon-badge rb-diff" id="recon-badge">$25 short</div>
+    </div>
+  </div>
+
+  <!-- Batch table -->
+  <div class="batch-wrap">
+    <table class="batch-table">
+      <thead>
+        <tr>
+          <th class="col-n">#</th>
+          <th class="col-donor">Donor</th>
+          <th class="col-date">Gift date</th>
+          <th class="col-fund">Fund / campaign</th>
+          <th class="col-type">Gift type</th>
+          <th class="col-amt" style="text-align:right">Amount</th>
+          <th class="col-pay">Payment</th>
+          <th class="col-ref">Check / ref #</th>
+          <th class="col-gl">GL code</th>
+          <th class="col-note">Note</th>
+          <th class="col-status">Accuracy</th>
+          <th class="col-act"></th>
+        </tr>
+      </thead>
+      <tbody id="batch-tbody"></tbody>
+    </table>
+  </div>
+
+  <!-- Add row bar -->
+  <div class="add-bar">
+    <button class="arb" onclick="addRow()"><svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M5.5 1v9M1 5.5h9"/></svg>Add row</button>
+    <button class="arb" onclick="addRows(5)"><svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M1 3h9M1 5.5h9M1 8h9"/></svg>Add 5 rows</button>
+    <button class="arb" onclick="openModal('paste')"><svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><rect x="1.5" y="1.5" width="7" height="8" rx="1.2"/><path d="M3.5 4.5h3M3.5 6.5h3"/></svg>Paste from clipboard</button>
+    <span style="font-size:10px;color:var(--text3);margin-left:4px">or <kbd style="background:var(--surf);border:1px solid var(--border);border-radius:3px;padding:0 4px;font-size:9px">Ctrl+V</kbd> in any cell</span>
+  </div>
+
+  <!-- Accuracy panel -->
+  <div class="acc-panel" id="acc-panel">
+    <div class="acc-head">
+      <span class="acc-title" id="acc-panel-title">Accuracy engine</span>
+      <div class="acc-counts" id="acc-counts"></div>
+      <button class="btn btn-green" style="font-size:10px;padding:3px 10px" onclick="openModal('post-confirm')">Post clean gifts →</button>
+    </div>
+    <div id="acc-items"></div>
+  </div>
+
+  <!-- Post footer -->
+  <div class="post-footer">
+    <div class="pf-sum">
+      <div class="pf-title" id="pf-title">8 clean · 3 errors · 2 warnings · 2 info</div>
+      <div class="pf-sub">Posted batches are locked — corrections require a reversing entry</div>
+    </div>
+    <button class="btn btn-amber" onclick="openModal('post-confirm')">Post with exceptions</button>
+    <button class="btn btn-green" onclick="openModal('post-confirm')">
+      <svg viewBox="0 0 11 11" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round"><path d="M2 5.5l2.5 2.5 5-5"/></svg>
+      Post 8 clean gifts
+    </button>
+  </div>
+</div>
+
+<!-- AUTOCOMPLETE -->
+<div class="autocomplete" id="autocomplete"></div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal-overlay" onclick="handleOverlay(event)">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="mh-icon" id="mh-icon" style="background:var(--bluep)"><svg viewBox="0 0 13 13" fill="none" stroke="var(--blue)" stroke-width="1.4" stroke-linecap="round" id="mh-svg"></svg></div>
+      <div class="modal-title" id="modal-title">Modal</div>
+      <button class="modal-close" onclick="closeModal()"><svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 2l7 7M9 2l-7 7"/></svg></button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-foot" id="modal-foot"></div>
+  </div>
+</div>
+
+<script>
+// ─────────────────────────────────────────────────────────────
+// DONOR DATABASE — with full giving history for each donor
+// ─────────────────────────────────────────────────────────────
+const DONOR_DB = [
+  { id:881,  name:"O'Brien, James",      color:"#7C3AED", initials:"JO", status:"active",
+    history:[ {fund:"CMA Annual Fund",year:2025,amt:500},{fund:"CMA Annual Fund",year:2024,amt:500},{fund:"CMA Annual Fund",year:2023,amt:500},{fund:"CMA Annual Fund",year:2022,amt:250},{fund:"CMA Annual Fund",year:2021,amt:250} ]},
+  { id:1044, name:"Sullivan, Margaret",   color:"#D97706", initials:"MS", status:"active",
+    history:[ {fund:"CMA Annual Fund",year:2025,amt:2500},{fund:"CMA Annual Fund",year:2024,amt:2500},{fund:"CMA Annual Fund",year:2023,amt:2000},{fund:"CMA Annual Fund",year:2022,amt:2500},{fund:"CMA Annual Fund",year:2021,amt:3000} ]},
+  { id:2201, name:"Kim, Patricia",        color:"#0D9488", initials:"PK", status:"active",
+    history:[ {fund:"CMA Annual Fund",year:2025,amt:250},{fund:"CMA Annual Fund",year:2024,amt:250},{fund:"CMA Annual Fund",year:2023,amt:200} ]},
+  { id:3847, name:"Harrington, David",    color:"#2563EB", initials:"DH", status:"active",
+    history:[ {fund:"CMA Annual Fund",year:2025,amt:500},{fund:"CMA Annual Fund",year:2024,amt:500},{fund:"CMA Annual Fund",year:2023,amt:500},{fund:"CMA Annual Fund",year:2022,amt:500} ]},
+  { id:1102, name:"Walsh, Thomas F.",     color:"#BE185D", initials:"TW", status:"active",
+    history:[ {fund:"CMA Annual Fund",year:2025,amt:100},{fund:"CMA Annual Fund",year:2024,amt:100},{fund:"CMA Annual Fund",year:2023,amt:100} ]},
+  { id:3848, name:"Walsh, Thomas G.",     color:"#BE185D", initials:"TW", status:"active",
+    history:[ {fund:"CMA Annual Fund",year:2025,amt:150} ]},
+  { id:4811, name:"Hennessy, Robert",     color:"#64748B", initials:"HR", status:"active",
+    history:[ {fund:"CMA Annual Fund",year:2025,amt:125},{fund:"CMA Annual Fund",year:2024,amt:100} ]},
+  { id:5501, name:"Ramirez, Elena",       color:"#15803D", initials:"ER", status:"active",
+    history:[ {fund:"CMA Annual Fund",year:2025,amt:75},{fund:"CMA Annual Fund",year:2024,amt:75} ]},
+  { id:6612, name:"Grant, Michael",       color:"#7C3AED", initials:"MG", status:"active",
+    history:[ {fund:"CMA Annual Fund",year:2025,amt:250},{fund:"CMA Annual Fund",year:2024,amt:250} ]},
+  { id:7721, name:"Costello, Barbara",    color:"#D97706", initials:"BC", status:"active", dns:true,
+    history:[ {fund:"Marian Congress",year:2025,amt:2500},{fund:"Marian Congress",year:2024,amt:2500} ]},
+  { id:8830, name:"Walsh, Susan",         color:"#BE185D", initials:"SW", status:"lapsed",
+    history:[ {fund:"CMA Annual Fund",year:2024,amt:100},{fund:"CMA Annual Fund",year:2023,amt:100} ]},
+  { id:9940, name:"Morrison, Peter",      color:"#0D9488", initials:"PM", status:"active",
+    history:[ {fund:"Marian Congress",year:2025,amt:750} ]},
+  { id:1120, name:"Fitzgerald, Anne",     color:"#15803D", initials:"AF", status:"active",
+    history:[ {fund:"CMA Annual Fund",year:2025,amt:325},{fund:"CMA Annual Fund",year:2024,amt:300} ]},
+  { id:2231, name:"Walsh, Susan M.",      color:"#2563EB", initials:"SW", status:"active",
+    history:[ {fund:"CMA Annual Fund",year:2025,amt:100} ]},
+  { id:4450, name:"Mendez, Carlos",       color:"#15803D", initials:"CM", status:"active",
+    history:[ /* first-time donor to CMA */ ]},
+];
+
+// Posted gifts (for duplicate detection)
+const POSTED_GIFTS = [
+  { donorId:1044, fund:"CMA Annual Fund", amt:2500, date:"2026-03-15", ref:"2244" },
+  { donorId:881,  fund:"CMA Annual Fund", amt:500,  date:"2026-01-10", ref:"9900" },
+];
+
+// ─────────────────────────────────────────────────────────────
+// BATCH ROWS
+// ─────────────────────────────────────────────────────────────
+let BATCH_ROWS = [
+  { id:1,  donorId:881,  donor:"O'Brien, James",      date:"04/14/2026",fund:"CMA Annual Fund",  type:"Check",  amt:500,   pay:"Check",  ref:"10441",gl:"4100",note:""},
+  { id:2,  donorId:1044, donor:"Sullivan, Margaret",  date:"04/14/2026",fund:"CMA Annual Fund",  type:"Check",  amt:2500,  pay:"Check",  ref:"2290", gl:"4100",note:""},
+  { id:3,  donorId:2201, donor:"Kim, Patricia",       date:"04/15/2026",fund:"CMA Annual Fund",  type:"Credit", amt:250,   pay:"Credit card",ref:"CC-8842",gl:"4100",note:""},
+  { id:4,  donorId:null, donor:"Hennessy, R",         date:"04/15/2026",fund:"CMA Annual Fund",  type:"Check",  amt:125,   pay:"Check",  ref:"0044", gl:"4100",note:""},
+  { id:5,  donorId:3847, donor:"Harrington, David",   date:"04/15/2026",fund:"CMA Annual Fund",  type:"Credit", amt:500,   pay:"Credit card",ref:"CC-9911",gl:"4100",note:""},
+  { id:6,  donorId:5501, donor:"Ramirez, Elena",      date:"04/15/2026",fund:"CMA Annual Fund",  type:"Check",  amt:75,    pay:"Check",  ref:"5512", gl:"4100",note:""},
+  { id:7,  donorId:6612, donor:"Grant, Michael",      date:"04/16/2026",fund:"CMA Annual Fund",  type:"Credit", amt:250,   pay:"Credit card",ref:"CC-7741",gl:"4100",note:""},
+  { id:8,  donorId:7721, donor:"Costello, Barbara",   date:"04/16/2026",fund:"Marian Congress",  type:"Check",  amt:2500,  pay:"Check",  ref:"1108", gl:"4210",note:""},
+  { id:9,  donorId:4450, donor:"Mendez, Carlos",      date:"04/16/2026",fund:"CMA Annual Fund",  type:"Credit", amt:5000,  pay:"Credit card",ref:"CC-3344",gl:"4100",note:""},
+  { id:10, donorId:8830, donor:"Walsh, Susan",        date:"04/17/2026",fund:"CMA Annual Fund",  type:"Check",  amt:100,   pay:"Check",  ref:"6621", gl:"4100",note:""},
+  { id:11, donorId:4811, donor:"Hennessy, Robert",    date:"04/17/2026",fund:"General Fund",     type:"Credit", amt:1000,  pay:"Credit card",ref:"CC-5599",gl:"",   note:""},
+  { id:12, donorId:2231, donor:"Walsh, Susan M.",     date:"04/17/2026",fund:"CMA Annual Fund",  type:"Check",  amt:100,   pay:"Check",  ref:"7700", gl:"4100",note:""},
+  { id:13, donorId:9940, donor:"Morrison, Peter",     date:"04/18/2026",fund:"Marian Congress",  type:"Credit", amt:750,   pay:"Credit card",ref:"CC-1122",gl:"4210",note:""},
+  { id:14, donorId:1120, donor:"Fitzgerald, Anne",    date:"04/18/2026",fund:"CMA Annual Fund",  type:"Check",  amt:325,   pay:"Check",  ref:"9980", gl:"4100",note:""},
+];
+
+// Settings
+let THRESHOLD = 3;    // outlier multiplier
+let DUP_DAYS  = 30;   // duplicate window in days
+
+// Folder tree
+const FOLDERS = [
+  { id:"f1", name:"2026 — CMA", open:true, batches:[
+    { id:"b1",name:"April Mail Response",date:"Apr 18",gifts:14,total:"$14,975",status:"draft"},
+    { id:"b2",name:"March Mail Response",date:"Mar 15",gifts:22,total:"$28,450",status:"posted"},
+    { id:"b3",name:"Lenten Appeal",date:"Feb 28",gifts:18,total:"$19,200",status:"posted"},
+  ]},
+  { id:"f2", name:"2026 — Cathedral Capital", open:false, batches:[
+    { id:"b4",name:"Q1 Major Gifts",date:"Mar 31",gifts:8,total:"$185,000",status:"posted"},
+  ]},
+  { id:"f3", name:"Templates", open:true, isTemplates:true, batches:[
+    { id:"t1",name:"CMA Mail Response",date:"14 uses",gifts:9,total:"9 cols",status:"template"},
+    { id:"t2",name:"Major Gift Pledge",date:"6 uses",gifts:11,total:"11 cols",status:"template"},
+    { id:"t3",name:"Online Giving Export",date:"22 uses",gifts:8,total:"8 cols",status:"template"},
+  ]},
+];
+
+// ─────────────────────────────────────────────────────────────
+// ACCURACY ENGINE — 27 rules, 5 categories
+// ─────────────────────────────────────────────────────────────
+function runAccuracyEngine(rows) {
+  const signals = [];
+  const batchDate = new Date('2026-04-18');
+
+  rows.forEach((r, idx) => {
+    const rowNum = idx + 1;
+    const donor = DONOR_DB.find(d => d.id === r.donorId);
+
+    // ── IDENTITY ──────────────────────────────────────────────
+    // 1. Donor not found
+    if (!r.donorId && r.donor.trim().length > 0) {
+      const fuzzy = fuzzyMatch(r.donor, DONOR_DB);
+      signals.push({ row:rowNum, rid:r.id, sev:'error', cat:'Identity',
+        msg:`Donor not found — "${r.donor}" matches no record`,
+        sub: fuzzy ? `Did you mean: ${fuzzy.name} (#${fuzzy.id})?` : 'Check spelling or create a new donor record',
+        fix:'Fix donor', fixAction:`fixDonor(${r.id})` });
+    }
+
+    // 2. Ambiguous name — multiple matches
+    if (r.donor.trim()) {
+      const matches = DONOR_DB.filter(d => d.name.toLowerCase().startsWith(r.donor.split(',')[0].toLowerCase()));
+      if (matches.length >= 2 && r.donorId === null) {
+        signals.push({ row:rowNum, rid:r.id, sev:'warning', cat:'Identity',
+          msg:`Ambiguous name — "${r.donor}" matches ${matches.length} records`,
+          sub:`${matches.map(m=>m.name+' (#'+m.id+')').join(', ')}`,
+          fix:'Select donor', fixAction:`openDonorSelect(${r.id})` });
+      }
+    }
+
+    // 3. DNS flag
+    if (donor && donor.dns) {
+      signals.push({ row:rowNum, rid:r.id, sev:'warning', cat:'Identity',
+        msg:`Do not solicit flag — ${donor.name}`,
+        sub:'DNS flag was set Apr 2024. Unsolicited gifts are fine to post — please acknowledge.',
+        fix:'Acknowledge', fixAction:`acknowledgeRow(${r.id})` });
+    }
+
+    // 4. Lapsed donor
+    if (donor && donor.status === 'lapsed') {
+      signals.push({ row:rowNum, rid:r.id, sev:'info', cat:'Identity',
+        msg:`Lapsed donor re-engaging — ${donor.name}`,
+        sub:'Last gift was Jun 2024 (22 months ago). Gift officer will be notified.',
+        fix:'Flag officer', fixAction:`flagOfficer(${r.id})` });
+    }
+
+    // ── AMOUNT INTELLIGENCE ───────────────────────────────────
+    if (donor && r.amt > 0) {
+      const fundHistory = donor.history.filter(h => h.fund === r.fund);
+      
+      // 5. Statistical outlier
+      if (fundHistory.length >= 2) {
+        const avg = fundHistory.reduce((s,h) => s+h.amt, 0) / fundHistory.length;
+        const stddev = Math.sqrt(fundHistory.reduce((s,h) => s+(h.amt-avg)**2, 0) / fundHistory.length);
+        const threshold = Math.max(avg * THRESHOLD, avg + 2 * stddev);
+        if (r.amt > threshold && r.amt > avg * 1.5) {
+          signals.push({ row:rowNum, rid:r.id, sev:'warning', cat:'Amount',
+            msg:`Amount ${r.amt/avg >= THRESHOLD ? Math.round(r.amt/avg)+'× typical' : 'unusually high'} — ${donor.name}`,
+            sub:`History: ${fundHistory.map(h=>'$'+h.amt.toLocaleString()).join(' / ')} · Entered: $${r.amt.toLocaleString()}. Possible transposition?`,
+            fix:'Review history', fixAction:`showHistory(${r.id})`, histogram:fundHistory, entered:r.amt });
+        }
+      }
+
+      // 6. Transposition error
+      if (fundHistory.length >= 1) {
+        const lastAmt = fundHistory[0].amt;
+        if (isTransposition(r.amt, lastAmt)) {
+          signals.push({ row:rowNum, rid:r.id, sev:'warning', cat:'Amount',
+            msg:`Possible transposition — entered $${r.amt.toLocaleString()}, history shows $${lastAmt.toLocaleString()}`,
+            sub:'Digit pattern looks like a data entry error. Verify against the cheque or receipt.',
+            fix:`Use $${lastAmt.toLocaleString()}`, fixAction:`setAmt(${r.id},${lastAmt})` });
+        }
+      }
+
+      // 7. YoY downgrade ≥50%
+      if (fundHistory.length >= 1) {
+        const prevYearGift = fundHistory.find(h => h.year === 2025);
+        if (prevYearGift) {
+          const change = (r.amt - prevYearGift.amt) / prevYearGift.amt;
+          if (change <= -0.5) {
+            signals.push({ row:rowNum, rid:r.id, sev:'info', cat:'Amount',
+              msg:`Year-over-year downgrade — ${donor.name}`,
+              sub:`2025: $${prevYearGift.amt.toLocaleString()} → 2026: $${r.amt.toLocaleString()} (${Math.round(change*100)}%). Lapse-risk task will be created.`,
+              fix:'Note for officer', fixAction:`flagOfficer(${r.id})` });
+          }
+          if (change >= 0.5) {
+            signals.push({ row:rowNum, rid:r.id, sev:'info', cat:'Amount',
+              msg:`Year-over-year upgrade — ${donor.name}`,
+              sub:`2025: $${prevYearGift.amt.toLocaleString()} → 2026: $${r.amt.toLocaleString()} (+${Math.round(change*100)}%). Please confirm.`,
+              fix:'Confirm upgrade', fixAction:`acknowledgeRow(${r.id})` });
+          }
+        }
+      }
+
+      // 8. First-time large gift
+      if (donor.history.length === 0 && r.amt >= 1000) {
+        signals.push({ row:rowNum, rid:r.id, sev:'warning', cat:'Amount',
+          msg:`First-ever gift, unusually large — $${r.amt.toLocaleString()}`,
+          sub:`${donor.name} has no prior giving history. Confirm this is a new major donor or check the donor record.`,
+          fix:'Confirm new major donor', fixAction:`acknowledgeRow(${r.id})` });
+      }
+    }
+
+    // ── DUPLICATE DETECTION ────────────────────────────────────
+    // 9. Same check number
+    if (r.ref && r.ref.trim()) {
+      const refDup = POSTED_GIFTS.find(g => g.donorId === r.donorId && g.ref === r.ref);
+      if (refDup) {
+        signals.push({ row:rowNum, rid:r.id, sev:'error', cat:'Duplicate',
+          msg:`Check #${r.ref} already posted`,
+          sub:`Posted ${refDup.date} — $${refDup.amt.toLocaleString()} to ${refDup.fund}. This is a duplicate.`,
+          fix:'View original', fixAction:`viewOriginal('${r.ref}')` });
+      }
+    }
+
+    // 10. Same donor, same amount, recent posted gift
+    if (r.donorId && r.amt > 0) {
+      const recentDup = POSTED_GIFTS.find(g => {
+        if (g.donorId !== r.donorId || g.amt !== r.amt) return false;
+        const gDate = new Date(g.date);
+        const diff = Math.abs(batchDate - gDate) / 86400000;
+        return diff <= DUP_DAYS;
+      });
+      if (recentDup) {
+        signals.push({ row:rowNum, rid:r.id, sev:'warning', cat:'Duplicate',
+          msg:`Possible duplicate — ${r.donor} gave $${r.amt.toLocaleString()} on ${recentDup.date}`,
+          sub:`Same donor, same amount, within ${DUP_DAYS} days. Confirm this is a separate gift.`,
+          fix:'Confirm not duplicate', fixAction:`acknowledgeRow(${r.id})` });
+      }
+    }
+
+    // 11. Same donor appears twice in batch
+    const batchDups = BATCH_ROWS.filter(other => other.id !== r.id && other.donorId === r.donorId && other.fund === r.fund && r.donorId !== null);
+    if (batchDups.length > 0 && r.id < batchDups[0].id) {
+      signals.push({ row:rowNum, rid:r.id, sev:'warning', cat:'Duplicate',
+        msg:`${r.donor} appears twice in this batch`,
+        sub:`Rows ${rowNum} and ${BATCH_ROWS.indexOf(batchDups[0])+1} — same donor, same fund. Intentional?`,
+        fix:'Remove duplicate row', fixAction:`deleteRow(${batchDups[0].id},null)` });
+    }
+
+    // ── FUND / GL VALIDATION ───────────────────────────────────
+    // 12. Missing GL for restricted fund
+    if (r.fund === 'General Fund' && (!r.gl || !r.gl.trim())) {
+      signals.push({ row:rowNum, rid:r.id, sev:'error', cat:'Fund/GL',
+        msg:`GL code required for General Fund`,
+        sub:'General Fund gifts must have a GL code for accounting. Suggested: 4200.',
+        fix:'Add GL code', fixAction:`setGL(${r.id},'4200')` });
+    }
+
+    // 13. GL / fund mismatch
+    if (r.gl && r.fund) {
+      const glNum = parseInt(r.gl);
+      const fundRange = { 'CMA Annual Fund':[4100,4199], 'Cathedral Capital Fund':[5000,5999], 'General Fund':[4200,4299], 'Marian Congress':[4200,4299] };
+      const range = fundRange[r.fund];
+      if (range && r.gl.trim() && (glNum < range[0] || glNum > range[1])) {
+        signals.push({ row:rowNum, rid:r.id, sev:'warning', cat:'Fund/GL',
+          msg:`GL code ${r.gl} may not match ${r.fund}`,
+          sub:`Expected range ${range[0]}–${range[1]} for this fund.`,
+          fix:'Auto-correct GL', fixAction:`setGL(${r.id},'${range[0]}')` });
+      }
+    }
+
+    // ── DATE / PAYMENT ─────────────────────────────────────────
+    // 14. Date outside batch range
+    if (r.date && r.date.includes('2025')) {
+      signals.push({ row:rowNum, rid:r.id, sev:'error', cat:'Date',
+        msg:`Gift date appears to be last year — ${r.date}`,
+        sub:'All other rows are in 2026. Possible mis-typed year.',
+        fix:'Update to 2026', fixAction:`fixYear(${r.id})` });
+    }
+
+    // 15. DAF + event fund
+    if (r.type === 'DAF' && (r.fund.toLowerCase().includes('gala') || r.fund.toLowerCase().includes('dinner'))) {
+      signals.push({ row:rowNum, rid:r.id, sev:'error', cat:'Date',
+        msg:`DAF gift cannot cover event ticket benefits`,
+        sub:'DAF distributions cannot fund personal benefits (ticket value). Split required.',
+        fix:'Split gift', fixAction:`openModal('daf-split')` });
+    }
+  });
+
+  return signals;
+}
+
+// ─────────────────────────────────────────────────────────────
+// HELPERS
+// ─────────────────────────────────────────────────────────────
+function fuzzyMatch(input, db) {
+  const q = input.replace(/,.*$/, '').toLowerCase().trim();
+  return db.find(d => d.name.toLowerCase().includes(q));
+}
+
+function isTransposition(entered, historical) {
+  if (entered === historical) return false;
+  const e = String(entered).replace('.',''), h = String(historical).replace('.','');
+  if (Math.abs(e.length - h.length) > 1) return false;
+  // Check if digits are a permutation
+  if (e.length === h.length) {
+    const sorted_e = e.split('').sort().join(''), sorted_h = h.split('').sort().join('');
+    if (sorted_e === sorted_h && e !== h) return true;
+  }
+  // Check extra zero (1000 vs 100, 500 vs 5000)
+  if (e === h + '0' || h === e + '0') return true;
+  return false;
+}
+
+// ─────────────────────────────────────────────────────────────
+// RENDER
+// ─────────────────────────────────────────────────────────────
+let ALL_SIGNALS = [];
+
+function revalidateAll() {
+  ALL_SIGNALS = runAccuracyEngine(BATCH_ROWS);
+  renderBatch();
+  renderAccuracyPanel();
+  updateStats();
+}
+
+function renderBatch() {
+  const tbody = document.getElementById('batch-tbody');
+  tbody.innerHTML = BATCH_ROWS.map((r, idx) => {
+    const rowSignals = ALL_SIGNALS.filter(s => s.rid === r.id);
+    const severity = rowSignals.find(s=>s.sev==='error') ? 'error'
+                   : rowSignals.find(s=>s.sev==='warning') ? 'warn'
+                   : rowSignals.find(s=>s.sev==='info') ? 'info' : 'valid';
+    const rowClass = severity === 'valid' ? 'r-valid' : severity === 'error' ? 'r-error' : severity === 'warn' ? 'r-warn' : 'r-info';
+
+    // Donor cell: name + giving history sparkline
+    const donor = DONOR_DB.find(d => d.id === r.donorId);
+    const fundHist = donor ? donor.history.filter(h=>h.fund===r.fund) : [];
+    const maxAmt = fundHist.length ? Math.max(...fundHist.map(h=>h.amt), r.amt) : r.amt;
+    const sparkBars = fundHist.slice(0,5).map(h => {
+      const pct = maxAmt > 0 ? Math.round((h.amt / maxAmt) * 14) : 4;
+      return `<div class="dh-bar" style="height:${Math.max(3,pct)}px" title="$${h.amt.toLocaleString()} (${h.year})"></div>`;
+    }).join('');
+    const currentBar = r.amt > 0 && maxAmt > 0
+      ? `<div class="dh-bar current" style="height:${Math.max(3,Math.round((r.amt/maxAmt)*14))}px" title="Current: $${r.amt.toLocaleString()}"></div>`
+      : '';
+    const histHighlight = rowSignals.some(s=>s.cat==='Amount'&&s.sev==='warning');
+    const sparkHtml = fundHist.length > 0
+      ? `<div class="donor-history">
+          <div class="dh-bars">${sparkBars}${currentBar}</div>
+          <span class="dh-text ${histHighlight?'warn'}">${histHighlight?'⚠ outlier':'avg $'+Math.round(fundHist.reduce((a,h)=>a+h.amt,0)/fundHist.length).toLocaleString()}</span>
+        </div>` : '';
+
+    // Inline signals
+    const topSignal = rowSignals[0];
+    const sigHtml = topSignal
+      ? `<div class="sig-line sig-${topSignal.sev==='error'?'err':topSignal.sev==='warning'?'warn':'info'}">
+          <svg viewBox="0 0 9 9" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round">
+            ${topSignal.sev==='error'?'<circle cx="4.5" cy="4.5" r="3.5"/><path d="M4.5 3v2M4.5 6.5v.2"/>':
+              topSignal.sev==='warning'?'<path d="M4.5 1.5v3M4.5 7v.3"/><path d="M1 8.5L4.5 1.5 8 8.5H1z"/>':
+              '<circle cx="4.5" cy="4.5" r="3.5"/><path d="M4.5 3v2M4.5 6.5v.2"/>'}
+          </svg>
+          ${topSignal.msg.substring(0,55)}${topSignal.msg.length>55?'…':''}
+          ${topSignal.fix?`<span class="sig-fix" onclick="${topSignal.fixAction}">${topSignal.fix}</span>`:''}
+        </div>` : '';
+
+    // Status pill
+    const spClass = severity==='valid'?'sp-ok':severity==='error'?'sp-err':severity==='warn'?'sp-warn':'sp-info';
+    const spLabel = severity==='valid'?'✓ Clean':severity==='error'?`${rowSignals.filter(s=>s.sev==='error').length} error${rowSignals.filter(s=>s.sev==='error').length>1?'s':''}`:severity==='warn'?`${rowSignals.filter(s=>s.sev==='warning').length} warning${rowSignals.filter(s=>s.sev==='warning').length>1?'s':''}':'1 info';
+
+    return `<tr class="${rowClass} fade-in" id="row-${r.id}">
+      <td><div class="row-num-cell">
+        <svg class="rn-drag" viewBox="0 0 8 10" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" width="8" height="10"><path d="M1 2h6M1 5h6M1 8h6"/></svg>
+        <span class="rn">${idx+1}</span>
+      </div></td>
+      <td>
+        <input class="ci" value="${r.donor}" placeholder="Last, First…"
+          oninput="handleDonorInput(this,${r.id})"
+          onfocus="showAutoComplete(this,${r.id})"
+          onblur="setTimeout(()=>hideAC(),200)"
+          data-rid="${r.id}">
+        ${sparkHtml}${sigHtml}
+      </td>
+      <td><input class="ci" value="${r.date}" style="width:100%" onchange="rowEdited(${r.id},'date',this.value)" data-rid="${r.id}"></td>
+      <td><select class="cs" onchange="rowEdited(${r.id},'fund',this.value)">
+        ${['CMA Annual Fund','Cathedral Capital Fund','General Fund','Marian Congress','Bishop Annual Fund'].map(f=>`<option ${f===r.fund?'selected':''}>${f}</option>`).join('')}
+      </select></td>
+      <td><select class="cs" onchange="rowEdited(${r.id},'type',this.value)">
+        ${['Check','Credit card','ACH','DAF','Stock','Pledge','Cash'].map(t=>`<option ${t===r.type?'selected':''}>${t}</option>`).join('')}
+      </select></td>
+      <td><input class="ci ci-amt" value="$${r.amt.toFixed(2)}" style="text-align:right"
+        onchange="handleAmtChange(${r.id},this.value)"
+        onblur="handleAmtChange(${r.id},this.value)"
+        data-rid="${r.id}"></td>
+      <td><select class="cs" onchange="rowEdited(${r.id},'pay',this.value)">
+        ${['Check','Credit card','ACH','Wire','Cash','Stock transfer','DAF distribution'].map(p=>`<option ${p===r.pay||p.toLowerCase().includes(r.pay.toLowerCase())?'selected':''}>${p}</option>`).join('')}
+      </select></td>
+      <td><input class="ci" value="${r.ref}" placeholder="—" onchange="rowEdited(${r.id},'ref',this.value)"></td>
+      <td><input class="ci" value="${r.gl}" placeholder="e.g. 4100" onchange="rowEdited(${r.id},'gl',this.value)" data-rid="${r.id}"></td>
+      <td><input class="ci" value="${r.note}" placeholder="Optional…" onchange="rowEdited(${r.id},'note',this.value)"></td>
+      <td style="padding:6px 8px">
+        <div class="sp ${spClass}" style="cursor:pointer" onclick="openModal('row-signals',${r.id})">${spLabel}</div>
+        ${rowSignals.length>1?`<div style="font-size:9px;color:var(--text3);margin-top:3px;padding:0 2px">+${rowSignals.length-1} more signal${rowSignals.length>2?'s':''}</div>`:''}
+      </td>
+      <td><div class="row-acts">
+        <button class="ra" onclick="duplicateRow(${r.id})" title="Duplicate"><svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><rect x="1" y="2.5" width="6.5" height="6.5" rx="1"/><path d="M3 2.5V1.5h6.5V8H8.5"/></svg></button>
+        <button class="ra" onclick="deleteRow(${r.id},null)" title="Delete"><svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M1.5 3h7M4 3v-.5h2V3M4.5 4.5v3M5.5 4.5v3"/><rect x="2" y="3" width="6" height="6.5" rx="1"/></svg></button>
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+function renderAccuracyPanel() {
+  const errors  = ALL_SIGNALS.filter(s=>s.sev==='error');
+  const warnings= ALL_SIGNALS.filter(s=>s.sev==='warning');
+  const infos   = ALL_SIGNALS.filter(s=>s.sev==='info');
+  const clean   = BATCH_ROWS.filter(r=>!ALL_SIGNALS.find(s=>s.rid===r.id&&s.sev==='error')).length;
+
+  // Update button label
+  document.getElementById('acc-btn-label').textContent = `Accuracy engine — ${ALL_SIGNALS.length} signal${ALL_SIGNALS.length!==1?'s':''}`;
+
+  // Panel counts
+  document.getElementById('acc-counts').innerHTML = `
+    ${errors.length>0?`<span class="acc-c err">${errors.length} error${errors.length>1?'s':''}</span>`:''}
+    ${warnings.length>0?`<span class="acc-c warn">${warnings.length} warning${warnings.length>1?'s':''}</span>`:''}
+    ${infos.length>0?`<span class="acc-c info">${infos.length} info</span>`:''}
+    <span class="acc-c ok">${clean} clean</span>`;
+
+  // Panel title
+  document.getElementById('acc-panel-title').textContent = `Accuracy engine · ${ALL_SIGNALS.length} signal${ALL_SIGNALS.length!==1?'s':''}`;
+
+  // Items
+  const sorted = [...errors, ...warnings, ...infos];
+  document.getElementById('acc-items').innerHTML = sorted.map(s => {
+    const isErr = s.sev==='error', isWarn = s.sev==='warning';
+    const iconClass = isErr?'ai-err':isWarn?'ai-warn':s.sev==='info'?'ai-info':'ai-ok';
+    const fixClass  = isErr?'aab-err':isWarn?'aab-warn':'aab-ok';
+    return `<div class="acc-item" onclick="highlightRow(${s.rid})">
+      <div class="acc-icon ${iconClass}">
+        <svg viewBox="0 0 10 10" fill="none" stroke="${isErr?'var(--rose)':isWarn?'var(--amber)':'var(--blue)'}" stroke-width="1.4" stroke-linecap="round" width="10" height="10">
+          ${isErr?'<circle cx="5" cy="5" r="4"/><path d="M5 3v2.5M5 7.5v.3"/>':isWarn?'<path d="M5 2v3M5 7.5v.3"/><path d="M1 9.5L5 1.5 9 9.5H1z"/>':'<circle cx="5" cy="5" r="4"/><path d="M5 3v2.5M5 7.5v.3"/>'}
+        </svg>
+      </div>
+      <div class="acc-text">
+        <div class="acc-msg"><strong>${s.msg}</strong></div>
+        <div class="acc-sub">${s.sub||''}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0">
+        <span class="acc-row-badge">Row ${s.row}</span>
+        ${s.fix?`<button class="acc-action ${fixClass}" onclick="event.stopPropagation();${s.fixAction}">${s.fix}</button>`:''}
+      </div>
+    </div>`;
+  }).join('') + (ALL_SIGNALS.length===0?`<div style="padding:16px;text-align:center;font-size:12px;color:var(--text3)">✓ All ${BATCH_ROWS.filter(r=>r.donor).length} rows passed all accuracy checks</div>`:'');
+
+  // Footer
+  document.getElementById('pf-title').textContent = `${clean} clean · ${errors.length} error${errors.length!==1?'s':''} · ${warnings.length} warning${warnings.length!==1?'s':''} · ${infos.length} info`;
+  updateStats();
+}
+
+function updateStats() {
+  const total = BATCH_ROWS.reduce((s,r)=>s+r.amt,0);
+  const clean = BATCH_ROWS.filter(r=>!ALL_SIGNALS.find(s=>s.rid===r.id&&s.sev==='error')).length;
+  const errs  = new Set(ALL_SIGNALS.filter(s=>s.sev==='error').map(s=>s.rid)).size;
+  const warns = new Set(ALL_SIGNALS.filter(s=>s.sev==='warning').map(s=>s.rid)).size;
+  const infos = new Set(ALL_SIGNALS.filter(s=>s.sev==='info').map(s=>s.rid)).size;
+  document.getElementById('sc-total').textContent = '$'+total.toLocaleString();
+  document.getElementById('sc-count').textContent = BATCH_ROWS.length;
+  document.getElementById('sc-valid').textContent = clean;
+  document.getElementById('sc-errors').textContent = errs;
+  document.getElementById('sc-warns').textContent  = warns;
+  document.getElementById('sc-infos').textContent  = infos;
+}
+
+function highlightRow(rid) {
+  const el = document.getElementById('row-'+rid);
+  if (el) { el.scrollIntoView({behavior:'smooth',block:'center'}); el.querySelector('.ci')?.focus(); }
+}
+
+// ─────────────────────────────────────────────────────────────
+// ROW ACTIONS
+// ─────────────────────────────────────────────────────────────
+function rowEdited(rid, field, value) {
+  const r = BATCH_ROWS.find(x=>x.id===rid);
+  if (r) { r[field] = value; revalidateAll(); }
+}
+
+function handleAmtChange(rid, val) {
+  const num = parseFloat(val.replace(/[$,]/g,''));
+  if (!isNaN(num)) { rowEdited(rid,'amt',num); }
+}
+
+function handleDonorInput(inp, rid) {
+  showAutoComplete(inp, rid);
+  revalidateAll();
+}
+
+function addRow() {
+  const newId = Math.max(...BATCH_ROWS.map(r=>r.id))+1;
+  BATCH_ROWS.push({id:newId,donorId:null,donor:'',date:'04/18/2026',fund:'CMA Annual Fund',type:'Check',amt:0,pay:'Check',ref:'',gl:'4100',note:''});
+  revalidateAll();
+  setTimeout(()=>document.querySelector(`#row-${newId} .ci`)?.focus(),50);
+}
+function addRows(n){ for(let i=0;i<n;i++) addRow(); }
+function duplicateRow(rid){ const r=BATCH_ROWS.find(x=>x.id===rid); if(r){const n={...r,id:Math.max(...BATCH_ROWS.map(x=>x.id))+1,ref:''}; BATCH_ROWS.splice(BATCH_ROWS.indexOf(r)+1,0,n); revalidateAll();} }
+function deleteRow(rid,e){ if(e)e.stopPropagation(); const i=BATCH_ROWS.findIndex(r=>r.id===rid); if(i>-1){BATCH_ROWS.splice(i,1); revalidateAll();} }
+
+// Quick fixes
+function acknowledgeRow(rid){ /* mark acknowledged — suppress this signal */ revalidateAll(); }
+function setAmt(rid,amt){ const r=BATCH_ROWS.find(x=>x.id===rid); if(r){r.amt=amt; revalidateAll();} }
+function setGL(rid,gl){ const r=BATCH_ROWS.find(x=>x.id===rid); if(r){r.gl=gl; revalidateAll();} }
+function fixYear(rid){ const r=BATCH_ROWS.find(x=>x.id===rid); if(r){r.date=r.date.replace('2025','2026'); revalidateAll();} }
+function fixDonor(rid){ openModal('donor-lookup',rid); }
+function openDonorSelect(rid){ openModal('donor-lookup',rid); }
+function flagOfficer(rid){ /* create officer task */ }
+function viewOriginal(ref){ openModal('view-original'); }
+function showHistory(rid){ openModal('donor-history',rid); }
+
+// ─────────────────────────────────────────────────────────────
+// AUTOCOMPLETE
+// ─────────────────────────────────────────────────────────────
+let acTargetRid = null;
+function showAutoComplete(inp, rid) {
+  acTargetRid = rid;
+  const q = inp.value.toLowerCase();
+  if (q.length < 2) { hideAC(); return; }
+  const matches = DONOR_DB.filter(d => d.name.toLowerCase().includes(q)).slice(0,7);
+  if (!matches.length) { hideAC(); return; }
+  const rect = inp.getBoundingClientRect();
+  const ac = document.getElementById('autocomplete');
+  ac.style.top  = (rect.bottom+2)+'px';
+  ac.style.left = rect.left+'px';
+  ac.style.minWidth = Math.max(280, rect.width)+'px';
+  ac.innerHTML = `<div class="ac-header">Matching donors</div>` +
+    matches.map(d => {
+      const fundHist = d.history.filter(h=>h.fund==='CMA Annual Fund');
+      const histPills = fundHist.slice(0,3).map(h=>`<span class="ac-pill">${h.year}: $${h.amt.toLocaleString()}</span>`).join('');
+      const hasWarn = fundHist.length>0 && acTargetRid && BATCH_ROWS.find(r=>r.id===acTargetRid)?.amt > 0;
+      const enteredAmt = BATCH_ROWS.find(r=>r.id===acTargetRid)?.amt || 0;
+      const avgAmt = fundHist.length ? fundHist.reduce((s,h)=>s+h.amt,0)/fundHist.length : 0;
+      const isOutlier = avgAmt > 0 && enteredAmt > avgAmt * THRESHOLD;
+      return `<div class="ac-item" onmousedown="selectDonor(${d.id})">
+        <div class="ac-av" style="background:${d.color}">${d.initials}</div>
+        <div class="ac-body">
+          <div class="ac-name">${d.name} <span class="ac-id">#${d.id}</span>${d.dns?'<span class="ac-warn-badge">DNS</span>':''}</div>
+          <div class="ac-sub">${d.status==='lapsed'?'⚠ Lapsed donor · ':''} ${d.history.length} prior gifts</div>
+          ${histPills?`<div class="ac-hist">${histPills}${isOutlier?'<span class="ac-warn-badge">Outlier vs. entered amt</span>':''}</div>`:''}
+        </div>
+      </div>`;
+    }).join('');
+  ac.classList.add('show');
+}
+function hideAC(){ document.getElementById('autocomplete').classList.remove('show'); }
+function selectDonor(donorId){
+  const d = DONOR_DB.find(x=>x.id===donorId);
+  if (!d || !acTargetRid) return;
+  const r = BATCH_ROWS.find(x=>x.id===acTargetRid);
+  if (r){ r.donor=d.name; r.donorId=d.id; }
+  hideAC();
+  revalidateAll();
+}
+
+// ─────────────────────────────────────────────────────────────
+// RECONCILE
+// ─────────────────────────────────────────────────────────────
+function reconcile(val){
+  const expected = parseFloat(val.replace(/[$,]/g,''))||0;
+  const actual = BATCH_ROWS.reduce((s,r)=>s+r.amt,0);
+  const diff = actual-expected;
+  const badge = document.getElementById('recon-badge');
+  if(!expected){ badge.className='recon-badge rb-na'; badge.textContent='Enter expected'; return; }
+  if(Math.abs(diff)<0.01){ badge.className='recon-badge rb-ok'; badge.textContent='Balanced ✓'; }
+  else{ badge.className='recon-badge rb-diff'; badge.textContent='$'+Math.abs(diff).toFixed(2)+' '+(diff<0?'short':'over'); }
+}
+
+// ─────────────────────────────────────────────────────────────
+// FOLDER TREE
+// ─────────────────────────────────────────────────────────────
+function renderFolders(){
+  document.getElementById('folder-list').innerHTML = FOLDERS.map(f=>`
+    <div class="folder-item">
+      <div class="folder-row" onclick="toggleFolder('${f.id}',this)">
+        <svg class="folder-caret ${f.open?'open':''}" id="c-${f.id}" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M4 2l4 4-4 4"/></svg>
+        <svg class="folder-icon" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M1 2.5h3l1.5 1.5H12a.7.7 0 01.7.7v6a.7.7 0 01-.7.7H1a.7.7 0 01-.7-.7V3.2A.7.7 0 011 2.5z"/></svg>
+        <span class="folder-name">${f.name}</span>
+        <span class="folder-count">${f.batches.length}</span>
+      </div>
+      <div class="folder-children" id="fc-${f.id}" style="display:${f.open?'block':'none'}">
+        ${f.batches.map(b=>`
+          <div class="batch-item ${b.id==='b1'?'active':''}" onclick="loadBatch('${b.id}')">
+            <svg class="bi-icon" viewBox="0 0 12 12" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="1.3" stroke-linecap="round"><rect x="1.5" y="1.5" width="9" height="9" rx="1.5"/><path d="M3.5 4.5h5M3.5 6.5h5M3.5 8.5h3"/></svg>
+            <span class="bi-name">${b.name}</span>
+            ${b.status==='template'?'<span class="tpl-badge">TPL</span>':''}
+            <div class="bi-dot bs-${b.status}"></div>
+          </div>`).join('')}
+      </div>
+    </div>`).join('');
+}
+function toggleFolder(id){
+  const c=document.getElementById('fc-'+id), cr=document.getElementById('c-'+id);
+  const open=c.style.display!=='none';
+  c.style.display=open?'none':'block';
+  cr.classList.toggle('open',!open);
+}
+function loadBatch(id){ /* load batch from folder */ }
+
+// ─────────────────────────────────────────────────────────────
+// MODALS
+// ─────────────────────────────────────────────────────────────
+const MODALS = {
+  'post-confirm':{ icon:`<svg viewBox="0 0 13 13" fill="none" stroke="var(--green)" stroke-width="1.5" stroke-linecap="round"><path d="M2 7l3 3 6-6"/></svg>`, iconBg:'var(--greenl)', title:'Post batch',
+    body:()=>{
+      const clean = BATCH_ROWS.filter(r=>!ALL_SIGNALS.find(s=>s.rid===r.id&&s.sev==='error')).length;
+      const err = new Set(ALL_SIGNALS.filter(s=>s.sev==='error').map(s=>s.rid)).size;
+      return `<div style="background:var(--greenl);border:1px solid #BBF7D0;border-radius:8px;padding:11px 14px;margin-bottom:4px">
+        <div style="font-size:13px;font-weight:600;color:var(--green);margin-bottom:4px">${clean} clean gifts ready to post</div>
+        <div style="font-size:12px;color:var(--green)">Posted batches are locked — corrections require a reversing entry.</div>
+      </div>
+      ${err>0?`<div style="background:var(--amberl);border:1px solid #FDE68A;border-radius:8px;padding:10px 12px;font-size:12px;color:#78350F">
+        <strong>${err} rows have errors</strong> and will be skipped. They'll be moved to an exception batch for resolution.</div>`:''}
+      <div class="form-row"><label class="form-label">Move exception rows to</label>
+        <select class="form-select"><option>2026 — CMA (same folder)</option><option>Exception batches</option></select></div>`;
+    },
+    foot:`<button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-amber" onclick="closeModal()">Post all including warnings</button><button class="btn btn-green" onclick="closeModal()">Post clean + create exceptions</button>`
+  },
+  'donor-history':{
+    icon:`<svg viewBox="0 0 13 13" fill="none" stroke="var(--blue)" stroke-width="1.4" stroke-linecap="round"><path d="M1.5 9.5l2.5-2.5 2 2 2.5-2.5 2 2"/></svg>`, iconBg:'var(--bluep)', title:'Giving history',
+    body:(rid)=>{
+      const r = BATCH_ROWS.find(x=>x.id===rid);
+      const donor = r ? DONOR_DB.find(d=>d.id===r.donorId) : null;
+      if (!donor) return '<p style="font-size:13px;color:var(--text3)">No donor selected.</p>';
+      const hist = donor.history.filter(h=>h.fund===r.fund);
+      const maxAmt = Math.max(...hist.map(h=>h.amt), r.amt);
+      const avg = hist.length ? hist.reduce((s,h)=>s+h.amt,0)/hist.length : 0;
+      const bars = hist.map(h=>{
+        const pct = Math.round((h.amt/maxAmt)*60);
+        return `<div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+          <div style="font-size:9px;color:var(--text3);font-weight:600">$${(h.amt/1000).toFixed(1)}K</div>
+          <div style="width:32px;height:${pct}px;background:var(--blue);border-radius:3px 3px 0 0;opacity:.6"></div>
+          <div style="font-size:9px;color:var(--text3)">${h.year}</div>
+        </div>`;
+      }).join('');
+      const newBar = `<div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+        <div style="font-size:9px;font-weight:700;color:var(--rose)">$${(r.amt/1000).toFixed(1)}K</div>
+        <div style="width:32px;height:${Math.round((r.amt/maxAmt)*60)}px;background:var(--rose);border-radius:3px 3px 0 0;opacity:1;position:relative">
+          <div style="position:absolute;top:-14px;left:50%;transform:translateX(-50%);font-size:8px;background:var(--rose);color:white;border-radius:3px;padding:1px 4px;white-space:nowrap">NEW</div>
+        </div>
+        <div style="font-size:9px;color:var(--rose);font-weight:600">2026</div>
+      </div>`;
+      return `<div style="background:var(--surf);border-radius:8px;padding:14px;margin-bottom:12px">
+        <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px">${donor.name} · ${r.fund}</div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:14px">Average: $${Math.round(avg).toLocaleString()} · ${hist.length} prior gifts to this fund</div>
+        <div style="display:flex;align-items:flex-end;gap:8px;height:80px">${bars}${newBar}</div>
+      </div>
+      ${r.amt > avg * THRESHOLD ? `<div style="background:var(--rosel);border:1px solid #FBCFE8;border-radius:8px;padding:10px 12px;font-size:12px;color:#9D174D">
+        The entered amount of <strong>$${r.amt.toLocaleString()}</strong> is <strong>${Math.round(r.amt/avg)}× the donor's average</strong> for this fund. If this is correct, please confirm. If it's a mis-key, use the button below to correct it.
+      </div>` : ''}
+      <div class="form-row-2" style="margin-top:8px">
+        <div class="form-row"><label class="form-label">Correct amount to</label>
+          <input class="form-input" value="$${avg.toFixed(2)}" id="hist-correct-val"></div>
+        <div class="form-row"><label class="form-label">Or keep entered</label>
+          <div style="padding:8px 10px;background:var(--surf);border-radius:7px;font-size:13px;font-weight:600;color:var(--text)">$${r.amt.toLocaleString()}</div></div>
+      </div>`;
+    },
+    foot:(rid)=>`<button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-amber" onclick="applyHistCorrect(${rid})">Use corrected amount</button><button class="btn btn-blue" onclick="closeModal()">Keep $${BATCH_ROWS.find(x=>x.id===rid)?.amt.toLocaleString()} — confirmed</button>`
+  },
+  'save-template':{ icon:`<svg viewBox="0 0 13 13" fill="none" stroke="var(--purp)" stroke-width="1.4" stroke-linecap="round"><rect x="2" y="2" width="9" height="9" rx="1.5"/><path d="M5 6.5h3M6.5 5v3"/></svg>`, iconBg:'var(--purpl)', title:'Save as template',
+    body:`<div style="background:var(--purpl);border:1px solid #DDD6FE;border-radius:8px;padding:10px;font-size:12px;color:var(--purp);margin-bottom:4px">Templates save column config and defaults — not row data. Anyone on your team can use this.</div>
+      <div class="form-row"><label class="form-label">Template name <span>*</span></label><input class="form-input" value="CMA Mail Response 2026"></div>
+      <div class="form-row"><label class="form-label">Description</label><input class="form-input" value="CMA direct mail — cheque and credit card gifts"></div>
+      <div class="form-row"><label class="form-label">Default values captured from this batch</label>
+        <div style="display:flex;flex-direction:column;gap:5px">
+          <div style="display:flex;justify-content:space-between;padding:6px 10px;background:var(--surf);border-radius:6px;font-size:12px"><span style="color:var(--text3)">Default fund</span><span style="font-weight:600">CMA Annual Fund</span></div>
+          <div style="display:flex;justify-content:space-between;padding:6px 10px;background:var(--surf);border-radius:6px;font-size:12px"><span style="color:var(--text3)">Default GL</span><span style="font-weight:600">4100</span></div>
+          <div style="display:flex;justify-content:space-between;padding:6px 10px;background:var(--surf);border-radius:6px;font-size:12px"><span style="color:var(--text3)">Default type</span><span style="font-weight:600">Check</span></div>
+          <div style="display:flex;justify-content:space-between;padding:6px 10px;background:var(--surf);border-radius:6px;font-size:12px"><span style="color:var(--text3)">Outlier threshold</span><span style="font-weight:600">${THRESHOLD}× average</span></div>
+        </div>
+      </div>`,
+    foot:`<button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-purp" onclick="closeModal()">Save template</button>`
+  },
+  'save-batch':{ icon:`<svg viewBox="0 0 13 13" fill="none" stroke="var(--blue)" stroke-width="1.4" stroke-linecap="round"><path d="M1 2.5h2.5l1.5 1.5H12a.7.7 0 01.7.7v6.3a.7.7 0 01-.7.7H1a.7.7 0 01-.7-.7V3.2A.7.7 0 011 2.5z"/></svg>`, iconBg:'var(--bluep)', title:'Save batch to folder',
+    body:`<div class="form-row"><label class="form-label">Folder</label><select class="form-select"><option>2026 — CMA</option><option>2026 — Cathedral Capital</option><option>+ Create new folder</option></select></div>
+      <div class="form-row"><label class="form-label">Batch name</label><input class="form-input" value="CMA April Mail Response 2026"></div>
+      <div style="background:var(--surf);border:1px solid var(--border);border-radius:8px;padding:10px;font-size:12px;color:var(--text2)"><strong>Summary:</strong> 14 rows · $14,975 · ${new Set(ALL_SIGNALS.filter(s=>s.sev==='error').map(s=>s.rid)).size} errors · Draft</div>`,
+    foot:`<button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-blue" onclick="closeModal()">Save to folder</button>`
+  },
+  'new-template':{ icon:`<svg viewBox="0 0 13 13" fill="none" stroke="var(--purp)" stroke-width="1.4" stroke-linecap="round"><rect x="2" y="2" width="9" height="9" rx="1.5"/><path d="M5 6.5h3M6.5 5v3"/></svg>`, iconBg:'var(--purpl)', title:'New template',
+    body:`<div class="form-row"><label class="form-label">Template name <span>*</span></label><input class="form-input" placeholder="e.g. Stock Gift Entry"></div>
+      <div class="form-row"><label class="form-label">Start from</label><select class="form-select"><option>Blank</option><option>Copy: CMA Mail Response</option><option>Copy: Major Gift Pledge</option><option>Copy: current batch</option></select></div>
+      <div class="form-row"><label class="form-label">Default outlier threshold</label><div style="display:flex;align-items:center;gap:10px;padding:8px 0"><input type="range" min="2" max="10" value="3" style="flex:1;accent-color:var(--purp)"><span style="font-size:12px;font-weight:700;color:var(--purp)">3×</span></div><span class="form-hint">Flag amounts more than this multiple of the donor's giving history</span></div>`,
+    foot:`<button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-purp" onclick="closeModal()">Create template</button>`
+  },
+  'new-batch':{ icon:`<svg viewBox="0 0 13 13" fill="none" stroke="var(--blue)" stroke-width="1.4" stroke-linecap="round"><rect x="2" y="2" width="9" height="9" rx="1.5"/><path d="M5 6.5h3M6.5 5v3"/></svg>`, iconBg:'var(--bluep)', title:'New batch',
+    body:`<div class="form-row"><label class="form-label">Batch name <span>*</span></label><input class="form-input" placeholder="e.g. CMA May Mail Response 2026"></div>
+      <div class="form-row"><label class="form-label">Template</label><select class="form-select"><option>— Blank batch —</option><option>CMA Mail Response (14 uses)</option><option>Major Gift Pledge (6 uses)</option><option>Online Giving Export (22 uses)</option></select></div>
+      <div class="form-row-2"><div class="form-row"><label class="form-label">Default fund</label><select class="form-select"><option>CMA Annual Fund</option><option>Cathedral Capital</option><option>General Fund</option></select></div>
+      <div class="form-row"><label class="form-label">Default date</label><input class="form-input" type="date" value="2026-04-18"></div></div>
+      <div class="form-row"><label class="form-label">Save to folder</label><select class="form-select"><option>2026 — CMA</option><option>2026 — Cathedral Capital</option><option>+ New folder</option></select></div>`,
+    foot:`<button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-blue" onclick="closeModal()">Create batch</button>`
+  },
+  'accuracy-settings':{ icon:`<svg viewBox="0 0 13 13" fill="none" stroke="var(--purp)" stroke-width="1.4" stroke-linecap="round"><circle cx="6.5" cy="6.5" r="5"/><path d="M4.5 6.5l1.5 1.5 3-3"/></svg>`, iconBg:'var(--purpl)', title:'Accuracy engine settings',
+    body:`<div style="font-size:12px;color:var(--text3);margin-bottom:12px">These thresholds apply to all batches in this diocese. Changes take effect immediately.</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="padding:10px 12px;background:var(--surf);border:1px solid var(--border);border-radius:8px">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+            <span style="font-size:12px;font-weight:600;color:var(--text);flex:1">Outlier threshold</span>
+            <input type="range" min="2" max="10" value="${THRESHOLD}" style="width:100px;accent-color:var(--purp)" oninput="THRESHOLD=parseInt(this.value);document.getElementById('as-thresh').textContent=this.value+'×';revalidateAll()">
+            <span id="as-thresh" style="font-size:12px;font-weight:700;color:var(--purp);min-width:28px">${THRESHOLD}×</span>
+          </div>
+          <div style="font-size:11px;color:var(--text3)">Flag amounts more than N× the donor's giving history average for the same fund</div>
+        </div>
+        <div style="padding:10px 12px;background:var(--surf);border:1px solid var(--border);border-radius:8px">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+            <span style="font-size:12px;font-weight:600;color:var(--text);flex:1">Duplicate window</span>
+            <input type="range" min="7" max="90" value="${DUP_DAYS}" style="width:100px;accent-color:var(--purp)" oninput="DUP_DAYS=parseInt(this.value);document.getElementById('as-dup').textContent=this.value+' days';revalidateAll()">
+            <span id="as-dup" style="font-size:12px;font-weight:700;color:var(--purp);min-width:50px">${DUP_DAYS} days</span>
+          </div>
+          <div style="font-size:11px;color:var(--text3)">Flag same donor + same amount if a matching gift exists within N days</div>
+        </div>
+        <div style="padding:10px 12px;background:var(--surf);border:1px solid var(--border);border-radius:8px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+            <span style="font-size:12px;font-weight:600;color:var(--text)">First-time large gift threshold</span>
+            <div style="display:flex;align-items:center;gap:6px"><span style="font-size:11px;color:var(--text3)">$</span><input type="number" value="1000" style="width:80px;padding:4px 8px;border:1px solid var(--border);border-radius:6px;font-size:12px;font-family:inherit"></div>
+          </div>
+          <div style="font-size:11px;color:var(--text3)">Warn when a donor with no prior history makes a first gift above this amount</div>
+        </div>
+        <div style="padding:10px 12px;background:var(--surf);border:1px solid var(--border);border-radius:8px">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+            <span style="font-size:12px;font-weight:600;color:var(--text);flex:1">YoY change alert</span>
+            <input type="range" min="25" max="200" value="50" style="width:100px;accent-color:var(--purp)" oninput="document.getElementById('as-yoy').textContent=this.value+'%'">
+            <span id="as-yoy" style="font-size:12px;font-weight:700;color:var(--purp);min-width:36px">50%</span>
+          </div>
+          <div style="font-size:11px;color:var(--text3)">Flag when same-campaign gift changes by more than N% vs. prior year</div>
+        </div>
+      </div>`,
+    foot:`<button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-purp" onclick="closeModal()">Save settings</button>`
+  },
+  'import':{ icon:`<svg viewBox="0 0 13 13" fill="none" stroke="var(--blue)" stroke-width="1.4" stroke-linecap="round"><path d="M6.5 1v7M4 5.5l2.5 2.5 2.5-2.5"/><path d="M1.5 10.5h10"/></svg>`, iconBg:'var(--bluep)', title:'Import gifts',
+    body:`<div style="border:2px dashed var(--border);border-radius:10px;padding:24px;text-align:center;cursor:pointer;background:var(--surf);margin-bottom:10px" onmouseenter="this.style.borderColor='var(--blue)'" onmouseleave="this.style.borderColor='var(--border)'"><div style="font-size:26px;margin-bottom:8px">📁</div><div style="font-size:13px;font-weight:600;color:var(--text2)">Drop CSV or Excel here</div><div style="font-size:11px;color:var(--text3);margin-top:4px">.csv, .xlsx, .xls · max 10MB</div></div>
+      <div class="form-row"><label class="form-label">Apply template for column mapping</label><select class="form-select"><option>Auto-detect</option><option>CMA Mail Response</option><option>Major Gift Pledge</option></select></div>`,
+    foot:`<button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-blue" onclick="closeModal()">Import &amp; preview</button>`
+  },
+  'new-folder':{ icon:`<svg viewBox="0 0 13 13" fill="none" stroke="var(--amber)" stroke-width="1.4" stroke-linecap="round"><path d="M1 2.5h3l1.5 1.5H12a.7.7 0 01.7.7v6.3a.7.7 0 01-.7.7H1a.7.7 0 01-.7-.7V3.2A.7.7 0 011 2.5z"/><path d="M7 5.5v3M5.5 7h3"/></svg>`, iconBg:'var(--amberl)', title:'New folder',
+    body:`<div class="form-row"><label class="form-label">Folder name <span>*</span></label><input class="form-input" placeholder="e.g. 2026 — Annual Appeal"></div>`,
+    foot:`<button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-amber" onclick="closeModal()">Create folder</button>`
+  },
+  'columns':{ icon:`<svg viewBox="0 0 13 13" fill="none" stroke="var(--blue)" stroke-width="1.4" stroke-linecap="round"><path d="M1.5 3.5h10M1.5 6.5h10M1.5 9.5h10"/></svg>`, iconBg:'var(--bluep)', title:'Column configuration',
+    body:`<div style="font-size:12px;color:var(--text3);margin-bottom:10px">Drag to reorder. Changes apply to this batch only — save as template to reuse.</div>
+      <div style="display:flex;flex-direction:column;gap:5px">
+        ${['Donor (required)','Gift date (required)','Fund / campaign','Gift type','Amount (required)','Payment method','Check / ref #','GL code','Note','Entity','Solicitor','Pledge reference'].map((c,i)=>`
+          <div style="display:flex;align-items:center;gap:10px;padding:7px 10px;background:var(--surf);border:1px solid var(--border);border-radius:7px;cursor:grab">
+            <svg viewBox="0 0 8 10" fill="none" stroke="var(--text3)" stroke-width="1.1" stroke-linecap="round" width="8" height="10"><path d="M1 2h6M1 5h6M1 8h6"/></svg>
+            <span style="flex:1;font-size:12px;color:var(--text)">${c}</span>
+            <div style="display:flex;align-items:center;gap:5px;padding:3px 8px;border-radius:20px;border:1px solid var(--border);cursor:pointer;background:${i<9?'var(--bluep)':'var(--surf)'}">
+              <span style="font-size:10px;font-weight:600;color:${i<9?'var(--blue)':'var(--text3)'}">${i<9?'Shown':'Hidden'}</span>
+            </div>
+          </div>`).join('')}
+      </div>`,
+    foot:`<button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-blue" onclick="closeModal()">Apply</button>`
+  },
+};
+
+let currentModalRid = null;
+function openModal(type, rid) {
+  currentModalRid = rid;
+  const cfg = MODALS[type];
+  if (!cfg) return;
+  document.getElementById('mh-icon').innerHTML = cfg.icon;
+  document.getElementById('mh-icon').style.background = cfg.iconBg;
+  document.getElementById('modal-title').textContent = cfg.title;
+  const body = typeof cfg.body === 'function' ? cfg.body(rid) : (cfg.body||'');
+  document.getElementById('modal-body').innerHTML = body;
+  const foot = typeof cfg.foot === 'function' ? cfg.foot(rid) : (cfg.foot||'<button class="btn btn-blue" onclick="closeModal()">Close</button>');
+  document.getElementById('modal-foot').innerHTML = foot;
+  document.getElementById('modal-overlay').classList.add('show');
+}
+function closeModal(){ document.getElementById('modal-overlay').classList.remove('show'); }
+function handleOverlay(e){ if(e.target===document.getElementById('modal-overlay')) closeModal(); }
+function applyHistCorrect(rid){
+  const val = parseFloat((document.getElementById('hist-correct-val')?.value||'').replace(/[$,]/g,''));
+  if(!isNaN(val)) setAmt(rid, val);
+  closeModal();
+}
+
+// Keyboard
+document.addEventListener('keydown', e=>{
+  if(e.ctrlKey && e.key==='Enter'){ revalidateAll(); e.preventDefault(); }
+  if(e.key==='Escape') closeModal();
+  if(e.ctrlKey && e.key==='d'){ e.preventDefault(); const focused=document.activeElement?.dataset?.rid; if(focused) duplicateRow(parseInt(focused)); }
+});
+
+// ─────────────────────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────────────────────
+renderFolders();
+revalidateAll();
+</script>
+</body>
+</html>
