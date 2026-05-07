@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Atlas — Check Capture Architecture</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --navy:  #0E1E35; --navy2: #152844;
+      --blue:  #2563EB; --bluel: #DBEAFE; --bluep: #EFF6FF;
+      --green: #15803D; --greenl:#DCFCE7;
+      --amber: #D97706; --amberl:#FEF3C7;
+      --teal:  #0D9488; --teall: #CCFBF1;
+      --purp:  #7C3AED; --purpl: #EDE9FE;
+      --text:  #0F172A; --text2: #334155; --text3: #64748B;
+      --border:#E2E8F0; --surf:  #F8FAFC;
+    }
+    html { font-size: 14px; -webkit-font-smoothing: antialiased; }
+    body { font-family: 'DM Sans', sans-serif; background: #F0F4F8; color: var(--text); padding: 24px 20px 64px; }
+    .wrap { max-width: 900px; margin: 0 auto; }
+
+    /* Header */
+    .page-header { background: var(--navy); border-radius: 14px; padding: 22px 26px; margin-bottom: 20px; display: flex; align-items: center; gap: 16px; }
+    .ph-mark { width: 38px; height: 38px; background: var(--blue); border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .ph-mark svg { width: 18px; height: 18px; }
+    .ph-title { font-family: 'DM Serif Display', serif; font-size: 21px; color: white; }
+    .ph-sub { font-size: 12px; color: rgba(255,255,255,.45); margin-top: 3px; }
+    .ph-badge { margin-left: auto; display: flex; align-items: center; gap: 6px; background: rgba(37,99,235,.3); border: 1px solid rgba(37,99,235,.5); border-radius: 20px; padding: 5px 13px; font-size: 11px; font-weight: 600; color: #93C5FD; flex-shrink: 0; }
+
+    /* Tabs */
+    .tabs { display: flex; gap: 4px; margin-bottom: 16px; }
+    .tab-btn { padding: 7px 16px; border-radius: 20px; font-size: 12px; font-weight: 500; cursor: pointer; border: 1px solid var(--border); background: white; color: var(--text3); transition: all .12s; font-family: 'DM Sans', sans-serif; }
+    .tab-btn.active { background: var(--navy); color: white; border-color: var(--navy); font-weight: 600; }
+
+    /* Panels */
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* Cards */
+    .card { background: white; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 14px; }
+    .card-head { padding: 12px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+    .ch-icon { width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .ch-icon svg { width: 13px; height: 13px; }
+    .ch-title { font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--text3); flex: 1; }
+    .ch-badge { font-size: 10px; font-weight: 600; padding: 2px 9px; border-radius: 20px; }
+    .card-body { padding: 16px 18px; }
+
+    /* Two-col */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+    @media(max-width:640px){ .two-col { grid-template-columns: 1fr; } }
+
+    /* QR box */
+    .qr-wrap { display: flex; align-items: center; gap: 16px; padding: 14px; background: var(--surf); border-radius: 10px; margin-bottom: 16px; }
+    .qr-box { width: 84px; height: 84px; background: white; border: 1px solid var(--border); border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .qr-box svg { width: 64px; height: 64px; }
+    .qr-info { flex: 1; }
+    .qr-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+    .qr-sub { font-size: 12px; color: var(--text2); line-height: 1.6; }
+    .qr-url { font-size: 11px; color: var(--blue); margin-top: 5px; font-family: monospace; }
+
+    /* Steps */
+    .step-list { display: flex; flex-direction: column; }
+    .step { display: flex; gap: 10px; align-items: flex-start; padding: 9px 0; border-bottom: 1px solid var(--border); }
+    .step:last-child { border-bottom: none; }
+    .step-left { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; padding-top: 2px; }
+    .step-num { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 600; flex-shrink: 0; }
+    .step-line { width: 1px; flex: 1; min-height: 12px; background: var(--border); margin-top: 3px; }
+    .step:last-child .step-line { display: none; }
+    .step-body { flex: 1; padding-bottom: 4px; }
+    .step-action { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 3px; }
+    .step-detail { font-size: 12px; color: var(--text2); line-height: 1.6; }
+
+    /* Phone mockup */
+    .phone-wrap { background: var(--surf); border-radius: 12px; padding: 16px; display: flex; justify-content: center; }
+    .phone { width: 200px; background: white; border: 1.5px solid var(--border); border-radius: 26px; overflow: hidden; }
+    .phone-bar { height: 26px; background: var(--surf); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: center; gap: 4px; }
+    .ph-dot { width: 7px; height: 7px; background: var(--border); border-radius: 50%; }
+    .phone-screen { padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+    .ps-lbl { font-size: 9px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--text3); }
+    .ps-title { font-size: 13px; font-weight: 600; color: var(--text); }
+    .ps-img { width: 100%; height: 72px; background: var(--surf); border: 1px solid var(--border); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+    .ps-img svg { width: 26px; height: 26px; color: var(--text3); }
+    .ps-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 8px; background: var(--surf); border-radius: 6px; font-size: 11px; }
+    .ps-key { color: var(--text3); }
+    .ps-val { font-weight: 500; color: var(--text); }
+    .ps-tag { font-size: 10px; padding: 1px 6px; border-radius: 20px; }
+    .ps-btn { padding: 8px; border-radius: 8px; font-size: 11px; font-weight: 600; text-align: center; background: var(--blue); color: white; margin-top: 2px; }
+
+    /* Auto-populate rows */
+    .ap-row { display: flex; align-items: center; justify-content: space-between; padding: 7px 12px; border-bottom: 1px solid var(--border); font-size: 12px; }
+    .ap-row:last-child { border-bottom: none; }
+    .ap-key { color: var(--text2); }
+    .conf-pill { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 20px; }
+    .c-high { background: var(--greenl); color: var(--green); }
+    .c-med  { background: var(--amberl); color: var(--amber); }
+    .c-def  { background: var(--surf); color: var(--text3); border: 1px solid var(--border); }
+
+    /* Arch flow */
+    .arch-flow { display: flex; align-items: center; gap: 0; flex-wrap: wrap; row-gap: 8px; margin-bottom: 18px; }
+    .arch-node { padding: 8px 14px; background: var(--surf); border: 1px solid var(--border); border-radius: 8px; font-size: 12px; font-weight: 500; color: var(--text); white-space: nowrap; }
+    .arch-node.hi-blue { background: var(--bluep); border-color: var(--bluel); color: var(--blue); }
+    .arch-node.hi-green { background: var(--greenl); border-color: #BBF7D0; color: var(--green); }
+    .arch-arrow { padding: 0 6px; color: var(--text3); font-size: 16px; }
+
+    /* OCR table */
+    .ocr-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .ocr-table th { text-align: left; padding: 7px 12px; font-size: 10px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--text3); background: var(--surf); border-bottom: 1px solid var(--border); }
+    .ocr-table td { padding: 8px 12px; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: middle; }
+    .ocr-table tr:last-child td { border-bottom: none; }
+    .ocr-table tr:hover td { background: var(--surf); }
+    .field-tag { font-size: 10px; padding: 1px 7px; border-radius: 20px; background: var(--bluep); color: var(--blue); font-weight: 500; }
+
+    /* Storage options */
+    .storage-row { display: flex; align-items: flex-start; gap: 12px; padding: 12px 14px; border-bottom: 1px solid var(--border); }
+    .storage-row:last-child { border-bottom: none; }
+    .stor-letter { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+    .stor-body { flex: 1; }
+    .stor-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 3px; }
+    .stor-desc { font-size: 12px; color: var(--text2); line-height: 1.6; }
+    .stor-badge { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 20px; margin-top: 5px; display: inline-block; }
+
+    /* Considerations */
+    .concern { display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; border-left: 3px solid transparent; border-bottom: 1px solid var(--border); }
+    .concern:last-child { border-bottom: none; }
+    .concern.warn { border-left-color: var(--amber); background: #FFFBEB; }
+    .concern.info { border-left-color: var(--blue); }
+    .concern.ok   { border-left-color: var(--green); }
+    .cc-icon { width: 18px; height: 18px; flex-shrink: 0; margin-top: 1px; }
+    .cc-icon svg { width: 18px; height: 18px; }
+    .cc-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 3px; }
+    .cc-body { font-size: 12px; color: var(--text2); line-height: 1.6; }
+
+    /* Section label */
+    .sec-label { font-size: 10px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--text3); margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+  </style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div class="ph-mark">
+      <svg viewBox="0 0 18 18" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round">
+        <rect x="2" y="5" width="14" height="10" rx="2"/>
+        <path d="M5 5V3.5a1.5 1.5 0 013 0V5M10 5V3.5a1.5 1.5 0 013 0V5"/>
+        <path d="M5 10h8M5 13h5"/>
+      </svg>
+    </div>
+    <div>
+      <div class="ph-title">Atlas Batch — Check Capture &amp; Scan-to-Batch</div>
+      <div class="ph-sub">Mobile QR flow · OCR extraction · Auto-populate batch rows · No app download required</div>
+    </div>
+    <div class="ph-badge">
+      <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" width="12" height="12"><rect x="2" y="2" width="8" height="8" rx="1.5"/><path d="M2 5h8M5 2v8"/></svg>
+      Architecture spec
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="setTab('flow',this)">Scan flow</button>
+    <button class="tab-btn" onclick="setTab('ocr',this)">OCR extraction</button>
+    <button class="tab-btn" onclick="setTab('arch',this)">Architecture</button>
+    <button class="tab-btn" onclick="setTab('considerations',this)">Considerations</button>
+  </div>
+
+  <!-- ── FLOW ── -->
+  <div class="tab-panel active" id="tab-flow">
+    <div class="two-col">
+
+      <div class="card">
+        <div class="card-head">
+          <div class="ch-icon" style="background:var(--bluep)"><svg viewBox="0 0 13 13" fill="none" stroke="var(--blue)" stroke-width="1.4" stroke-linecap="round"><rect x="2.5" y="1" width="8" height="11" rx="1.5"/><path d="M4.5 4h4M4.5 6.5h4M4.5 9h2"/></svg></div>
+          <span class="ch-title">Desktop — batch entry</span>
+        </div>
+        <div class="card-body">
+          <div class="qr-wrap">
+            <div class="qr-box">
+              <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="4" y="4" width="22" height="22" rx="2" stroke="#0F172A" stroke-width="2" fill="none"/>
+                <rect x="9" y="9" width="12" height="12" fill="#0F172A"/>
+                <rect x="38" y="4" width="22" height="22" rx="2" stroke="#0F172A" stroke-width="2" fill="none"/>
+                <rect x="43" y="9" width="12" height="12" fill="#0F172A"/>
+                <rect x="4" y="38" width="22" height="22" rx="2" stroke="#0F172A" stroke-width="2" fill="none"/>
+                <rect x="9" y="43" width="12" height="12" fill="#0F172A"/>
+                <rect x="38" y="38" width="6" height="6" fill="#0F172A"/>
+                <rect x="46" y="38" width="6" height="6" fill="#0F172A"/>
+                <rect x="54" y="38" width="6" height="6" fill="#0F172A"/>
+                <rect x="38" y="46" width="6" height="6" fill="#0F172A"/>
+                <rect x="46" y="46" width="6" height="6" fill="#0F172A"/>
+                <rect x="54" y="54" width="6" height="6" fill="#0F172A"/>
+                <rect x="38" y="54" width="6" height="6" fill="#0F172A"/>
+                <rect x="30" y="4" width="6" height="6" fill="#0F172A"/>
+                <rect x="30" y="14" width="6" height="6" fill="#0F172A"/>
+                <rect x="4" y="30" width="6" height="6" fill="#0F172A"/>
+                <rect x="14" y="30" width="6" height="6" fill="#0F172A"/>
+                <rect x="22" y="30" width="6" height="6" fill="#0F172A"/>
+              </svg>
+            </div>
+            <div class="qr-info">
+              <div class="qr-title">Scan to upload checks</div>
+              <div class="qr-sub">Opens the check capture portal for <strong>Batch #2026-0418</strong> — no app download needed</div>
+              <div class="qr-url">atlas.givecentral.org/scan/b/0418</div>
+            </div>
+          </div>
+          <div class="step-list">
+            <div class="step">
+              <div class="step-left"><div class="step-num" style="background:var(--bluep);color:var(--blue)">1</div><div class="step-line"></div></div>
+              <div class="step-body"><div class="step-action">Clerk opens a batch</div><div class="step-detail">A unique QR is generated encoding the batch ID, diocese, and a short-lived auth token (4-hour expiry).</div></div>
+            </div>
+            <div class="step">
+              <div class="step-left"><div class="step-num" style="background:var(--bluep);color:var(--blue)">2</div><div class="step-line"></div></div>
+              <div class="step-body"><div class="step-action">Phone camera scans QR</div><div class="step-detail">Opens a lightweight mobile web page. No App Store. Works in any iOS or Android browser.</div></div>
+            </div>
+            <div class="step">
+              <div class="step-left"><div class="step-num" style="background:var(--bluep);color:var(--blue)">3</div><div class="step-line"></div></div>
+              <div class="step-body"><div class="step-action">Photograph each check</div><div class="step-detail">Alignment overlay guides the clerk. Auto-capture when edges are detected. Supports front + back.</div></div>
+            </div>
+            <div class="step">
+              <div class="step-left"><div class="step-num" style="background:var(--bluep);color:var(--blue)">4</div><div class="step-line"></div></div>
+              <div class="step-body"><div class="step-action">OCR runs in the cloud</div><div class="step-detail">Amount (CAR/LAR), routing number, account, memo, and payer name extracted. Donor matched to Atlas database.</div></div>
+            </div>
+            <div class="step">
+              <div class="step-left"><div class="step-num" style="background:var(--greenl);color:var(--green)">5</div></div>
+              <div class="step-body"><div class="step-action">Rows appear in batch</div><div class="step-detail">Desktop batch grid auto-populates. Confidence-flagged fields show amber. Clerk reviews — no manual typing.</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div class="phone-wrap">
+          <div class="phone">
+            <div class="phone-bar"><div class="ph-dot"></div><div class="ph-dot"></div><div class="ph-dot"></div></div>
+            <div class="phone-screen">
+              <div class="ps-lbl">Batch #2026-0418 · CMA</div>
+              <div class="ps-title">Scan check</div>
+              <div style="font-size:10px;color:var(--text3)">3 of 14 uploaded</div>
+              <div class="ps-img">
+                <svg viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round">
+                  <rect x="2" y="5" width="22" height="14" rx="2"/>
+                  <path d="M5 12h6M5 16h3M16 12h6"/>
+                  <path d="M5 9h4M12 9h8"/>
+                  <path d="M2 7l2.5-2.5M24 7l-2.5-2.5M2 17l2.5 2.5M24 17l-2.5 2.5" stroke-dasharray="1.5 1" opacity=".4"/>
+                </svg>
+              </div>
+              <div class="ps-row"><span class="ps-key">Amount</span><span class="ps-val" style="color:var(--green)">$250.00</span></div>
+              <div class="ps-row"><span class="ps-key">Donor</span><span class="ps-val">O'Brien, J</span></div>
+              <div class="ps-row"><span class="ps-key">Check #</span><span class="ps-val">10441</span></div>
+              <div class="ps-row"><span class="ps-key">Fund</span><span class="ps-tag" style="background:var(--amberl);color:var(--amber)">Review</span></div>
+              <div class="ps-btn">Confirm &amp; scan next →</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div class="ch-icon" style="background:var(--greenl)"><svg viewBox="0 0 13 13" fill="none" stroke="var(--green)" stroke-width="1.4" stroke-linecap="round"><path d="M2 6.5l3 3 6-6"/></svg></div>
+            <span class="ch-title">What auto-populates</span>
+          </div>
+          <div style="padding:0">
+            <div class="ap-row"><span class="ap-key">Gift amount</span><span class="conf-pill c-high">OCR — high confidence</span></div>
+            <div class="ap-row"><span class="ap-key">Check / ref number</span><span class="conf-pill c-high">OCR — high confidence</span></div>
+            <div class="ap-row"><span class="ap-key">Donor name</span><span class="conf-pill c-high">Matched from database</span></div>
+            <div class="ap-row"><span class="ap-key">Date on check</span><span class="conf-pill c-high">OCR — high confidence</span></div>
+            <div class="ap-row"><span class="ap-key">Memo / fund hint</span><span class="conf-pill c-med">OCR — needs review</span></div>
+            <div class="ap-row"><span class="ap-key">Fund designation</span><span class="conf-pill c-def">Defaulted from batch</span></div>
+            <div class="ap-row"><span class="ap-key">GL code</span><span class="conf-pill c-def">Defaulted from batch</span></div>
+            <div class="ap-row"><span class="ap-key">Payment method</span><span class="conf-pill c-high">Auto: Check</span></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── OCR ── -->
+  <div class="tab-panel" id="tab-ocr">
+    <div class="card" style="margin-bottom:12px">
+      <div class="card-head">
+        <div class="ch-icon" style="background:var(--purpl)"><svg viewBox="0 0 13 13" fill="none" stroke="var(--purp)" stroke-width="1.4" stroke-linecap="round"><rect x="1.5" y="1.5" width="10" height="10" rx="1.5"/><path d="M4 5h5M4 7.5h4M4 10h3"/></svg></div>
+        <span class="ch-title">Check fields — OCR extraction targets</span>
+        <span class="ch-badge" style="background:var(--purpl);color:var(--purp)">MICR + visual OCR</span>
+      </div>
+      <div style="padding:0;overflow-x:auto">
+        <table class="ocr-table">
+          <thead><tr>
+            <th>Field</th><th>Check zone</th><th>Extraction method</th><th>Confidence</th><th>Atlas field</th>
+          </tr></thead>
+          <tbody>
+            <tr><td style="font-weight:500">Amount (numeric)</td><td style="color:var(--text3)">Courtesy amount (CAR)</td><td>OCR — digit field</td><td><span class="conf-pill c-high">98%+</span></td><td><span class="field-tag">Amount</span></td></tr>
+            <tr><td style="font-weight:500">Amount (written)</td><td style="color:var(--text3)">Legal amount (LAR)</td><td>OCR + NLP number parse</td><td><span class="conf-pill c-high">95%+</span></td><td><span class="field-tag">Amount (cross-check)</span></td></tr>
+            <tr><td style="font-weight:500">Check date</td><td style="color:var(--text3)">Top-right date field</td><td>OCR — date parse</td><td><span class="conf-pill c-high">94%</span></td><td><span class="field-tag">Gift date</span></td></tr>
+            <tr><td style="font-weight:500">Routing number</td><td style="color:var(--text3)">MICR bottom-left</td><td>MICR character recognition</td><td><span class="conf-pill c-high">99%+</span></td><td><span class="field-tag">Ref / bank</span></td></tr>
+            <tr><td style="font-weight:500">Account number</td><td style="color:var(--text3)">MICR centre</td><td>MICR character recognition</td><td><span class="conf-pill c-high">99%+</span></td><td><span class="field-tag">Duplicate detection</span></td></tr>
+            <tr><td style="font-weight:500">Check number</td><td style="color:var(--text3)">MICR right / top-right</td><td>MICR + OCR cross-check</td><td><span class="conf-pill c-high">98%</span></td><td><span class="field-tag">Check / ref #</span></td></tr>
+            <tr><td style="font-weight:500">Payer name</td><td style="color:var(--text3)">Top-left printed name</td><td>OCR + fuzzy donor match</td><td><span class="conf-pill c-med">78–88%</span></td><td><span class="field-tag">Donor lookup</span></td></tr>
+            <tr><td style="font-weight:500">Payer address</td><td style="color:var(--text3)">Top-left 2nd line</td><td>OCR — address parse</td><td><span class="conf-pill c-med">70–85%</span></td><td><span class="field-tag">Address update hint</span></td></tr>
+            <tr><td style="font-weight:500">Memo line</td><td style="color:var(--text3)">Bottom-left memo</td><td>OCR + NLP fund classifier</td><td><span class="conf-pill c-med">60–80%</span></td><td><span class="field-tag">Fund hint</span></td></tr>
+            <tr><td style="font-weight:500">Payee name</td><td style="color:var(--text3)">Pay to the order of</td><td>OCR — validate vs expected</td><td><span class="conf-pill c-high">92%</span></td><td><span class="field-tag">Validation check</span></td></tr>
+            <tr><td style="font-weight:500">Signature present</td><td style="color:var(--text3)">Bottom-right</td><td>Region presence detection</td><td><span class="conf-pill c-high">96%</span></td><td><span class="field-tag">Validity flag</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div style="background:var(--surf);border:1px solid var(--border);border-radius:10px;padding:12px 16px;font-size:12px;color:var(--text2);line-height:1.7">
+      <strong style="color:var(--text)">CAR vs LAR cross-validation:</strong> If the numeric and written amounts differ by more than $0.01, the row is flagged amber and left for clerk review before posting. Any field below <strong>70% confidence</strong> is left blank and highlighted — not auto-filled with a low-confidence guess. The full accuracy engine (outlier detection, duplicate checks) runs on OCR-populated rows exactly as it does for manually typed rows.
+    </div>
+  </div>
+
+  <!-- ── ARCH ── -->
+  <div class="tab-panel" id="tab-arch">
+    <div class="card" style="margin-bottom:14px">
+      <div class="card-head">
+        <div class="ch-icon" style="background:var(--greenl)"><svg viewBox="0 0 13 13" fill="none" stroke="var(--green)" stroke-width="1.4" stroke-linecap="round"><circle cx="6.5" cy="6.5" r="5.5"/><path d="M6.5 4v5M4 6.5h5"/></svg></div>
+        <span class="ch-title">End-to-end system flow</span>
+      </div>
+      <div class="card-body">
+        <div class="arch-flow" style="margin-bottom:18px">
+          <div class="arch-node">Phone camera</div>
+          <div class="arch-arrow">→</div>
+          <div class="arch-node hi-blue">Mobile web portal<br><span style="font-size:10px;font-weight:400">atlas.givecentral.org/scan</span></div>
+          <div class="arch-arrow">→</div>
+          <div class="arch-node">Secure upload<br><span style="font-size:10px;font-weight:400">HTTPS + batch token</span></div>
+          <div class="arch-arrow">→</div>
+          <div class="arch-node hi-green">OCR engine<br><span style="font-size:10px;font-weight:400">AWS Textract / Azure</span></div>
+          <div class="arch-arrow">→</div>
+          <div class="arch-node">Atlas batch API</div>
+          <div class="arch-arrow">→</div>
+          <div class="arch-node hi-blue">Desktop batch grid<br><span style="font-size:10px;font-weight:400">rows appear live</span></div>
+        </div>
+
+        <div class="two-col" style="margin-bottom:0">
+          <div>
+            <div class="sec-label">QR code encodes</div>
+            <div class="step-list">
+              <div class="step">
+                <div class="step-left"><div class="step-num" style="background:var(--bluep);color:var(--blue);font-size:9px">→</div><div class="step-line"></div></div>
+                <div class="step-body"><div class="step-action">Batch ID</div><div class="step-detail">Ties all uploaded checks to the correct batch in Atlas automatically.</div></div>
+              </div>
+              <div class="step">
+                <div class="step-left"><div class="step-num" style="background:var(--bluep);color:var(--blue);font-size:9px">→</div><div class="step-line"></div></div>
+                <div class="step-body"><div class="step-action">Short-lived auth token</div><div class="step-detail">Expires in 4 hours. Tied to the clerk's session. No phone login required.</div></div>
+              </div>
+              <div class="step">
+                <div class="step-left"><div class="step-num" style="background:var(--bluep);color:var(--blue);font-size:9px">→</div><div class="step-line"></div></div>
+                <div class="step-body"><div class="step-action">Default batch fields</div><div class="step-detail">Fund, GL code, payment type pre-loaded so uploads inherit batch defaults.</div></div>
+              </div>
+              <div class="step">
+                <div class="step-left"><div class="step-num" style="background:var(--bluep);color:var(--blue);font-size:9px">→</div></div>
+                <div class="step-body"><div class="step-action">Diocese + environment</div><div class="step-detail">Routes to the correct tenant. Supports multi-diocese deployments.</div></div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="sec-label">Storage options</div>
+            <div class="card" style="margin-bottom:0">
+              <div class="storage-row">
+                <div class="stor-letter" style="background:var(--greenl);color:var(--green)">A</div>
+                <div class="stor-body">
+                  <div class="stor-title">GiveCentral-hosted secure storage</div>
+                  <div class="stor-desc">Images encrypted at rest in Atlas. Full audit trail linked to batch and gift record. PCI DSS scope applies.</div>
+                  <div class="stor-badge" style="background:var(--greenl);color:var(--green)">Recommended</div>
+                </div>
+              </div>
+              <div class="storage-row">
+                <div class="stor-letter" style="background:var(--bluep);color:var(--blue)">B</div>
+                <div class="stor-body">
+                  <div class="stor-title">Diocese Google Drive folder</div>
+                  <div class="stor-desc">QR links to a Drive folder. Simpler setup. Less integrated — requires manual match to batch rows.</div>
+                  <div class="stor-badge" style="background:var(--bluep);color:var(--blue)">Faster to ship</div>
+                </div>
+              </div>
+              <div class="storage-row">
+                <div class="stor-letter" style="background:var(--amberl);color:var(--amber)">C</div>
+                <div class="stor-body">
+                  <div class="stor-title">Hybrid: images in Drive, data in Atlas</div>
+                  <div class="stor-desc">Drive for archival, structured data to Atlas via API. Good for dioceses with existing Google Workspace workflows.</div>
+                  <div class="stor-badge" style="background:var(--amberl);color:var(--amber)">Good middle ground</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── CONSIDERATIONS ── -->
+  <div class="tab-panel" id="tab-considerations">
+    <div class="card">
+      <div class="concern warn">
+        <div class="cc-icon"><svg viewBox="0 0 18 18" fill="none" stroke="var(--amber)" stroke-width="1.5" stroke-linecap="round"><path d="M9 3v5M9 11.5v.5"/><path d="M2 16L9 2l7 14H2z"/></svg></div>
+        <div><div class="cc-title">Banking data security — PCI / SOC 2</div><div class="cc-body">Check images contain routing and account numbers. Storage must be encrypted at rest and in transit. Recommend auto-deleting raw images after OCR extraction (retain structured data only). Consult your SOC 2 scope before storing check images longer than necessary.</div></div>
+      </div>
+      <div class="concern warn">
+        <div class="cc-icon"><svg viewBox="0 0 18 18" fill="none" stroke="var(--amber)" stroke-width="1.5" stroke-linecap="round"><path d="M9 3v5M9 11.5v.5"/><path d="M2 16L9 2l7 14H2z"/></svg></div>
+        <div><div class="cc-title">OCR confidence and human review</div><div class="cc-body">No OCR is 100% accurate. Any field below a configurable threshold (recommend 85%) must be left blank and flagged amber — never auto-filled with a low-confidence guess. The accuracy engine still runs on OCR-populated rows, so all outlier and duplicate checks apply normally.</div></div>
+      </div>
+      <div class="concern info">
+        <div class="cc-icon"><svg viewBox="0 0 18 18" fill="none" stroke="var(--blue)" stroke-width="1.5" stroke-linecap="round"><circle cx="9" cy="9" r="7"/><path d="M9 8v5M9 6v.5"/></svg></div>
+        <div><div class="cc-title">Donor matching from handwritten names</div><div class="cc-body">Printed names on personal checks are often informal — "Jim O'Brien" vs "James Patrick O'Brien". Fuzzy matching against the donor database with a confidence score and a disambiguation UI handles most cases. New donors with no match should flow into a "new donor" queue, not fail silently.</div></div>
+      </div>
+      <div class="concern info">
+        <div class="cc-icon"><svg viewBox="0 0 18 18" fill="none" stroke="var(--blue)" stroke-width="1.5" stroke-linecap="round"><circle cx="9" cy="9" r="7"/><path d="M9 8v5M9 6v.5"/></svg></div>
+        <div><div class="cc-title">Memo line as fund classifier</div><div class="cc-body">Many donors write "CMA" or "Cathedral" in the memo field. A simple keyword-to-fund mapping table (configurable per diocese) can auto-suggest the correct fund for 60–70% of checks. For ambiguous or blank memos, default to the batch default fund and flag for review.</div></div>
+      </div>
+      <div class="concern ok">
+        <div class="cc-icon"><svg viewBox="0 0 18 18" fill="none" stroke="var(--green)" stroke-width="1.5" stroke-linecap="round"><circle cx="9" cy="9" r="7"/><path d="M6 9l2.5 2.5 4.5-4.5"/></svg></div>
+        <div><div class="cc-title">Recommended OCR vendor</div><div class="cc-body">AWS Textract has a dedicated "Analyze Check" API handling MICR, CAR/LAR, and structured check fields out of the box. Azure Form Recognizer has a pre-built check model. Both return field-level confidence scores. Estimated cost: $0.01–0.015 per check at scale.</div></div>
+      </div>
+      <div class="concern ok">
+        <div class="cc-icon"><svg viewBox="0 0 18 18" fill="none" stroke="var(--green)" stroke-width="1.5" stroke-linecap="round"><circle cx="9" cy="9" r="7"/><path d="M6 9l2.5 2.5 4.5-4.5"/></svg></div>
+        <div><div class="cc-title">No app download needed — PWA</div><div class="cc-body">The mobile capture page should be a progressive web app (PWA). Works in any iOS or Android browser, uses the native camera API, and requires no App Store distribution. The QR token handles authentication. This is critical for adoption — part-time clerks and volunteers won't install an app.</div></div>
+      </div>
+      <div class="concern ok">
+        <div class="cc-icon"><svg viewBox="0 0 18 18" fill="none" stroke="var(--green)" stroke-width="1.5" stroke-linecap="round"><circle cx="9" cy="9" r="7"/><path d="M6 9l2.5 2.5 4.5-4.5"/></svg></div>
+        <div><div class="cc-title">Batch default inheritance</div><div class="cc-body">The QR code carries the batch's default fund, GL code, gift type, and date. Every scanned check inherits these unless overridden — a CMA mail batch of 40 checks can be scanned in ~10 minutes with the clerk only confirming amounts, not retyping fund and GL for every row.</div></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function setTab(id, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+</script>
+</body>
+</html>
