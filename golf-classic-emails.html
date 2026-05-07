@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bishop's Golf Classic — Email Confirmation Mockups</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --navy: #0E1E35; --navy2: #152844;
+      --blue: #2563EB; --bluel: #DBEAFE; --bluep: #EFF6FF;
+      --green: #15803D; --greenl: #DCFCE7;
+      --gold: #B45309; --goldm: #D97706; --goldl: #FEF3C7;
+      --teal: #0D9488; --teall: #CCFBF1;
+      --text: #0F172A; --text2: #334155; --text3: #64748B;
+      --border: #E2E8F0; --surf: #F8FAFC;
+    }
+    body { font-family: 'DM Sans', sans-serif; background: #EEF2F7; color: var(--text); padding: 24px 16px 48px; }
+
+    /* ── SELECTOR UI ── */
+    .selector-wrap { max-width: 760px; margin: 0 auto 28px; }
+    .selector-title { font-family: 'Lora', serif; font-size: 22px; color: var(--text); margin-bottom: 4px; }
+    .selector-sub { font-size: 13px; color: var(--text3); margin-bottom: 18px; }
+    .tier-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 0; }
+    .tier-tab { padding: 7px 14px; border-radius: 20px; border: 1px solid var(--border); background: white; font-size: 12px; font-weight: 500; color: var(--text3); cursor: pointer; transition: all .14s; font-family: 'DM Sans', sans-serif; }
+    .tier-tab:hover { border-color: #94A3B8; color: var(--text2); }
+    .tier-tab.active { color: white; border-color: transparent; font-weight: 600; }
+    .tier-tab.t-platinum { }
+    .tier-tab.t-platinum.active { background: var(--goldm); }
+    .tier-tab.t-gold.active     { background: #CA8A04; }
+    .tier-tab.t-silver.active   { background: #64748B; }
+    .tier-tab.t-ace.active      { background: var(--teal); }
+    .tier-tab.t-reception.active{ background: #7C3AED; }
+    .tier-tab.t-brunch.active   { background: #B45309; }
+    .tier-tab.t-beverage.active { background: var(--blue); }
+    .tier-tab.t-foursome.active { background: #0F766E; }
+    .tier-tab.t-hole.active     { background: var(--green); }
+    .tier-tab.t-single.active   { background: #334155; }
+
+    /* ── EMAIL VIEWPORT ── */
+    .email-viewport { max-width: 760px; margin: 0 auto; }
+    .email-panel { display: none; }
+    .email-panel.active { display: block; }
+
+    /* Client chrome */
+    .client-chrome { background: #2C2C2E; border-radius: 12px 12px 0 0; padding: 10px 16px; display: flex; align-items: center; gap: 8px; }
+    .chrome-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+    .chrome-bar { flex: 1; background: rgba(255,255,255,.1); border-radius: 6px; height: 20px; display: flex; align-items: center; padding: 0 10px; }
+    .chrome-from { font-size: 11px; color: rgba(255,255,255,.5); }
+    .chrome-subj { font-size: 11px; color: rgba(255,255,255,.7); font-weight: 500; }
+
+    /* Email outer */
+    .email-outer { background: #E8ECF0; padding: 24px 0; border-radius: 0 0 12px 12px; }
+    .email-card { max-width: 580px; margin: 0 auto; background: white; border-radius: 8px; overflow: hidden; border: 1px solid #D1D5DB; }
+
+    /* Email header bar */
+    .email-header { padding: 28px 36px 24px; }
+    .eh-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+    .eh-mark { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .eh-mark svg { width: 14px; height: 14px; }
+    .eh-name { font-family: 'Lora', serif; font-size: 15px; color: white; font-weight: 500; }
+    .eh-tagline { font-size: 11px; color: rgba(255,255,255,.5); margin-top: 1px; }
+    .eh-title { font-family: 'Lora', serif; font-size: 26px; color: white; line-height: 1.25; margin-bottom: 6px; }
+    .eh-subtitle { font-size: 13px; color: rgba(255,255,255,.65); line-height: 1.6; }
+
+    /* Tier badge in header */
+    .tier-badge { display: inline-flex; align-items: center; gap: 6px; border-radius: 20px; padding: 5px 13px; font-size: 12px; font-weight: 700; margin-bottom: 14px; }
+
+    /* Email body */
+    .email-body { padding: 28px 36px; }
+    .greeting { font-size: 15px; color: var(--text); margin-bottom: 14px; line-height: 1.6; }
+    .para { font-size: 14px; color: var(--text2); line-height: 1.75; margin-bottom: 14px; }
+    .para:last-of-type { margin-bottom: 0; }
+
+    /* Confirmation box */
+    .confirm-box { border-radius: 10px; padding: 18px 20px; margin: 20px 0; border: 1px solid var(--border); }
+    .cb-title { font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--text3); margin-bottom: 12px; }
+    .cb-row { display: flex; justify-content: space-between; align-items: baseline; padding: 7px 0; border-bottom: 1px solid var(--border); }
+    .cb-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .cb-key { font-size: 13px; color: var(--text3); }
+    .cb-val { font-size: 13px; font-weight: 600; color: var(--text); text-align: right; max-width: 60%; }
+    .cb-val.highlight { font-family: 'Lora', serif; font-size: 17px; }
+
+    /* Perks list */
+    .perks-box { background: var(--surf); border-radius: 10px; padding: 16px 20px; margin: 18px 0; }
+    .pb-title { font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--text3); margin-bottom: 10px; }
+    .perk-row { display: flex; align-items: flex-start; gap: 9px; padding: 5px 0; font-size: 13px; color: var(--text2); }
+    .perk-check { width: 16px; height: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+    .perk-check svg { width: 8px; height: 8px; }
+
+    /* Action steps */
+    .next-steps { background: var(--navy); border-radius: 10px; padding: 18px 20px; margin: 20px 0; }
+    .ns-title { font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: rgba(255,255,255,.45); margin-bottom: 12px; }
+    .ns-row { display: flex; align-items: flex-start; gap: 10px; padding: 6px 0; }
+    .ns-num { width: 20px; height: 20px; border-radius: 50%; background: rgba(255,255,255,.12); display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: rgba(255,255,255,.7); flex-shrink: 0; margin-top: 1px; }
+    .ns-text { font-size: 13px; color: rgba(255,255,255,.8); line-height: 1.55; }
+
+    /* CTA button */
+    .cta-wrap { text-align: center; margin: 22px 0; }
+    .cta-btn { display: inline-block; padding: 12px 28px; border-radius: 8px; font-size: 14px; font-weight: 600; color: white; text-decoration: none; font-family: 'DM Sans', sans-serif; }
+
+    /* Info callout */
+    .info-box { border-radius: 8px; padding: 13px 16px; margin: 16px 0; font-size: 13px; line-height: 1.6; }
+
+    /* Tax line */
+    .tax-line { font-size: 12px; color: var(--text3); padding: 12px 0; border-top: 1px solid var(--border); line-height: 1.6; }
+
+    /* Signature */
+    .signature { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--border); }
+    .sig-name { font-family: 'Lora', serif; font-size: 16px; color: var(--text); margin-bottom: 2px; }
+    .sig-title { font-size: 12px; color: var(--text3); }
+
+    /* Footer */
+    .email-footer { background: var(--navy); padding: 20px 36px; }
+    .ef-org { font-family: 'Lora', serif; font-size: 14px; color: white; margin-bottom: 4px; }
+    .ef-addr { font-size: 12px; color: rgba(255,255,255,.45); line-height: 1.6; }
+    .ef-links { display: flex; gap: 16px; margin-top: 12px; }
+    .ef-link { font-size: 11px; color: rgba(255,255,255,.4); text-decoration: none; }
+    .ef-link:hover { color: rgba(255,255,255,.7); }
+
+    /* Divider */
+    .divider { height: 1px; background: var(--border); margin: 20px 0; }
+
+    /* Ace scholarship callout */
+    .scholarship-callout { background: var(--teall); border: 1px solid #5EEAD4; border-radius: 10px; padding: 14px 18px; margin: 16px 0; }
+    .sc-title { font-size: 13px; font-weight: 600; color: #134E4A; margin-bottom: 4px; }
+    .sc-body  { font-size: 12px; color: #0F766E; line-height: 1.6; }
+  </style>
+</head>
+<body>
+
+<div class="selector-wrap">
+  <div class="selector-title">Sponsorship confirmation emails</div>
+  <div class="selector-sub">Bishop's 2026 Golf Classic — Diocese of St. Petersburg · Monday, August 4 · Westwood Country Club</div>
+  <div class="tier-tabs">
+    <button class="tier-tab t-platinum active" onclick="showEmail('platinum',this)">★ Platinum $25K</button>
+    <button class="tier-tab t-gold"      onclick="showEmail('gold',this)">Gold $10K</button>
+    <button class="tier-tab t-silver"    onclick="showEmail('silver',this)">Silver $5K</button>
+    <button class="tier-tab t-ace"       onclick="showEmail('ace',this)">Ace $5K ✦ new</button>
+    <button class="tier-tab t-reception" onclick="showEmail('reception',this)">Reception $4K</button>
+    <button class="tier-tab t-brunch"    onclick="showEmail('brunch',this)">Brunch $3K</button>
+    <button class="tier-tab t-beverage"  onclick="showEmail('beverage',this)">Beverage $3K</button>
+    <button class="tier-tab t-foursome"  onclick="showEmail('foursome',this)">Foursome $2K</button>
+    <button class="tier-tab t-hole"      onclick="showEmail('hole',this)">Hole sponsor $1K</button>
+    <button class="tier-tab t-single"    onclick="showEmail('single',this)">Single golfer $500</button>
+  </div>
+</div>
+
+<div class="email-viewport">
+
+<!-- ──────────────────────────────────────────
+     PLATINUM — $25,000
+────────────────────────────────────────── -->
+<div class="email-panel active" id="email-platinum">
+  <div class="client-chrome">
+    <div class="chrome-dot" style="background:#FF5F57"></div>
+    <div class="chrome-dot" style="background:#FEBC2E"></div>
+    <div class="chrome-dot" style="background:#28C840"></div>
+    <div class="chrome-bar">
+      <span class="chrome-from">From: Kaitlyn Novicky &lt;knovicky@catholiccommunity.org&gt;&nbsp;&nbsp;·&nbsp;&nbsp;</span>
+      <span class="chrome-subj">Your Platinum Sponsorship — Bishop's 2026 Golf Classic</span>
+    </div>
+  </div>
+  <div class="email-outer">
+    <div class="email-card">
+      <div class="email-header" style="background:linear-gradient(135deg,#0E1E35,#1B3460)">
+        <div class="eh-logo">
+          <div class="eh-mark" style="background:#2563EB"><svg viewBox="0 0 14 14" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round"><circle cx="7" cy="7" r="5.5"/><path d="M4 7.5C4.8 9 7 10.5 7 10.5s2.2-1.5 3-3S10 3.5 7 3.5 3.2 6 4 7.5z"/></svg></div>
+          <div><div class="eh-name">Catholic Community Foundation</div><div class="eh-tagline">Diocese of St. Petersburg</div></div>
+        </div>
+        <div class="tier-badge" style="background:rgba(217,119,6,.25);color:#FCD34D;border:1px solid rgba(217,119,6,.4)">★ Platinum Presenting Sponsor</div>
+        <div class="eh-title">Thank you for your extraordinary generosity.</div>
+        <div class="eh-subtitle">Bishop's 2026 Golf Classic · Monday, August 4 · Westwood Country Club, Rocky River OH</div>
+      </div>
+      <div class="email-body">
+        <div class="greeting">Dear [First Name],</div>
+        <div class="para">We are deeply grateful for your Platinum sponsorship of the Bishop's 2026 Golf Classic. Your presenting-level commitment of <strong>$25,000</strong> makes you the cornerstone partner of this year's tournament and directly supports Catholic education for students across the Diocese of St. Petersburg.</div>
+        <div class="para">Bishop [Name] will personally acknowledge your generosity during the awards ceremony, and your name will appear as presenting sponsor on all event materials from this point forward.</div>
+
+        <div class="confirm-box" style="background:#FFFBEB;border-color:#FDE68A">
+          <div class="cb-title">Sponsorship confirmation</div>
+          <div class="cb-row"><span class="cb-key">Sponsorship level</span><span class="cb-val" style="color:#B45309">★ Platinum — Presenting Sponsor</span></div>
+          <div class="cb-row"><span class="cb-key">Sponsorship amount</span><span class="cb-val highlight" style="color:#B45309">$25,000</span></div>
+          <div class="cb-row"><span class="cb-key">Tax-deductible portion</span><span class="cb-val">$16,960</span></div>
+          <div class="cb-row"><span class="cb-key">Event date</span><span class="cb-val">Monday, August 4, 2026</span></div>
+          <div class="cb-row"><span class="cb-key">Venue</span><span class="cb-val">Westwood Country Club, Rocky River OH</div>
+          <div class="cb-row"><span class="cb-key">Golfer registrations included</span><span class="cb-val">8 golfers (2 foursomes)</span></div>
+          <div class="cb-row"><span class="cb-key">Confirmation number</span><span class="cb-val">#GC2026-PLT-001</span></div>
+        </div>
+
+        <div class="perks-box">
+          <div class="pb-title">Your Platinum benefits</div>
+          <div class="perk-row"><div class="perk-check" style="background:#FEF3C7"><svg viewBox="0 0 8 8" fill="none" stroke="#B45309" stroke-width="1.8" stroke-linecap="round"><path d="M1 4l2 2 4-4"/></svg></div>Name &amp; logo included with the event logo on all printed materials and signage</div>
+          <div class="perk-row"><div class="perk-check" style="background:#FEF3C7"><svg viewBox="0 0 8 8" fill="none" stroke="#B45309" stroke-width="1.8" stroke-linecap="round"><path d="M1 4l2 2 4-4"/></svg></div>Name &amp; logo on all on-course signage at the event</div>
+          <div class="perk-row"><div class="perk-check" style="background:#FEF3C7"><svg viewBox="0 0 8 8" fill="none" stroke="#B45309" stroke-width="1.8" stroke-linecap="round"><path d="M1 4l2 2 4-4"/></svg></div>Name &amp; logo on all printed materials and signs</div>
+          <div class="perk-row"><div class="perk-check" style="background:#FEF3C7"><svg viewBox="0 0 8 8" fill="none" stroke="#B45309" stroke-width="1.8" stroke-linecap="round"><path d="M1 4l2 2 4-4"/></svg></div>Hole sponsorship with dedicated on-course signage</div>
+          <div class="perk-row"><div class="perk-check" style="background:#FEF3C7"><svg viewBox="0 0 8 8" fill="none" stroke="#B45309" stroke-width="1.8" stroke-linecap="round"><path d="M1 4l2 2 4-4"/></svg></div>Name on recognition boards throughout the venue</div>
+          <div class="perk-row"><div class="perk-check" style="background:#FEF3C7"><svg viewBox="0 0 8 8" fill="none" stroke="#B45309" stroke-width="1.8" stroke-linecap="round"><path d="M1 4l2 2 4-4"/></svg></div>Greens fees, food, beverages &amp; gift packages for 8 golfers</div>
+          <div class="perk-row"><div class="perk-check" style="background:#FEF3C7"><svg viewBox="0 0 8 8" fill="none" stroke="#B45309" stroke-width="1.8" stroke-linecap="round"><path d="M1 4l2 2 4-4"/></svg></div>Prominent listing in the event program and on the tournament website</div>
+        </div>
+
+        <div class="next-steps">
+          <div class="ns-title">Next steps</div>
+          <div class="ns-row"><div class="ns-num">1</div><div class="ns-text">Please submit your <strong style="color:white">high-resolution logo</strong> (PNG, EPS, or SVG) to knovicky@catholiccommunity.org by <strong style="color:white">July 1, 2026</strong> for inclusion on all materials.</div></div>
+          <div class="ns-row"><div class="ns-num">2</div><div class="ns-text">Complete your <strong style="color:white">golfer roster</strong> (names for all 8 spots) and return it by July 14, 2026. Guest names are required for check-in and the event program.</div></div>
+          <div class="ns-row"><div class="ns-num">3</div><div class="ns-text">An <strong style="color:white">invoice</strong> will be sent within 24 hours. Payment may be made by check payable to the Catholic Community Foundation or by credit card via the enclosed link.</div></div>
+          <div class="ns-row"><div class="ns-num">4</div><div class="ns-text">A member of our team will contact you to confirm your <strong style="color:white">hole assignment</strong> and any special requests.</div></div>
+        </div>
+
+        <div class="tax-line">Catholic Community Foundation is a 501(c)(3) tax-exempt organization (EIN: 34-xxxxxxx). Of your $25,000 sponsorship, <strong>$16,960 is tax-deductible</strong> as a charitable contribution; $8,040 represents the fair market value of goods and services received. A formal written acknowledgement will accompany your invoice.</div>
+
+        <div class="signature">
+          <div class="sig-name">Kaitlyn Novicky</div>
+          <div class="sig-title">Development Associate · Catholic Community Foundation<br>(216) 696-6525 x1680 · knovicky@catholiccommunity.org</div>
+        </div>
+      </div>
+      <div class="email-footer">
+        <div class="ef-org">Catholic Community Foundation</div>
+        <div class="ef-addr">1404 East Ninth Street · Cleveland, Ohio 44114<br>(216) 696-6525 · catholiccommunity.org/golf</div>
+        <div class="ef-links">
+          <a href="#" class="ef-link">Unsubscribe</a>
+          <a href="#" class="ef-link">Privacy policy</a>
+          <a href="#" class="ef-link">View in browser</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ──────────────────────────────────────────
+     GOLD — $10,000
+────────────────────────────────────────── -->
+<div class="email-panel" id="email-gold">
+  <div class="client-chrome">
+    <div class="chrome-dot" style="background:#FF5F57"></div>
+    <div class="chrome-dot" style="background:#FEBC2E"></div>
+    <div class="chrome-dot" style="background:#28C840"></div>
+    <div class="chrome-bar">
+      <span class="chrome-from">From: Kaitlyn Novicky &lt;knovicky@catholiccommunity.org&gt;&nbsp;&nbsp;·&nbsp;&nbsp;</span>
+      <span class="chrome-subj">Your Gold Sponsorship Confirmation — Bishop's 2026 Golf Classic</span>
+    </div>
+  </div>
+  <div class="email-outer">
+    <div class="email-card">
+      <div class="email-header" style="background:linear-gradient(135deg,#0E1E35,#1B3460)">
+        <div class="eh-logo">
+          <div class="eh-mark" style="background:#2563EB"><svg viewBox="0 0 14 14" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round"><circle cx="7" cy="7" r="5.5"/><path d="M4 7.5C4.8 9 7 10.5 7 10.5s2.2-1.5 3-3S10 3.5 7 3.5 3.2 6 4 7.5z"/></svg></div>
+          <div><div class="eh-name">Catholic Community Foundation</div><div class="eh-tagline">Diocese of St. Petersburg</div></div>
+        </div>
+        <div class="tier-badge" style="background:rgba(202,138,4,.2);color:#FDE68A;border:1px solid rgba(202,138,4,.35)">Gold Sponsor</div>
+        <div class="eh-title">Your sponsorship is confirmed.</div>
+        <div class="eh-subtitle">Bishop's 2026 Golf Classic · Monday, August 4 · Westwood Country Club, Rocky River OH</div>
+      </div>
+      <div class="email-body">
+        <div class="greeting">Dear [First Name],</div>
+        <div class="para">Thank you for your generous Gold sponsorship of the Bishop's 2026 Golf Classic. Your commitment of <strong>$10,000</strong> provides essential support for the Angel Scholarship Fund, helping students across the diocese access the gift of Catholic education.</div>
+
+        <div class="confirm-box" style="background:var(--surf);border-color:var(--border)">
+          <div class="cb-title">Sponsorship confirmation</div>
+          <div class="cb-row"><span class="cb-key">Sponsorship level</span><span class="cb-val" style="color:#CA8A04">Gold Sponsor</span></div>
+          <div class="cb-row"><span class="cb-key">Amount</span><span class="cb-val highlight">$10,000</span></div>
+          <div class="cb-row"><span class="cb-key">Tax-deductible portion</span><span class="cb-val">$4,430</span></div>
+          <div class="cb-row"><span class="cb-key">Event date</span><span class="cb-val">Monday, August 4, 2026</span></div>
+          <div class="cb-row"><span class="cb-key">Venue</span><span class="cb-val">Westwood Country Club, Rocky River OH</span></div>
+          <div class="cb-row"><span class="cb-key">Golfer registrations included</span><span class="cb-val">8 golfers (2 foursomes)</span></div>
+          <div class="cb-row"><span class="cb-key">Confirmation number</span><span class="cb-val">#GC2026-GLD-012</span></div>
+        </div>
+
+        <div class="perks-box">
+          <div class="pb-title">Your Gold benefits</div>
+          <div class="perk-row"><div class="perk-check" style="background:var(--greenl)"><svg viewBox="0 0 8 8" fill="none" stroke="#15803D" stroke-width="1.8" stroke-linecap="round"><path d="M1 4l2 2 4-4"/></svg></div>8 golfer registrations including greens fees, food, beverages &amp; gift packages</div>
+          <div class="perk-row"><div class="perk-check" style="background:var(--greenl)"><svg viewBox="0 0 8 8" fill="none" stroke="#15803D" stroke-width="1.8" stroke-linecap="round"><path d="M1 4l2 2 4-4"/></svg></div>Hole sponsorship with on-course signage</div>
+          <div class="perk-row"><div class="perk-check" style="background:var(--greenl)"><svg viewBox="0 0 8 8" fill="none" stroke="#15803D" stroke-width="1.8" stroke-linecap="round"><path d="M1 4l2 2 4-4"/></svg></div>Name &amp; logo on all printed materials and signs</div>
+          <div class="perk-row"><div class="perk-check" style="background:var(--greenl)"><svg viewBox="0 0 8 8" fill="none" stroke="#15803D" stroke-width="1.8" stroke-linecap="round"><path d="M1 4l2 2 4-4"/></svg></div>Name on recognition boards throughout the venue</div>
+          <div class="perk-row"><div class="perk-check" style="background:var(--greenl)"><svg viewBox="0 0 8 8" fill="none" stroke="#15803D" stroke-width="1.8" stroke-linecap="round"><path d="M1 4l2 2 4-4"/></svg></div>Sponsor listing in the event program and on the tournament website</div>
+        </div>
+
+        <div class="next-steps">
+          <div class="ns-title">What happens next</div>
+          <div class="ns-row"><div class="ns-num">1</div><div class="ns-text">Please email your <strong style="color:white">logo file</strong> (PNG, EPS, or SVG) to knovicky@catholiccommunity.org by July 1.</div></div>
+          <div class="ns-row"><div class="ns-num">2</div><div class="ns-text">Submit your <strong style="color:white">golfer names</strong> for all 8 spots by July 14. Names are required for check-in, seating, and the event program.</div></div>
+          <div class="ns-row"><div class="ns-num">3</div><div class="ns-text">An invoice will follow within 24 hours. Checks payable to Catholic Community Foundation or credit card accepted.</div></div>
+        </div>
+
+        <div class="tax-line">Of your $10,000 sponsorship, <strong>$4,430 is tax-deductible</strong>. The remaining $5,570 represents the fair market value of benefits received (8 golfer registrations). Tax acknowledgement enclosed with invoice.</div>
+        <div class="signature">
+          <div class="sig-name">Kaitlyn Novicky</div>
+          <div class="sig-title">Development Associate · Catholic Community Foundation<br>(216) 696-6525 x1680 · knovicky@catholiccommunity.org</div>
+        </div>
+      </div>
+      <div class="email-footer">
+        <div class="ef-org">Catholic Community Foundation</div>
+        <div class="ef-addr">1404 East Ninth Street · Cleveland, Ohio 44114 · catholiccommunity.org/golf</div>
+        <div class="ef-links"><a href="#" class="ef-link">Unsubscribe</a><a href="#" class="ef-link">Privacy policy</a><a href="#" class="ef-link">View in browser</a></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ──────────────────────────────────────────
+     SILVER — $5,000
+────────────────────────────────────────── -->
+<div class="email-panel" id="email-silver">
+  <div class="client-chrome">
+    <div class="chrome-dot" style="background:#FF5F57"></div><div class="chrome-dot" style="background:#FEBC2E"></div><div class="chrome-dot" style="background:#28C840"></div>
+    <div class="chrome-bar"><span class="chrome-from">From: knovicky@catholiccommunity.org&nbsp;·&nbsp;</span><span class="chrome-subj">Silver Sponsorship Confirmed — Bishop's 2026 Golf Classic</span></div>
+  </div>
+  <div class="email-outer"><div class="email-card">
+    <div class="email-header" style="background:linear-gradient(135deg,#334155,#475569)">
+      <div class="eh-logo"><div class="eh-mark" style="background:#2563EB"><svg viewBox="0 0 14 14" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round"><circle cx="7" cy="7" r="5.5"/><path d="M4 7.5C4.8 9 7 10.5 7 10.5s2.2-1.5 3-3S10 3.5 7 3.5 3.2 6 4 7.5z"/></svg></div><div><div class="eh-name">Catholic Community Foundation</div><div class="eh-tagline">Diocese of St. Petersburg</div></div></div>
+      <div class="tier-badge" style="background:rgba(255,255,255,.15);color:#E2E8F0;border:1px solid rgba(255,255,255,.25)">Silver Sponsor</div>
+      <div class="eh-title">You're in — thank you!</div>
+      <div class="eh-subtitle">Bishop's 2026 Golf Classic · Monday, August 4 · Westwood Country Club</div>
+    </div>
+    <div class="email-body">
+      <div class="greeting">Dear [First Name],</div>
+      <div class="para">Thank you for your Silver sponsorship of the Bishop's 2026 Golf Classic. Your support of <strong>$5,000</strong> goes directly toward scholarships for Catholic school students in our community.</div>
+      <div class="confirm-box" style="background:var(--surf)">
+        <div class="cb-title">Sponsorship summary</div>
+        <div class="cb-row"><span class="cb-key">Level</span><span class="cb-val">Silver Sponsor</span></div>
+        <div class="cb-row"><span class="cb-key">Amount</span><span class="cb-val highlight">$5,000</span></div>
+        <div class="cb-row"><span class="cb-key">Tax-deductible portion</span><span class="cb-val">$2,115</span></div>
+        <div class="cb-row"><span class="cb-key">Golfers included</span><span class="cb-val">4 golfers (1 foursome)</span></div>
+        <div class="cb-row"><span class="cb-key">Confirmation</span><span class="cb-val">#GC2026-SLV-024</span></div>
+      </div>
+      <div class="perks-box">
+        <div class="pb-title">Your Silver benefits</div>
+        <div class="perk-row"><div class="perk-check" style="background:var(--greenl)"><svg viewBox="0 0 8 8" fill="none" stroke="#15803D" stroke-width="1.8" stroke-linecap="round"><path d="M1 4l2 2 4-4"/></svg></div>4 golfer registrations with greens fees, food, beverages &amp; gift packages</div>
+        <div class="perk-row"><div class="perk-check" style="background:var(--greenl)"><svg viewBox="0 0 8 8" fill="none" stroke="#15803D" stroke-width="1.8" stroke-linecap="round"><path d="M1 4l2 2 4-4"/></svg></div>Hole sponsorship with dedicated on-course signage</div>
+        <div class="perk-row"><div class="perk-check" style="background:var(--greenl)"><svg viewBox="0 0 8 8" fill="none" stroke="#15803D" stroke-width="1.8" stroke-linecap="round"><path d="M1 4l2 2 4-4"/></svg></div>Name on recognition boards and sponsor listing in the event program</div>
+      </div>
+      <div class="next-steps">
+        <div class="ns-title">Action required</div>
+        <div class="ns-row"><div class="ns-num">1</div><div class="ns-text">Submit your <strong style="color:white">golfer names</strong> for 4 spots by July 14. Reach out to knovicky@catholiccommunity.org.</div></div>
+        <div class="ns-row"><div class="ns-num">2</div><div class="ns-text">Invoice will be sent within 24 hours. Check or credit card accepted.</div></div>
+      </div>
+      <div class="tax-line">Of your $5,000, <strong>$2,115 is tax-deductible</strong>. The remaining $2,885 is the fair market value of 4 golfer registrations.</div>
+      <div class="signature"><div class="sig-name">Kaitlyn Novicky</div><div class="sig-title">Catholic Community Foundation · (216) 696-6525 x1680</div></div>
+    </div>
+    <div class="email-footer"><div class="ef-org">Catholic Community Foundation</div><div class="ef-addr">1404 East Ninth Street · Cleveland, OH 44114 · catholiccommunity.org/golf</div><div class="ef-links"><a href="#" class="ef-link">Unsubscribe</a><a href="#" class="ef-link">Privacy policy</a></div></div>
+  </div></div>
+</div>
+
+<!-- ──────────────────────────────────────────
+     ACE — $5,000 (NEW — scholarship focus)
+────────────────────────────────────────── -->
+<div class="email-panel" id="email-ace">
+  <div class="client-chrome">
+    <div class="chrome-dot" style="background:#FF5F57"></div><div class="chrome-dot" style="background:#FEBC2E"></div><div class="chrome-dot" style="background:#28C840"></div>
+    <div class="chrome-bar"><span class="chrome-from">knovicky@catholiccommunity.org&nbsp;·&nbsp;</span><span class="chrome-subj">You just funded four scholarships — Ace Sponsorship Confirmed</span></div>
+  </div>
+  <div class="email-outer"><div class="email-card">
+    <div class="email-header" style="background:linear-gradient(135deg,#0F6E56,#0D9488)">
+      <div class="eh-logo"><div class="eh-mark" style="background:rgba(255,255,255,.2)"><svg viewBox="0 0 14 14" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round"><circle cx="7" cy="7" r="5.5"/><path d="M4 7.5C4.8 9 7 10.5 7 10.5s2.2-1.5 3-3S10 3.5 7 3.5 3.2 6 4 7.5z"/></svg></div><div><div class="eh-name">Catholic Community Foundation</div><div class="eh-tagline">Diocese of St. Petersburg</div></div></div>
+      <div class="tier-badge" style="background:rgba(255,255,255,.2);color:white;border:1px solid rgba(255,255,255,.3)">✦ Ace Sponsor — New in 2026</div>
+      <div class="eh-title">Your gift just opened four doors.</div>
+      <div class="eh-subtitle">Bishop's 2026 Golf Classic · Monday, August 4 · Westwood Country Club</div>
+    </div>
+    <div class="email-body">
+      <div class="greeting">Dear [First Name],</div>
+      <div class="para">We are thrilled to confirm your Ace Sponsorship of the Bishop's 2026 Golf Classic. You've chosen our brand-new scholarship-focused tier — and your $5,000 gift will be used to fund <strong>four $500 Bishop Gries Scholarships</strong>, awarded to students in attendance at the tournament that day.</div>
+
+      <div class="scholarship-callout">
+        <div class="sc-title">Four Bishop Gries Scholarships funded by your gift</div>
+        <div class="sc-body">The Bishop Gries Scholarship provides $500 awards to students attending the tournament who demonstrate financial need and academic merit. Recipients will be recognized during the awards luncheon. As the Ace Sponsor, your name is permanently connected to their story.</div>
+      </div>
+
+      <div class="confirm-box" style="background:var(--teall);border-color:#5EEAD4">
+        <div class="cb-title" style="color:#134E4A">Sponsorship summary</div>
+        <div class="cb-row"><span class="cb-key" style="color:#0F766E">Level</span><span class="cb-val" style="color:#0F766E">Ace Sponsor (new 2026)</span></div>
+        <div class="cb-row"><span class="cb-key" style="color:#0F766E">Amount</span><span class="cb-val highlight" style="color:#134E4A">$5,000</span></div>
+        <div class="cb-row"><span class="cb-key" style="color:#0F766E">Tax-deductible portion</span><span class="cb-val" style="color:#134E4A">$3,640</span></div>
+        <div class="cb-row"><span class="cb-key" style="color:#0F766E">Scholarships funded</span><span class="cb-val" style="color:#134E4A">4 × $500 Bishop Gries Scholarships</span></div>
+        <div class="cb-row"><span class="cb-key" style="color:#0F766E">Golfers included</span><span class="cb-val" style="color:#134E4A">4 golfers</span></div>
+        <div class="cb-row"><span class="cb-key" style="color:#0F766E">Confirmation</span><span class="cb-val" style="color:#134E4A">#GC2026-ACE-007</span></div>
+      </div>
+
+      <div class="perks-box">
+        <div class="pb-title">Your Ace benefits</div>
+        <div class="perk-row"><div class="perk-check" style="background:var(--teall)"><svg viewBox="0 0 8 8" fill="none" stroke="#0D9488" stroke-width="1.8" stroke-linecap="round"><path d="M1 4l2 2 4-4"/></svg></div>Funds four $500 Bishop Gries Scholarships — students recognised at luncheon</div>
+        <div class="perk-row"><div class="perk-check" style="background:var(--teall)"><svg viewBox="0 0 8 8" fill="none" stroke="#0D9488" stroke-width="1.8" stroke-linecap="round"><path d="M1 4l2 2 4-4"/></svg></div>4 golfer registrations with greens fees, food, beverages &amp; gift packages</div>
+        <div class="perk-row"><div class="perk-check" style="background:var(--teall)"><svg viewBox="0 0 8 8" fill="none" stroke="#0D9488" stroke-width="1.8" stroke-linecap="round"><path d="M1 4l2 2 4-4"/></svg></div>Name on recognition boards and sponsor listing</div>
+      </div>
+
+      <div class="next-steps">
+        <div class="ns-title">What's next</div>
+        <div class="ns-row"><div class="ns-num">1</div><div class="ns-text">Submit your <strong style="color:white">golfer names</strong> (4 spots) by July 14.</div></div>
+        <div class="ns-row"><div class="ns-num">2</div><div class="ns-text">You will receive a separate letter with the names of the four scholarship recipients ahead of the event.</div></div>
+        <div class="ns-row"><div class="ns-num">3</div><div class="ns-text">Invoice follows within 24 hours.</div></div>
+      </div>
+
+      <div class="tax-line">Of your $5,000, <strong>$3,640 is tax-deductible</strong>. The remaining $1,360 represents the fair market value of 4 golfer registrations.</div>
+      <div class="signature"><div class="sig-name">Kaitlyn Novicky</div><div class="sig-title">Catholic Community Foundation · (216) 696-6525 x1680</div></div>
+    </div>
+    <div class="email-footer"><div class="ef-org">Catholic Community Foundation</div><div class="ef-addr">1404 East Ninth Street · Cleveland, OH 44114 · catholiccommunity.org/golf</div><div class="ef-links"><a href="#" class="ef-link">Unsubscribe</a><a href="#" class="ef-link">Privacy policy</a></div></div>
+  </div></div>
+</div>
+
+<!-- ──────────────────────────────────────────
+     RECEPTION — $4,000
+────────────────────────────────────────── -->
+<div class="email-panel" id="email-reception">
+  <div class="client-chrome">
+    <div class="chrome-dot" style="background:#FF5F57"></div><div class="chrome-dot" style="background:#FEBC2E"></div><div class="chrome-dot" style="background:#28C840"></div>
+    <div class="chrome-bar"><span class="chrome-from">knovicky@catholiccommunity.org&nbsp;·&nbsp;</span><span class="chrome-subj">Reception Sponsorship Confirmed — Bishop's 2026 Golf Classic</span></div>
+  </div>
+  <div class="email-outer"><div class="email-card">
+    <div class="email-header" style="background:linear-gradient(135deg,#3B0764,#6D28D9)">
+      <div class="eh-logo"><div class="eh-mark" style="background:rgba(255,255,255,.2)"><svg viewBox="0 0 14 14" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round"><circle cx="7" cy="7" r="5.5"/><path d="M4 7.5C4.8 9 7 10.5 7 10.5s2.2-1.5 3-3S10 3.5 7 3.5 3.2 6 4 7.5z"/></svg></div><div><div class="eh-name">Catholic Community Foundation</div><div class="eh-tagline">Diocese of St. Petersburg</div></div></div>
+      <div class="tier-badge" style="background:rgba(255,255,255,.15);color:#E9D5FF;border:1px solid rgba(255,255,255,.25)">Reception Sponsor</div>
+      <div class="eh-title">Thank you for sponsoring the reception.</div>
+      <div class="eh-subtitle">Bishop's 2026 Golf Classic · August 4 · Westwood Country Club</div>
+    </div>
+    <div class="email-body">
+      <div class="greeting">Dear [First Name],</div>
+      <div class="para">Your Reception Sponsorship of <strong>$4,000</strong> will be featured prominently at the post-round reception welcoming players to the awards ceremony. Thank you for your generosity in supporting Catholic education.</div>
+      <div class="confirm-box" style="background:var(--surf)">
+        <div class="cb-title">Confirmation summary</div>
+        <div class="cb-row"><span class="cb-key">Level</span><span class="cb-val">Reception Sponsor</span></div>
+        <div class="cb-row"><span class="cb-key">Amount</span><span class="cb-val highlight">$4,000</span></div>
+        <div class="cb-row"><span class="cb-key">Tax-deductible portion</span><span class="cb-val">$2,640</span></div>
+        <div class="cb-row"><span class="cb-key">Golfers included</span><span class="cb-val">4 golfers</span></div>
+        <div class="cb-row"><span class="cb-key">Confirmation</span><span class="cb-val">#GC2026-RCP-015</span></div>
+      </div>
+      <div class="info-box" style="background:#F5F3FF;border:1px solid #DDD6FE;color:#4C1D95">Your name will appear on signage at the reception area throughout the awards luncheon, and you will be acknowledged during the program.</div>
+      <div class="next-steps">
+        <div class="ns-title">Next steps</div>
+        <div class="ns-row"><div class="ns-num">1</div><div class="ns-text">Submit golfer names (4 spots) by July 14 to knovicky@catholiccommunity.org.</div></div>
+        <div class="ns-row"><div class="ns-num">2</div><div class="ns-text">Invoice will be sent within 24 hours.</div></div>
+      </div>
+      <div class="tax-line">Of your $4,000, <strong>$2,640 is tax-deductible</strong>. The remaining $1,360 is the fair market value of 4 golfer registrations.</div>
+      <div class="signature"><div class="sig-name">Kaitlyn Novicky</div><div class="sig-title">Catholic Community Foundation · (216) 696-6525 x1680</div></div>
+    </div>
+    <div class="email-footer"><div class="ef-org">Catholic Community Foundation</div><div class="ef-addr">1404 East Ninth Street · Cleveland, OH 44114 · catholiccommunity.org/golf</div><div class="ef-links"><a href="#" class="ef-link">Unsubscribe</a><a href="#" class="ef-link">Privacy policy</a></div></div>
+  </div></div>
+</div>
+
+<!-- ──────────────────────────────────────────
+     BRUNCH — $3,000
+────────────────────────────────────────── -->
+<div class="email-panel" id="email-brunch">
+  <div class="client-chrome">
+    <div class="chrome-dot" style="background:#FF5F57"></div><div class="chrome-dot" style="background:#FEBC2E"></div><div class="chrome-dot" style="background:#28C840"></div>
+    <div class="chrome-bar"><span class="chrome-from">knovicky@catholiccommunity.org&nbsp;·&nbsp;</span><span class="chrome-subj">Brunch Sponsorship Confirmed — Bishop's Golf Classic 2026</span></div>
+  </div>
+  <div class="email-outer"><div class="email-card">
+    <div class="email-header" style="background:linear-gradient(135deg,#78350F,#B45309)">
+      <div class="eh-logo"><div class="eh-mark" style="background:rgba(255,255,255,.2)"><svg viewBox="0 0 14 14" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round"><circle cx="7" cy="7" r="5.5"/><path d="M4 7.5C4.8 9 7 10.5 7 10.5s2.2-1.5 3-3S10 3.5 7 3.5 3.2 6 4 7.5z"/></svg></div><div><div class="eh-name">Catholic Community Foundation</div><div class="eh-tagline">Diocese of St. Petersburg</div></div></div>
+      <div class="tier-badge" style="background:rgba(255,255,255,.15);color:#FDE68A;border:1px solid rgba(255,255,255,.25)">Brunch Sponsor</div>
+      <div class="eh-title">You're feeding the field — thank you!</div>
+      <div class="eh-subtitle">Bishop's 2026 Golf Classic · August 4 · Westwood Country Club</div>
+    </div>
+    <div class="email-body">
+      <div class="greeting">Dear [First Name],</div>
+      <div class="para">Your Brunch Sponsorship of <strong>$3,000</strong> is confirmed. Your generosity will fuel our golfers before they hit the links, and your name will be featured at the brunch tables and in the event program.</div>
+      <div class="confirm-box" style="background:var(--surf)">
+        <div class="cb-title">Confirmation summary</div>
+        <div class="cb-row"><span class="cb-key">Level</span><span class="cb-val">Brunch Sponsor</span></div>
+        <div class="cb-row"><span class="cb-key">Amount</span><span class="cb-val highlight">$3,000</span></div>
+        <div class="cb-row"><span class="cb-key">Tax-deductible portion</span><span class="cb-val">$1,640</span></div>
+        <div class="cb-row"><span class="cb-key">Golfers included</span><span class="cb-val">4 golfers</span></div>
+        <div class="cb-row"><span class="cb-key">Confirmation</span><span class="cb-val">#GC2026-BRN-019</span></div>
+      </div>
+      <div class="next-steps">
+        <div class="ns-title">Next steps</div>
+        <div class="ns-row"><div class="ns-num">1</div><div class="ns-text">Submit golfer names (4 spots) by July 14.</div></div>
+        <div class="ns-row"><div class="ns-num">2</div><div class="ns-text">Invoice follows within 24 hours.</div></div>
+      </div>
+      <div class="tax-line">Of your $3,000, <strong>$1,640 is tax-deductible</strong>. The remaining $1,360 is fair market value of 4 golfer registrations.</div>
+      <div class="signature"><div class="sig-name">Kaitlyn Novicky</div><div class="sig-title">Catholic Community Foundation · (216) 696-6525 x1680</div></div>
+    </div>
+    <div class="email-footer"><div class="ef-org">Catholic Community Foundation</div><div class="ef-addr">1404 East Ninth Street · Cleveland, OH 44114 · catholiccommunity.org/golf</div><div class="ef-links"><a href="#" class="ef-link">Unsubscribe</a><a href="#" class="ef-link">Privacy policy</a></div></div>
+  </div></div>
+</div>
+
+<!-- ──────────────────────────────────────────
+     BEVERAGE — $3,000
+────────────────────────────────────────── -->
+<div class="email-panel" id="email-beverage">
+  <div class="client-chrome">
+    <div class="chrome-dot" style="background:#FF5F57"></div><div class="chrome-dot" style="background:#FEBC2E"></div><div class="chrome-dot" style="background:#28C840"></div>
+    <div class="chrome-bar"><span class="chrome-from">knovicky@catholiccommunity.org&nbsp;·&nbsp;</span><span class="chrome-subj">Beverage Sponsorship Confirmed — Bishop's Golf Classic 2026</span></div>
+  </div>
+  <div class="email-outer"><div class="email-card">
+    <div class="email-header" style="background:linear-gradient(135deg,#1E3A5F,#2563EB)">
+      <div class="eh-logo"><div class="eh-mark" style="background:rgba(255,255,255,.2)"><svg viewBox="0 0 14 14" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round"><circle cx="7" cy="7" r="5.5"/><path d="M4 7.5C4.8 9 7 10.5 7 10.5s2.2-1.5 3-3S10 3.5 7 3.5 3.2 6 4 7.5z"/></svg></div><div><div class="eh-name">Catholic Community Foundation</div><div class="eh-tagline">Diocese of St. Petersburg</div></div></div>
+      <div class="tier-badge" style="background:rgba(255,255,255,.15);color:#BFDBFE;border:1px solid rgba(255,255,255,.25)">Beverage Sponsor</div>
+      <div class="eh-title">Keeping the course refreshed — thank you!</div>
+      <div class="eh-subtitle">Bishop's 2026 Golf Classic · August 4 · Westwood Country Club</div>
+    </div>
+    <div class="email-body">
+      <div class="greeting">Dear [First Name],</div>
+      <div class="para">Your Beverage Sponsorship of <strong>$3,000</strong> is confirmed. Your support will be recognised on-course at the beverage stations, keeping 120+ golfers refreshed on the links for a great cause.</div>
+      <div class="confirm-box" style="background:var(--surf)">
+        <div class="cb-title">Confirmation summary</div>
+        <div class="cb-row"><span class="cb-key">Level</span><span class="cb-val">Beverage Sponsor</span></div>
+        <div class="cb-row"><span class="cb-key">Amount</span><span class="cb-val highlight">$3,000</span></div>
+        <div class="cb-row"><span class="cb-key">Tax-deductible portion</span><span class="cb-val">$1,640</span></div>
+        <div class="cb-row"><span class="cb-key">Golfers included</span><span class="cb-val">4 golfers</span></div>
+        <div class="cb-row"><span class="cb-key">Confirmation</span><span class="cb-val">#GC2026-BEV-022</span></div>
+      </div>
+      <div class="next-steps">
+        <div class="ns-title">Next steps</div>
+        <div class="ns-row"><div class="ns-num">1</div><div class="ns-text">Submit golfer names (4 spots) by July 14 to knovicky@catholiccommunity.org.</div></div>
+        <div class="ns-row"><div class="ns-num">2</div><div class="ns-text">Invoice will be sent within 24 hours.</div></div>
+      </div>
+      <div class="tax-line">Of your $3,000, <strong>$1,640 is tax-deductible</strong>.</div>
+      <div class="signature"><div class="sig-name">Kaitlyn Novicky</div><div class="sig-title">Catholic Community Foundation · (216) 696-6525 x1680</div></div>
+    </div>
+    <div class="email-footer"><div class="ef-org">Catholic Community Foundation</div><div class="ef-addr">1404 East Ninth Street · Cleveland, OH 44114 · catholiccommunity.org/golf</div><div class="ef-links"><a href="#" class="ef-link">Unsubscribe</a><a href="#" class="ef-link">Privacy policy</a></div></div>
+  </div></div>
+</div>
+
+<!-- ──────────────────────────────────────────
+     FOURSOME — $2,000
+────────────────────────────────────────── -->
+<div class="email-panel" id="email-foursome">
+  <div class="client-chrome">
+    <div class="chrome-dot" style="background:#FF5F57"></div><div class="chrome-dot" style="background:#FEBC2E"></div><div class="chrome-dot" style="background:#28C840"></div>
+    <div class="chrome-bar"><span class="chrome-from">knovicky@catholiccommunity.org&nbsp;·&nbsp;</span><span class="chrome-subj">Your Foursome is Registered — Bishop's Golf Classic 2026</span></div>
+  </div>
+  <div class="email-outer"><div class="email-card">
+    <div class="email-header" style="background:linear-gradient(135deg,#064E3B,#0F766E)">
+      <div class="eh-logo"><div class="eh-mark" style="background:rgba(255,255,255,.2)"><svg viewBox="0 0 14 14" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round"><circle cx="7" cy="7" r="5.5"/><path d="M4 7.5C4.8 9 7 10.5 7 10.5s2.2-1.5 3-3S10 3.5 7 3.5 3.2 6 4 7.5z"/></svg></div><div><div class="eh-name">Catholic Community Foundation</div><div class="eh-tagline">Diocese of St. Petersburg</div></div></div>
+      <div class="tier-badge" style="background:rgba(255,255,255,.15);color:#A7F3D0;border:1px solid rgba(255,255,255,.25)">Foursome Registration</div>
+      <div class="eh-title">Tee it up — you're registered!</div>
+      <div class="eh-subtitle">Bishop's 2026 Golf Classic · August 4 · Westwood Country Club</div>
+    </div>
+    <div class="email-body">
+      <div class="greeting">Dear [First Name],</div>
+      <div class="para">Your foursome registration for the Bishop's 2026 Golf Classic is confirmed. We look forward to welcoming your group to Westwood Country Club on August 4!</div>
+      <div class="confirm-box" style="background:var(--surf)">
+        <div class="cb-title">Registration summary</div>
+        <div class="cb-row"><span class="cb-key">Registration type</span><span class="cb-val">Foursome (4 golfers)</span></div>
+        <div class="cb-row"><span class="cb-key">Amount</span><span class="cb-val highlight">$2,000</span></div>
+        <div class="cb-row"><span class="cb-key">Tax-deductible portion</span><span class="cb-val">$640</span></div>
+        <div class="cb-row"><span class="cb-key">Check-in time</span><span class="cb-val">7:00 AM · August 4, 2026</span></div>
+        <div class="cb-row"><span class="cb-key">Shotgun start</span><span class="cb-val">8:00 AM</span></div>
+        <div class="cb-row"><span class="cb-key">Confirmation</span><span class="cb-val">#GC2026-4SM-041</span></div>
+      </div>
+      <div class="perks-box">
+        <div class="pb-title">What's included for all 4 golfers</div>
+        <div class="perk-row"><div class="perk-check" style="background:var(--greenl)"><svg viewBox="0 0 8 8" fill="none" stroke="#15803D" stroke-width="1.8" stroke-linecap="round"><path d="M1 4l2 2 4-4"/></svg></div>18-hole scramble on the Westwood championship course</div>
+        <div class="perk-row"><div class="perk-check" style="background:var(--greenl)"><svg viewBox="0 0 8 8" fill="none" stroke="#15803D" stroke-width="1.8" stroke-linecap="round"><path d="M1 4l2 2 4-4"/></svg></div>Morning brunch and on-course beverages</div>
+        <div class="perk-row"><div class="perk-check" style="background:var(--greenl)"><svg viewBox="0 0 8 8" fill="none" stroke="#15803D" stroke-width="1.8" stroke-linecap="round"><path d="M1 4l2 2 4-4"/></svg></div>Awards luncheon with the Bishop</div>
+        <div class="perk-row"><div class="perk-check" style="background:var(--greenl)"><svg viewBox="0 0 8 8" fill="none" stroke="#15803D" stroke-width="1.8" stroke-linecap="round"><path d="M1 4l2 2 4-4"/></svg></div>Tournament gift package for each golfer</div>
+        <div class="perk-row"><div class="perk-check" style="background:var(--greenl)"><svg viewBox="0 0 8 8" fill="none" stroke="#15803D" stroke-width="1.8" stroke-linecap="round"><path d="M1 4l2 2 4-4"/></svg></div>Sponsor listing in the event program</div>
+      </div>
+      <div class="next-steps">
+        <div class="ns-title">Before August 4</div>
+        <div class="ns-row"><div class="ns-num">1</div><div class="ns-text">Submit the <strong style="color:white">names of all 4 golfers</strong> by July 14. Names are required for check-in and the event program — reply to this email or contact knovicky@catholiccommunity.org.</div></div>
+        <div class="ns-row"><div class="ns-num">2</div><div class="ns-text">Invoice enclosed. Check payable to Catholic Community Foundation or credit card accepted.</div></div>
+        <div class="ns-row"><div class="ns-num">3</div><div class="ns-text">Arrive at Westwood Country Club by <strong style="color:white">7:00 AM</strong> for registration, range time, and brunch before the 8:00 AM shotgun start.</div></div>
+      </div>
+      <div class="tax-line">Of your $2,000 registration, <strong>$640 is tax-deductible</strong>. The remaining $1,360 represents the fair market value of 4 golfer registrations (greens fees, food, beverages, gift packages).</div>
+      <div class="signature"><div class="sig-name">Kaitlyn Novicky</div><div class="sig-title">Catholic Community Foundation · (216) 696-6525 x1680</div></div>
+    </div>
+    <div class="email-footer"><div class="ef-org">Catholic Community Foundation</div><div class="ef-addr">1404 East Ninth Street · Cleveland, OH 44114 · catholiccommunity.org/golf</div><div class="ef-links"><a href="#" class="ef-link">Unsubscribe</a><a href="#" class="ef-link">Privacy policy</a></div></div>
+  </div></div>
+</div>
+
+<!-- ──────────────────────────────────────────
+     HOLE SPONSOR — $1,000
+────────────────────────────────────────── -->
+<div class="email-panel" id="email-hole">
+  <div class="client-chrome">
+    <div class="chrome-dot" style="background:#FF5F57"></div><div class="chrome-dot" style="background:#FEBC2E"></div><div class="chrome-dot" style="background:#28C840"></div>
+    <div class="chrome-bar"><span class="chrome-from">knovicky@catholiccommunity.org&nbsp;·&nbsp;</span><span class="chrome-subj">Your Hole Sponsorship — Bishop's Golf Classic 2026</span></div>
+  </div>
+  <div class="email-outer"><div class="email-card">
+    <div class="email-header" style="background:linear-gradient(135deg,#14532D,#15803D)">
+      <div class="eh-logo"><div class="eh-mark" style="background:rgba(255,255,255,.2)"><svg viewBox="0 0 14 14" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round"><circle cx="7" cy="7" r="5.5"/><path d="M4 7.5C4.8 9 7 10.5 7 10.5s2.2-1.5 3-3S10 3.5 7 3.5 3.2 6 4 7.5z"/></svg></div><div><div class="eh-name">Catholic Community Foundation</div><div class="eh-tagline">Diocese of St. Petersburg</div></div></div>
+      <div class="tier-badge" style="background:rgba(255,255,255,.15);color:#BBF7D0;border:1px solid rgba(255,255,255,.25)">Hole Sponsor</div>
+      <div class="eh-title">Your name is on the course.</div>
+      <div class="eh-subtitle">Bishop's 2026 Golf Classic · August 4 · Westwood Country Club</div>
+    </div>
+    <div class="email-body">
+      <div class="greeting">Dear [First Name],</div>
+      <div class="para">Thank you for your Hole Sponsorship of <strong>$1,000</strong> at the Bishop's 2026 Golf Classic. Your name will be displayed on the tee box signage for your assigned hole throughout the tournament — seen by every golfer who plays it.</div>
+      <div class="confirm-box" style="background:var(--surf)">
+        <div class="cb-title">Confirmation summary</div>
+        <div class="cb-row"><span class="cb-key">Sponsorship type</span><span class="cb-val">Hole Sponsor</span></div>
+        <div class="cb-row"><span class="cb-key">Amount</span><span class="cb-val highlight">$1,000</span></div>
+        <div class="cb-row"><span class="cb-key">Tax-deductible amount</span><span class="cb-val">$1,000 (fully deductible)</span></div>
+        <div class="cb-row"><span class="cb-key">Hole assignment</span><span class="cb-val">To be confirmed by July 21</span></div>
+        <div class="cb-row"><span class="cb-key">Confirmation</span><span class="cb-val">#GC2026-HLE-033</span></div>
+      </div>
+      <div class="info-box" style="background:var(--greenl);border:1px solid #86EFAC;color:#14532D">Your hole assignment will be confirmed by July 21. Signage will include your name or organisation exactly as it appears on your registration. Please email knovicky@catholiccommunity.org if you would like to specify a preference.</div>
+      <div class="next-steps">
+        <div class="ns-title">Next steps</div>
+        <div class="ns-row"><div class="ns-num">1</div><div class="ns-text">Invoice will be sent within 24 hours.</div></div>
+        <div class="ns-row"><div class="ns-num">2</div><div class="ns-text">If your sponsorship name differs from your registration, please reply to confirm the exact text for your tee sign.</div></div>
+      </div>
+      <div class="tax-line">Your $1,000 hole sponsorship is <strong>fully tax-deductible</strong> as no golfer registrations or personal benefits are included. A written acknowledgement will accompany your invoice.</div>
+      <div class="signature"><div class="sig-name">Kaitlyn Novicky</div><div class="sig-title">Catholic Community Foundation · (216) 696-6525 x1680</div></div>
+    </div>
+    <div class="email-footer"><div class="ef-org">Catholic Community Foundation</div><div class="ef-addr">1404 East Ninth Street · Cleveland, OH 44114 · catholiccommunity.org/golf</div><div class="ef-links"><a href="#" class="ef-link">Unsubscribe</a><a href="#" class="ef-link">Privacy policy</a></div></div>
+  </div></div>
+</div>
+
+<!-- ──────────────────────────────────────────
+     SINGLE GOLFER — $500
+────────────────────────────────────────── -->
+<div class="email-panel" id="email-single">
+  <div class="client-chrome">
+    <div class="chrome-dot" style="background:#FF5F57"></div><div class="chrome-dot" style="background:#FEBC2E"></div><div class="chrome-dot" style="background:#28C840"></div>
+    <div class="chrome-bar"><span class="chrome-from">knovicky@catholiccommunity.org&nbsp;·&nbsp;</span><span class="chrome-subj">You're registered — Bishop's Golf Classic 2026</span></div>
+  </div>
+  <div class="email-outer"><div class="email-card">
+    <div class="email-header" style="background:linear-gradient(135deg,#1E293B,#334155)">
+      <div class="eh-logo"><div class="eh-mark" style="background:#2563EB"><svg viewBox="0 0 14 14" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round"><circle cx="7" cy="7" r="5.5"/><path d="M4 7.5C4.8 9 7 10.5 7 10.5s2.2-1.5 3-3S10 3.5 7 3.5 3.2 6 4 7.5z"/></svg></div><div><div class="eh-name">Catholic Community Foundation</div><div class="eh-tagline">Diocese of St. Petersburg</div></div></div>
+      <div class="tier-badge" style="background:rgba(255,255,255,.12);color:#E2E8F0;border:1px solid rgba(255,255,255,.2)">Single Golfer</div>
+      <div class="eh-title">See you on the fairway!</div>
+      <div class="eh-subtitle">Bishop's 2026 Golf Classic · Monday, August 4 · Westwood Country Club</div>
+    </div>
+    <div class="email-body">
+      <div class="greeting">Dear [First Name],</div>
+      <div class="para">Your registration for the Bishop's 2026 Golf Classic is confirmed! We're looking forward to an outstanding day of golf in support of Catholic education. Please find your details below.</div>
+      <div class="confirm-box" style="background:var(--surf)">
+        <div class="cb-title">Your registration</div>
+        <div class="cb-row"><span class="cb-key">Registration</span><span class="cb-val">Single golfer</span></div>
+        <div class="cb-row"><span class="cb-key">Amount</span><span class="cb-val highlight">$500</span></div>
+        <div class="cb-row"><span class="cb-key">Tax-deductible portion</span><span class="cb-val">$160</span></div>
+        <div class="cb-row"><span class="cb-key">Date</span><span class="cb-val">Monday, August 4, 2026</span></div>
+        <div class="cb-row"><span class="cb-key">Check-in</span><span class="cb-val">7:00 AM · Westwood Country Club</span></div>
+        <div class="cb-row"><span class="cb-key">Shotgun start</span><span class="cb-val">8:00 AM sharp</span></div>
+        <div class="cb-row"><span class="cb-key">Confirmation</span><span class="cb-val">#GC2026-SGL-088</span></div>
+      </div>
+      <div class="perks-box">
+        <div class="pb-title">What's included</div>
+        <div class="perk-row"><div class="perk-check" style="background:var(--greenl)"><svg viewBox="0 0 8 8" fill="none" stroke="#15803D" stroke-width="1.8" stroke-linecap="round"><path d="M1 4l2 2 4-4"/></svg></div>18-hole scramble format at Westwood Country Club</div>
+        <div class="perk-row"><div class="perk-check" style="background:var(--greenl)"><svg viewBox="0 0 8 8" fill="none" stroke="#15803D" stroke-width="1.8" stroke-linecap="round"><path d="M1 4l2 2 4-4"/></svg></div>Morning brunch, on-course beverages &amp; tournament gift package</div>
+        <div class="perk-row"><div class="perk-check" style="background:var(--greenl)"><svg viewBox="0 0 8 8" fill="none" stroke="#15803D" stroke-width="1.8" stroke-linecap="round"><path d="M1 4l2 2 4-4"/></svg></div>Awards luncheon with Bishop [Name] and recognition ceremony</div>
+        <div class="perk-row"><div class="perk-check" style="background:var(--greenl)"><svg viewBox="0 0 8 8" fill="none" stroke="#15803D" stroke-width="1.8" stroke-linecap="round"><path d="M1 4l2 2 4-4"/></svg></div>Closest-to-pin and longest-drive contests on select holes</div>
+        <div class="perk-row"><div class="perk-check" style="background:var(--greenl)"><svg viewBox="0 0 8 8" fill="none" stroke="#15803D" stroke-width="1.8" stroke-linecap="round"><path d="M1 4l2 2 4-4"/></svg></div>Sponsor listing and recognition in the event program</div>
+      </div>
+      <div class="info-box" style="background:#F0FDF4;border:1px solid #BBF7D0;color:#14532D">You will be assigned to a scramble foursome before the event. If you would like to request a specific playing partner or have any accessibility needs, please contact us by July 21.</div>
+      <div class="next-steps">
+        <div class="ns-title">Day-of details</div>
+        <div class="ns-row"><div class="ns-num">1</div><div class="ns-text">Arrive at Westwood Country Club (<strong style="color:white">3788 Bradley Road, Westlake OH</strong>) by 7:00 AM for registration and brunch.</div></div>
+        <div class="ns-row"><div class="ns-num">2</div><div class="ns-text">Shotgun start at <strong style="color:white">8:00 AM sharp</strong>. All golfers must be on their starting hole by 7:50 AM.</div></div>
+        <div class="ns-row"><div class="ns-num">3</div><div class="ns-text">Payment is due by July 28. Invoice enclosed — check payable to Catholic Community Foundation or pay online at catholiccommunity.org/golf.</div></div>
+      </div>
+      <div class="tax-line">Of your $500 registration fee, <strong>$160 is tax-deductible</strong>. The remaining $340 represents the fair market value of greens fees, food, beverages, and gift packages.</div>
+      <div class="signature"><div class="sig-name">Kaitlyn Novicky</div><div class="sig-title">Development Associate · Catholic Community Foundation<br>(216) 696-6525 x1680 · knovicky@catholiccommunity.org</div></div>
+    </div>
+    <div class="email-footer"><div class="ef-org">Catholic Community Foundation</div><div class="ef-addr">1404 East Ninth Street · Cleveland, Ohio 44114<br>(216) 696-6525 · catholiccommunity.org/golf</div><div class="ef-links"><a href="#" class="ef-link">Unsubscribe</a><a href="#" class="ef-link">Privacy policy</a><a href="#" class="ef-link">View in browser</a></div></div>
+  </div></div>
+</div>
+
+</div>
+
+<script>
+function showEmail(id, btn) {
+  document.querySelectorAll('.email-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tier-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('email-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+</script>
+</body>
+</html>
