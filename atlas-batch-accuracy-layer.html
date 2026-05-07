@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Atlas Batch — Accuracy Layer Spec</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --navy: #0E1E35;
+      --blue: #2563EB; --bluel: #DBEAFE; --bluep: #EFF6FF;
+      --green: #15803D; --greenl: #DCFCE7;
+      --amber: #D97706; --amberl: #FEF3C7;
+      --rose: #BE185D; --rosel: #FCE7F3;
+      --teal: #0D9488; --teall: #CCFBF1;
+      --text: #0F172A; --text2: #334155; --text3: #64748B;
+      --border: #E2E8F0; --surf: #F8FAFC;
+    }
+    body { font-family: 'DM Sans', sans-serif; background: #F0F4F8; color: var(--text); padding: 24px; }
+    .wrap { max-width: 900px; margin: 0 auto; }
+
+    /* Page header */
+    .page-header { background: var(--navy); border-radius: 14px; padding: 22px 26px; margin-bottom: 20px; display: flex; align-items: center; gap: 16px; }
+    .ph-mark { width: 38px; height: 38px; background: var(--blue); border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .ph-mark svg { width: 18px; height: 18px; }
+    .ph-title { font-family: 'DM Serif Display', serif; font-size: 22px; color: white; }
+    .ph-sub { font-size: 12px; color: rgba(255,255,255,.45); margin-top: 3px; }
+    .ph-badge { margin-left: auto; display: flex; align-items: center; gap: 6px; background: rgba(124,58,237,.35); border: 1px solid rgba(124,58,237,.5); border-radius: 20px; padding: 5px 13px; font-size: 11px; font-weight: 700; color: #C4B5FD; }
+
+    /* Severity key */
+    .severity-key { display: flex; gap: 20px; margin-bottom: 20px; flex-wrap: wrap; background: white; border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; }
+    .sk-item { display: flex; align-items: center; gap: 7px; font-size: 12px; color: var(--text2); }
+    .sk-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+    /* Section */
+    .section { margin-bottom: 24px; }
+    .sec-head { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+    .sec-badge { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 6px; }
+    .sec-title { font-size: 15px; font-weight: 600; color: var(--text); }
+    .sec-count { font-size: 11px; color: var(--text3); margin-left: auto; }
+
+    /* Rule cards grid */
+    .rule-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .rule-card { background: white; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    .rule-card.span2 { grid-column: span 2; }
+    .rc-head { padding: 11px 14px 9px; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; gap: 10px; }
+    .rc-sev { width: 4px; align-self: stretch; border-radius: 2px 0 0 2px; flex-shrink: 0; }
+    .rc-sev-err  { background: var(--rose); }
+    .rc-sev-warn { background: var(--amber); }
+    .rc-sev-info { background: var(--blue); }
+    .rc-name { font-size: 13px; font-weight: 600; color: var(--text); flex: 1; }
+    .rc-trigger { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 20px; flex-shrink: 0; }
+    .rc-body { padding: 10px 14px; font-size: 12px; color: var(--text2); line-height: 1.65; }
+    .rc-example { margin-top: 8px; background: var(--surf); border-radius: 7px; padding: 8px 10px; font-size: 11px; font-family: monospace; color: var(--text3); border-left: 2px solid var(--border); }
+    .rc-action { margin-top: 8px; font-size: 11px; color: var(--text3); padding-left: 10px; border-left: 2px solid var(--bluel); line-height: 1.55; }
+
+    .badge { display: inline-flex; align-items: center; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 20px; }
+    .badge-err  { background: var(--rosel);  color: var(--rose); }
+    .badge-warn { background: var(--amberl); color: var(--amber); }
+    .badge-info { background: var(--bluep);  color: var(--blue); }
+
+    /* Thresholds card */
+    .threshold-card { background: white; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    .threshold-row { display: flex; align-items: center; gap: 14px; padding: 11px 16px; border-bottom: .5px solid var(--border); }
+    .threshold-row:last-child { border-bottom: none; }
+    .thr-name { font-size: 13px; font-weight: 500; color: var(--text); min-width: 230px; }
+    .thr-val  { font-size: 12px; color: var(--text2); flex: 1; }
+    .thr-ctrl { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+    .thr-ctrl input[type=range] { width: 100px; accent-color: #7C3AED; }
+    .thr-ctrl input[type=number] { width: 80px; padding: 4px 8px; border: 1px solid var(--border); border-radius: 6px; font-size: 12px; font-family: 'DM Sans', sans-serif; }
+    .thr-num { font-size: 12px; font-weight: 700; color: #7C3AED; min-width: 40px; }
+
+    /* Engine flow */
+    .flow-row { display: flex; align-items: stretch; background: white; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    .flow-step { flex: 1; padding: 14px 12px; border-right: 1px solid var(--border); text-align: center; }
+    .flow-step:last-child { border-right: none; }
+    .fs-circle { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; margin: 0 auto 8px; }
+    .fs-label { font-size: 11px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+    .fs-sub   { font-size: 10px; color: var(--text3); line-height: 1.45; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div class="ph-mark">
+      <svg viewBox="0 0 18 18" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round">
+        <path d="M2.5 9l3 3 8-8"/>
+        <circle cx="9" cy="9" r="7.5"/>
+      </svg>
+    </div>
+    <div>
+      <div class="ph-title">Atlas Batch Entry — Accuracy Layer</div>
+      <div class="ph-sub">27 rules across 5 categories · configurable thresholds · fires in real time</div>
+    </div>
+    <div class="ph-badge">
+      <svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" width="11" height="11"><circle cx="5.5" cy="5.5" r="4"/><path d="M5.5 3v3M5.5 8v.3"/></svg>
+      Smart accuracy engine
+    </div>
+  </div>
+
+  <!-- Severity key -->
+  <div class="severity-key">
+    <div class="sk-item"><div class="sk-dot" style="background:var(--rose)"></div> Error — blocks posting until resolved</div>
+    <div class="sk-item"><div class="sk-dot" style="background:var(--amber)"></div> Warning — prompts double-check, can override</div>
+    <div class="sk-item"><div class="sk-dot" style="background:var(--blue)"></div> Info — surfaced for awareness, no action required</div>
+  </div>
+
+  <!-- 1. Identity -->
+  <div class="section">
+    <div class="sec-head">
+      <span class="sec-badge" style="background:var(--rosel);color:var(--rose)">Identity</span>
+      <span class="sec-title">Donor identity checks</span>
+      <span class="sec-count">6 rules</span>
+    </div>
+    <div class="rule-grid">
+      <div class="rule-card">
+        <div class="rc-head">
+          <div class="rc-sev rc-sev-err"></div>
+          <span class="rc-name">Donor not found</span>
+          <span class="rc-trigger badge badge-err">Error</span>
+        </div>
+        <div class="rc-body">
+          Typed string matches no record. Could be a typo, new donor, or name mismatch.
+          <div class="rc-example">Input: "Hennessy, R" → No match<br>Suggest: Hennessy, Robert (#4821) — last gave Apr 2025</div>
+          <div class="rc-action">Show top 3 fuzzy matches ranked by similarity + last gift date</div>
+        </div>
+      </div>
+      <div class="rule-card">
+        <div class="rc-head">
+          <div class="rc-sev rc-sev-warn"></div>
+          <span class="rc-name">Ambiguous name — multiple matches</span>
+          <span class="rc-trigger badge badge-warn">Warning</span>
+        </div>
+        <div class="rc-body">
+          Typed name matches 2 or more records. Common with "Walsh, John" in large diocesan databases.
+          <div class="rc-example">Input: "Walsh, Thomas" → 4 records:<br>#1102 Walsh, Thomas F. · #3847 Walsh, Thomas G. · …</div>
+          <div class="rc-action">Force selection before row can post. Show gift history alongside each match.</div>
+        </div>
+      </div>
+      <div class="rule-card">
+        <div class="rc-head">
+          <div class="rc-sev rc-sev-warn"></div>
+          <span class="rc-name">Household vs. individual mismatch</span>
+          <span class="rc-trigger badge badge-warn">Warning</span>
+        </div>
+        <div class="rc-body">
+          Gift attributed to household record when prior gifts went to the individual, or vice versa. Creates split giving history.
+          <div class="rc-example">Prior: O'Brien, James (#881) · New: O'Brien Household (#880)</div>
+          <div class="rc-action">Suggest matching the attribution pattern from the prior year.</div>
+        </div>
+      </div>
+      <div class="rule-card">
+        <div class="rc-head">
+          <div class="rc-sev rc-sev-info"></div>
+          <span class="rc-name">Deceased donor flag</span>
+          <span class="rc-trigger badge badge-info">Info</span>
+        </div>
+        <div class="rc-body">
+          Donor record is marked deceased. Gift may be valid (estate/bequest) or a wrong-record error.
+          <div class="rc-example">Sullivan, Margaret (deceased Mar 2025) — gift dated Apr 2026</div>
+          <div class="rc-action">Surface notice; prompt clerk to confirm or redirect to estate record.</div>
+        </div>
+      </div>
+      <div class="rule-card">
+        <div class="rc-head">
+          <div class="rc-sev rc-sev-warn"></div>
+          <span class="rc-name">Do not solicit flag</span>
+          <span class="rc-trigger badge badge-warn">Warning</span>
+        </div>
+        <div class="rc-body">
+          Donor record has a DNS/DNC flag. An unsolicited gift from a DNS donor is fine to post, but staff should be aware.
+          <div class="rc-example">Costello, Barbara — DNS flag set Apr 2024</div>
+          <div class="rc-action">Display flag visibly. Require acknowledgement before posting.</div>
+        </div>
+      </div>
+      <div class="rule-card">
+        <div class="rc-head">
+          <div class="rc-sev rc-sev-info"></div>
+          <span class="rc-name">Lapsed donor re-engagement</span>
+          <span class="rc-trigger badge badge-info">Info</span>
+        </div>
+        <div class="rc-body">
+          Donor has not given in 24+ months. Gift is valid but flagged so a gift officer can be notified.
+          <div class="rc-example">Walsh, Susan — last gift Jun 2023 (22 months ago)</div>
+          <div class="rc-action">Post normally; auto-create a task for the assigned gift officer.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Amount -->
+  <div class="section">
+    <div class="sec-head">
+      <span class="sec-badge" style="background:var(--amberl);color:var(--amber)">Amount</span>
+      <span class="sec-title">Gift amount intelligence</span>
+      <span class="sec-count">7 rules</span>
+    </div>
+    <div class="rule-grid">
+      <div class="rule-card span2">
+        <div class="rc-head">
+          <div class="rc-sev rc-sev-warn"></div>
+          <span class="rc-name">Statistical outlier vs. giving history — the core rule</span>
+          <span class="rc-trigger badge badge-warn">Warning</span>
+        </div>
+        <div class="rc-body">
+          The entered amount deviates significantly from this donor's historical giving pattern for the same fund. Atlas computes a personalised threshold per donor using their last 5 gifts, flagging anything beyond a configurable multiplier (default 3×). A donor who always gives $250 suddenly giving $25,000 is almost certainly a transposition error.
+          <div class="rc-example">Sullivan, Margaret — CMA history: $2,500 / $2,500 / $2,000 / $2,500 / $3,000<br>New entry: $25,000 → ⚠ 10× typical amount (possible: meant $2,500?)</div>
+          <div class="rc-action">Show donor's giving history chart inline. Offer one-click correction to the most common prior amount. Require explicit confirmation to proceed.</div>
+        </div>
+      </div>
+      <div class="rule-card">
+        <div class="rc-head">
+          <div class="rc-sev rc-sev-warn"></div>
+          <span class="rc-name">Transposition error detection</span>
+          <span class="rc-trigger badge badge-warn">Warning</span>
+        </div>
+        <div class="rc-body">
+          Entered amount is a digit-permutation of a historical amount — classic data entry error.
+          <div class="rc-example">History: $1,250 · Entered: $2,150 → transposition?<br>History: $500 · Entered: $5,000 → extra zero?</div>
+          <div class="rc-action">Suggest the most likely intended amount alongside the entered one.</div>
+        </div>
+      </div>
+      <div class="rule-card">
+        <div class="rc-head">
+          <div class="rc-sev rc-sev-err"></div>
+          <span class="rc-name">Negative or zero amount</span>
+          <span class="rc-trigger badge badge-err">Error</span>
+        </div>
+        <div class="rc-body">
+          Amount is zero or negative. Zero is a skipped field; negative requires a reversing entry workflow.
+          <div class="rc-example">Amount: $0.00 → empty field<br>Amount: -$500 → use Reversal Entry instead</div>
+          <div class="rc-action">Block posting. For negatives, redirect to the Reversal Entry workflow.</div>
+        </div>
+      </div>
+      <div class="rule-card">
+        <div class="rc-head">
+          <div class="rc-sev rc-sev-warn"></div>
+          <span class="rc-name">First-ever gift — unusually large</span>
+          <span class="rc-trigger badge badge-warn">Warning</span>
+        </div>
+        <div class="rc-body">
+          Donor has no prior giving history and the gift is above a configurable threshold (default $1,000).
+          <div class="rc-example">Mendez, Carlos — no prior gifts · Amount: $10,000<br>→ New major donor or entry error?</div>
+          <div class="rc-action">Prompt: confirm this is a new major donor, or wrong record?</div>
+        </div>
+      </div>
+      <div class="rule-card">
+        <div class="rc-head">
+          <div class="rc-sev rc-sev-info"></div>
+          <span class="rc-name">Year-over-year upgrade / downgrade</span>
+          <span class="rc-trigger badge badge-info">Info</span>
+        </div>
+        <div class="rc-body">
+          Gift is significantly higher (upgrade ≥50%) or lower (downgrade ≥50%) than the same campaign in the prior year.
+          <div class="rc-example">CMA 2025: $1,000 · CMA 2026: $250 → 75% downgrade<br>CMA 2025: $500 · CMA 2026: $2,500 → 5× upgrade — confirm?</div>
+          <div class="rc-action">Upgrade: notify gift officer. Downgrade: auto-log lapse-risk task.</div>
+        </div>
+      </div>
+      <div class="rule-card">
+        <div class="rc-head">
+          <div class="rc-sev rc-sev-info"></div>
+          <span class="rc-name">Giving capacity check (WealthEngine)</span>
+          <span class="rc-trigger badge badge-info">Info</span>
+        </div>
+        <div class="rc-body">
+          Gift amount exceeds the donor's estimated capacity from WealthEngine screening. Not an error — donors may exceed model predictions — but worth flagging.
+          <div class="rc-example">Capacity estimate: $5K–$10K/yr · Entered: $50,000</div>
+          <div class="rc-action">Info badge only. Auto-create officer task.</div>
+        </div>
+      </div>
+      <div class="rule-card">
+        <div class="rc-head">
+          <div class="rc-sev rc-sev-info"></div>
+          <span class="rc-name">Round-number / pledge type check</span>
+          <span class="rc-trigger badge badge-info">Info</span>
+        </div>
+        <div class="rc-body">
+          Very large round number significantly above history. May need pledge record instead of one-time gift.
+          <div class="rc-example">History: $750–$1,500 · Entered: $100,000<br>→ Should this be a pledge, not a cash gift?</div>
+          <div class="rc-action">Suggest switching gift type to Pledge if amount exceeds 10× prior single gifts.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Duplicates -->
+  <div class="section">
+    <div class="sec-head">
+      <span class="sec-badge" style="background:var(--bluep);color:var(--blue)">Duplicates</span>
+      <span class="sec-title">Duplicate &amp; repeat detection</span>
+      <span class="sec-count">4 rules</span>
+    </div>
+    <div class="rule-grid">
+      <div class="rule-card">
+        <div class="rc-head">
+          <div class="rc-sev rc-sev-err"></div>
+          <span class="rc-name">Same check number already posted</span>
+          <span class="rc-trigger badge badge-err">Error</span>
+        </div>
+        <div class="rc-body">
+          Check/reference number already exists on a posted gift. Strongest duplicate signal — check numbers are unique per account.
+          <div class="rc-example">Ref #10441 — already posted Mar 15 to the same donor</div>
+          <div class="rc-action">Hard block. Show the original posted gift for comparison.</div>
+        </div>
+      </div>
+      <div class="rule-card">
+        <div class="rc-head">
+          <div class="rc-sev rc-sev-warn"></div>
+          <span class="rc-name">Same donor, same amount, recent date</span>
+          <span class="rc-trigger badge badge-warn">Warning</span>
+        </div>
+        <div class="rc-body">
+          Exact match on donor + amount within a configurable window (default 30 days). Most common duplicate pattern — a cheque batch re-entered or online gift also posted manually.
+          <div class="rc-example">Sullivan, Margaret — $2,500 CMA · Mar 15 (existing)<br>New row: Sullivan, Margaret — $2,500 CMA · Apr 3</div>
+          <div class="rc-action">Show prior gift inline. Require "confirm not a duplicate" before posting.</div>
+        </div>
+      </div>
+      <div class="rule-card">
+        <div class="rc-head">
+          <div class="rc-sev rc-sev-warn"></div>
+          <span class="rc-name">Same donor appears twice in batch</span>
+          <span class="rc-trigger badge badge-warn">Warning</span>
+        </div>
+        <div class="rc-body">
+          Donor appears twice in the current batch with the same fund. Likely a duplicate row from Ctrl+D or copy-paste.
+          <div class="rc-example">Rows 3 and 7 both: Walsh, Susan — CMA — $100</div>
+          <div class="rc-action">Highlight both rows. Offer one-click delete of the duplicate row.</div>
+        </div>
+      </div>
+      <div class="rule-card">
+        <div class="rc-head">
+          <div class="rc-sev rc-sev-info"></div>
+          <span class="rc-name">Online gift already auto-imported</span>
+          <span class="rc-trigger badge badge-info">Info</span>
+        </div>
+        <div class="rc-body">
+          A GiveCentral online gift matching this donor, fund, and amount is already imported. Prevents double-counting when a clerk manually enters what was already auto-imported.
+          <div class="rc-example">Kim, Patricia — $250 CMA — Apr 15 — online ref #OG-88421 already in system</div>
+          <div class="rc-action">Block with a clear explanation and link to the existing online gift record.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Fund / GL -->
+  <div class="section">
+    <div class="sec-head">
+      <span class="sec-badge" style="background:var(--greenl);color:var(--green)">Fund / GL</span>
+      <span class="sec-title">Fund, GL, and campaign validation</span>
+      <span class="sec-count">5 rules</span>
+    </div>
+    <div class="rule-grid">
+      <div class="rule-card">
+        <div class="rc-head">
+          <div class="rc-sev rc-sev-err"></div>
+          <span class="rc-name">Fund not active / campaign closed</span>
+          <span class="rc-trigger badge badge-err">Error</span>
+        </div>
+        <div class="rc-body">
+          Selected fund is inactive or the campaign end date has passed.
+          <div class="rc-example">Marian Congress 2024 — campaign closed Dec 31, 2024<br>New gift dated Apr 2026 → wrong year's fund?</div>
+          <div class="rc-action">Suggest the current year's equivalent fund if one exists. Block until resolved.</div>
+        </div>
+      </div>
+      <div class="rule-card">
+        <div class="rc-head">
+          <div class="rc-sev rc-sev-err"></div>
+          <span class="rc-name">GL code missing for restricted fund</span>
+          <span class="rc-trigger badge badge-err">Error</span>
+        </div>
+        <div class="rc-body">
+          Certain restricted funds (endowments, capital campaigns) require a GL code for accounting.
+          <div class="rc-example">Cathedral Capital Fund — GL code required<br>Row 11: GL field is blank</div>
+          <div class="rc-action">Auto-suggest the default GL code for this fund if configured. Block until filled.</div>
+        </div>
+      </div>
+      <div class="rule-card">
+        <div class="rc-head">
+          <div class="rc-sev rc-sev-warn"></div>
+          <span class="rc-name">GL code / fund mismatch</span>
+          <span class="rc-trigger badge badge-warn">Warning</span>
+        </div>
+        <div class="rc-body">
+          The entered GL code is outside the expected range for the selected fund. Likely a copy-paste error.
+          <div class="rc-example">Fund: Cathedral Capital (expected GL 5xxx)<br>Entered GL: 4100 → CMA range</div>
+          <div class="rc-action">Warn and suggest the correct GL code for this fund.</div>
+        </div>
+      </div>
+      <div class="rule-card">
+        <div class="rc-head">
+          <div class="rc-sev rc-sev-warn"></div>
+          <span class="rc-name">Pledge over-payment</span>
+          <span class="rc-trigger badge badge-warn">Warning</span>
+        </div>
+        <div class="rc-body">
+          A payment against a pledge would push the cumulative total beyond the original pledge amount.
+          <div class="rc-example">Pledge #PL-2026-0047: $250,000 · Paid: $200,000<br>New entry: $100,000 → total would be $300,000</div>
+          <div class="rc-action">Show pledge balance inline. Require confirmation or split into a new gift for the excess.</div>
+        </div>
+      </div>
+      <div class="rule-card">
+        <div class="rc-head">
+          <div class="rc-sev rc-sev-info"></div>
+          <span class="rc-name">Donor has prior gift restriction</span>
+          <span class="rc-trigger badge badge-info">Info</span>
+        </div>
+        <div class="rc-body">
+          Donor has previously specified a restriction or intent for gifts to this fund (e.g. scholarships only, specific parish).
+          <div class="rc-example">O'Brien, James — CMA prior gifts restricted to "Holy Cross Parish"<br>New gift: no restriction specified</div>
+          <div class="rc-action">Pre-fill restriction from prior gift. Alert if blank.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. Dates -->
+  <div class="section">
+    <div class="sec-head">
+      <span class="sec-badge" style="background:var(--surf);color:var(--text3);border:1px solid var(--border)">Dates</span>
+      <span class="sec-title">Date &amp; payment logic</span>
+      <span class="sec-count">5 rules</span>
+    </div>
+    <div class="rule-grid">
+      <div class="rule-card">
+        <div class="rc-head">
+          <div class="rc-sev rc-sev-warn"></div>
+          <span class="rc-name">Date outside batch date range</span>
+          <span class="rc-trigger badge badge-warn">Warning</span>
+        </div>
+        <div class="rc-body">
+          A row's gift date falls significantly outside the range of other rows. Could be a mis-typed year or a stale cheque in the wrong batch.
+          <div class="rc-example">Batch rows: Apr 14–18 2026 · Row 9: Apr 14 2025 (last year)</div>
+          <div class="rc-action">Flag the outlier row visually. Show the difference clearly.</div>
+        </div>
+      </div>
+      <div class="rule-card">
+        <div class="rc-head">
+          <div class="rc-sev rc-sev-warn"></div>
+          <span class="rc-name">Future date</span>
+          <span class="rc-trigger badge badge-warn">Warning</span>
+        </div>
+        <div class="rc-body">
+          Gift date is in the future. Unusual for a cheque or credit card payment; possible for a pledge commitment.
+          <div class="rc-example">Gift date: May 30, 2026 · Today: Apr 18, 2026</div>
+          <div class="rc-action">Warn for cash/cheque/credit. Allow for pledges. Require confirmation.</div>
+        </div>
+      </div>
+      <div class="rule-card">
+        <div class="rc-head">
+          <div class="rc-sev rc-sev-info"></div>
+          <span class="rc-name">Stale cheque</span>
+          <span class="rc-trigger badge badge-info">Info</span>
+        </div>
+        <div class="rc-body">
+          Cheque date is more than 6 months prior to today. Bank may not honour it; finance should be alerted before depositing.
+          <div class="rc-example">Cheque dated Oct 12, 2025 · Entered Apr 18, 2026 (6 months old)</div>
+          <div class="rc-action">Info flag. Notify the finance team before bank deposit.</div>
+        </div>
+      </div>
+      <div class="rule-card">
+        <div class="rc-head">
+          <div class="rc-sev rc-sev-info"></div>
+          <span class="rc-name">Tax year boundary</span>
+          <span class="rc-trigger badge badge-info">Info</span>
+        </div>
+        <div class="rc-body">
+          Gift date is in the prior tax year but being entered now. The donor's receipt must show the gift date, not the entry date.
+          <div class="rc-example">Gift date: Dec 28, 2025 · Entry date: Jan 14, 2026<br>→ Receipt year: 2025</div>
+          <div class="rc-action">Info banner confirming receipt year. Recommend explicit acknowledgement.</div>
+        </div>
+      </div>
+      <div class="rule-card">
+        <div class="rc-head">
+          <div class="rc-sev rc-sev-err"></div>
+          <span class="rc-name">DAF gift — non-deductible benefits</span>
+          <span class="rc-trigger badge badge-err">Error</span>
+        </div>
+        <div class="rc-body">
+          A DAF gift is being posted to an event fund that includes a personal benefit (ticket, dinner). DAF distributions cannot cover benefits.
+          <div class="rc-example">Sullivan Foundation (DAF) — $25,000 to Bishop's Gala<br>→ $1,400 ticket value cannot be DAF-funded</div>
+          <div class="rc-action">Block. Require split: DAF amount = pledge minus benefit value. Separate personal payment record required for benefit portion.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Thresholds -->
+  <div class="section">
+    <div class="sec-head">
+      <span class="sec-badge" style="background:#EDE9FE;color:#7C3AED">Config</span>
+      <span class="sec-title">Configurable thresholds</span>
+    </div>
+    <div class="threshold-card">
+      <div class="threshold-row">
+        <span class="thr-name">Outlier multiplier (amount vs. history)</span>
+        <span class="thr-val">Flag gifts that are N× the donor's average for this fund</span>
+        <div class="thr-ctrl">
+          <input type="range" min="2" max="10" value="3" oninput="document.getElementById('tv1').textContent=this.value+'×'">
+          <span class="thr-num" id="tv1">3×</span>
+        </div>
+      </div>
+      <div class="threshold-row">
+        <span class="thr-name">Duplicate detection window</span>
+        <span class="thr-val">Flag same donor + same amount within N days</span>
+        <div class="thr-ctrl">
+          <input type="range" min="7" max="90" value="30" oninput="document.getElementById('tv2').textContent=this.value+'d'">
+          <span class="thr-num" id="tv2">30d</span>
+        </div>
+      </div>
+      <div class="threshold-row">
+        <span class="thr-name">First-gift large amount threshold</span>
+        <span class="thr-val">Warn when a new donor's first gift exceeds this amount</span>
+        <div class="thr-ctrl">
+          <span style="font-size:11px;color:var(--text3)">$</span>
+          <input type="number" value="1000" min="100">
+          <span style="font-size:11px;color:var(--text3)">USD</span>
+        </div>
+      </div>
+      <div class="threshold-row">
+        <span class="thr-name">Year-over-year upgrade alert</span>
+        <span class="thr-val">Info flag when same-campaign gift increases by more than N%</span>
+        <div class="thr-ctrl">
+          <input type="range" min="25" max="200" value="50" oninput="document.getElementById('tv4').textContent=this.value+'%'">
+          <span class="thr-num" id="tv4">50%</span>
+        </div>
+      </div>
+      <div class="threshold-row">
+        <span class="thr-name">Stale cheque age</span>
+        <span class="thr-val">Info flag when cheque date is older than N months</span>
+        <div class="thr-ctrl">
+          <input type="range" min="3" max="12" value="6" oninput="document.getElementById('tv5').textContent=this.value+' mo'">
+          <span class="thr-num" id="tv5">6 mo</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Engine flow -->
+  <div class="section">
+    <div class="sec-head">
+      <span class="sec-badge" style="background:var(--surf);color:var(--text3);border:1px solid var(--border)">Engine</span>
+      <span class="sec-title">When rules fire</span>
+    </div>
+    <div class="flow-row">
+      <div class="flow-step">
+        <div class="fs-circle" style="background:var(--bluep);color:var(--blue)">1</div>
+        <div class="fs-label">On keystroke</div>
+        <div class="fs-sub">Donor lookup, dupe check in real time</div>
+      </div>
+      <div class="flow-step">
+        <div class="fs-circle" style="background:var(--bluep);color:var(--blue)">2</div>
+        <div class="fs-label">On Tab / row exit</div>
+        <div class="fs-sub">Amount outlier, GL validation, date checks</div>
+      </div>
+      <div class="flow-step">
+        <div class="fs-circle" style="background:var(--bluep);color:var(--blue)">3</div>
+        <div class="fs-label">On Ctrl+Enter</div>
+        <div class="fs-sub">Full batch cross-row scan, duplicate sweep</div>
+      </div>
+      <div class="flow-step">
+        <div class="fs-circle" style="background:var(--amberl);color:var(--amber)">4</div>
+        <div class="fs-label">On Post click</div>
+        <div class="fs-sub">Final gate — all errors must clear before posting</div>
+      </div>
+      <div class="flow-step">
+        <div class="fs-circle" style="background:var(--greenl);color:var(--green)">5</div>
+        <div class="fs-label">Post-posting</div>
+        <div class="fs-sub">Officer task creation, lapse-risk alerts, capacity flags</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
