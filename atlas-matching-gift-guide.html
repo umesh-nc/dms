@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Atlas — Matching Gift Posting Guide</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --navy:  #0E1E35; --navy2: #152844;
+      --blue:  #2563EB; --bluel: #DBEAFE; --bluep: #EFF6FF;
+      --green: #15803D; --greenl:#DCFCE7;
+      --amber: #D97706; --amberl:#FEF3C7;
+      --rose:  #BE185D; --rosel: #FCE7F3;
+      --teal:  #0D9488; --teall: #CCFBF1;
+      --text:  #0F172A; --text2: #334155; --text3: #64748B;
+      --border:#E2E8F0; --surf:  #F8FAFC;
+    }
+    html { font-size: 14px; -webkit-font-smoothing: antialiased; }
+    body { font-family: 'DM Sans', sans-serif; background: #F0F4F8; color: var(--text); padding: 24px 20px 64px; }
+    .wrap { max-width: 840px; margin: 0 auto; }
+
+    /* ── PAGE HEADER ── */
+    .page-header { background: var(--navy); border-radius: 14px; padding: 20px 26px; margin-bottom: 20px; display: flex; align-items: center; gap: 16px; }
+    .ph-mark { width: 40px; height: 40px; background: var(--blue); border-radius: 11px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .ph-mark svg { width: 20px; height: 20px; }
+    .ph-title { font-family: 'DM Serif Display', serif; font-size: 21px; color: white; }
+    .ph-sub { font-size: 12px; color: rgba(255,255,255,.45); margin-top: 3px; line-height: 1.5; }
+    .ph-chips { margin-left: auto; display: flex; flex-direction: column; gap: 5px; align-items: flex-end; flex-shrink: 0; }
+    .ph-chip { font-size: 10px; font-weight: 600; padding: 3px 10px; border-radius: 20px; white-space: nowrap; }
+
+    /* ── PROGRESS BAR ── */
+    .progress-bar { display: flex; gap: 0; background: white; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 20px; }
+    .pb-step { flex: 1; padding: 10px 6px; text-align: center; cursor: pointer; border-right: 1px solid var(--border); transition: background .12s; }
+    .pb-step:last-child { border-right: none; }
+    .pb-step:hover { background: var(--surf); }
+    .pb-step.active { background: var(--bluep); }
+    .pb-step.done   { background: var(--greenl); }
+    .pb-num { font-size: 11px; font-weight: 700; margin-bottom: 2px; }
+    .pb-step.active .pb-num { color: var(--blue); }
+    .pb-step.done   .pb-num { color: var(--green); }
+    .pb-step:not(.active):not(.done) .pb-num { color: var(--text3); }
+    .pb-label { font-size: 10px; color: var(--text3); line-height: 1.3; }
+    .pb-step.active .pb-label { color: var(--blue); font-weight: 600; }
+    .pb-step.done   .pb-label { color: var(--green); }
+
+    /* ── STEP PANELS ── */
+    .step-panel { display: none; }
+    .step-panel.active { display: block; }
+    .step-header { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 18px; }
+    .step-badge { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; flex-shrink: 0; margin-top: 2px; }
+    .step-title { font-family: 'DM Serif Display', serif; font-size: 20px; color: var(--text); margin-bottom: 4px; }
+    .step-sub { font-size: 13px; color: var(--text2); line-height: 1.65; }
+
+    /* ── RECORD CARDS ── */
+    .two-up { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 14px 0; }
+    @media(max-width:600px) { .two-up { grid-template-columns: 1fr; } }
+    .record-card { background: white; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    .rc-top { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--border); }
+    .rc-av { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+    .rc-name { font-size: 13px; font-weight: 600; color: var(--text); }
+    .rc-type { font-size: 11px; color: var(--text3); margin-top: 1px; }
+    .rc-badge { margin-left: auto; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 20px; flex-shrink: 0; }
+    .rc-fields { padding: 10px 16px; }
+    .rf-row { display: flex; justify-content: space-between; align-items: baseline; padding: 5px 0; border-bottom: .5px solid var(--border); font-size: 12px; }
+    .rf-row:last-child { border-bottom: none; }
+    .rf-key { color: var(--text3); }
+    .rf-val { font-weight: 600; color: var(--text); text-align: right; max-width: 60%; }
+    .rf-val.blue  { color: var(--blue); }
+    .rf-val.green { color: var(--green); }
+    .rf-val.red   { color: var(--rose); }
+    .rf-val.amber { color: var(--amber); }
+
+    /* ── FORM MOCK ── */
+    .form-mock { background: white; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin: 14px 0; }
+    .fm-head { padding: 10px 16px; background: var(--surf); border-bottom: 1px solid var(--border); font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--text3); display: flex; align-items: center; gap: 8px; }
+    .fm-head svg { width: 14px; height: 14px; flex-shrink: 0; }
+    .fm-body { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+    .field-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media(max-width:550px) { .field-row-2 { grid-template-columns: 1fr; } }
+    .field-label { font-size: 11px; font-weight: 600; color: var(--text2); margin-bottom: 5px; display: flex; align-items: center; gap: 4px; }
+    .req { color: var(--rose); }
+    .field-val { width: 100%; padding: 7px 10px; border-radius: 7px; font-size: 12px; font-family: 'DM Sans', sans-serif; }
+    .fv-filled  { background: var(--greenl); border: 1px solid #BBF7D0; color: var(--green); font-weight: 500; }
+    .fv-focus   { background: var(--bluep);  border: 1px solid var(--bluel); color: var(--blue); font-weight: 500; }
+    .fv-warn    { background: var(--amberl); border: 1px solid #FDE68A; color: var(--amber); font-weight: 500; }
+    .fv-danger  { background: var(--rosel);  border: 1px solid #FBCFE8; color: var(--rose); font-weight: 500; }
+    .fv-empty   { background: var(--surf);   border: 1px solid var(--border); color: var(--text3); }
+    .field-hint { font-size: 11px; margin-top: 4px; line-height: 1.5; }
+    .fh-info  { color: var(--blue); }
+    .fh-warn  { color: var(--amber); }
+    .fh-red   { color: var(--rose); }
+    .fh-muted { color: var(--text3); }
+
+    /* ── CALLOUTS ── */
+    .callout { border-radius: 9px; padding: 12px 14px; margin: 14px 0; }
+    .callout-title { font-size: 12px; font-weight: 700; margin-bottom: 4px; }
+    .callout-body  { font-size: 12px; line-height: 1.7; }
+    .c-info    { background: var(--bluep);  border-left: 3px solid var(--blue);  border-radius: 0 9px 9px 0; }
+    .c-info    .callout-title { color: var(--blue); }
+    .c-info    .callout-body  { color: #1E40AF; }
+    .c-success { background: var(--greenl); border-left: 3px solid var(--green); border-radius: 0 9px 9px 0; }
+    .c-success .callout-title { color: var(--green); }
+    .c-success .callout-body  { color: #14532D; }
+    .c-warn    { background: var(--amberl); border-left: 3px solid var(--amber); border-radius: 0 9px 9px 0; }
+    .c-warn    .callout-title { color: var(--amber); }
+    .c-warn    .callout-body  { color: #78350F; }
+    .c-danger  { background: var(--rosel);  border-left: 3px solid var(--rose);  border-radius: 0 9px 9px 0; }
+    .c-danger  .callout-title { color: var(--rose); }
+    .c-danger  .callout-body  { color: #9D174D; }
+
+    /* ── CHECKLIST ── */
+    .checklist { display: flex; flex-direction: column; gap: 6px; margin: 14px 0; }
+    .check-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; background: white; border: 1px solid var(--border); border-radius: 9px; cursor: pointer; transition: all .12s; }
+    .check-item:hover { background: var(--surf); }
+    .check-item.checked { background: var(--greenl); border-color: #BBF7D0; }
+    .ci-box { width: 18px; height: 18px; border-radius: 5px; border: 1.5px solid var(--border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; transition: all .12s; }
+    .check-item.checked .ci-box { background: var(--green); border-color: var(--green); }
+    .ci-box svg { display: none; width: 10px; height: 10px; }
+    .check-item.checked .ci-box svg { display: block; }
+    .ci-text { font-size: 13px; color: var(--text2); line-height: 1.5; flex: 1; }
+    .check-item.checked .ci-text { color: var(--green); }
+
+    /* ── READY MSG ── */
+    .ready-msg { display: none; }
+
+    /* ── NAV ── */
+    .nav-row { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; }
+    .step-count { font-size: 12px; color: var(--text3); }
+    .nav-btn { padding: 8px 18px; border: 1px solid var(--border); border-radius: 8px; background: white; font-size: 13px; font-weight: 500; color: var(--text2); cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .12s; }
+    .nav-btn:hover { background: var(--surf); }
+    .nav-btn.primary { background: var(--blue); color: white; border-color: var(--blue); }
+    .nav-btn.primary:hover { background: #1D4ED8; }
+    .nav-btn:disabled { opacity: .35; pointer-events: none; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- Page header -->
+  <div class="page-header">
+    <div class="ph-mark">
+      <svg viewBox="0 0 20 20" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round">
+        <path d="M10 2a8 8 0 100 16A8 8 0 0010 2z"/>
+        <path d="M7 10l2 2 4-4"/>
+      </svg>
+    </div>
+    <div>
+      <div class="ph-title">Posting a matching gift in Atlas</div>
+      <div class="ph-sub">Step-by-step guide · 2 gift records · 1 soft credit · correct tax receipts</div>
+    </div>
+    <div class="ph-chips">
+      <span class="ph-chip" style="background:var(--bluep);color:var(--blue)">6 steps</span>
+      <span class="ph-chip" style="background:var(--greenl);color:var(--green)">Verification checklist included</span>
+    </div>
+  </div>
+
+  <!-- Progress bar -->
+  <div class="progress-bar" id="progress-bar">
+    <div class="pb-step active" onclick="goTo(0)"><div class="pb-num">1</div><div class="pb-label">Check records</div></div>
+    <div class="pb-step"        onclick="goTo(1)"><div class="pb-num">2</div><div class="pb-label">Employee gift</div></div>
+    <div class="pb-step"        onclick="goTo(2)"><div class="pb-num">3</div><div class="pb-label">Matching gift</div></div>
+    <div class="pb-step"        onclick="goTo(3)"><div class="pb-num">4</div><div class="pb-label">Soft credit</div></div>
+    <div class="pb-step"        onclick="goTo(4)"><div class="pb-num">5</div><div class="pb-label">Tax receipts</div></div>
+    <div class="pb-step"        onclick="goTo(5)"><div class="pb-num">6</div><div class="pb-label">Verify</div></div>
+  </div>
+
+  <!-- ── STEP 1: CHECK RECORDS ── -->
+  <div class="step-panel active" id="step-0">
+    <div class="step-header">
+      <div class="step-badge" style="background:var(--bluep);color:var(--blue)">1</div>
+      <div>
+        <div class="step-title">Before you post — confirm both records exist</div>
+        <div class="step-sub">A matching gift requires two separate records in Atlas: the employee (individual donor) and the employer (organisation). Confirm both exist before opening batch entry.</div>
+      </div>
+    </div>
+
+    <div class="two-up">
+      <div class="record-card">
+        <div class="rc-top">
+          <div class="rc-av" style="background:var(--bluep);color:var(--blue)">JO</div>
+          <div><div class="rc-name">James O'Brien</div><div class="rc-type">Individual · donor record</div></div>
+          <span class="rc-badge" style="background:var(--greenl);color:var(--green)">Exists ✓</span>
+        </div>
+        <div class="rc-fields">
+          <div class="rf-row"><span class="rf-key">Record type</span><span class="rf-val">Individual</span></div>
+          <div class="rf-row"><span class="rf-key">Employer link</span><span class="rf-val blue">Acme Corporation</span></div>
+          <div class="rf-row"><span class="rf-key">Match eligible</span><span class="rf-val green">Yes — 1:1 up to $1,000/yr</span></div>
+          <div class="rf-row"><span class="rf-key">Donor ID</span><span class="rf-val">#4821</span></div>
+        </div>
+      </div>
+      <div class="record-card">
+        <div class="rc-top">
+          <div class="rc-av" style="background:var(--surf);color:var(--text3)">AC</div>
+          <div><div class="rc-name">Acme Corporation</div><div class="rc-type">Organisation · employer record</div></div>
+          <span class="rc-badge" style="background:var(--greenl);color:var(--green)">Exists ✓</span>
+        </div>
+        <div class="rc-fields">
+          <div class="rf-row"><span class="rf-key">Record type</span><span class="rf-val">Organisation</span></div>
+          <div class="rf-row"><span class="rf-key">Org type</span><span class="rf-val">Employer / corporation</span></div>
+          <div class="rf-row"><span class="rf-key">Match program</span><span class="rf-val green">Active — 1:1</span></div>
+          <div class="rf-row"><span class="rf-key">Org ID</span><span class="rf-val">#ORG-0291</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout c-warn">
+      <div class="callout-title">If the employer record doesn't exist yet</div>
+      <div class="callout-body">Go to Records → New → Organisation. Set Org type to "Employer / Corporation". Enter the company name exactly as it will appear on receipts. Link it to the employee's record via the Employer field on the individual record. Do this before opening batch entry.</div>
+    </div>
+    <div class="callout c-info">
+      <div class="callout-title">Tip — link employer on the employee record first</div>
+      <div class="callout-body">On James O'Brien's record, confirm the Employer field points to Acme Corporation. This link is what lets Atlas suggest the matching gift automatically when posting and pre-populate the employer on the second gift row.</div>
+    </div>
+  </div>
+
+  <!-- ── STEP 2: EMPLOYEE GIFT ── -->
+  <div class="step-panel" id="step-1">
+    <div class="step-header">
+      <div class="step-badge" style="background:var(--bluep);color:var(--blue)">2</div>
+      <div>
+        <div class="step-title">Post the employee's personal gift</div>
+        <div class="step-sub">Enter the employee's gift first. This is the hard credit to the individual donor — the tax receipt for this row goes to James O'Brien.</div>
+      </div>
+    </div>
+
+    <div class="form-mock">
+      <div class="fm-head">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><rect x="1.5" y="1.5" width="11" height="11" rx="1.5"/><path d="M4 7h6M4 9.5h4"/></svg>
+        Batch row 1 — employee personal gift
+      </div>
+      <div class="fm-body">
+        <div class="field-row-2">
+          <div>
+            <div class="field-label">Donor <span class="req">*</span></div>
+            <div class="field-val fv-filled">O'Brien, James (#4821)</div>
+            <div class="field-hint fh-info">Individual record — hard credit goes here</div>
+          </div>
+          <div>
+            <div class="field-label">Gift date <span class="req">*</span></div>
+            <div class="field-val fv-filled">04/18/2026</div>
+            <div class="field-hint fh-muted">Date check was written or card charged</div>
+          </div>
+        </div>
+        <div class="field-row-2">
+          <div>
+            <div class="field-label">Fund <span class="req">*</span></div>
+            <div class="field-val fv-filled">CMA Annual Fund</div>
+          </div>
+          <div>
+            <div class="field-label">Amount <span class="req">*</span></div>
+            <div class="field-val fv-filled">$500.00</div>
+          </div>
+        </div>
+        <div class="field-row-2">
+          <div>
+            <div class="field-label">Gift type <span class="req">*</span></div>
+            <div class="field-val fv-filled">Check</div>
+          </div>
+          <div>
+            <div class="field-label">Check / ref #</div>
+            <div class="field-val fv-filled">10441</div>
+          </div>
+        </div>
+        <div class="field-row-2">
+          <div>
+            <div class="field-label">GL code</div>
+            <div class="field-val fv-filled">4100</div>
+          </div>
+          <div>
+            <div class="field-label">Matching gift eligible?</div>
+            <div class="field-val fv-focus">Yes — will be matched by Acme Corp</div>
+            <div class="field-hint fh-info">Flags this gift as match-eligible; links to employer record</div>
+          </div>
+        </div>
+        <div>
+          <div class="field-label">Tax receipt</div>
+          <div class="field-val fv-filled">Issue to James O'Brien — $500, fully deductible</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout c-success">
+      <div class="callout-title">What "matching gift eligible" does in Atlas</div>
+      <div class="callout-body">Flagging this row as match-eligible links the personal gift to the employer match when you post the second row. It also enables match tracking in reports — you can see total matched giving per employer and per employee across all campaigns.</div>
+    </div>
+  </div>
+
+  <!-- ── STEP 3: EMPLOYER MATCHING GIFT ── -->
+  <div class="step-panel" id="step-2">
+    <div class="step-header">
+      <div class="step-badge" style="background:var(--surf);color:var(--text3)">3</div>
+      <div>
+        <div class="step-title">Post the employer's matching gift</div>
+        <div class="step-sub">This is a completely separate gift record. The donor is Acme Corporation — not James O'Brien. Hard credit and tax receipt both go to the company.</div>
+      </div>
+    </div>
+
+    <div class="callout c-warn">
+      <div class="callout-title">Most common mistake — wrong donor on Row 2</div>
+      <div class="callout-body">Never record the matching gift on James O'Brien's record. The match comes from the employer's bank account and the receipt must go to the employer. Using the employee's record for both inflates their giving total with money they didn't actually give, and creates a false tax receipt obligation.</div>
+    </div>
+
+    <div class="form-mock">
+      <div class="fm-head">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><rect x="1.5" y="1.5" width="11" height="11" rx="1.5"/><path d="M4 7h6M4 9.5h4"/></svg>
+        Batch row 2 — employer matching gift
+      </div>
+      <div class="fm-body">
+        <div class="field-row-2">
+          <div>
+            <div class="field-label">Donor <span class="req">*</span></div>
+            <div class="field-val fv-focus">Acme Corporation (#ORG-0291)</div>
+            <div class="field-hint fh-warn">Org record — NOT the employee</div>
+          </div>
+          <div>
+            <div class="field-label">Gift date <span class="req">*</span></div>
+            <div class="field-val fv-filled">04/18/2026</div>
+            <div class="field-hint fh-muted">Date of employer's matching payment</div>
+          </div>
+        </div>
+        <div class="field-row-2">
+          <div>
+            <div class="field-label">Fund <span class="req">*</span></div>
+            <div class="field-val fv-filled">CMA Annual Fund</div>
+            <div class="field-hint fh-muted">Must match the fund on Row 1</div>
+          </div>
+          <div>
+            <div class="field-label">Amount <span class="req">*</span></div>
+            <div class="field-val fv-filled">$500.00</div>
+            <div class="field-hint fh-muted">1:1 match = same as employee gift</div>
+          </div>
+        </div>
+        <div class="field-row-2">
+          <div>
+            <div class="field-label">Gift type <span class="req">*</span></div>
+            <div class="field-val fv-focus">Matching gift</div>
+            <div class="field-hint fh-info">Use "Matching gift" type — not Check or Credit</div>
+          </div>
+          <div>
+            <div class="field-label">Matched gift reference</div>
+            <div class="field-val fv-focus">Links to Row 1 — O'Brien #4821</div>
+            <div class="field-hint fh-info">Links this match to the original employee gift</div>
+          </div>
+        </div>
+        <div class="field-row-2">
+          <div>
+            <div class="field-label">GL code</div>
+            <div class="field-val fv-filled">4100</div>
+          </div>
+          <div>
+            <div class="field-label">Tax receipt</div>
+            <div class="field-val fv-filled">Issue to Acme Corporation — $500</div>
+          </div>
+        </div>
+        <div>
+          <div class="field-label">Soft credit</div>
+          <div class="field-val fv-focus">+ Add soft credit → configure in Step 4</div>
+          <div class="field-hint fh-info">Do not skip — this is where the employee gets relationship credit</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── STEP 4: SOFT CREDIT ── -->
+  <div class="step-panel" id="step-3">
+    <div class="step-header">
+      <div class="step-badge" style="background:var(--greenl);color:var(--green)">4</div>
+      <div>
+        <div class="step-title">Configure the soft credit on the employer's gift</div>
+        <div class="step-sub">On the Acme Corporation gift record, add a soft credit attribution pointing to James O'Brien. This is how he gets LTG credit and stewardship recognition without receiving a tax receipt.</div>
+      </div>
+    </div>
+
+    <div class="form-mock">
+      <div class="fm-head">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><circle cx="7" cy="5" r="3"/><path d="M1.5 13c0-3 2.5-5 5.5-5s5.5 2 5.5 5"/></svg>
+        Soft credit panel — on Acme Corporation gift record
+      </div>
+      <div class="fm-body">
+        <div>
+          <div class="field-label">Soft credit type <span class="req">*</span></div>
+          <div class="field-val fv-focus">Matching gift — employee attribution</div>
+          <div class="field-hint fh-info">Select "Matching gift" — not "Tribute" or "Solicitor"</div>
+        </div>
+        <div>
+          <div class="field-label">Soft credit to <span class="req">*</span></div>
+          <div class="field-val fv-focus">O'Brien, James (#4821)</div>
+          <div class="field-hint fh-info">The employee whose action prompted the match</div>
+        </div>
+        <div class="field-row-2">
+          <div>
+            <div class="field-label">Soft credit amount</div>
+            <div class="field-val fv-filled">$500.00</div>
+            <div class="field-hint fh-muted">Full match amount — not a split</div>
+          </div>
+          <div>
+            <div class="field-label">Count toward donor LTG?</div>
+            <div class="field-val fv-focus">Yes (diocese setting)</div>
+            <div class="field-hint fh-warn">Confirm your diocese's LTG policy for soft credits</div>
+          </div>
+        </div>
+        <div>
+          <div class="field-label">Generate tax receipt for soft credit holder?</div>
+          <div class="field-val fv-danger">No — never issue a receipt to the soft credit holder</div>
+          <div class="field-hint fh-red">James O'Brien must NOT receive a tax receipt for Acme's matching gift</div>
+        </div>
+        <div>
+          <div class="field-label">Acknowledgement to soft credit holder</div>
+          <div class="field-val fv-filled">Optional stewardship letter only — no tax language</div>
+          <div class="field-hint fh-muted">A thank-you noting his employer matched his gift is fine — just no deductible amounts</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout c-info">
+      <div class="callout-title">Diocese LTG policy for soft credits — where to configure</div>
+      <div class="callout-body">Go to Atlas Settings → Gift policies → Soft credit LTG inclusion. The most common setting is "Yes — include matching gift soft credits in donor LTG." Confirm with your development director before your first matching gift batch. This setting affects recognition thresholds, major gift qualification, and invitation lists.</div>
+    </div>
+  </div>
+
+  <!-- ── STEP 5: TAX RECEIPTS ── -->
+  <div class="step-panel" id="step-4">
+    <div class="step-header">
+      <div class="step-badge" style="background:var(--amberl);color:var(--amber)">5</div>
+      <div>
+        <div class="step-title">Tax receipts — who gets what</div>
+        <div class="step-sub">Two gifts, two receipts, one rule: receipts only go to the legal payer. James gets a receipt for his personal gift only. Acme gets a receipt for the matching gift only.</div>
+      </div>
+    </div>
+
+    <div class="two-up">
+      <div class="record-card">
+        <div class="rc-top">
+          <div class="rc-av" style="background:var(--bluep);color:var(--blue)">JO</div>
+          <div><div class="rc-name">James O'Brien</div><div class="rc-type">Receipt for personal gift only</div></div>
+        </div>
+        <div class="rc-fields">
+          <div class="rf-row"><span class="rf-key">Amount on receipt</span><span class="rf-val green">$500.00</span></div>
+          <div class="rf-row"><span class="rf-key">Deductible amount</span><span class="rf-val green">$500.00 fully deductible</span></div>
+          <div class="rf-row"><span class="rf-key">Receipt type</span><span class="rf-val">Standard tax receipt</span></div>
+          <div class="rf-row"><span class="rf-key">Mention match on receipt?</span><span class="rf-val amber">Optional stewardship note only</span></div>
+          <div class="rf-row"><span class="rf-key">Match amount on receipt</span><span class="rf-val red">Never included</span></div>
+        </div>
+      </div>
+      <div class="record-card">
+        <div class="rc-top">
+          <div class="rc-av" style="background:var(--surf);color:var(--text3)">AC</div>
+          <div><div class="rc-name">Acme Corporation</div><div class="rc-type">Receipt for matching gift only</div></div>
+        </div>
+        <div class="rc-fields">
+          <div class="rf-row"><span class="rf-key">Amount on receipt</span><span class="rf-val green">$500.00</span></div>
+          <div class="rf-row"><span class="rf-key">Deductible amount</span><span class="rf-val green">$500.00 fully deductible</span></div>
+          <div class="rf-row"><span class="rf-key">Receipt type</span><span class="rf-val">Standard tax receipt</span></div>
+          <div class="rf-row"><span class="rf-key">Soft credit on receipt?</span><span class="rf-val red">Never included</span></div>
+          <div class="rf-row"><span class="rf-key">Employee reference</span><span class="rf-val amber">Can note for their records only</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout c-danger">
+      <div class="callout-title">Never do this</div>
+      <div class="callout-body">Do not add "$500 matched by Acme Corporation" to James O'Brien's tax receipt — it makes it look like he is claiming a deduction for money Acme paid. His receipt must only show the $500 he personally gave. The IRS will flag a receipt that includes amounts not paid by the recipient.</div>
+    </div>
+    <div class="callout c-success">
+      <div class="callout-title">Optional — stewardship note to James</div>
+      <div class="callout-body">You may send James a separate non-tax stewardship message: "Your employer matched your gift, doubling your impact to $1,000 this year." Great relationship communication — just make sure it contains no deductible amount language and is clearly not a tax receipt.</div>
+    </div>
+  </div>
+
+  <!-- ── STEP 6: VERIFY ── -->
+  <div class="step-panel" id="step-5">
+    <div class="step-header">
+      <div class="step-badge" style="background:var(--greenl);color:var(--green)">6</div>
+      <div>
+        <div class="step-title">Verification checklist before posting</div>
+        <div class="step-sub">Work through each item — click to mark complete. Post the batch only when all 10 are checked.</div>
+      </div>
+    </div>
+
+    <div class="checklist" id="checklist">
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="ci-box"><svg viewBox="0 0 10 10" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M1.5 5l2.5 2.5 5-5"/></svg></div>
+        <div class="ci-text">Row 1 donor is the employee's individual record (James O'Brien #4821) — not the household or employer</div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="ci-box"><svg viewBox="0 0 10 10" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M1.5 5l2.5 2.5 5-5"/></svg></div>
+        <div class="ci-text">Row 2 donor is the employer org record (Acme Corporation #ORG-0291) — not the employee</div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="ci-box"><svg viewBox="0 0 10 10" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M1.5 5l2.5 2.5 5-5"/></svg></div>
+        <div class="ci-text">Row 2 gift type is set to "Matching gift" — not Check or Credit card</div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="ci-box"><svg viewBox="0 0 10 10" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M1.5 5l2.5 2.5 5-5"/></svg></div>
+        <div class="ci-text">The matched gift reference on Row 2 links back to Row 1 (employee gift)</div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="ci-box"><svg viewBox="0 0 10 10" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M1.5 5l2.5 2.5 5-5"/></svg></div>
+        <div class="ci-text">Both rows post to the same fund and GL code</div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="ci-box"><svg viewBox="0 0 10 10" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M1.5 5l2.5 2.5 5-5"/></svg></div>
+        <div class="ci-text">Soft credit is configured on Row 2, pointing to James O'Brien with type "Matching gift"</div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="ci-box"><svg viewBox="0 0 10 10" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M1.5 5l2.5 2.5 5-5"/></svg></div>
+        <div class="ci-text">"Generate tax receipt" is OFF on the soft credit — James gets no receipt for Acme's payment</div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="ci-box"><svg viewBox="0 0 10 10" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M1.5 5l2.5 2.5 5-5"/></svg></div>
+        <div class="ci-text">Tax receipt for Row 1 goes to James O'Brien for $500 — his personal gift only</div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="ci-box"><svg viewBox="0 0 10 10" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M1.5 5l2.5 2.5 5-5"/></svg></div>
+        <div class="ci-text">Tax receipt for Row 2 goes to Acme Corporation for $500 — no mention of soft credit</div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="ci-box"><svg viewBox="0 0 10 10" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M1.5 5l2.5 2.5 5-5"/></svg></div>
+        <div class="ci-text">Accuracy engine shows no errors — duplicate check, amount outlier, and GL validation all green</div>
+      </div>
+    </div>
+
+    <div class="ready-msg" id="ready-msg">
+      <div class="callout c-success">
+        <div class="callout-title">All checks passed — ready to post</div>
+        <div class="callout-body">Both gift records are correctly configured. After posting: James O'Brien's donor record shows his $500 personal gift plus a soft credit for the $500 match. Acme Corporation's org record shows $500 hard credit. Revenue totals count $1,000 — $500 from each record. James's LTG includes the soft credit if your diocese has that setting enabled.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <div class="nav-row">
+    <button class="nav-btn" id="btn-prev" onclick="navigate(-1)" disabled>← Previous</button>
+    <span class="step-count" id="step-count">Step 1 of 6</span>
+    <button class="nav-btn primary" id="btn-next" onclick="navigate(1)">Next →</button>
+  </div>
+
+</div>
+
+<script>
+let current = 0;
+const total = 6;
+
+function goTo(n) {
+  current = n;
+  render();
+}
+
+function navigate(dir) {
+  current = Math.max(0, Math.min(total - 1, current + dir));
+  render();
+}
+
+function render() {
+  document.querySelectorAll('.step-panel').forEach((p, i) => p.classList.toggle('active', i === current));
+  document.querySelectorAll('.pb-step').forEach((s, i) => {
+    s.classList.remove('active', 'done');
+    if (i === current) s.classList.add('active');
+    else if (i < current) s.classList.add('done');
+  });
+  document.getElementById('btn-prev').disabled = current === 0;
+  document.getElementById('btn-next').style.display = current === total - 1 ? 'none' : '';
+  document.getElementById('step-count').textContent = 'Step ' + (current + 1) + ' of ' + total;
+}
+
+function toggleCheck(el) {
+  el.classList.toggle('checked');
+  const all  = document.querySelectorAll('#checklist .check-item').length;
+  const done = document.querySelectorAll('#checklist .check-item.checked').length;
+  document.getElementById('ready-msg').style.display = done === all ? 'block' : 'none';
+}
+
+render();
+</script>
+</body>
+</html>
