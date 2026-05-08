@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Atlas — Soft Credit Rules</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --navy:  #0E1E35; --navy2: #152844;
+      --blue:  #2563EB; --bluel: #DBEAFE; --bluep: #EFF6FF;
+      --green: #15803D; --greenl:#DCFCE7;
+      --amber: #D97706; --amberl:#FEF3C7;
+      --rose:  #BE185D; --rosel: #FCE7F3;
+      --teal:  #0D9488; --teall: #CCFBF1;
+      --purp:  #7C3AED; --purpl: #EDE9FE;
+      --text:  #0F172A; --text2: #334155; --text3: #64748B;
+      --border:#E2E8F0; --surf:  #F8FAFC;
+    }
+    html { font-size: 14px; -webkit-font-smoothing: antialiased; }
+    body { font-family: 'DM Sans', sans-serif; background: #F0F4F8; color: var(--text); padding: 24px 20px 64px; }
+    .wrap { max-width: 960px; margin: 0 auto; }
+
+    /* ── PAGE HEADER ── */
+    .page-header { background: var(--navy); border-radius: 14px; padding: 22px 28px; margin-bottom: 20px; display: flex; align-items: center; gap: 16px; }
+    .ph-mark { width: 40px; height: 40px; background: var(--blue); border-radius: 11px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .ph-mark svg { width: 20px; height: 20px; }
+    .ph-title { font-family: 'DM Serif Display', serif; font-size: 22px; color: white; }
+    .ph-sub { font-size: 12px; color: rgba(255,255,255,.45); margin-top: 3px; line-height: 1.5; }
+    .ph-rule { margin-left: auto; background: rgba(37,99,235,.25); border: 1px solid rgba(37,99,235,.45); border-radius: 10px; padding: 10px 16px; text-align: center; flex-shrink: 0; }
+    .ph-rule-title { font-size: 12px; font-weight: 600; color: #93C5FD; margin-bottom: 2px; }
+    .ph-rule-sub { font-size: 11px; color: rgba(255,255,255,.4); }
+
+    /* ── SCENARIO GRID ── */
+    .scenario-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 16px; }
+    @media(max-width:700px) { .scenario-grid { grid-template-columns: 1fr 1fr; } }
+
+    .sc-card { background: white; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; cursor: pointer; transition: all .14s; }
+    .sc-card:hover { border-color: #94A3B8; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(15,30,53,.07); }
+    .sc-card.active { border: 1.5px solid var(--blue); box-shadow: 0 0 0 3px rgba(37,99,235,.1); }
+    .sc-head { padding: 12px 14px 10px; display: flex; align-items: flex-start; gap: 9px; }
+    .sc-icon { width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .sc-icon svg { width: 14px; height: 14px; }
+    .sc-label { flex: 1; }
+    .sc-name { font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+    .sc-sub { font-size: 11px; color: var(--text3); line-height: 1.4; }
+    .sc-badges { display: flex; gap: 4px; padding: 0 14px 12px; flex-wrap: wrap; }
+
+    /* ── BADGES ── */
+    .badge { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 20px; white-space: nowrap; }
+    .b-hard { background: var(--bluep); color: var(--blue); }
+    .b-soft { background: var(--greenl); color: var(--green); }
+    .b-none { background: var(--surf); color: var(--text3); border: 1px solid var(--border); }
+    .b-warn { background: var(--amberl); color: var(--amber); }
+    .b-danger { background: var(--rosel); color: var(--rose); }
+
+    /* ── DETAIL PANEL ── */
+    .detail-panel { background: white; border: 1px solid var(--border); border-radius: 14px; padding: 22px 24px; margin-bottom: 18px; display: none; }
+    .detail-panel.show { display: block; }
+    .dp-name { font-family: 'DM Serif Display', serif; font-size: 20px; color: var(--text); margin-bottom: 16px; padding-bottom: 14px; border-bottom: 1px solid var(--border); }
+
+    .rule-rows { margin-bottom: 16px; }
+    .rule-row { display: flex; align-items: flex-start; gap: 14px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+    .rule-row:last-child { border-bottom: none; }
+    .rr-label { width: 130px; flex-shrink: 0; font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--text3); padding-top: 3px; }
+    .rr-val { flex: 1; font-size: 13px; color: var(--text2); line-height: 1.65; }
+
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    @media(max-width:640px) { .two-col { grid-template-columns: 1fr; } }
+
+    /* Example box */
+    .example-box { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+    .eb-head { padding: 8px 14px; background: var(--surf); border-bottom: 1px solid var(--border); font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--text3); }
+    .eb-row { display: flex; justify-content: space-between; align-items: baseline; padding: 8px 14px; border-bottom: 1px solid var(--border); gap: 8px; }
+    .eb-row:last-child { border-bottom: none; }
+    .eb-key { font-size: 12px; color: var(--text3); flex-shrink: 0; }
+    .eb-mid { font-size: 11px; color: var(--text2); flex: 1; padding: 0 8px; }
+    .eb-val { font-size: 11px; font-weight: 600; flex-shrink: 0; text-align: right; }
+    .ev-hard { color: var(--blue); }
+    .ev-soft { color: var(--green); }
+    .ev-warn { color: var(--amber); }
+    .ev-none { color: var(--text3); }
+
+    /* Atlas records box */
+    .atlas-box { background: var(--navy); border-radius: 10px; padding: 14px 16px; }
+    .ab-head { font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: rgba(255,255,255,.4); margin-bottom: 10px; }
+    .ab-row { display: flex; align-items: flex-start; gap: 8px; padding: 5px 0; font-size: 12px; color: rgba(255,255,255,.75); line-height: 1.5; }
+    .ab-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
+    .d-blue  { background: #93C5FD; }
+    .d-green { background: #86EFAC; }
+    .d-amber { background: #FCD34D; }
+    .d-red   { background: #FDA4AF; }
+    .d-gray  { background: rgba(255,255,255,.25); }
+
+    /* Warning box */
+    .warn-box { background: var(--amberl); border: 1px solid #FDE68A; border-radius: 10px; padding: 12px 14px; margin-top: 12px; }
+    .wb-label { font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--amber); margin-bottom: 5px; }
+    .wb-text { font-size: 12px; color: #78350F; line-height: 1.65; }
+
+    /* ── QUICK REFERENCE TABLE ── */
+    .quick-ref { background: white; border: 1px solid var(--border); border-radius: 14px; overflow: hidden; margin-bottom: 20px; }
+    .qr-head { padding: 12px 18px; background: var(--navy); display: flex; align-items: center; gap: 10px; }
+    .qr-head-title { font-size: 13px; font-weight: 600; color: white; }
+    .qr-head-sub { font-size: 11px; color: rgba(255,255,255,.45); margin-left: auto; }
+    .qr-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .qr-table th { padding: 9px 14px; text-align: left; font-size: 10px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--text3); background: var(--surf); border-bottom: 1px solid var(--border); white-space: nowrap; }
+    .qr-table td { padding: 10px 14px; border-bottom: .5px solid var(--border); color: var(--text2); vertical-align: top; }
+    .qr-table tr:last-child td { border-bottom: none; }
+    .qr-table tr:hover td { background: var(--surf); }
+    .qr-table td:first-child { font-weight: 600; color: var(--text); }
+    .note-bar { padding: 10px 18px; background: var(--navy2); font-size: 12px; color: rgba(255,255,255,.55); line-height: 1.6; }
+    .note-bar strong { color: rgba(255,255,255,.85); }
+
+    /* ── KEY PRINCIPLE BOX ── */
+    .principle-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 18px; }
+    @media(max-width:600px) { .principle-row { grid-template-columns: 1fr; } }
+    .principle-card { border-radius: 10px; padding: 14px 16px; }
+    .pc-title { font-size: 12px; font-weight: 700; margin-bottom: 5px; }
+    .pc-body  { font-size: 12px; line-height: 1.65; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div class="ph-mark">
+      <svg viewBox="0 0 20 20" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round">
+        <path d="M10 2a8 8 0 100 16A8 8 0 0010 2z"/>
+        <path d="M7 10l2 2 4-4"/>
+        <path d="M10 6v.5M10 14v-.5"/>
+      </svg>
+    </div>
+    <div>
+      <div class="ph-title">Atlas — Soft Credit Rules</div>
+      <div class="ph-sub">When to record hard credits vs. soft credits · tax receipt attribution · LTG impact<br>Click any scenario card for the full rule, Atlas record structure, and common mistakes.</div>
+    </div>
+    <div class="ph-rule">
+      <div class="ph-rule-title">Hard credit</div>
+      <div class="ph-rule-sub">Tax receipt + revenue</div>
+      <div style="margin:6px 0;width:100%;height:1px;background:rgba(255,255,255,.1)"></div>
+      <div class="ph-rule-title" style="color:#86EFAC">Soft credit</div>
+      <div class="ph-rule-sub">Stewardship + LTG only</div>
+    </div>
+  </div>
+
+  <!-- Key principles -->
+  <div class="principle-row">
+    <div class="principle-card" style="background:var(--bluep);border:1px solid var(--bluel)">
+      <div class="pc-title" style="color:var(--blue)">Hard credit</div>
+      <div class="pc-body" style="color:#1E3A8A">The legal donor — the entity whose funds were transferred. Receives the tax receipt. Counted in revenue totals. Appears on acknowledgement letters with deductible amount.</div>
+    </div>
+    <div class="principle-card" style="background:var(--greenl);border:1px solid #BBF7D0">
+      <div class="pc-title" style="color:var(--green)">Soft credit</div>
+      <div class="pc-body" style="color:#14532D">A relationship or influence attribution. Never generates a tax receipt. Never counted in revenue. Used for LTG tracking, stewardship, portfolio reporting, and giving history display only.</div>
+    </div>
+  </div>
+
+  <!-- Scenario cards -->
+  <div class="scenario-grid" id="scenario-grid"></div>
+
+  <!-- Detail panel -->
+  <div class="detail-panel" id="detail-panel"></div>
+
+  <!-- Quick reference -->
+  <div class="quick-ref">
+    <div class="qr-head">
+      <span class="qr-head-title">Quick reference — all scenarios</span>
+      <span class="qr-head-sub">Hard credit = tax receipt · Soft credit = stewardship only</span>
+    </div>
+    <table class="qr-table">
+      <thead>
+        <tr><th>Scenario</th><th>Hard credit to</th><th>Soft credit to</th><th>Tax receipt to</th><th>LTG impact</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Matching gift (employer)</td>
+          <td><span class="badge b-hard">Employer / company</span></td>
+          <td><span class="badge b-soft">Employee donor</span></td>
+          <td style="color:var(--text3)">Employer only</td>
+          <td style="color:var(--text3)">Soft credit can count toward employee LTG (configurable)</td>
+        </tr>
+        <tr>
+          <td>DAF distribution</td>
+          <td><span class="badge b-hard">DAF / sponsoring org</span></td>
+          <td><span class="badge b-soft">Donor advisor</span></td>
+          <td style="color:var(--text3)">No receipt to donor — deduction taken at contribution</td>
+          <td style="color:var(--text3)">Soft credit counts toward advisor LTG</td>
+        </tr>
+        <tr>
+          <td>Tribute / memorial gift</td>
+          <td><span class="badge b-hard">Actual donor (payer)</span></td>
+          <td><span class="badge b-soft">Honoree record</span></td>
+          <td style="color:var(--text3)">Donor only — honoree gets courtesy letter, no tax language</td>
+          <td style="color:var(--text3)">Optional on honoree record</td>
+        </tr>
+        <tr>
+          <td>Spousal / joint gift</td>
+          <td><span class="badge b-hard">Check signer / cardholder</span></td>
+          <td><span class="badge b-soft">Spouse (optional)</span></td>
+          <td style="color:var(--text3)">Payer — may address to both for courtesy</td>
+          <td style="color:var(--text3)">Household LTG; spouse LTG optional</td>
+        </tr>
+        <tr>
+          <td>Family foundation</td>
+          <td><span class="badge b-hard">Foundation (legal entity)</span></td>
+          <td><span class="badge b-soft">Family principals</span></td>
+          <td style="color:var(--text3)">Foundation only — family never receive personal receipts</td>
+          <td style="color:var(--text3)">Soft credit on individual records — essential for major gift tracking</td>
+        </tr>
+        <tr>
+          <td>Solicitor / officer credit</td>
+          <td><span class="badge b-hard">Donor</span></td>
+          <td><span class="badge b-none">Gift record field only</span></td>
+          <td style="color:var(--text3)">Donor only — solicitor credit is internal</td>
+          <td style="color:var(--text3)">No LTG impact — portfolio reporting only</td>
+        </tr>
+        <tr>
+          <td>Bequest / estate gift</td>
+          <td><span class="badge b-hard">Estate</span></td>
+          <td><span class="badge b-soft">Deceased donor record</span></td>
+          <td style="color:var(--text3)">Estate / executor</td>
+          <td style="color:var(--text3)">Soft credit preserves deceased donor LTG and legacy record</td>
+        </tr>
+        <tr>
+          <td>QCD — IRA rollover</td>
+          <td><span class="badge b-hard">Donor (direct)</span></td>
+          <td><span class="badge b-none">None required</span></td>
+          <td style="color:var(--text3)">QCD-specific acknowledgement — NOT a standard deduction receipt</td>
+          <td style="color:var(--text3)">Counts fully toward donor LTG — same as a regular gift</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="note-bar">
+      <strong>Key rule:</strong> Soft credits must never appear on tax receipts and must never be summed in revenue totals. They exist solely for stewardship, relationship management, and lifetime giving calculations. &nbsp;·&nbsp;
+      <strong>DAF vs. QCD:</strong> A DAF grant: hard credit to the DAF org, soft credit to the donor, no receipt to donor. A QCD: hard credit directly to the donor, no soft credit needed, but requires a QCD-specific acknowledgement letter — not a standard tax receipt.
+    </div>
+  </div>
+
+</div>
+
+<script>
+const SCENARIOS = [
+  {
+    id: 'matching',
+    name: 'Matching gift',
+    sub: 'Employer matches employee donation',
+    iconBg: '#EFF6FF', iconColor: '#2563EB',
+    iconPath: `<path d="M8 2.5C8 2.5 5 2.5 5 5.5s3 3 3 6c0-3 3-3 3-6s-3-3-3-3z" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 8.5h10" stroke-linecap="round"/>`,
+    rule: 'The gift originates from the employer\'s account. Hard credit and tax receipt always go to the company. The employee receives a soft credit on their donor record to reflect their influence and for LTG tracking.',
+    hard: 'Employer / company record in Atlas (org record)',
+    soft: 'Employee donor\'s individual record',
+    receipt: 'Employer only — employee already deducted their own personal gift separately',
+    ltg: 'Soft credit can count toward employee\'s LTG total (configurable per diocese)',
+    example: [
+      ['Employee gift','$500 to CMA','Hard: employee donor'],
+      ['Employer match','$500 to CMA','Hard: Acme Corp (org)'],
+      ['Soft credit','$500 on employee record','Stewardship + LTG only'],
+      ['Tax receipt','To Acme Corp only','Employee gets no receipt for match'],
+    ],
+    atlas: [
+      { dot:'d-blue',  text:'Gift record: Acme Corp → $500 CMA Annual Fund' },
+      { dot:'d-green', text:'Soft credit: James O\'Brien → $500 CMA' },
+      { dot:'d-amber', text:'Tax receipt: Acme Corp — $500, fully deductible' },
+      { dot:'d-gray',  text:'Employee LTG +$500 (if diocese enables soft LTG)' },
+    ],
+    warn: 'Never issue a tax receipt to the employee for the matching gift portion — they did not make that payment and cannot claim a deduction for it.'
+  },
+  {
+    id: 'daf',
+    name: 'DAF distribution',
+    sub: 'Donor-advised fund sends a grant',
+    iconBg: '#DCFCE7', iconColor: '#15803D',
+    iconPath: `<rect x="2" y="3.5" width="12" height="9" rx="1.5" stroke-linecap="round"/><path d="M2 7h12M5 3.5V2M11 3.5V2" stroke-linecap="round"/>`,
+    rule: 'A DAF distribution is a grant from the sponsoring organisation (Fidelity Charitable, Schwab Charitable, diocesan foundation). Hard credit goes to the DAF entity. The donor advisor receives a soft credit for relationship and LTG purposes.',
+    hard: 'DAF / sponsoring organisation (org record in Atlas)',
+    soft: 'Donor advisor\'s individual record in Atlas',
+    receipt: 'No receipt to the donor — they already received a tax deduction when they contributed to the DAF. Sending a receipt to the donor is incorrect and may cause IRS issues.',
+    ltg: 'Soft credit counts toward donor advisor\'s LTG — critical for major gift recognition thresholds',
+    example: [
+      ['DAF grant received','$10,000 from Fidelity Charitable','Hard: Fidelity Charitable (org)'],
+      ['Donor advisor','Sullivan Family','Soft: $10,000 on Sullivan record'],
+      ['Receipt','To Fidelity only','Standard grant acknowledgement'],
+      ['Event benefit flag','If gala tickets included','Ticket value must be separate personal payment'],
+    ],
+    atlas: [
+      { dot:'d-blue',  text:'Gift record: Fidelity Charitable → $10,000 CMA' },
+      { dot:'d-green', text:'Soft credit: Sullivan Family → $10,000' },
+      { dot:'d-amber', text:'Acknowledgement letter to Fidelity Charitable only' },
+      { dot:'d-red',   text:'Flag: if event fund — split DAF vs. personal ticket payment' },
+    ],
+    warn: 'DAF gifts cannot cover event ticket benefits or tangible personal benefits. If a DAF sponsor is also a gala sponsor, the ticket value must be a separate personal payment — posting the full amount as DAF creates an IRS compliance issue.'
+  },
+  {
+    id: 'tribute',
+    name: 'Tribute / memorial',
+    sub: 'Gift in honour or memory of someone',
+    iconBg: '#FEF3C7', iconColor: '#D97706',
+    iconPath: `<circle cx="8.5" cy="5.5" r="3.5" stroke-linecap="round"/><path d="M2 14c0-2.5 2-4.5 4.5-4.5M10 9.5c2.5.2 4.5 2.1 4.5 4.5" stroke-linecap="round"/><path d="M8.5 4v3" stroke-linecap="round"/>`,
+    rule: 'The person paying is the legal donor — they receive hard credit and tax receipt. The person being honoured receives a soft credit and a courtesy notification letter with absolutely no tax language.',
+    hard: 'Donor who made the payment',
+    soft: 'Honoree\'s record (or family record) in Atlas',
+    receipt: 'Tax receipt to donor only. Honoree receives a notification letter only — no dollar amounts, no "tax-deductible" language.',
+    ltg: 'Soft credit on honoree record can count toward that family\'s LTG (optional — configure per diocese)',
+    example: [
+      ['Gift made by','Margaret Sullivan','Hard credit + receipt to Margaret'],
+      ['In memory of','Fr. James Collins','Soft credit on Fr. Collins record'],
+      ['Family letter','Collins family','Courtesy notification — zero tax language'],
+      ['LTG','Sullivan +$500','Collins memorial LTG +$500 (if configured)'],
+    ],
+    atlas: [
+      { dot:'d-blue',  text:'Gift record: Margaret Sullivan → $500, tribute gift' },
+      { dot:'d-green', text:'Soft credit: Fr. James Collins record (memorial)' },
+      { dot:'d-amber', text:'Tax receipt: Margaret Sullivan — $500' },
+      { dot:'d-gray',  text:'Notification letter: Collins family — no dollar amount on some templates' },
+    ],
+    warn: 'Never include tax receipt language or dollar amounts in the notification letter sent to the family. It must be a pure acknowledgement: "A gift was made in memory of Fr. Collins…" — no deductible amount stated.'
+  },
+  {
+    id: 'spousal',
+    name: 'Spousal / joint gift',
+    sub: 'Couple gives — one account holder',
+    iconBg: '#F8FAFC', iconColor: '#64748B',
+    iconPath: `<circle cx="5.5" cy="5" r="2.8" stroke-linecap="round"/><circle cx="11.5" cy="5" r="2.8" stroke-linecap="round"/><path d="M1 13c0-2.5 2-4.5 4.5-4.5h2M13 13c0-2.5-2-4.5-4.5-4.5" stroke-linecap="round"/>`,
+    rule: 'Hard credit goes to the actual payer. Soft credit to the spouse is a stewardship practice ensuring both partners feel recognised and appear in the gift officer\'s relationship reports. Do not split the gift 50/50 between spouses.',
+    hard: 'The spouse whose name is on the payment instrument',
+    soft: 'Other spouse — stewardship and relationship reporting',
+    receipt: 'To the payer. May address to "Mr. & Mrs." for courtesy — but the legal receipt is to the payer only.',
+    ltg: 'LTG typically tracked at the household level. Soft credit on spouse record is optional but recommended for relationship management.',
+    example: [
+      ['Cheque signed by','James O\'Brien','Hard credit + receipt to James'],
+      ['Spouse','Patricia O\'Brien','Soft credit — stewardship only'],
+      ['Household LTG','O\'Brien Household','LTG tracked at household level'],
+      ['Receipt','James O\'Brien','Can address to James & Patricia for courtesy'],
+    ],
+    atlas: [
+      { dot:'d-blue',  text:'Gift record: James O\'Brien → $2,500 CMA Annual Fund' },
+      { dot:'d-green', text:'Soft credit: Patricia O\'Brien → $2,500 (stewardship)' },
+      { dot:'d-gray',  text:'Household LTG updated: O\'Brien Household' },
+      { dot:'d-amber', text:'Receipt: James O\'Brien (can address to both for courtesy)' },
+    ],
+    warn: 'Do not create two separate hard credit records splitting the gift 50/50 between spouses. This inflates gift counts, creates duplicate receipt obligations, and distorts campaign totals.'
+  },
+  {
+    id: 'foundation',
+    name: 'Family foundation',
+    sub: 'Private foundation makes a grant',
+    iconBg: '#F8FAFC', iconColor: '#0F172A',
+    iconPath: `<rect x="2.5" y="8" width="11" height="4.5" rx="1" stroke-linecap="round"/><path d="M8 2l6 6H2z" stroke-linecap="round" stroke-linejoin="round"/><path d="M5.5 8v4.5M8 8v4.5M10.5 8v4.5" stroke-linecap="round"/>`,
+    rule: 'A private family foundation is a separate legal entity. All grants from the foundation hard-credit the foundation\'s org record. Family principal members receive soft credits for relationship visibility — without this, the family\'s true philanthropic impact becomes invisible in Atlas.',
+    hard: 'The foundation (separate org record in Atlas)',
+    soft: 'Family principals on their individual records',
+    receipt: 'Foundation only. Family members never receive personal tax receipts for foundation grants.',
+    ltg: 'Soft credit on family principal records is strongly recommended. A family with $400K in foundation gifts should have that reflected on their individual records for major gift cultivation.',
+    example: [
+      ['Grant from','O\'Brien Family Foundation','Hard credit to foundation org record'],
+      ['Soft credit','James O\'Brien','Principal — major gift relationship'],
+      ['Soft credit','Patricia O\'Brien','Principal — stewardship'],
+      ['Receipt','Foundation only','Never to individual family members'],
+    ],
+    atlas: [
+      { dot:'d-blue',  text:'Gift record: O\'Brien Family Foundation → $25,000' },
+      { dot:'d-green', text:'Soft credit: James O\'Brien → $25,000' },
+      { dot:'d-green', text:'Soft credit: Patricia O\'Brien → $25,000' },
+      { dot:'d-amber', text:'Receipt: O\'Brien Family Foundation — $25,000' },
+    ],
+    warn: 'Gift officers manage the family relationship, not the foundation relationship. If soft credits aren\'t applied to individual records, the family\'s full giving impact disappears from the gift officer\'s view and from LTG calculations.'
+  },
+  {
+    id: 'solicitor',
+    name: 'Solicitor / officer credit',
+    sub: 'Gift officer influenced the gift',
+    iconBg: '#F8FAFC', iconColor: '#64748B',
+    iconPath: `<circle cx="8.5" cy="5" r="3.5" stroke-linecap="round"/><path d="M3 14c0-3 2.5-5 5.5-5s5.5 2 5.5 5" stroke-linecap="round"/>`,
+    rule: 'Solicitor credit is an internal reporting field on the gift record — not a donor-level soft credit. It tracks portfolio performance and officer attribution. The donor still receives the only hard credit and tax receipt. No donor record is soft-credited for a solicitor.',
+    hard: 'The donor who made the gift',
+    soft: 'Solicitor field on the gift record (not on a donor record)',
+    receipt: 'Donor only. Solicitor credit has zero tax implications.',
+    ltg: 'No LTG impact on any record. Solicitor credit tracks officer portfolio performance only in Atlas reporting.',
+    example: [
+      ['Donor','David Harrington','Hard credit + receipt to David'],
+      ['Solicitor field','Mike Donovan (gift officer)','Internal field on gift record only'],
+      ['Officer portfolio','Mike\'s portfolio +$5,000','Tracks towards officer goals'],
+      ['Donor record','Unchanged','Solicitor does not appear on donor record'],
+    ],
+    atlas: [
+      { dot:'d-blue',  text:'Gift record: David Harrington → $5,000' },
+      { dot:'d-gray',  text:'Solicitor field: Mike Donovan (gift record field only)' },
+      { dot:'d-amber', text:'Receipt: David Harrington — $5,000' },
+      { dot:'d-gray',  text:'Officer dashboard: Mike Donovan portfolio +$5,000' },
+    ],
+    warn: 'Solicitor credit is NOT a soft credit on a donor record — it lives on the gift record itself. Do not create a donor-level soft credit entry for the gift officer, as this would inflate the officer\'s own giving record in Atlas.'
+  },
+  {
+    id: 'bequest',
+    name: 'Bequest / estate gift',
+    sub: 'Gift from a deceased donor\'s estate',
+    iconBg: '#F8FAFC', iconColor: '#334155',
+    iconPath: `<path d="M8.5 2v11M5.5 5l3-3 3 3" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 13h11" stroke-linecap="round"/>`,
+    rule: 'Bequests are received from the estate as a legal entity. Hard credit goes to the estate record. A soft credit is applied to the deceased donor\'s individual record to honour their legacy, preserve their LTG total, and maintain the full picture of their relationship with the diocese.',
+    hard: 'Estate of [Donor Name] — estate org record',
+    soft: 'Deceased donor\'s individual record in Atlas',
+    receipt: 'To the estate / executor. Not to family members.',
+    ltg: 'Soft credit on the deceased donor\'s record ensures their lifetime giving total reflects their intended legacy gift. Essential for legacy society and named fund records.',
+    example: [
+      ['Estate sends','Estate of Robert Walsh','Hard credit to estate org record'],
+      ['Soft credit','Robert Walsh (deceased)','LTG preserved + legacy society updated'],
+      ['Receipt','To executor / estate','Not to surviving family'],
+      ['Legacy record','Acknowledged posthumously','Named endowment / plaque if applicable'],
+    ],
+    atlas: [
+      { dot:'d-blue',  text:'Gift record: Estate of Robert Walsh → $50,000' },
+      { dot:'d-green', text:'Soft credit: Robert Walsh (deceased) → $50,000 LTG' },
+      { dot:'d-amber', text:'Acknowledgement: to Estate of Robert Walsh / executor' },
+      { dot:'d-gray',  text:'Legacy society record updated for Robert Walsh' },
+    ],
+    warn: 'Mark the donor record as deceased before posting. The estate record must be separate from the individual record so giving histories are not merged and the individual\'s LTG history is preserved.'
+  },
+  {
+    id: 'qcd',
+    name: 'QCD — IRA rollover',
+    sub: 'Donor age 70½+ directs IRA to give directly',
+    iconBg: '#CCFBF1', iconColor: '#0D9488',
+    iconPath: `<circle cx="8.5" cy="8.5" r="6" stroke-linecap="round"/><path d="M8.5 5.5v4h3" stroke-linecap="round"/>`,
+    rule: 'A Qualified Charitable Distribution (QCD) is made directly from an IRA custodian to the charity. Unlike a DAF, the gift is attributed directly to the donor — they receive the hard credit. The acknowledgement must use QCD-specific language because QCDs are excluded from income, not deducted.',
+    hard: 'The individual donor (not the IRA custodian)',
+    soft: 'None required',
+    receipt: 'QCD-specific acknowledgement to the donor. Must NOT state a deductible amount or standard "no goods and services" tax receipt language. QCDs use income exclusion — not a charitable deduction.',
+    ltg: 'Counts fully toward donor\'s LTG. Record as gift type "QCD" in Atlas. Do not treat like a DAF.',
+    example: [
+      ['IRA custodian','Fidelity Investments','On behalf of Robert Walsh'],
+      ['Hard credit','Robert Walsh','Same as a regular personal gift'],
+      ['Gift type','QCD in Atlas','Not DAF — completely different'],
+      ['Acknowledgement','QCD-specific letter','No deduction amount stated'],
+    ],
+    atlas: [
+      { dot:'d-blue',  text:'Gift record: Robert Walsh → $15,000 CMA, type: QCD' },
+      { dot:'d-amber', text:'QCD acknowledgement letter to Robert Walsh (special template)' },
+      { dot:'d-gray',  text:'No soft credit needed — donor is the direct giver' },
+      { dot:'d-red',   text:'Do NOT use standard tax receipt — QCD acknowledgement required' },
+    ],
+    warn: 'The biggest QCD error: applying the DAF workflow. A QCD is attributed directly to the donor — hard credit to the donor, donor LTG updated, QCD acknowledgement letter (not a tax receipt). Using the DAF workflow misdirects the gift to the IRA custodian\'s org record.'
+  },
+];
+
+function buildCard(s) {
+  const el = document.createElement('div');
+  el.className = 'sc-card';
+  el.id = 'card-' + s.id;
+  el.innerHTML = `
+    <div class="sc-head">
+      <div class="sc-icon" style="background:${s.iconBg}">
+        <svg viewBox="0 0 16 16" fill="none" stroke="${s.iconColor}" stroke-width="1.4">${s.iconPath}</svg>
+      </div>
+      <div class="sc-label">
+        <div class="sc-name">${s.name}</div>
+        <div class="sc-sub">${s.sub}</div>
+      </div>
+    </div>
+    <div class="sc-badges">
+      <span class="badge b-hard">Hard: ${s.hard.split(' ')[0]} ${s.hard.split(' ')[1]||''}</span>
+      <span class="badge b-soft">Soft: ${s.soft.split(' ')[0]} ${s.soft.split(' ')[1]||''}</span>
+    </div>`;
+  el.onclick = () => showDetail(s.id);
+  return el;
+}
+
+function showDetail(id) {
+  document.querySelectorAll('.sc-card').forEach(c => c.classList.remove('active'));
+  const card = document.getElementById('card-' + id);
+  if (card) card.classList.add('active');
+  const s = SCENARIOS.find(x => x.id === id);
+  const panel = document.getElementById('detail-panel');
+
+  const exRows = s.example.map(r => {
+    const valClass = r[2].startsWith('Hard') ? 'ev-hard' : r[2].startsWith('Soft') ? 'ev-soft' : r[2].startsWith('No') ? 'ev-none' : 'ev-warn';
+    return `<div class="eb-row">
+      <span class="eb-key">${r[0]}</span>
+      <span class="eb-mid">${r[1]}</span>
+      <span class="eb-val ${valClass}">${r[2]}</span>
+    </div>`;
+  }).join('');
+
+  const atlasRows = s.atlas.map(a => `
+    <div class="ab-row"><div class="ab-dot ${a.dot}"></div><span>${a.text}</span></div>`).join('');
+
+  panel.innerHTML = `
+    <div class="dp-name">${s.name}</div>
+    <div class="rule-rows">
+      <div class="rule-row"><div class="rr-label">Core rule</div><div class="rr-val">${s.rule}</div></div>
+      <div class="rule-row"><div class="rr-label">Hard credit to</div><div class="rr-val"><span class="badge b-hard">${s.hard}</span></div></div>
+      <div class="rule-row"><div class="rr-label">Soft credit to</div><div class="rr-val"><span class="badge b-soft">${s.soft}</span></div></div>
+      <div class="rule-row"><div class="rr-label">Tax receipt</div><div class="rr-val">${s.receipt}</div></div>
+      <div class="rule-row"><div class="rr-label">LTG impact</div><div class="rr-val">${s.ltg}</div></div>
+    </div>
+    <div class="two-col">
+      <div>
+        <div class="example-box">
+          <div class="eb-head">Example</div>
+          ${exRows}
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div class="atlas-box">
+          <div class="ab-head">Atlas records</div>
+          ${atlasRows}
+        </div>
+        <div class="warn-box">
+          <div class="wb-label">Common mistake</div>
+          <div class="wb-text">${s.warn}</div>
+        </div>
+      </div>
+    </div>`;
+  panel.classList.add('show');
+  panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+const grid = document.getElementById('scenario-grid');
+SCENARIOS.forEach(s => grid.appendChild(buildCard(s)));
+showDetail('matching');
+</script>
+</body>
+</html>
