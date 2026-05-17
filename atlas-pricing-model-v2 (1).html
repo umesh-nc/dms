@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Atlas — Diocesan Pricing Model</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0E1E35;--navy2:#152844;
+  --blue:#2563EB;--bluel:#DBEAFE;--bluep:#EFF6FF;
+  --green:#15803D;--greenl:#DCFCE7;--greend:#14532D;
+  --amber:#D97706;--amberl:#FEF3C7;--amberd:#78350F;
+  --teal:#0D9488;--teall:#CCFBF1;
+  --purp:#7C3AED;--purpl:#EDE9FE;
+  --text:#0F172A;--text2:#334155;--text3:#64748B;--text4:#94A3B8;
+  --border:#E2E8F0;--surf:#F8FAFC;
+}
+html{font-size:15px;-webkit-font-smoothing:antialiased}
+body{font-family:'DM Sans',sans-serif;background:#EDF0F7;color:var(--text);min-height:100vh}
+
+/* ── CHROME ── */
+.chrome{background:var(--navy);padding:0 40px;height:56px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:100}
+.chrome-logo{display:flex;align-items:center;gap:10px}
+.chrome-mark{width:30px;height:30px;background:var(--blue);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.chrome-mark svg{width:14px;height:14px}
+.chrome-name{font-family:'DM Serif Display',serif;font-size:16px;color:white}
+.chrome-sep{width:1px;height:20px;background:rgba(255,255,255,.15)}
+.chrome-title{font-size:13px;color:rgba(255,255,255,.5)}
+.chrome-right{margin-left:auto;display:flex;gap:8px;align-items:center}
+.chrome-badge{font-size:11px;font-weight:600;padding:4px 12px;border-radius:20px;background:rgba(37,99,235,.25);border:1px solid rgba(37,99,235,.4);color:#93C5FD}
+
+/* ── HERO ── */
+.hero{background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 60%,#1B3A6B 100%);padding:56px 40px 52px;position:relative;overflow:hidden}
+.hero::after{content:'';position:absolute;bottom:-60px;right:-60px;width:280px;height:280px;border-radius:50%;background:rgba(37,99,235,.08);pointer-events:none}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:7px;background:rgba(37,99,235,.18);border:1px solid rgba(37,99,235,.35);border-radius:20px;padding:5px 14px;font-size:11px;font-weight:600;color:#93C5FD;letter-spacing:.06em;text-transform:uppercase;margin-bottom:18px}
+.hero-eyebrow-dot{width:6px;height:6px;border-radius:50%;background:#3B82F6}
+.hero-title{font-family:'DM Serif Display',serif;font-size:38px;color:white;line-height:1.18;margin-bottom:10px}
+.hero-sub{font-size:15px;color:rgba(255,255,255,.5);line-height:1.65;max-width:560px;margin-bottom:32px}
+.hero-stats{display:flex;gap:40px;flex-wrap:wrap}
+.hero-stat-val{font-family:'DM Serif Display',serif;font-size:30px;color:white;line-height:1}
+.hero-stat-lbl{font-size:11px;color:rgba(255,255,255,.4);margin-top:4px;text-transform:uppercase;letter-spacing:.05em}
+
+/* ── PAGE BODY ── */
+.page{max-width:1140px;margin:0 auto;padding:40px 32px 80px}
+
+/* ── SECTION HEADER ── */
+.sec-header{margin-bottom:24px}
+.sec-tag{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px}
+.sec-tag::before{content:'';width:18px;height:2px;background:var(--blue);border-radius:1px}
+.sec-title{font-family:'DM Serif Display',serif;font-size:24px;color:var(--text)}
+.sec-sub{font-size:14px;color:var(--text3);margin-top:5px;line-height:1.6}
+
+/* ── TIER GRID ── */
+.tier-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:48px}
+.tier-card{background:white;border:1px solid var(--border);border-radius:16px;overflow:hidden;transition:transform .15s,box-shadow .15s}
+.tier-card:hover{transform:translateY(-3px);box-shadow:0 12px 32px rgba(14,30,53,.1)}
+.tier-card.featured{border:2px solid var(--blue);box-shadow:0 0 0 4px rgba(37,99,235,.08)}
+.tc-top{padding:22px 22px 18px;border-bottom:1px solid var(--border)}
+.tc-badge{display:inline-block;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;margin-bottom:12px}
+.tc-name{font-family:'DM Serif Display',serif;font-size:22px;color:var(--text);margin-bottom:3px}
+.tc-range{font-size:13px;color:var(--text3)}
+.tc-body{padding:20px 22px}
+.price-block{margin-bottom:16px}
+.price-label{font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--text4);margin-bottom:5px}
+.price-val{font-family:'DM Serif Display',serif;font-size:28px;color:var(--text);line-height:1}
+.price-val .price-sub{font-family:'DM Sans',sans-serif;font-size:14px;font-weight:400;color:var(--text3)}
+.price-sm{font-size:17px}
+.price-divider{height:1px;background:var(--border);margin:16px 0}
+.feature-list{display:flex;flex-direction:column;gap:7px;margin-bottom:16px}
+.feat-row{display:flex;align-items:flex-start;gap:9px;font-size:13px;color:var(--text2)}
+.feat-check{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.feat-check svg{width:9px;height:9px}
+.bundle-pill{display:flex;align-items:center;gap:7px;background:var(--greenl);border:1px solid #BBF7D0;border-radius:9px;padding:9px 12px;font-size:13px;color:var(--greend);font-weight:500;margin-top:4px}
+.bundle-pill svg{width:15px;height:15px;flex-shrink:0}
+
+/* ── CALCULATOR ── */
+.calc-wrap{background:white;border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:48px;box-shadow:0 4px 20px rgba(14,30,53,.06)}
+.calc-header{background:var(--navy);padding:20px 28px;display:flex;align-items:center;gap:12px}
+.calc-header-icon{width:36px;height:36px;background:rgba(37,99,235,.3);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.calc-header-icon svg{width:16px;height:16px;color:white}
+.calc-header-title{font-family:'DM Serif Display',serif;font-size:18px;color:white}
+.calc-header-sub{font-size:12px;color:rgba(255,255,255,.45);margin-top:2px}
+.calc-controls{padding:24px 28px;background:var(--surf);border-bottom:1px solid var(--border);display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:20px}
+.ctrl-label{font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--text3);margin-bottom:7px}
+.ctrl-select{width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:9px;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;background:white;color:var(--text);cursor:pointer;transition:border-color .12s}
+.ctrl-select:focus{border-color:var(--blue)}
+.calc-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-bottom:1px solid var(--border)}
+.c-metric{padding:22px 24px;border-right:1px solid var(--border);transition:background .15s}
+.c-metric:last-child{border-right:none}
+.c-metric:hover{background:var(--surf)}
+.cm-label{font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--text4);margin-bottom:7px}
+.cm-val{font-family:'DM Serif Display',serif;font-size:26px;color:var(--text);line-height:1}
+.cm-sub{font-size:12px;color:var(--text3);margin-top:5px}
+.calc-breakdown{padding:0}
+.cb-table{width:100%;border-collapse:collapse;font-size:13px}
+.cb-table thead th{padding:10px 24px;font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--text3);background:var(--surf);border-bottom:1px solid var(--border);text-align:left}
+.cb-table td{padding:12px 24px;border-bottom:.5px solid var(--border);color:var(--text2)}
+.cb-table tr:last-child td{border-bottom:none}
+.cb-table tr:hover td{background:#FAFBFC}
+.cb-table tr.row-total td{background:var(--surf);font-weight:600;color:var(--text)}
+.cb-table tr.row-saving td{color:var(--greend);font-weight:500}
+.cb-table tr.row-final td{font-family:'DM Serif Display',serif;font-size:16px;color:var(--text);border-top:2px solid var(--navy);background:var(--bluep)}
+.cb-table .td-note{font-size:12px;color:var(--text4)}
+
+/* ── STRATEGY GRID ── */
+.strategy-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:48px}
+.strat-card{background:white;border:1px solid var(--border);border-radius:16px;padding:24px;transition:transform .15s,box-shadow .15s}
+.strat-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(14,30,53,.08)}
+.sc-icon{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:14px;flex-shrink:0}
+.sc-icon svg{width:20px;height:20px}
+.sc-title{font-size:16px;font-weight:600;color:var(--text);margin-bottom:10px}
+.sc-body{font-size:13px;color:var(--text3);line-height:1.7}
+.sc-list{margin-top:12px;display:flex;flex-direction:column;gap:6px}
+.sc-item{display:flex;align-items:flex-start;gap:8px;font-size:13px;color:var(--text2)}
+.sc-dash{color:var(--text4);flex-shrink:0}
+
+/* ── REVENUE BANNER ── */
+.rev-banner{background:var(--navy);border-radius:16px;padding:32px 36px;margin-bottom:48px;display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:0;overflow:hidden;position:relative}
+.rev-banner::before{content:'';position:absolute;top:-40px;right:-40px;width:200px;height:200px;border-radius:50%;background:rgba(37,99,235,.1);pointer-events:none}
+.rev-stat{padding:0 28px;border-right:1px solid rgba(255,255,255,.1);text-align:center}
+.rev-stat:first-child{padding-left:0;text-align:left}
+.rev-stat:last-child{border-right:none;text-align:right}
+.rv-val{font-family:'DM Serif Display',serif;font-size:32px;color:white;line-height:1;margin-bottom:6px}
+.rv-val.green{color:#86EFAC}
+.rv-val.amber{color:#FCD34D}
+.rv-lbl{font-size:12px;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.05em}
+
+/* ── FOOTER ── */
+.page-footer{background:var(--navy);padding:24px 40px;display:flex;align-items:center;justify-content:space-between}
+.pf-left{font-size:13px;color:rgba(255,255,255,.4)}
+.pf-left strong{color:rgba(255,255,255,.75)}
+.pf-right{font-size:12px;color:rgba(255,255,255,.3)}
+</style>
+</head>
+<body>
+
+<!-- CHROME -->
+<div class="chrome">
+  <div class="chrome-logo">
+    <div class="chrome-mark">
+      <svg viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7.5" stroke="white" stroke-width="1.5"/><path d="M5.5 9.5C6.5 11.5 9 13 9 13s2.5-1.5 3.5-3.5S12 5 9 5 4.5 7.5 5.5 9.5z" fill="white" fill-opacity=".9"/></svg>
+    </div>
+    <span class="chrome-name">GiveCentral Atlas</span>
+  </div>
+  <div class="chrome-sep"></div>
+  <span class="chrome-title">Diocesan Pricing Model</span>
+  <div class="chrome-right">
+    <span class="chrome-badge">Internal — Confidential</span>
+  </div>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div style="max-width:1140px;margin:0 auto;padding:0 32px">
+    <div class="hero-eyebrow"><div class="hero-eyebrow-dot"></div>Pricing &amp; packaging · 2026</div>
+    <div class="hero-title">Diocesan client pricing<br>for Atlas CRM</div>
+    <div class="hero-sub">Three tiers priced by donor database size. All include native GiveCentral integration, Raiser's Edge migration, Guru AI, and the full diocesan feature set.</div>
+    <div class="hero-stats">
+      <div><div class="hero-stat-val">60</div><div class="hero-stat-lbl">Target clients</div></div>
+      <div><div class="hero-stat-val">$3.9M</div><div class="hero-stat-lbl">ARR at full conversion</div></div>
+      <div><div class="hero-stat-val">$2.04M</div><div class="hero-stat-lbl">Migration revenue (one-time)</div></div>
+      <div><div class="hero-stat-val">3 tiers</div><div class="hero-stat-lbl">100K – 500K donors</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="page">
+
+  <!-- TIER SECTION -->
+  <div class="sec-header">
+    <div class="sec-tag">Platform pricing</div>
+    <div class="sec-title">Three tiers — priced by donor database size</div>
+    <div class="sec-sub">Donor count is the right metric — it drives storage, query performance, Guru AI processing, and migration effort. A number every diocese knows instantly.</div>
+  </div>
+
+  <div class="tier-grid">
+
+    <!-- TIER 1 -->
+    <div class="tier-card">
+      <div class="tc-top">
+        <div class="tc-badge" style="background:#F1F5F9;color:#64748B">Tier 1</div>
+        <div class="tc-name">Foundation</div>
+        <div class="tc-range">Up to 150K donor records</div>
+      </div>
+      <div class="tc-body">
+        <div class="price-block">
+          <div class="price-label">Annual platform fee</div>
+          <div class="price-val">$42,000 <span class="price-sub">/ yr</span></div>
+        </div>
+        <div class="price-block">
+          <div class="price-label">Monthly equivalent</div>
+          <div class="price-val price-sm">$3,500 <span class="price-sub">/ mo</span></div>
+        </div>
+        <div class="price-divider"></div>
+        <div class="price-block">
+          <div class="price-label">Migration — one-time</div>
+          <div class="price-val price-sm">$18,000 – $25,000</div>
+        </div>
+        <div class="price-divider"></div>
+        <div class="feature-list">
+          <div class="feat-row"><div class="feat-check" style="background:#EFF6FF"><svg viewBox="0 0 9 9" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round"><path d="M1.5 4.5l2 2 4-4"/></svg></div>Full Atlas CRM + Guru AI</div>
+          <div class="feat-row"><div class="feat-check" style="background:#EFF6FF"><svg viewBox="0 0 9 9" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round"><path d="M1.5 4.5l2 2 4-4"/></svg></div>Diocese → Parish hierarchy</div>
+          <div class="feat-row"><div class="feat-check" style="background:#EFF6FF"><svg viewBox="0 0 9 9" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round"><path d="M1.5 4.5l2 2 4-4"/></svg></div>Raiser's Edge data migration</div>
+          <div class="feat-row"><div class="feat-check" style="background:#EFF6FF"><svg viewBox="0 0 9 9" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round"><path d="M1.5 4.5l2 2 4-4"/></svg></div>Onboarding + training (40 hrs)</div>
+          <div class="feat-row"><div class="feat-check" style="background:#EFF6FF"><svg viewBox="0 0 9 9" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round"><path d="M1.5 4.5l2 2 4-4"/></svg></div>Standard support SLA</div>
+        </div>
+        <div class="bundle-pill">
+          <svg viewBox="0 0 16 16" fill="none" stroke="#15803D" stroke-width="1.5" stroke-linecap="round"><path d="M8 2l1.5 3.5L13 6l-2.5 2.5.5 3.5L8 10.5 5 12l.5-3.5L3 6l3.5-.5z"/></svg>
+          Bundle with GC: <strong>15% off</strong> Atlas
+        </div>
+      </div>
+    </div>
+
+    <!-- TIER 2 -->
+    <div class="tier-card featured">
+      <div class="tc-top">
+        <div class="tc-badge" style="background:#EFF6FF;color:#2563EB">Tier 2 — most common</div>
+        <div class="tc-name">Diocese</div>
+        <div class="tc-range">150K – 300K donor records</div>
+      </div>
+      <div class="tc-body">
+        <div class="price-block">
+          <div class="price-label">Annual platform fee</div>
+          <div class="price-val">$65,000 <span class="price-sub">/ yr</span></div>
+        </div>
+        <div class="price-block">
+          <div class="price-label">Monthly equivalent</div>
+          <div class="price-val price-sm">$5,417 <span class="price-sub">/ mo</span></div>
+        </div>
+        <div class="price-divider"></div>
+        <div class="price-block">
+          <div class="price-label">Migration — one-time</div>
+          <div class="price-val price-sm">$28,000 – $40,000</div>
+        </div>
+        <div class="price-divider"></div>
+        <div class="feature-list">
+          <div class="feat-row"><div class="feat-check" style="background:#EFF6FF"><svg viewBox="0 0 9 9" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round"><path d="M1.5 4.5l2 2 4-4"/></svg></div>Everything in Foundation</div>
+          <div class="feat-row"><div class="feat-check" style="background:#EFF6FF"><svg viewBox="0 0 9 9" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round"><path d="M1.5 4.5l2 2 4-4"/></svg></div>Multi-parish campaign portal</div>
+          <div class="feat-row"><div class="feat-check" style="background:#EFF6FF"><svg viewBox="0 0 9 9" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round"><path d="M1.5 4.5l2 2 4-4"/></svg></div>Wealth screening integration (iWave / DonorSearch) <span style="font-size:11px;color:var(--text4);font-weight:400">+$4K/yr connector</span></div>
+          <div class="feat-row"><div class="feat-check" style="background:#EFF6FF"><svg viewBox="0 0 9 9" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round"><path d="M1.5 4.5l2 2 4-4"/></svg></div>Moves management pipeline</div>
+          <div class="feat-row"><div class="feat-check" style="background:#EFF6FF"><svg viewBox="0 0 9 9" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round"><path d="M1.5 4.5l2 2 4-4"/></svg></div>Onboarding + training (80 hrs)</div>
+          <div class="feat-row"><div class="feat-check" style="background:#EFF6FF"><svg viewBox="0 0 9 9" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round"><path d="M1.5 4.5l2 2 4-4"/></svg></div>Priority support SLA</div>
+        </div>
+        <div class="bundle-pill">
+          <svg viewBox="0 0 16 16" fill="none" stroke="#15803D" stroke-width="1.5" stroke-linecap="round"><path d="M8 2l1.5 3.5L13 6l-2.5 2.5.5 3.5L8 10.5 5 12l.5-3.5L3 6l3.5-.5z"/></svg>
+          Bundle with GC: <strong>20% off</strong> Atlas
+        </div>
+      </div>
+    </div>
+
+    <!-- TIER 3 -->
+    <div class="tier-card">
+      <div class="tc-top">
+        <div class="tc-badge" style="background:#F1F5F9;color:#64748B">Tier 3</div>
+        <div class="tc-name">Archdiocese</div>
+        <div class="tc-range">300K – 500K donor records</div>
+      </div>
+      <div class="tc-body">
+        <div class="price-block">
+          <div class="price-label">Annual platform fee</div>
+          <div class="price-val">$95,000 <span class="price-sub">/ yr</span></div>
+        </div>
+        <div class="price-block">
+          <div class="price-label">Monthly equivalent</div>
+          <div class="price-val price-sm">$7,917 <span class="price-sub">/ mo</span></div>
+        </div>
+        <div class="price-divider"></div>
+        <div class="price-block">
+          <div class="price-label">Migration — one-time</div>
+          <div class="price-val price-sm">$45,000 – $65,000</div>
+        </div>
+        <div class="price-divider"></div>
+        <div class="feature-list">
+          <div class="feat-row"><div class="feat-check" style="background:#EFF6FF"><svg viewBox="0 0 9 9" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round"><path d="M1.5 4.5l2 2 4-4"/></svg></div>Everything in Diocese</div>
+          <div class="feat-row"><div class="feat-check" style="background:#EFF6FF"><svg viewBox="0 0 9 9" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round"><path d="M1.5 4.5l2 2 4-4"/></svg></div>Custom GL / fund mapping</div>
+          <div class="feat-row"><div class="feat-check" style="background:#EFF6FF"><svg viewBox="0 0 9 9" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round"><path d="M1.5 4.5l2 2 4-4"/></svg></div>Wealth screening + RelSci integration <span style="font-size:11px;color:var(--text4);font-weight:400">+$4K/yr connector</span></div>
+          <div class="feat-row"><div class="feat-check" style="background:#EFF6FF"><svg viewBox="0 0 9 9" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round"><path d="M1.5 4.5l2 2 4-4"/></svg></div>Dedicated success manager</div>
+          <div class="feat-row"><div class="feat-check" style="background:#EFF6FF"><svg viewBox="0 0 9 9" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round"><path d="M1.5 4.5l2 2 4-4"/></svg></div>SSO / SAML integration</div>
+          <div class="feat-row"><div class="feat-check" style="background:#EFF6FF"><svg viewBox="0 0 9 9" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round"><path d="M1.5 4.5l2 2 4-4"/></svg></div>Onboarding + training (120 hrs)</div>
+          <div class="feat-row"><div class="feat-check" style="background:#EFF6FF"><svg viewBox="0 0 9 9" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round"><path d="M1.5 4.5l2 2 4-4"/></svg></div>Enterprise SLA + escalation</div>
+        </div>
+        <div class="bundle-pill">
+          <svg viewBox="0 0 16 16" fill="none" stroke="#15803D" stroke-width="1.5" stroke-linecap="round"><path d="M8 2l1.5 3.5L13 6l-2.5 2.5.5 3.5L8 10.5 5 12l.5-3.5L3 6l3.5-.5z"/></svg>
+          Bundle with GC: <strong>25% off</strong> Atlas
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- REVENUE BANNER -->
+  <div class="rev-banner" style="margin-bottom:48px">
+    <div class="rev-stat">
+      <div class="rv-val">60</div>
+      <div class="rv-lbl">Target diocesan clients</div>
+    </div>
+    <div class="rev-stat">
+      <div class="rv-val green">$3.9M</div>
+      <div class="rv-lbl">ARR at full conversion</div>
+    </div>
+    <div class="rev-stat">
+      <div class="rv-val amber">$2.04M</div>
+      <div class="rv-lbl">Migration revenue (one-time)</div>
+    </div>
+    <div class="rev-stat">
+      <div class="rv-val">20%</div>
+      <div class="rv-lbl">Yr 1 target = $780K ARR</div>
+    </div>
+  </div>
+
+  <!-- CALCULATOR -->
+  <div class="sec-header">
+    <div class="sec-tag">Deal calculator</div>
+    <div class="sec-title">Model a specific client</div>
+    <div class="sec-sub">Adjust the four variables to generate an instant deal breakdown with competitive comparison against Raiser's Edge.</div>
+  </div>
+
+  <div class="calc-wrap">
+    <div class="calc-header">
+      <div class="calc-header-icon">
+        <svg viewBox="0 0 16 16" fill="none" stroke="white" stroke-width="1.4" stroke-linecap="round">
+          <rect x="2" y="2" width="12" height="12" rx="2"/>
+          <path d="M5 8h6M8 5v6"/>
+        </svg>
+      </div>
+      <div>
+        <div class="calc-header-title">Deal calculator</div>
+        <div class="calc-header-sub">Adjust inputs — pricing updates instantly</div>
+      </div>
+    </div>
+
+    <div class="calc-controls">
+      <div>
+        <div class="ctrl-label">Donor record count</div>
+        <select class="ctrl-select" id="sel-tier" onchange="calc()">
+          <option value="1">Up to 150K (Foundation)</option>
+          <option value="2" selected>150K – 300K (Diocese)</option>
+          <option value="3">300K – 500K (Archdiocese)</option>
+        </select>
+      </div>
+      <div>
+        <div class="ctrl-label">Existing GiveCentral client?</div>
+        <select class="ctrl-select" id="sel-gc" onchange="calc()">
+          <option value="1">Yes — bundle discount applies</option>
+          <option value="0">No — Atlas standalone</option>
+        </select>
+      </div>
+      <div>
+        <div class="ctrl-label">Migration complexity</div>
+        <select class="ctrl-select" id="sel-mig" onchange="calc()">
+          <option value="low">Low — clean RE data, standard funds</option>
+          <option value="mid" selected>Medium — custom fields, multi-parish</option>
+          <option value="high">High — complex GL mapping, legacy data</option>
+        </select>
+      </div>
+      <div>
+        <div class="ctrl-label">Contract term</div>
+        <select class="ctrl-select" id="sel-term" onchange="calc()">
+          <option value="1">1 year</option>
+          <option value="3">3 years (+5% discount)</option>
+          <option value="5">5 years (+10% discount)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="calc-metrics" id="calc-metrics"></div>
+
+    <div class="calc-breakdown">
+      <table class="cb-table" id="cb-table"></table>
+    </div>
+  </div>
+
+  <!-- STRATEGY -->
+  <div class="sec-header">
+    <div class="sec-tag">Go-to-market</div>
+    <div class="sec-title">Strategy considerations</div>
+    <div class="sec-sub">How to sequence the 60-client opportunity and address the key objections at each stage.</div>
+  </div>
+
+  <div class="strategy-grid">
+
+    <div class="strat-card">
+      <div class="sc-icon" style="background:#EFF6FF">
+        <svg viewBox="0 0 20 20" fill="none" stroke="#2563EB" stroke-width="1.5" stroke-linecap="round">
+          <circle cx="7" cy="7" r="4"/><circle cx="14" cy="7" r="4"/>
+          <path d="M1.5 16.5c0-3 2.5-5 5.5-5h2"/>
+          <path d="M10 11.5c3 0 5.5 2 5.5 5"/>
+        </svg>
+      </div>
+      <div class="sc-title">Existing GC clients first</div>
+      <div class="sc-body">Lead with the 60 existing clients. They trust GiveCentral, already see the platform's value, and the bundle discount creates a clear financial incentive to consolidate.</div>
+      <div class="sc-list">
+        <div class="sc-item"><span class="sc-dash">–</span>Position Atlas as the CRM layer that was always missing</div>
+        <div class="sc-item"><span class="sc-dash">–</span>No new vendor relationship — just expanding what they have</div>
+        <div class="sc-item"><span class="sc-dash">–</span>Bundle discount removes the "why pay more" objection</div>
+        <div class="sc-item"><span class="sc-dash">–</span>Their GC transaction history pre-populates Atlas on day one</div>
+      </div>
+    </div>
+
+    <div class="strat-card">
+      <div class="sc-icon" style="background:#DCFCE7">
+        <svg viewBox="0 0 20 20" fill="none" stroke="#15803D" stroke-width="1.5" stroke-linecap="round">
+          <path d="M5 10h10M10 5l5 5-5 5"/>
+        </svg>
+      </div>
+      <div class="sc-title">Raiser's Edge displacement</div>
+      <div class="sc-body">RE NXT scales to $40–80K+ for large dioceses. Atlas competes on native giving integration, diocese-specific hierarchy, and Guru AI — things RE cannot match.</div>
+      <div class="sc-list">
+        <div class="sc-item"><span class="sc-dash">–</span>Lead with the RE annual cost comparison in every proposal</div>
+        <div class="sc-item"><span class="sc-dash">–</span>Migration service removes the switching cost objection</div>
+        <div class="sc-item"><span class="sc-dash">–</span>RE has no native GiveCentral integration — ever</div>
+        <div class="sc-item"><span class="sc-dash">–</span>Diocese clients hate paying for two systems that don't talk</div>
+      </div>
+    </div>
+
+    <div class="strat-card">
+      <div class="sc-icon" style="background:#FEF3C7">
+        <svg viewBox="0 0 20 20" fill="none" stroke="#D97706" stroke-width="1.5" stroke-linecap="round">
+          <rect x="3" y="5" width="14" height="12" rx="2"/>
+          <path d="M7 5V4a1 1 0 011-1h4a1 1 0 011 1v1"/>
+          <path d="M10 10v4M8 12h4"/>
+        </svg>
+      </div>
+      <div class="sc-title">Migration as a profit centre</div>
+      <div class="sc-body">Migration is not a cost of sale — it's a service line. RE to Atlas migrations are repeatable and can be systematised across 60 clients.</div>
+      <div class="sc-list">
+        <div class="sc-item"><span class="sc-dash">–</span>Build the RE → Atlas import toolkit once, amortise across 60</div>
+        <div class="sc-item"><span class="sc-dash">–</span>Offer a fixed-price guarantee to reduce client anxiety</div>
+        <div class="sc-item"><span class="sc-dash">–</span>Use early migrations as case studies for later conversions</div>
+        <div class="sc-item"><span class="sc-dash">–</span>Margin improves dramatically by client 10</div>
+      </div>
+    </div>
+
+    <div class="strat-card">
+      <div class="sc-icon" style="background:#EDE9FE">
+        <svg viewBox="0 0 20 20" fill="none" stroke="#7C3AED" stroke-width="1.5" stroke-linecap="round">
+          <path d="M3 14l4-6 4 4 4-8"/>
+        </svg>
+      </div>
+      <div class="sc-title">Pipeline revenue potential</div>
+      <div class="sc-body">At mid-tier pricing the 60-client opportunity is substantial even at conservative conversion rates.</div>
+      <div class="sc-list">
+        <div class="sc-item"><span class="sc-dash">–</span>60 clients × $65K avg = $3.9M ARR at full conversion</div>
+        <div class="sc-item"><span class="sc-dash">–</span>Migration: 60 × $34K avg = $2.04M one-time revenue</div>
+        <div class="sc-item"><span class="sc-dash">–</span>20% Yr 1 conversion = $780K ARR + $408K migration</div>
+        <div class="sc-item"><span class="sc-dash">–</span>GC + Atlas clients churn significantly less than single-product</div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="page-footer">
+  <div class="pf-left"><strong>GiveCentral Atlas</strong> — Diocesan Pricing Model · Internal use only</div>
+  <div class="pf-right">Updated May 2026</div>
+</div>
+
+<script>
+const TIERS = {
+  1: { name:'Foundation',  platform:42000, migLow:18000, migMid:22000, migHigh:25000, gcDisc:0.15 },
+  2: { name:'Diocese',     platform:65000, migLow:28000, migMid:34000, migHigh:40000, gcDisc:0.20 },
+  3: { name:'Archdiocese', platform:95000, migLow:45000, migMid:55000, migHigh:65000, gcDisc:0.25 },
+};
+const fmt = n => '$' + Math.round(n).toLocaleString();
+
+function calc() {
+  const tier    = TIERS[document.getElementById('sel-tier').value];
+  const isGC    = document.getElementById('sel-gc').value === '1';
+  const migKey  = document.getElementById('sel-mig').value;
+  const term    = parseInt(document.getElementById('sel-term').value);
+  const migCost = migKey==='low' ? tier.migLow : migKey==='mid' ? tier.migMid : tier.migHigh;
+  const gcDisc  = isGC ? tier.gcDisc : 0;
+  const termDisc= term===3 ? 0.05 : term===5 ? 0.10 : 0;
+  const totalDisc = Math.min(gcDisc + termDisc, 0.35);
+  const platformBase   = tier.platform;
+  const platformAnnual = Math.round(platformBase * (1 - totalDisc));
+  const platformTotal  = platformAnnual * term;
+  // Wealth connector only applies to Diocese (tier 2) and Archdiocese (tier 3)
+  const wealthConnector = parseInt(document.getElementById('sel-tier').value) >= 2 ? 4000 : 0;
+  const totalFirstYear = platformAnnual + migCost + wealthConnector;
+  const totalAnnual    = platformAnnual + wealthConnector;
+  const vsRE = Math.round(platformBase * 0.9);
+  const saving = Math.round(platformBase - platformAnnual + (isGC ? 8000 : 0));
+
+  // Metrics
+  document.getElementById('calc-metrics').innerHTML = `
+    <div class="c-metric">
+      <div class="cm-label">Annual platform fee</div>
+      <div class="cm-val">${fmt(platformAnnual)}</div>
+      <div class="cm-sub">${totalDisc > 0 ? Math.round(totalDisc*100)+'% total discount' : 'No discount applied'}</div>
+    </div>
+    <div class="c-metric">
+      <div class="cm-label">Migration (one-time)</div>
+      <div class="cm-val">${fmt(migCost)}</div>
+      <div class="cm-sub">${migKey.charAt(0).toUpperCase()+migKey.slice(1)} complexity</div>
+    </div>
+    <div class="c-metric">
+      <div class="cm-label">Year 1 total</div>
+      <div class="cm-val">${fmt(totalFirstYear)}</div>
+      <div class="cm-sub">Platform + connector + migration</div>
+    </div>
+    <div class="c-metric">
+      <div class="cm-label">${term}-year contract value</div>
+      <div class="cm-val">${fmt(totalAnnual * term + migCost)}</div>
+      <div class="cm-sub">Incl. one-time migration</div>
+    </div>`;
+
+  // Breakdown
+  const rows = [
+    { label:'Atlas platform — list price', val:fmt(platformBase), note:'per year', cls:'' },
+    isGC ? { label:'GiveCentral bundle discount', val:'–'+Math.round(gcDisc*100)+'%', note:fmt(platformBase*gcDisc)+' saved / yr', cls:'row-saving' } : null,
+    term>1 ? { label:'Multi-year commitment discount', val:'–'+Math.round(termDisc*100)+'%', note:fmt(platformBase*termDisc)+' saved / yr', cls:'row-saving' } : null,
+    { label:'Atlas platform — net price', val:fmt(platformAnnual), note:'per year', cls:'row-total' },
+    wealthConnector > 0 ? { label:'Wealth screening connector (iWave / DonorSearch)', val:fmt(wealthConnector), note:'per year · Diocese & Archdiocese tiers · data subscription billed separately by provider', cls:'' } : null,
+    { label:'Migration from Raiser\'s Edge', val:fmt(migCost), note:'one-time fixed price', cls:'' },
+    { label:'Year 1 total investment', val:fmt(totalFirstYear), note:'platform + connector + migration', cls:'row-final' },
+    term>1 ? { label:'Total contract value ('+term+' yrs)', val:fmt(totalAnnual*term+migCost), note:'', cls:'row-final' } : null,
+    { label:'Comparable RE NXT cost (est.)', val:fmt(vsRE), note:'per year — no GC integration, no connector needed', cls:'' },
+    { label:'Annual saving vs. RE + GC separate', val:fmt(saving), note:'per year after all discounts', cls:'row-saving' },
+  ].filter(Boolean);
+
+  document.getElementById('cb-table').innerHTML =
+    '<thead><tr><th style="width:55%">Line item</th><th style="width:20%">Amount</th><th class="td-note">Notes</th></tr></thead><tbody>' +
+    rows.map(r =>
+      `<tr class="${r.cls}"><td>${r.label}</td><td>${r.val}</td><td class="td-note">${r.note}</td></tr>`
+    ).join('') + '</tbody>';
+}
+calc();
+</script>
+</body>
+</html>
