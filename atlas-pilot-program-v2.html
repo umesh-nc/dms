@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Atlas — Founding Partner Pilot Program</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0E1E35;--navy2:#152844;--navy3:#1B3A6B;
+  --blue:#2563EB;--bluel:#DBEAFE;--bluep:#EFF6FF;
+  --green:#15803D;--greenl:#DCFCE7;--greend:#14532D;
+  --amber:#D97706;--amberl:#FEF3C7;--amberd:#78350F;
+  --red:#DC2626;--redl:#FEE2E2;--redd:#7F1D1D;
+  --teal:#0D9488;--teall:#CCFBF1;
+  --text:#0F172A;--text2:#334155;--text3:#64748B;--text4:#94A3B8;
+  --border:#E2E8F0;--surf:#F8FAFC;
+}
+html{font-size:15px;-webkit-font-smoothing:antialiased}
+body{font-family:'DM Sans',sans-serif;background:#EDF0F7;color:var(--text);min-height:100vh}
+
+/* ── CHROME ── */
+.chrome{background:var(--navy);padding:0 40px;height:56px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:100}
+.chrome-mark{width:30px;height:30px;background:var(--blue);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.chrome-mark svg{width:14px;height:14px}
+.chrome-name{font-family:'DM Serif Display',serif;font-size:16px;color:white}
+.chrome-sep{width:1px;height:20px;background:rgba(255,255,255,.15)}
+.chrome-trail{font-size:13px;color:rgba(255,255,255,.45)}
+.chrome-right{margin-left:auto;display:flex;gap:8px}
+.chrome-pill{font-size:11px;font-weight:600;padding:4px 12px;border-radius:20px}
+
+/* ── HERO ── */
+.hero{background:linear-gradient(135deg,var(--navy) 0%,#1B3460 55%,#163058 100%);padding:60px 40px 56px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-80px;right:-80px;width:400px;height:400px;border-radius:50%;background:rgba(37,99,235,.07);pointer-events:none}
+.hero::after{content:'';position:absolute;bottom:-100px;left:30%;width:300px;height:300px;border-radius:50%;background:rgba(13,148,136,.05);pointer-events:none}
+.hero-inner{max-width:1140px;margin:0 auto;padding:0 32px;position:relative}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:5px 14px;font-size:11px;font-weight:600;color:rgba(255,255,255,.7);letter-spacing:.07em;text-transform:uppercase;margin-bottom:20px}
+.hero-eyebrow-dot{width:7px;height:7px;border-radius:50%;background:#EF4444;animation:blink 2s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.hero-title{font-family:'DM Serif Display',serif;font-size:44px;color:white;line-height:1.15;margin-bottom:14px}
+.hero-title em{font-style:italic;color:#93C5FD}
+.hero-sub{font-size:16px;color:rgba(255,255,255,.55);line-height:1.7;max-width:600px;margin-bottom:32px}
+.hero-spots{display:flex;gap:10px;flex-wrap:wrap}
+.spot-chip{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1px solid transparent}
+.chip-danger{background:rgba(220,38,38,.2);border-color:rgba(220,38,38,.35);color:#FCA5A5}
+.chip-amber{background:rgba(217,119,6,.2);border-color:rgba(217,119,6,.35);color:#FCD34D}
+.chip-blue{background:rgba(37,99,235,.2);border-color:rgba(37,99,235,.4);color:#93C5FD}
+.chip-dot{width:7px;height:7px;border-radius:50%}
+
+/* ── PAGE ── */
+.page{max-width:1140px;margin:0 auto;padding:48px 32px 80px}
+
+/* ── SECTION HEADER ── */
+.sec-hd{margin-bottom:24px}
+.sec-tag{display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:600;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px}
+.sec-tag::before{content:'';width:18px;height:2px;background:var(--blue);border-radius:1px}
+.sec-title{font-family:'DM Serif Display',serif;font-size:26px;color:var(--text)}
+.sec-sub{font-size:14px;color:var(--text3);margin-top:6px;line-height:1.65}
+
+/* ── SAVINGS BANNER ── */
+.savings-banner{background:linear-gradient(135deg,var(--greend),var(--green));border-radius:16px;padding:28px 36px;margin-bottom:40px;display:flex;align-items:center;gap:24px;position:relative;overflow:hidden}
+.savings-banner::after{content:'50%';position:absolute;right:-20px;top:50%;transform:translateY(-50%);font-family:'DM Serif Display',serif;font-size:140px;color:rgba(255,255,255,.05);line-height:1;pointer-events:none}
+.sb-icon{width:52px;height:52px;background:rgba(255,255,255,.15);border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sb-icon svg{width:26px;height:26px;color:white}
+.sb-text{flex:1}
+.sb-title{font-family:'DM Serif Display',serif;font-size:20px;color:white;margin-bottom:5px}
+.sb-sub{font-size:14px;color:rgba(255,255,255,.7);line-height:1.6}
+.sb-num-wrap{text-align:right;flex-shrink:0}
+.sb-num{font-family:'DM Serif Display',serif;font-size:48px;color:white;line-height:1}
+.sb-num-lbl{font-size:13px;color:rgba(255,255,255,.55);margin-top:3px}
+
+/* ── COMPARISON TABLE ── */
+.table-card{background:white;border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:40px;box-shadow:0 2px 12px rgba(14,30,53,.05)}
+.cmp-table{width:100%;border-collapse:collapse;font-size:14px}
+.cmp-table thead th{padding:12px 20px;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:rgba(255,255,255,.6);background:var(--navy);border-right:1px solid rgba(255,255,255,.08);text-align:left}
+.cmp-table thead th.c{text-align:center}
+.cmp-table thead th:last-child{border-right:none}
+.cmp-table tbody td{padding:14px 20px;border-bottom:.5px solid var(--border);vertical-align:middle}
+.cmp-table tbody td.c{text-align:center}
+.cmp-table tbody tr:last-child td{border-bottom:none}
+.cmp-table tbody tr:hover td{background:var(--surf)}
+.tier-tag{display:inline-flex;align-items:center;font-size:12px;font-weight:600;padding:3px 10px;border-radius:20px}
+.saving-tag{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600;padding:4px 10px;border-radius:20px;background:var(--greenl);color:var(--greend)}
+.saving-tag svg{width:11px;height:11px}
+.pilot-val{font-size:15px;font-weight:600;color:var(--greend)}
+
+/* ── TWO COLUMN ── */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:40px}
+
+/* ── ELIGIBILITY + COMMITMENTS CARDS ── */
+.panel-card{background:white;border:1px solid var(--border);border-radius:16px;overflow:hidden;box-shadow:0 2px 12px rgba(14,30,53,.05)}
+.pc-head{padding:16px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;background:var(--surf)}
+.pc-head-icon{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.pc-head-icon svg{width:16px;height:16px}
+.pc-head-title{font-size:15px;font-weight:600;color:var(--text)}
+.pc-body{padding:0}
+.crit-row{display:flex;align-items:flex-start;gap:12px;padding:13px 22px;border-bottom:.5px solid var(--border);transition:background .1s}
+.crit-row:last-child{border-bottom:none}
+.crit-row:hover{background:var(--surf)}
+.crit-icon{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.crit-icon svg{width:11px;height:11px}
+.crit-text{font-size:13px;color:var(--text2);line-height:1.6;flex:1}
+.crit-text.muted{color:var(--text3)}
+
+.commit-row{display:flex;align-items:flex-start;gap:12px;padding:13px 22px;border-bottom:.5px solid var(--border);transition:background .1s}
+.commit-row:last-child{border-bottom:none}
+.commit-row:hover{background:var(--surf)}
+.commit-ico{width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.commit-ico svg{width:14px;height:14px}
+.commit-body{flex:1}
+.commit-text{font-size:13px;color:var(--text2);line-height:1.6}
+.commit-pill{display:inline-block;margin-top:5px;font-size:11px;font-weight:600;padding:2px 9px;border-radius:20px}
+
+/* ── GC PROVIDES GRID ── */
+.provides-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:40px}
+.prov-card{background:white;border:1px solid var(--border);border-radius:14px;padding:22px;transition:transform .15s,box-shadow .15s}
+.prov-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(14,30,53,.08)}
+.prov-icon-wrap{width:46px;height:46px;border-radius:13px;display:flex;align-items:center;justify-content:center;margin-bottom:14px}
+.prov-icon-wrap svg{width:22px;height:22px}
+.prov-title{font-size:15px;font-weight:600;color:var(--text);margin-bottom:6px}
+.prov-sub{font-size:13px;color:var(--text3);line-height:1.65}
+
+/* ── TIMELINE ── */
+.timeline-wrap{background:white;border:1px solid var(--border);border-radius:16px;overflow:hidden;box-shadow:0 2px 12px rgba(14,30,53,.05)}
+.tl-header{background:var(--navy);padding:16px 24px;display:flex;align-items:center;gap:10px}
+.tl-header-icon{width:32px;height:32px;background:rgba(37,99,235,.3);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.tl-header-icon svg{width:15px;height:15px;color:white}
+.tl-header-title{font-family:'DM Serif Display',serif;font-size:18px;color:white}
+.tl-header-sub{font-size:12px;color:rgba(255,255,255,.4);margin-top:2px}
+.tl-grid{display:grid;grid-template-columns:1fr 1fr;border-top:none}
+.tl-col{padding:28px 28px 28px 28px;border-right:1px solid var(--border)}
+.tl-col:last-child{border-right:none}
+.tl-col-label{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text4);margin-bottom:20px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+.tl-item{display:flex;gap:14px;padding-bottom:24px;position:relative}
+.tl-item:last-child{padding-bottom:0}
+.tl-left{display:flex;flex-direction:column;align-items:center;flex-shrink:0}
+.tl-dot{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;position:relative;z-index:1}
+.tl-line{width:2px;flex:1;min-height:14px;margin-top:4px;border-radius:1px}
+.tl-item:last-child .tl-line{display:none}
+.tl-body{flex:1;padding-top:4px}
+.tl-phase{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:3px}
+.tl-name{font-size:14px;font-weight:600;color:var(--text);margin-bottom:5px}
+.tl-detail{font-size:13px;color:var(--text3);line-height:1.65}
+
+/* ── FOOTER ── */
+.page-footer{background:var(--navy);padding:22px 40px;display:flex;align-items:center;justify-content:space-between}
+.pf-left{font-size:13px;color:rgba(255,255,255,.4)}
+.pf-left strong{color:rgba(255,255,255,.7)}
+.pf-right{font-size:12px;color:rgba(255,255,255,.3)}
+</style>
+</head>
+<body>
+
+<!-- CHROME -->
+<div class="chrome">
+  <div class="chrome-mark">
+    <svg viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7.5" stroke="white" stroke-width="1.5"/><path d="M5.5 9.5C6.5 11.5 9 13 9 13s2.5-1.5 3.5-3.5S12 5 9 5 4.5 7.5 5.5 9.5z" fill="white" fill-opacity=".9"/></svg>
+  </div>
+  <span class="chrome-name">GiveCentral Atlas</span>
+  <div class="chrome-sep"></div>
+  <span class="chrome-trail">Founding Partner Pilot Program</span>
+  <div class="chrome-right">
+    <span class="chrome-pill" style="background:rgba(220,38,38,.2);border:1px solid rgba(220,38,38,.35);color:#FCA5A5">3–5 spots only</span>
+    <span class="chrome-pill" style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.6)">Internal · Confidential</span>
+  </div>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-eyebrow">
+      <div class="hero-eyebrow-dot"></div>
+      Limited availability · founding partner cohort
+    </div>
+    <div class="hero-title">Atlas Pilot Program —<br><em>founding partner</em> cohort</div>
+    <div class="hero-sub">The first 3–5 diocesan clients to adopt Atlas receive significantly reduced migration fees, dedicated white-glove onboarding, and direct input into the product roadmap — in exchange for a published case study and willingness to serve as a reference client.</div>
+    <div class="hero-spots">
+      <div class="spot-chip chip-danger">
+        <div class="chip-dot" style="background:#EF4444"></div>
+        3–5 spots only
+      </div>
+      <div class="spot-chip chip-amber">
+        <div class="chip-dot" style="background:#F59E0B"></div>
+        Existing GiveCentral clients preferred
+      </div>
+      <div class="spot-chip chip-blue">
+        <div class="chip-dot" style="background:#60A5FA"></div>
+        Applications close when cohort is full
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="page">
+
+  <!-- SAVINGS BANNER -->
+  <div class="savings-banner">
+    <div class="sb-icon">
+      <svg viewBox="0 0 26 26" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round">
+        <circle cx="13" cy="13" r="10.5"/>
+        <path d="M13 6v2M13 18v2M9 10.5c0-1.4 1.8-2.5 4-2.5s4 1.1 4 2.5-1.8 2.5-4 2.5-4 1.1-4 2.5 1.8 2.5 4 2.5 4-1.1 4-2.5"/>
+      </svg>
+    </div>
+    <div class="sb-text">
+      <div class="sb-title">Pilot migration savings — 50% off, guaranteed at signing</div>
+      <div class="sb-sub">Migration fees are halved for all founding partner clients — fixed price with no time-and-materials risk. Platform pricing remains standard, plus any applicable GiveCentral bundle discount.</div>
+    </div>
+    <div class="sb-num-wrap">
+      <div class="sb-num">50%</div>
+      <div class="sb-num-lbl">off migration</div>
+    </div>
+  </div>
+
+  <!-- COMPARISON TABLE -->
+  <div class="sec-hd">
+    <div class="sec-tag">Pricing comparison</div>
+    <div class="sec-title">Pilot vs. standard — by tier</div>
+    <div class="sec-sub">Platform fees are unchanged. The saving is entirely on migration — the most significant one-time cost in the conversion.</div>
+  </div>
+
+  <div class="table-card">
+    <table class="cmp-table">
+      <thead>
+        <tr>
+          <th>Tier</th>
+          <th>Donor records</th>
+          <th class="c">Standard migration</th>
+          <th class="c">Pilot migration (50% off)</th>
+          <th class="c">Your saving</th>
+          <th class="c">Platform fee (annual)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="tier-tag" style="background:#F1F5F9;color:#475569">Foundation</span></td>
+          <td style="color:var(--text3)">Up to 150K</td>
+          <td class="c" style="color:var(--text3);text-decoration:line-through">$18K – $25K</td>
+          <td class="c"><span class="pilot-val">$9K – $12.5K</span></td>
+          <td class="c">
+            <span class="saving-tag">
+              <svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5.5 1.5v8M2.5 6.5l3 3 3-3"/></svg>
+              Save $9K – $12.5K
+            </span>
+          </td>
+          <td class="c" style="color:var(--text3)">$42K / yr</td>
+        </tr>
+        <tr style="background:#FAFBFF">
+          <td><span class="tier-tag" style="background:var(--bluep);color:var(--blue)">Diocese</span></td>
+          <td style="color:var(--text3)">150K – 300K</td>
+          <td class="c" style="color:var(--text3);text-decoration:line-through">$28K – $40K</td>
+          <td class="c"><span class="pilot-val">$14K – $20K</span></td>
+          <td class="c">
+            <span class="saving-tag">
+              <svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5.5 1.5v8M2.5 6.5l3 3 3-3"/></svg>
+              Save $14K – $20K
+            </span>
+          </td>
+          <td class="c" style="color:var(--text3)">$65K / yr</td>
+        </tr>
+        <tr>
+          <td><span class="tier-tag" style="background:#F1F5F9;color:#475569">Archdiocese</span></td>
+          <td style="color:var(--text3)">300K – 500K</td>
+          <td class="c" style="color:var(--text3);text-decoration:line-through">$45K – $65K</td>
+          <td class="c"><span class="pilot-val">$22.5K – $32.5K</span></td>
+          <td class="c">
+            <span class="saving-tag">
+              <svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5.5 1.5v8M2.5 6.5l3 3 3-3"/></svg>
+              Save $22.5K – $32.5K
+            </span>
+          </td>
+          <td class="c" style="color:var(--text3)">$95K / yr</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ELIGIBILITY + COMMITMENTS -->
+  <div class="sec-hd">
+    <div class="sec-tag">Terms &amp; eligibility</div>
+    <div class="sec-title">Who qualifies, and what's required</div>
+    <div class="sec-sub">The pilot is a mutual commitment — GiveCentral brings reduced fees and white-glove service; the diocese brings an openness to share their experience.</div>
+  </div>
+
+  <div class="two-col">
+
+    <div class="panel-card">
+      <div class="pc-head">
+        <div class="pc-head-icon" style="background:var(--bluep)">
+          <svg viewBox="0 0 16 16" fill="none" stroke="var(--blue)" stroke-width="1.5" stroke-linecap="round">
+            <path d="M8 2a4 4 0 100 8A4 4 0 008 2z"/>
+            <path d="M3 14c0-2.5 2.2-4.5 5-4.5s5 2 5 4.5"/>
+            <path d="M11 6l1.5 1.5L15 5"/>
+          </svg>
+        </div>
+        <div class="pc-head-title">Eligibility criteria</div>
+      </div>
+      <div class="pc-body">
+        <div class="crit-row">
+          <div class="crit-icon" style="background:var(--greenl)">
+            <svg viewBox="0 0 11 11" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round"><path d="M1.5 5.5l2.5 2.5 5.5-5.5"/></svg>
+          </div>
+          <div class="crit-text">Existing GiveCentral client — strongly preferred. Non-GC clients considered for strong strategic fit.</div>
+        </div>
+        <div class="crit-row">
+          <div class="crit-icon" style="background:var(--greenl)">
+            <svg viewBox="0 0 11 11" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round"><path d="M1.5 5.5l2.5 2.5 5.5-5.5"/></svg>
+          </div>
+          <div class="crit-text">Currently using Raiser's Edge as primary donor CRM</div>
+        </div>
+        <div class="crit-row">
+          <div class="crit-icon" style="background:var(--greenl)">
+            <svg viewBox="0 0 11 11" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round"><path d="M1.5 5.5l2.5 2.5 5.5-5.5"/></svg>
+          </div>
+          <div class="crit-text">Active development office with at least one dedicated data staff member</div>
+        </div>
+        <div class="crit-row">
+          <div class="crit-icon" style="background:var(--greenl)">
+            <svg viewBox="0 0 11 11" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round"><path d="M1.5 5.5l2.5 2.5 5.5-5.5"/></svg>
+          </div>
+          <div class="crit-text">Donor database between 50K and 500K records</div>
+        </div>
+        <div class="crit-row">
+          <div class="crit-icon" style="background:var(--greenl)">
+            <svg viewBox="0 0 11 11" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round"><path d="M1.5 5.5l2.5 2.5 5.5-5.5"/></svg>
+          </div>
+          <div class="crit-text">Able to begin migration within 90 days of signing</div>
+        </div>
+        <div class="crit-row">
+          <div class="crit-icon" style="background:var(--greenl)">
+            <svg viewBox="0 0 11 11" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round"><path d="M1.5 5.5l2.5 2.5 5.5-5.5"/></svg>
+          </div>
+          <div class="crit-text">Leadership sponsor (development director or CFO) committed to the project</div>
+        </div>
+        <div class="crit-row">
+          <div class="crit-icon" style="background:var(--redl)">
+            <svg viewBox="0 0 11 11" fill="none" stroke="var(--red)" stroke-width="2" stroke-linecap="round"><path d="M2 2l7 7M9 2L2 9"/></svg>
+          </div>
+          <div class="crit-text muted">Not eligible: clients mid-contract with RE with more than 12 months remaining, unless RE waives early termination</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel-card">
+      <div class="pc-head">
+        <div class="pc-head-icon" style="background:var(--amberl)">
+          <svg viewBox="0 0 16 16" fill="none" stroke="var(--amber)" stroke-width="1.5" stroke-linecap="round">
+            <path d="M5 8h6M8 5v6"/>
+            <circle cx="8" cy="8" r="6.5"/>
+          </svg>
+        </div>
+        <div class="pc-head-title">What the pilot client commits to</div>
+      </div>
+      <div class="pc-body">
+        <div class="commit-row">
+          <div class="commit-ico" style="background:var(--amberl)">
+            <svg viewBox="0 0 14 14" fill="none" stroke="var(--amber)" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="2" width="10" height="10" rx="1.5"/><path d="M4 6h6M4 8.5h4"/></svg>
+          </div>
+          <div class="commit-body">
+            <div class="commit-text">Participate in a written case study published on GiveCentral's website and marketing materials — reviewed and approved by the diocese before publication</div>
+            <span class="commit-pill" style="background:var(--amberl);color:var(--amberd)">Required</span>
+          </div>
+        </div>
+        <div class="commit-row">
+          <div class="commit-ico" style="background:var(--amberl)">
+            <svg viewBox="0 0 14 14" fill="none" stroke="var(--amber)" stroke-width="1.5" stroke-linecap="round"><path d="M4 2h6v2H4zM2 4h10v8H2z"/><path d="M5 7h4M5 9h2"/></svg>
+          </div>
+          <div class="commit-body">
+            <div class="commit-text">Serve as a reference client — available for up to 3 reference calls per year with prospective dioceses (30 min each)</div>
+            <span class="commit-pill" style="background:var(--amberl);color:var(--amberd)">Required</span>
+          </div>
+        </div>
+        <div class="commit-row">
+          <div class="commit-ico" style="background:var(--bluep)">
+            <svg viewBox="0 0 14 14" fill="none" stroke="var(--blue)" stroke-width="1.5" stroke-linecap="round"><path d="M2 11L5 8l2 2 2-2.5 3 3"/><circle cx="11.5" cy="4.5" r="1.5"/></svg>
+          </div>
+          <div class="commit-body">
+            <div class="commit-text">Monthly check-in calls during the first 6 months post-launch to share feedback with the Atlas product team</div>
+            <span class="commit-pill" style="background:var(--bluep);color:var(--blue)">6 months</span>
+          </div>
+        </div>
+        <div class="commit-row">
+          <div class="commit-ico" style="background:var(--bluep)">
+            <svg viewBox="0 0 14 14" fill="none" stroke="var(--blue)" stroke-width="1.5" stroke-linecap="round"><path d="M2 4h10M2 7h7M2 10h5"/></svg>
+          </div>
+          <div class="commit-body">
+            <div class="commit-text">Complete structured feedback surveys at 30, 90, and 180 days post-migration — results used to improve the product</div>
+            <span class="commit-pill" style="background:var(--bluep);color:var(--blue)">3 surveys</span>
+          </div>
+        </div>
+        <div class="commit-row">
+          <div class="commit-ico" style="background:var(--surf)">
+            <svg viewBox="0 0 14 14" fill="none" stroke="var(--text3)" stroke-width="1.5" stroke-linecap="round"><circle cx="7" cy="5" r="3"/><path d="M2 13c0-2.5 2.2-4 5-4s5 1.5 5 4"/></svg>
+          </div>
+          <div class="commit-body">
+            <div class="commit-text">Designate a named internal project lead with authority to make day-to-day migration decisions</div>
+            <span class="commit-pill" style="background:var(--surf);color:var(--text3);border:1px solid var(--border)">Recommended</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- WHAT GC PROVIDES -->
+  <div class="sec-hd">
+    <div class="sec-tag">GiveCentral's commitment</div>
+    <div class="sec-title">What we provide to pilot clients</div>
+    <div class="sec-sub">Six concrete deliverables — not vague promises — that GiveCentral guarantees to every founding partner client.</div>
+  </div>
+
+  <div class="provides-grid">
+    <div class="prov-card">
+      <div class="prov-icon-wrap" style="background:var(--bluep)">
+        <svg viewBox="0 0 22 22" fill="none" stroke="var(--blue)" stroke-width="1.5" stroke-linecap="round">
+          <circle cx="11" cy="8" r="4.5"/>
+          <path d="M3.5 19c0-3.5 3.4-6.5 7.5-6.5s7.5 3 7.5 6.5"/>
+          <path d="M16 5l1.5 1.5L20 4"/>
+        </svg>
+      </div>
+      <div class="prov-title">Dedicated migration lead</div>
+      <div class="prov-sub">A named GiveCentral project manager owns the migration end-to-end. Single point of contact from kickoff through go-live.</div>
+    </div>
+    <div class="prov-card">
+      <div class="prov-icon-wrap" style="background:var(--greenl)">
+        <svg viewBox="0 0 22 22" fill="none" stroke="var(--green)" stroke-width="1.5" stroke-linecap="round">
+          <circle cx="11" cy="11" r="8.5"/>
+          <path d="M11 6v5l3 3"/>
+          <path d="M7 18l-3 2M15 18l3 2"/>
+        </svg>
+      </div>
+      <div class="prov-title">50% migration discount</div>
+      <div class="prov-sub">Fixed-price migration at half the standard rate. Price is locked at signing — no time-and-materials overruns, ever.</div>
+    </div>
+    <div class="prov-card">
+      <div class="prov-icon-wrap" style="background:var(--amberl)">
+        <svg viewBox="0 0 22 22" fill="none" stroke="var(--amber)" stroke-width="1.5" stroke-linecap="round">
+          <rect x="3" y="4" width="16" height="15" rx="2"/>
+          <path d="M3 9h16M8 4V2M14 4V2"/>
+          <path d="M7 13h4M7 16h8"/>
+        </svg>
+      </div>
+      <div class="prov-title">Priority scheduling</div>
+      <div class="prov-sub">Pilot clients get first access to implementation slots. Migration starts within 30 days of kickoff — no queue.</div>
+    </div>
+    <div class="prov-card">
+      <div class="prov-icon-wrap" style="background:var(--bluep)">
+        <svg viewBox="0 0 22 22" fill="none" stroke="var(--blue)" stroke-width="1.5" stroke-linecap="round">
+          <rect x="3" y="5" width="16" height="13" rx="2"/>
+          <path d="M3 9h16M8 5V3M14 5V3"/>
+          <circle cx="11" cy="14" r="2.5"/>
+        </svg>
+      </div>
+      <div class="prov-title">Extended onboarding</div>
+      <div class="prov-sub">Double the standard training hours at no extra cost. Custom sessions for each role — gift officers, data clerks, finance, development director.</div>
+    </div>
+    <div class="prov-card">
+      <div class="prov-icon-wrap" style="background:#F0FDF4">
+        <svg viewBox="0 0 22 22" fill="none" stroke="#0D9488" stroke-width="1.5" stroke-linecap="round">
+          <path d="M3 18L11 4l8 14H3z"/>
+          <path d="M11 10v4M11 16v.5"/>
+        </svg>
+      </div>
+      <div class="prov-title">Roadmap input</div>
+      <div class="prov-sub">A seat at the table for quarterly product roadmap reviews. Feature requests from pilots are prioritised ahead of the general release queue.</div>
+    </div>
+    <div class="prov-card">
+      <div class="prov-icon-wrap" style="background:var(--amberl)">
+        <svg viewBox="0 0 22 22" fill="none" stroke="var(--amber)" stroke-width="1.5" stroke-linecap="round">
+          <path d="M11 3l2 6h6l-5 4 2 6-5-4-5 4 2-6-5-4h6z"/>
+        </svg>
+      </div>
+      <div class="prov-title">Beta feature access</div>
+      <div class="prov-sub">First access to new Atlas features before general availability — with the option to provide feedback before public release.</div>
+    </div>
+  </div>
+
+  <!-- TIMELINE -->
+  <div class="sec-hd">
+    <div class="sec-tag">Implementation timeline</div>
+    <div class="sec-title">Signing to case study — 6 months</div>
+    <div class="sec-sub">A structured 6-phase journey from pilot agreement through published case study and reference activation.</div>
+  </div>
+
+  <div class="timeline-wrap">
+    <div class="tl-header">
+      <div class="tl-header-icon">
+        <svg viewBox="0 0 15 15" fill="none" stroke="white" stroke-width="1.4" stroke-linecap="round">
+          <circle cx="7.5" cy="7.5" r="6"/><path d="M7.5 4v4l2.5 2"/>
+        </svg>
+      </div>
+      <div>
+        <div class="tl-header-title">Pilot program timeline</div>
+        <div class="tl-header-sub">Typical — exact dates set at kickoff</div>
+      </div>
+    </div>
+    <div class="tl-grid">
+      <div class="tl-col">
+        <div class="tl-col-label">Onboarding &amp; migration phase</div>
+        <div class="tl-item">
+          <div class="tl-left">
+            <div class="tl-dot" style="background:var(--bluep);color:var(--blue)">1</div>
+            <div class="tl-line" style="background:var(--bluel)"></div>
+          </div>
+          <div class="tl-body">
+            <div class="tl-phase" style="color:var(--blue)">Weeks 1–2</div>
+            <div class="tl-name">Application &amp; selection</div>
+            <div class="tl-detail">Diocese completes a short application. GiveCentral reviews RE data structure and confirms eligibility. Pilot agreement signed and PM assigned.</div>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-left">
+            <div class="tl-dot" style="background:var(--bluep);color:var(--blue)">2</div>
+            <div class="tl-line" style="background:var(--bluel)"></div>
+          </div>
+          <div class="tl-body">
+            <div class="tl-phase" style="color:var(--blue)">Weeks 3–4</div>
+            <div class="tl-name">Discovery &amp; data audit</div>
+            <div class="tl-detail">GiveCentral audits the RE export. Fund structure, GL codes, donor IDs, and giving history mapped to Atlas schema. Migration plan confirmed and fixed price locked.</div>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-left">
+            <div class="tl-dot" style="background:var(--bluep);color:var(--blue)">3</div>
+          </div>
+          <div class="tl-body">
+            <div class="tl-phase" style="color:var(--blue)">Weeks 5–12</div>
+            <div class="tl-name">Migration &amp; configuration</div>
+            <div class="tl-detail">Full data migration runs in staging. Diocese staff validate against RE. Parish hierarchy, fund structure, and user roles configured. Parallel run period begins.</div>
+          </div>
+        </div>
+      </div>
+      <div class="tl-col">
+        <div class="tl-col-label">Go-live &amp; case study phase</div>
+        <div class="tl-item">
+          <div class="tl-left">
+            <div class="tl-dot" style="background:var(--greenl);color:var(--green)">4</div>
+            <div class="tl-line" style="background:#BBF7D0"></div>
+          </div>
+          <div class="tl-body">
+            <div class="tl-phase" style="color:var(--green)">Weeks 13–14</div>
+            <div class="tl-name">Training &amp; go-live</div>
+            <div class="tl-detail">Role-specific training for all user groups. RE kept read-only during transition. Atlas goes live. Dedicated hypercare support begins immediately.</div>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-left">
+            <div class="tl-dot" style="background:var(--greenl);color:var(--green)">5</div>
+            <div class="tl-line" style="background:#BBF7D0"></div>
+          </div>
+          <div class="tl-body">
+            <div class="tl-phase" style="color:var(--green)">Months 2–6</div>
+            <div class="tl-name">Stabilisation &amp; feedback</div>
+            <div class="tl-detail">Monthly product feedback calls. 30-day and 90-day surveys completed. GiveCentral resolves any issues on priority basis. Case study drafted and reviewed at month 3.</div>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-left">
+            <div class="tl-dot" style="background:var(--greenl);color:var(--green)">6</div>
+          </div>
+          <div class="tl-body">
+            <div class="tl-phase" style="color:var(--green)">Month 6</div>
+            <div class="tl-name">Case study &amp; reference activation</div>
+            <div class="tl-detail">Case study published after diocese approval. Diocese added to reference client list. 180-day survey completed. All pilot obligations fulfilled.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="page-footer">
+  <div class="pf-left"><strong>GiveCentral Atlas</strong> — Founding Partner Pilot Program · Internal use only</div>
+  <div class="pf-right">Updated May 2026</div>
+</div>
+
+</body>
+</html>
