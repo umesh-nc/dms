@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GiveCentral + Camino</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Outfit:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0C1D35;--navy2:#142644;--navy3:#1C3058;
+  --gold:#C49A1A;--gold2:#E8BB3A;--goldl:#FBF4DC;--goldb:#F5E094;--goldd:#7A5C08;
+  --white:#FFFFFF;--offwhite:#F8F6F0;
+  --text:#0C1D35;--text2:#2A3F5C;--text3:#5A6E88;
+  --border:#D8E2EE;
+}
+html{font-size:15px;-webkit-font-smoothing:antialiased}
+body{font-family:'Outfit',sans-serif;background:#F0EDE6;color:var(--text);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:40px 20px}
+
+/* ── PAGE SHELL ── */
+.page{
+  width:680px;
+  background:var(--white);
+  box-shadow:0 24px 80px rgba(12,29,53,.18),0 4px 16px rgba(12,29,53,.1);
+  overflow:hidden;
+  position:relative;
+}
+
+/* ── HEADER ── */
+.hdr{
+  background:var(--navy);
+  padding:44px 52px 40px;
+  position:relative;
+  overflow:hidden;
+}
+.hdr::before{
+  content:'';position:absolute;top:-80px;right:-80px;
+  width:320px;height:320px;border-radius:50%;
+  background:radial-gradient(circle,rgba(196,154,26,.14) 0%,transparent 70%);
+  pointer-events:none;
+}
+.hdr::after{
+  content:'';position:absolute;bottom:-2px;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--gold),var(--gold2),transparent);
+}
+.brand-row{display:flex;align-items:center;gap:18px;margin-bottom:22px}
+.gc-logo{display:flex;align-items:center;gap:8px}
+.gc-mark{
+  width:36px;height:36px;background:var(--gold);border-radius:8px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.gc-mark svg{width:20px;height:20px}
+.gc-name{font-family:'Cormorant Garamond',serif;font-size:22px;color:white;font-weight:600;letter-spacing:.02em}
+.plus-sep{font-size:26px;color:rgba(255,255,255,.3);font-weight:300;margin:0 4px}
+.camino-logo{display:flex;align-items:center;gap:8px}
+.camino-shell{
+  width:36px;height:36px;background:rgba(255,255,255,.12);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  border:1.5px solid rgba(255,255,255,.2);
+}
+.camino-shell svg{width:20px;height:20px}
+.camino-name{font-family:'Cormorant Garamond',serif;font-size:22px;color:white;font-weight:600;letter-spacing:.02em}
+
+.hdr-headline{
+  font-family:'Cormorant Garamond',serif;
+  font-size:40px;color:white;line-height:1.15;
+  font-weight:700;margin-bottom:12px;
+  letter-spacing:-.01em;
+}
+.hdr-headline em{color:var(--gold2);font-style:italic;font-weight:600}
+.hdr-sub{
+  font-size:15px;color:rgba(255,255,255,.6);
+  line-height:1.65;max-width:440px;
+  font-weight:300;
+}
+
+/* ── OFFER STRIP ── */
+.offer-strip{
+  background:linear-gradient(135deg,var(--gold) 0%,var(--gold2) 100%);
+  padding:14px 52px;
+  display:flex;align-items:center;gap:12px;
+}
+.os-dot{width:8px;height:8px;border-radius:50%;background:var(--navy);flex-shrink:0}
+.os-text{font-size:13px;font-weight:600;color:var(--navy);letter-spacing:.03em}
+.os-exp{font-size:13px;font-weight:400;color:rgba(12,29,53,.6);margin-left:auto}
+
+/* ── BODY ── */
+.body{padding:44px 52px}
+
+/* ── PRICING CENTREPIECE ── */
+.pricing-section{margin-bottom:40px}
+.ps-label{
+  font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--text3);margin-bottom:18px;
+  display:flex;align-items:center;gap:10px;
+}
+.ps-label::after{content:'';flex:1;height:1px;background:var(--border)}
+.pricing-grid{display:grid;grid-template-columns:1fr 1fr 1.2fr;gap:0;border:1.5px solid var(--border);border-radius:14px;overflow:hidden}
+.p-cell{padding:28px 24px}
+.p-cell:not(:last-child){border-right:1.5px solid var(--border)}
+.pc-top{font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;margin-bottom:14px}
+.pc-amt{font-family:'Cormorant Garamond',serif;font-size:48px;font-weight:700;line-height:1;margin-bottom:4px}
+.pc-amt sup{font-size:22px;vertical-align:top;margin-top:8px;display:inline-block;font-weight:600}
+.pc-amt .unit{font-family:'Outfit',sans-serif;font-size:15px;font-weight:400;color:var(--text3)}
+.pc-note{font-size:13px;line-height:1.55}
+.p-cell-left .pc-top{color:var(--text3)}
+.p-cell-left .pc-amt{color:var(--text)}
+.p-cell-left .pc-note{color:var(--text3)}
+.p-cell-mid .pc-top{color:var(--text3)}
+.p-cell-mid .pc-amt{color:var(--navy2)}
+.p-cell-mid .pc-note{color:var(--text3)}
+.p-cell-right{background:var(--navy);position:relative;overflow:hidden}
+.p-cell-right::before{content:'';position:absolute;top:-30px;right:-30px;width:120px;height:120px;border-radius:50%;background:rgba(196,154,26,.15);pointer-events:none}
+.p-cell-right .pc-top{color:var(--gold)}
+.p-cell-right .pc-amt{color:white}
+.p-cell-right .pc-amt .unit{color:rgba(255,255,255,.5)}
+.p-cell-right .pc-note{color:rgba(255,255,255,.55)}
+.p-cell-right .pc-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  background:rgba(196,154,26,.2);border:1px solid rgba(196,154,26,.35);
+  border-radius:20px;padding:4px 11px;margin-top:10px;
+  font-size:11px;font-weight:600;color:var(--gold2);
+}
+.savings-bar{
+  margin-top:14px;background:var(--goldl);border:1px solid var(--goldb);
+  border-radius:8px;padding:10px 16px;display:flex;align-items:center;gap:8px;
+  font-size:13px;color:var(--goldd);
+}
+.sb-icon{width:22px;height:22px;background:var(--gold);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sb-icon svg{width:12px;height:12px;color:white}
+
+/* ── HOW IT WORKS ── */
+.how-section{margin-bottom:36px}
+.hs-label{
+  font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--text3);margin-bottom:18px;
+  display:flex;align-items:center;gap:10px;
+}
+.hs-label::after{content:'';flex:1;height:1px;background:var(--border)}
+.steps{display:flex;flex-direction:column;gap:0}
+.step-row{display:flex;align-items:flex-start;gap:16px;padding:16px 0;border-bottom:.5px solid var(--border)}
+.step-row:last-child{border-bottom:none}
+.step-icon{
+  width:38px;height:38px;border-radius:10px;display:flex;align-items:center;
+  justify-content:center;flex-shrink:0;margin-top:1px;
+}
+.step-icon svg{width:18px;height:18px}
+.step-body{}
+.step-title{font-size:15px;font-weight:600;color:var(--text);margin-bottom:3px}
+.step-sub{font-size:13px;color:var(--text3);line-height:1.6}
+
+/* ── PARTNER CARDS ── */
+.partner-section{margin-bottom:36px}
+.pl{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:18px;display:flex;align-items:center;gap:10px}
+.pl::after{content:'';flex:1;height:1px;background:var(--border)}
+.partner-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.partner-card{border:1px solid var(--border);border-radius:12px;padding:20px 22px}
+.partner-card.gc{border-left:3px solid var(--gold)}
+.partner-card.ca{border-left:3px solid #1E6FAA}
+.pcard-brand{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.pcard-mark{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.pcard-mark svg{width:14px;height:14px}
+.pcard-name{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:600;color:var(--text)}
+.pcard-text{font-size:13px;color:var(--text3);line-height:1.65}
+
+/* ── CTA ── */
+.cta-section{
+  background:var(--navy);border-radius:14px;padding:32px 36px;
+  text-align:center;position:relative;overflow:hidden;
+}
+.cta-section::before{
+  content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(45deg,rgba(255,255,255,.008) 0px,rgba(255,255,255,.008) 1px,transparent 1px,transparent 14px);
+  pointer-events:none;
+}
+.cta-label{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+.cta-headline{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:600;color:white;margin-bottom:8px;font-style:italic}
+.cta-sub{font-size:13px;color:rgba(255,255,255,.5);margin-bottom:20px;line-height:1.6}
+.cta-email{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--gold);border-radius:9px;
+  padding:12px 28px;
+  font-size:16px;font-weight:600;color:var(--navy);
+  letter-spacing:.01em;text-decoration:none;
+  font-family:'Outfit',sans-serif;
+  transition:all .15s;
+}
+.cta-email:hover{background:var(--gold2)}
+.cta-email svg{width:16px;height:16px}
+.cta-note{font-size:12px;color:rgba(255,255,255,.3);margin-top:12px}
+
+/* ── FOOTER RULE ── */
+.page-footer{
+  padding:14px 52px;background:var(--offwhite);
+  border-top:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.pf-left{font-size:11px;color:var(--text3)}
+.pf-right{font-size:11px;color:var(--text3)}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.hdr{animation:fadeUp .5s ease both}
+.offer-strip{animation:fadeUp .5s .07s ease both}
+.body{animation:fadeUp .5s .12s ease both}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="hdr">
+    <div class="brand-row">
+      <div class="gc-logo">
+        <div class="gc-mark">
+          <svg viewBox="0 0 20 20" fill="none" stroke="var(--navy)" stroke-width="1.8" stroke-linecap="round">
+            <circle cx="10" cy="10" r="8.5"/>
+            <path d="M6.5 10.5C7.2 12 10 13.5 10 13.5s2.8-1.5 3.5-3S14 6.5 10 6.5 6 9 6.5 10.5z" fill="var(--navy)" fill-opacity=".9"/>
+          </svg>
+        </div>
+        <span class="gc-name">GiveCentral</span>
+      </div>
+      <span class="plus-sep">+</span>
+      <div class="camino-logo">
+        <div class="camino-shell">
+          <svg viewBox="0 0 20 20" fill="none" stroke="white" stroke-width="1.4" stroke-linecap="round">
+            <path d="M10 2C10 2 7 4 5 7s-1.5 7 0 9l5-2 5 2c1.5-2 2.5-6 0-9S10 2 10 2z"/>
+            <path d="M5 16l5-2 5 2"/>
+          </svg>
+        </div>
+        <span class="camino-name">Camino</span>
+      </div>
+    </div>
+    <div class="hdr-headline">Your giving and your database,<br><em>finally talking to each other.</em></div>
+    <div class="hdr-sub">GiveCentral and Camino now integrate directly — donor records, payments, and pledge data move seamlessly between platforms, built for Catholic communities.</div>
+  </div>
+
+  <!-- OFFER STRIP -->
+  <div class="offer-strip">
+    <div class="os-dot"></div>
+    <span class="os-text">Special launch offer — $25/month after setup</span>
+    <span class="os-exp">Offer valid through July 31, 2026</span>
+  </div>
+
+  <!-- BODY -->
+  <div class="body">
+
+    <!-- PRICING -->
+    <div class="pricing-section">
+      <div class="ps-label">How the pricing works</div>
+      <div class="pricing-grid">
+        <div class="p-cell p-cell-left">
+          <div class="pc-top">Parish covers</div>
+          <div class="pc-amt"><sup>$</sup>500</div>
+          <div class="pc-note">One-time Camino setup fee — paid once, never again</div>
+        </div>
+        <div class="p-cell p-cell-mid">
+          <div class="pc-top">GiveCentral covers</div>
+          <div class="pc-amt"><sup>$</sup>50<span class="unit">/mo</span></div>
+          <div class="pc-note">$600 in annual savings on your Camino subscription</div>
+        </div>
+        <div class="p-cell p-cell-right">
+          <div class="pc-top">Your net price</div>
+          <div class="pc-amt"><sup>$</sup>25<span class="unit">/mo</span></div>
+          <div class="pc-note">For the first 12 months after setup</div>
+          <div class="pc-badge">
+            <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" width="10" height="10"><path d="M2 6l2.5 2.5 5.5-5"/></svg>
+            Save $1,100 in year one
+          </div>
+        </div>
+      </div>
+      <div class="savings-bar">
+        <div class="sb-icon"><svg viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round"><circle cx="6" cy="6" r="4.5"/><path d="M6 3.5v3l2 1.5"/></svg></div>
+        <span><strong>Total year-one value:</strong> $500 setup + 12 months at $25 = $800 total vs. $1,900 at standard pricing — a $1,100 saving.</span>
+      </div>
+    </div>
+
+    <!-- HOW IT WORKS -->
+    <div class="how-section">
+      <div class="hs-label">What the integration does</div>
+      <div class="steps">
+        <div class="step-row">
+          <div class="step-icon" style="background:var(--goldl)">
+            <svg viewBox="0 0 18 18" fill="none" stroke="var(--goldd)" stroke-width="1.5" stroke-linecap="round"><path d="M3 9h12M9 3l6 6-6 6"/></svg>
+          </div>
+          <div class="step-body">
+            <div class="step-title">Gifts post to Camino automatically</div>
+            <div class="step-sub">Every online gift processed through GiveCentral flows directly into your Camino donor record in real time — no manual export, no re-entry, no lag.</div>
+          </div>
+        </div>
+        <div class="step-row">
+          <div class="step-icon" style="background:#E8F3FA">
+            <svg viewBox="0 0 18 18" fill="none" stroke="#1E6FAA" stroke-width="1.5" stroke-linecap="round"><circle cx="9" cy="7" r="4"/><path d="M3 17c0-3.5 2.7-6 6-6s6 2.5 6 6"/></svg>
+          </div>
+          <div class="step-body">
+            <div class="step-title">Donor records stay in sync</div>
+            <div class="step-sub">New donors created in GiveCentral are added to Camino automatically. Address and contact updates made in either system propagate across both.</div>
+          </div>
+        </div>
+        <div class="step-row">
+          <div class="step-icon" style="background:var(--goldl)">
+            <svg viewBox="0 0 18 18" fill="none" stroke="var(--goldd)" stroke-width="1.5" stroke-linecap="round"><path d="M4 14V8M9 14V4M14 14v-6"/></svg>
+          </div>
+          <div class="step-body">
+            <div class="step-title">Pledge data and payment schedules linked</div>
+            <div class="step-sub">Pledge commitments made online are visible in Camino alongside payment history — your finance and development teams always see the same numbers.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PARTNER CARDS -->
+    <div class="partner-section">
+      <div class="pl">About the platforms</div>
+      <div class="partner-grid">
+        <div class="partner-card gc">
+          <div class="pcard-brand">
+            <div class="pcard-mark" style="background:var(--goldl)">
+              <svg viewBox="0 0 14 14" fill="none" stroke="var(--goldd)" stroke-width="1.5" stroke-linecap="round"><circle cx="7" cy="7" r="5.5"/><path d="M4.5 7.5C5 8.5 7 9.5 7 9.5s2-1 2.5-2S10 5 7 5 4 6.5 4.5 7.5z" fill="var(--goldd)" fill-opacity=".2"/></svg>
+            </div>
+            <span class="pcard-name">GiveCentral</span>
+          </div>
+          <div class="pcard-text">The online giving platform trusted by Catholic parishes and dioceses across the country — secure, mobile-ready, and designed to make donor engagement simple and effective.</div>
+        </div>
+        <div class="partner-card ca">
+          <div class="pcard-brand">
+            <div class="pcard-mark" style="background:#E8F3FA">
+              <svg viewBox="0 0 14 14" fill="none" stroke="#1E6FAA" stroke-width="1.5" stroke-linecap="round"><path d="M7 1.5C7 1.5 5 3 4 5s-.5 5 0 6.5L7 10l3 1.5c.5-1.5 1-4.5 0-6.5S7 1.5 7 1.5z"/></svg>
+            </div>
+            <span class="pcard-name">Camino</span>
+          </div>
+          <div class="pcard-text">The data management platform built specifically for the Catholic Church — helping parish teams organise, understand, and connect with their communities, founded on 30 years of parish staff input.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="cta-section">
+      <div class="cta-label">Ready to get started?</div>
+      <div class="cta-headline">Talk to our implementation team today</div>
+      <div class="cta-sub">Reach out to take advantage of this offer before July 31, 2026.<br>Setup takes less than a week.</div>
+      <a href="mailto:teresa@givecentral.org" class="cta-email">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+          <path d="M2 4h12v9H2z"/><path d="M2 4l6 5 6-5"/>
+        </svg>
+        teresa@givecentral.org
+      </a>
+      <div class="cta-note">Or call your GiveCentral account manager directly</div>
+    </div>
+
+  </div>
+
+  <!-- FOOTER -->
+  <div class="page-footer">
+    <span class="pf-left">© 2026 GiveCentral, Inc. · givecentral.org</span>
+    <span class="pf-right">Giving and data management for Catholic communities</span>
+  </div>
+
+</div>
+</body>
+</html>
