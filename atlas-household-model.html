@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Atlas — Household Model</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0E1E35;--navy2:#152844;--navy3:#1B3460;
+  --blue:#2563EB;--bluel:#DBEAFE;--bluep:#EFF6FF;
+  --green:#15803D;--greenl:#DCFCE7;--greend:#14532D;
+  --amber:#D97706;--amberl:#FEF3C7;--amberd:#78350F;
+  --teal:#0D9488;--teall:#CCFBF1;
+  --rose:#BE185D;--rosel:#FCE7F3;--rosed:#831843;
+  --purp:#7C3AED;--purpl:#EDE9FE;
+  --text:#0F172A;--text2:#334155;--text3:#64748B;--text4:#94A3B8;
+  --border:#E2E8F0;--surf:#F8FAFC;--white:#FFFFFF;
+}
+html{font-size:14px;-webkit-font-smoothing:antialiased}
+body{font-family:'DM Sans',sans-serif;background:#E8EFF8;color:var(--text);min-height:100vh}
+
+/* ── SHELL ── */
+.shell{display:grid;grid-template-columns:220px 1fr;grid-template-rows:52px 1fr;min-height:100vh}
+
+/* ── TOPBAR ── */
+.topbar{grid-column:1/-1;background:var(--navy);display:flex;align-items:center;padding:0 20px;gap:14px;border-bottom:1px solid rgba(255,255,255,.05);position:sticky;top:0;z-index:50}
+.tb-mark{width:28px;height:28px;background:var(--blue);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.tb-mark svg{width:13px;height:13px}
+.tb-name{font-family:'DM Serif Display',serif;font-size:16px;color:white;font-style:italic}
+.tb-sep{width:1px;height:18px;background:rgba(255,255,255,.12)}
+.tb-crumb{font-size:12px;color:rgba(255,255,255,.38);display:flex;align-items:center;gap:6px}
+.tb-crumb b{color:rgba(255,255,255,.7);font-weight:500}
+.tb-right{margin-left:auto;display:flex;gap:8px}
+.tbtn{padding:5px 13px;border-radius:7px;font-size:11px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .12s;display:flex;align-items:center;gap:5px}
+.tbtn svg{width:11px;height:11px}
+.tbtn-ghost{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.6)}
+.tbtn-blue{background:var(--blue);border:none;color:white}
+.tbtn-blue:hover{background:#1B4CD8}
+
+/* ── SIDEBAR ── */
+.sidebar{background:var(--navy2);border-right:1px solid rgba(255,255,255,.05);padding:16px 0}
+.sb-section{padding:0 12px;margin-bottom:4px}
+.sb-label{font-size:9px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.25);padding:8px 8px 5px}
+.sb-item{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:8px;font-size:12px;color:rgba(255,255,255,.4);cursor:pointer;transition:all .12s;margin-bottom:1px}
+.sb-item:hover{background:rgba(255,255,255,.05);color:rgba(255,255,255,.7)}
+.sb-item.active{background:rgba(37,99,235,.25);color:#BFDBFE}
+.sb-item svg{width:13px;height:13px;flex-shrink:0}
+
+/* ── MAIN ── */
+.main{overflow-y:auto;background:var(--surf)}
+
+/* ── VIEW SWITCHER ── */
+.view-bar{background:white;border-bottom:1px solid var(--border);padding:0 28px;display:flex;gap:0}
+.vt{padding:12px 16px;font-size:13px;font-weight:500;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;transition:all .12s;white-space:nowrap;font-family:'DM Sans',sans-serif;background:none;border-top:none;border-left:none;border-right:none}
+.vt:hover{color:var(--text2)}
+.vt.active{color:var(--blue);border-bottom-color:var(--blue);font-weight:600}
+
+/* ── CONTENT ── */
+.content{padding:24px 28px;display:flex;flex-direction:column;gap:18px}
+
+/* ── VIEWS ── */
+.view{display:none;flex-direction:column;gap:18px}
+.view.active{display:flex}
+
+/* ══════════════════════════════════════════════
+   VIEW 1 — HOUSEHOLD RECORD
+══════════════════════════════════════════════ */
+
+/* Household header card */
+.hh-header{background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 100%);border-radius:16px;padding:24px 28px;position:relative;overflow:hidden}
+.hh-header::before{content:'';position:absolute;top:-50px;right:-50px;width:200px;height:200px;border-radius:50%;background:rgba(37,99,235,.08);pointer-events:none}
+.hh-name{font-family:'DM Serif Display',serif;font-size:28px;color:white;margin-bottom:4px}
+.hh-meta{font-size:13px;color:rgba(255,255,255,.45);margin-bottom:16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.hh-meta-sep{width:3px;height:3px;border-radius:50%;background:rgba(255,255,255,.2)}
+.hh-stats{display:flex;gap:0;background:rgba(0,0,0,.25);border-radius:10px;overflow:hidden;width:fit-content}
+.hhs{padding:10px 20px;border-right:1px solid rgba(255,255,255,.06);text-align:center}
+.hhs:last-child{border-right:none}
+.hhs-val{font-family:'DM Serif Display',serif;font-size:20px;color:white;line-height:1}
+.hhs-val.green{color:#86EFAC}
+.hhs-val.amber{color:#FCD34D}
+.hhs-lbl{font-size:9px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-top:3px}
+
+/* Tier diagram */
+.tier-diagram{background:white;border:1px solid var(--border);border-radius:14px;padding:24px}
+.td-title{font-size:12px;font-weight:600;color:var(--text3);letter-spacing:.04em;text-transform:uppercase;margin-bottom:20px;display:flex;align-items:center;gap:8px}
+.td-title::before{content:'';width:16px;height:2px;background:var(--blue);border-radius:1px}
+.tier-grid{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:0;align-items:start}
+.tier-box{border-radius:12px;overflow:hidden}
+.tier-head{padding:10px 14px;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase}
+.tier-body{padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.tier-row{display:flex;align-items:center;gap:6px;font-size:12px}
+.tier-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.tier-arrow{display:flex;align-items:center;justify-content:center;padding:0 8px;padding-top:35px}
+.tier-arrow svg{width:20px;height:20px;color:var(--text4)}
+
+/* Two-col layout */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+
+/* Member cards */
+.member-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.member-card{background:white;border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:all .15s;cursor:pointer}
+.member-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(14,30,53,.08)}
+.mc-top{padding:16px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
+.mc-av{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'DM Serif Display',serif;font-size:16px;color:white;flex-shrink:0;font-style:italic}
+.mc-name{font-size:14px;font-weight:600;color:var(--text);margin-bottom:2px}
+.mc-sub{font-size:11px;color:var(--text3)}
+.mc-role{font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;margin-top:2px;display:inline-block}
+.mc-body{padding:14px 18px;display:flex;flex-direction:column;gap:6px}
+.mc-row{display:flex;justify-content:space-between;font-size:12px}
+.mc-key{color:var(--text3)}
+.mc-val{color:var(--text);font-weight:500;text-align:right}
+.mc-val.mono{font-family:'DM Mono',monospace;font-size:11px}
+.gc-linked{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;background:var(--greenl);color:var(--greend);margin-top:4px}
+.gc-linked svg{width:10px;height:10px}
+
+/* Cards */
+.card{background:white;border:1px solid var(--border);border-radius:14px;overflow:hidden}
+.card-head{padding:11px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;background:var(--surf)}
+.ch-icon{width:24px;height:24px;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ch-icon svg{width:11px;height:11px}
+.ch-title{font-size:12px;font-weight:600;color:var(--text);flex:1}
+.ch-badge{font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px}
+.card-body{padding:14px 18px}
+.field-row{display:flex;justify-content:space-between;align-items:baseline;padding:6px 0;border-bottom:.5px solid var(--border);font-size:12px}
+.field-row:last-child{border-bottom:none}
+.fr-key{color:var(--text3);flex-shrink:0;min-width:120px}
+.fr-val{color:var(--text);font-weight:500;text-align:right}
+.fr-val.mono{font-family:'DM Mono',monospace;font-size:11px}
+
+/* ══════════════════════════════════════════════
+   VIEW 2 — NEW INDIVIDUAL (with household matching)
+══════════════════════════════════════════════ */
+
+.form-card{background:white;border:1px solid var(--border);border-radius:16px;overflow:hidden}
+.form-head{background:var(--navy);padding:16px 24px;display:flex;align-items:center;gap:10px}
+.fh-title{font-family:'DM Serif Display',serif;font-size:18px;color:white;flex:1;font-style:italic}
+.form-body{padding:24px;display:flex;flex-direction:column;gap:18px}
+.fg-label{font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--text3);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.fg-label::after{content:'';flex:1;height:.5px;background:var(--border)}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.f-group{display:flex;flex-direction:column;gap:5px}
+.f-label{font-size:12px;font-weight:500;color:var(--text2)}
+.f-input,.f-select{padding:8px 11px;border:1px solid var(--border);border-radius:8px;font-size:13px;font-family:'DM Sans',sans-serif;color:var(--text);background:var(--surf);outline:none;transition:border-color .12s}
+.f-input:focus,.f-select:focus{border-color:var(--blue);background:white}
+.f-input.filled{border-color:var(--blue);background:white}
+
+/* Household match alert — the key UI element */
+.hh-match-alert{background:var(--amberl);border:1px solid #FDE68A;border-radius:12px;overflow:hidden;animation:slideDown .3s ease}
+@keyframes slideDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+.hma-head{padding:12px 16px;display:flex;align-items:center;gap:10px;background:var(--amber);cursor:pointer}
+.hma-icon{width:28px;height:28px;background:rgba(255,255,255,.2);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.hma-icon svg{width:12px;height:12px;color:white}
+.hma-title{font-size:13px;font-weight:600;color:white;flex:1}
+.hma-body{padding:14px 16px}
+.match-result{display:flex;align-items:center;gap:12px;padding:10px 12px;background:white;border:1px solid #FDE68A;border-radius:9px;margin-bottom:8px;cursor:pointer;transition:all .12s}
+.match-result:hover{border-color:var(--amber);background:#FFFBEB}
+.match-result.selected{border-color:var(--green);background:var(--greenl)}
+.mr-av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'DM Serif Display',serif;font-size:13px;color:white;flex-shrink:0;font-style:italic}
+.mr-name{font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px}
+.mr-sub{font-size:11px;color:var(--text3)}
+.mr-conf{font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px;margin-left:auto;flex-shrink:0}
+.conf-high{background:var(--greenl);color:var(--greend)}
+.conf-med{background:var(--amberl);color:var(--amberd)}
+.hma-actions{display:flex;gap:8px;margin-top:10px}
+.hma-btn{padding:6px 14px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .12s}
+.hma-btn-green{background:var(--green);color:white;border:none}
+.hma-btn-green:hover{background:var(--greend)}
+.hma-btn-ghost{background:none;border:1px solid var(--amber);color:var(--amberd)}
+.hma-btn-ghost:hover{background:var(--amberl)}
+
+/* GiveCentral link row */
+.gc-link-row{background:var(--greenl);border:1px solid #BBF7D0;border-radius:10px;padding:12px 16px;display:flex;align-items:center;gap:10px}
+.gcl-icon{width:28px;height:28px;background:var(--green);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.gcl-icon svg{width:12px;height:12px;color:white}
+.gcl-text{flex:1;font-size:13px;color:var(--greend)}
+.gcl-text b{font-weight:600}
+.gcl-status{font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;background:var(--green);color:white}
+
+.form-actions{display:flex;gap:8px;justify-content:flex-end;padding-top:8px;border-top:1px solid var(--border)}
+.fa-btn{padding:8px 18px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .12s;border:1px solid var(--border);background:white;color:var(--text2)}
+.fa-btn-blue{background:var(--blue);color:white;border-color:var(--blue)}
+.fa-btn-blue:hover{background:#1B4CD8}
+
+/* ══════════════════════════════════════════════
+   VIEW 3 — HOUSEHOLD GIVING ROLLUP
+══════════════════════════════════════════════ */
+
+.rollup-banner{background:linear-gradient(135deg,var(--greend),var(--green));border-radius:14px;padding:20px 24px;display:flex;align-items:center;gap:18px}
+.rb-icon{width:44px;height:44px;background:rgba(255,255,255,.15);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.rb-icon svg{width:22px;height:22px;color:white}
+.rb-title{font-family:'DM Serif Display',serif;font-size:18px;color:white;margin-bottom:3px}
+.rb-sub{font-size:13px;color:rgba(255,255,255,.65);line-height:1.55}
+.rb-nums{margin-left:auto;display:flex;gap:20px;flex-shrink:0}
+.rb-stat{text-align:center}
+.rb-val{font-family:'DM Serif Display',serif;font-size:26px;color:white;line-height:1}
+.rb-lbl{font-size:9px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-top:2px}
+
+.giving-table{width:100%;border-collapse:collapse;font-size:12px}
+.giving-table th{font-size:10px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:rgba(255,255,255,.55);background:var(--navy);padding:8px 16px;border-right:1px solid rgba(255,255,255,.06);text-align:left;white-space:nowrap}
+.giving-table th:last-child{border-right:none}
+.giving-table td{padding:10px 16px;border-bottom:.5px solid var(--border);vertical-align:middle;color:var(--text2)}
+.giving-table tr:last-child td{border-bottom:none}
+.giving-table tr:hover td{background:var(--surf)}
+.giving-table tr.hh-total td{background:var(--surf);font-weight:600;color:var(--text)}
+.donor-chip{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px}
+
+/* ══════════════════════════════════════════════
+   VIEW 4 — SALUTATION CONFIGURATOR
+══════════════════════════════════════════════ */
+
+.salut-preview{background:var(--navy);border-radius:12px;padding:20px 24px;margin-bottom:16px;position:relative;overflow:hidden}
+.salut-preview::before{content:'';position:absolute;top:-30px;right:-30px;width:140px;height:140px;border-radius:50%;background:rgba(37,99,235,.1);pointer-events:none}
+.sp-label{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:6px}
+.sp-val{font-family:'DM Serif Display',serif;font-size:22px;color:white;font-style:italic}
+.salut-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.salut-option{background:white;border:1px solid var(--border);border-radius:10px;padding:14px 16px;cursor:pointer;transition:all .12s}
+.salut-option:hover{border-color:var(--blue)}
+.salut-option.active{border-color:var(--blue);background:var(--bluep)}
+.so-label{font-size:11px;font-weight:600;color:var(--text3);margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em}
+.so-val{font-size:14px;font-weight:500;color:var(--text)}
+.so-val.active{color:var(--blue)}
+.so-sub{font-size:11px;color:var(--text4);margin-top:2px}
+
+/* Animations */
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.anim{animation:fadeUp .3s ease both}
+
+/* Modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(14,30,53,.55);display:flex;align-items:center;justify-content:center;z-index:200;opacity:0;pointer-events:none;transition:opacity .2s;backdrop-filter:blur(4px)}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{background:white;border-radius:16px;width:460px;max-width:90vw;overflow:hidden;transform:translateY(14px);transition:transform .2s}
+.modal-overlay.open .modal{transform:translateY(0)}
+.modal-head{background:var(--navy);padding:16px 20px;display:flex;align-items:center;gap:10px}
+.modal-title{font-family:'DM Serif Display',serif;font-size:17px;color:white;flex:1;font-style:italic}
+.modal-close{background:rgba(255,255,255,.1);border:none;color:rgba(255,255,255,.5);width:26px;height:26px;border-radius:7px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center}
+.modal-body{padding:18px 20px;display:flex;flex-direction:column;gap:12px}
+.modal-foot{padding:12px 20px;border-top:1px solid var(--border);display:flex;gap:7px;justify-content:flex-end;background:var(--surf)}
+.mf-btn{padding:7px 16px;border-radius:7px;font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;border:1px solid var(--border);background:white;color:var(--text2)}
+.mf-btn-blue{background:var(--blue);color:white;border-color:var(--blue)}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="tb-mark"><svg viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7.5" stroke="white" stroke-width="1.5"/><path d="M5.5 9.5C6.5 11.5 9 13 9 13s2.5-1.5 3.5-3.5S12 5 9 5 4.5 7.5 5.5 9.5z" fill="white" fill-opacity=".9"/></svg></div>
+  <span class="tb-name">Atlas</span>
+  <div class="tb-sep"></div>
+  <div class="tb-crumb">Donors <span style="color:rgba(255,255,255,.2)">›</span> <b>O'Brien Household</b></div>
+  <div class="tb-right">
+    <button class="tbtn tbtn-ghost">Edit household</button>
+    <button class="tbtn tbtn-blue" onclick="openModal()">
+      <svg viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="1.4" stroke-linecap="round"><path d="M6 1v10M1 6h10"/></svg>
+      Add member
+    </button>
+  </div>
+</div>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sb-section">
+    <div class="sb-label">Donors</div>
+    <div class="sb-item active">
+      <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M2 12c0-2.5 2-4 4.5-4M6.5 3a2.5 2.5 0 100 5 2.5 2.5 0 000-5zM8 9h4M10 7v4"/></svg>
+      Households
+    </div>
+    <div class="sb-item">
+      <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><circle cx="7" cy="5" r="3"/><path d="M1.5 13c0-3 2.5-5 5.5-5s5.5 2 5.5 5"/></svg>
+      Individuals
+    </div>
+    <div class="sb-item">
+      <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M2 10l2.5-2.5 2 2 2.5-3 2.5 3"/><path d="M2 2v10h10"/></svg>
+      Giving history
+    </div>
+    <div class="sb-item">
+      <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M7 2l1.5 3.5L12 6l-2.5 2.5.5 3.5L7 10.5 4 12l.5-3.5L2 6l3.5-.5z"/></svg>
+      Pipeline
+    </div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="view-bar">
+    <button class="vt active" onclick="setTab('household',this)">Household record</button>
+    <button class="vt" onclick="setTab('newentry',this)">New individual entry</button>
+    <button class="vt" onclick="setTab('rollup',this)">Giving rollup</button>
+    <button class="vt" onclick="setTab('salutation',this)">Salutation settings</button>
+  </div>
+  <div class="content">
+
+    <!-- ══ HOUSEHOLD RECORD ══ -->
+    <div class="view active" id="view-household">
+
+      <div class="hh-header anim">
+        <div class="hh-name">The O'Brien Household</div>
+        <div class="hh-meta">
+          <span>Household #HH-2841</span>
+          <div class="hh-meta-sep"></div>
+          <span>Cathedral Parish · Fort Worth, TX</span>
+          <div class="hh-meta-sep"></div>
+          <span>2 members · 1 linked GiveCentral account</span>
+          <div class="hh-meta-sep"></div>
+          <span>Donor since 2012</span>
+        </div>
+        <div class="hh-stats">
+          <div class="hhs"><div class="hhs-val green">$47,500</div><div class="hhs-lbl">Household LTG</div></div>
+          <div class="hhs"><div class="hhs-val">$2,500</div><div class="hhs-lbl">YTD (2026)</div></div>
+          <div class="hhs"><div class="hhs-val amber">✦ Founding</div><div class="hhs-lbl">Legacy tier</div></div>
+          <div class="hhs"><div class="hhs-val">14 yrs</div><div class="hhs-lbl">Donor tenure</div></div>
+        </div>
+      </div>
+
+      <!-- Three-tier data model diagram -->
+      <div class="tier-diagram anim">
+        <div class="td-title">Atlas three-tier donor hierarchy</div>
+        <div class="tier-grid">
+
+          <!-- Parish tier -->
+          <div class="tier-box">
+            <div class="tier-head" style="background:var(--navy);color:rgba(255,255,255,.7)">Parish level</div>
+            <div class="tier-body" style="background:var(--surf);border:1px solid var(--border);border-top:none;border-radius:0 0 10px 10px">
+              <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px">Cathedral Parish</div>
+              <div style="font-size:11px;color:var(--text3);line-height:1.55">Diocese of Fort Worth. All households in this parish roll up here for CMA reporting and pastor summaries.</div>
+            </div>
+          </div>
+
+          <div class="tier-arrow">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M4 10h12M12 6l4 4-4 4"/></svg>
+          </div>
+
+          <!-- Household tier -->
+          <div class="tier-box">
+            <div class="tier-head" style="background:var(--blue);color:white">Household level</div>
+            <div class="tier-body" style="background:var(--bluep);border:1px solid var(--bluel);border-top:none;border-radius:0 0 10px 10px">
+              <div style="font-size:13px;font-weight:600;color:var(--navy);margin-bottom:6px">O'Brien Household</div>
+              <div class="tier-row"><div class="tier-dot" style="background:var(--blue)"></div><span style="font-size:12px;color:var(--text2)">Mailing address</span></div>
+              <div class="tier-row"><div class="tier-dot" style="background:var(--blue)"></div><span style="font-size:12px;color:var(--text2)">Salutation preference</span></div>
+              <div class="tier-row"><div class="tier-dot" style="background:var(--blue)"></div><span style="font-size:12px;color:var(--text2)">Combined LTG ($47,500)</span></div>
+              <div class="tier-row"><div class="tier-dot" style="background:var(--blue)"></div><span style="font-size:12px;color:var(--text2)">Household bequest intent</span></div>
+              <div class="tier-row"><div class="tier-dot" style="background:var(--blue)"></div><span style="font-size:12px;color:var(--text2)">Legacy society membership</span></div>
+            </div>
+          </div>
+
+          <div class="tier-arrow">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M4 10h12M12 6l4 4-4 4"/></svg>
+          </div>
+
+          <!-- Individual tier -->
+          <div class="tier-box">
+            <div class="tier-head" style="background:var(--green);color:white">Individual level</div>
+            <div class="tier-body" style="background:var(--greenl);border:1px solid #BBF7D0;border-top:none;border-radius:0 0 10px 10px">
+              <div style="font-size:13px;font-weight:600;color:var(--greend);margin-bottom:6px">James + Patricia</div>
+              <div class="tier-row"><div class="tier-dot" style="background:var(--green)"></div><span style="font-size:12px;color:var(--text2)">Own giving history</span></div>
+              <div class="tier-row"><div class="tier-dot" style="background:var(--green)"></div><span style="font-size:12px;color:var(--text2)">Own email address</span></div>
+              <div class="tier-row"><div class="tier-dot" style="background:var(--green)"></div><span style="font-size:12px;color:var(--text2)">GiveCentral account link</span></div>
+              <div class="tier-row"><div class="tier-dot" style="background:var(--green)"></div><span style="font-size:12px;color:var(--text2)">Own tax receipt</span></div>
+              <div class="tier-row"><div class="tier-dot" style="background:var(--green)"></div><span style="font-size:12px;color:var(--text2)">Pipeline stage (James)</span></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Member cards -->
+      <div class="member-cards anim">
+        <!-- James -->
+        <div class="member-card">
+          <div class="mc-top">
+            <div class="mc-av" style="background:linear-gradient(135deg,#1B4CD8,#0B3A9E)">JO</div>
+            <div style="flex:1">
+              <div class="mc-name">James Patrick O'Brien</div>
+              <div class="mc-sub">Individual #4821 · DOB Sep 4, 1953 (age 72)</div>
+              <div class="mc-role" style="background:var(--bluep);color:var(--blue)">Primary contact</div>
+            </div>
+          </div>
+          <div class="mc-body">
+            <div class="mc-row"><span class="mc-key">Email</span><span class="mc-val">james.obrien@email.com</span></div>
+            <div class="mc-row"><span class="mc-key">Own LTG</span><span class="mc-val mono">$42,000</span></div>
+            <div class="mc-row"><span class="mc-key">Last gift</span><span class="mc-val mono">$2,500 — Apr 12, 2026</span></div>
+            <div class="mc-row"><span class="mc-key">Pipeline stage</span><span class="mc-val">Cultivation</span></div>
+            <div class="mc-row"><span class="mc-key">Assigned officer</span><span class="mc-val">Mike Donovan</span></div>
+            <div class="gc-linked">
+              <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M1.5 5l2 2 5-5"/></svg>
+              GiveCentral account linked
+            </div>
+          </div>
+        </div>
+        <!-- Patricia -->
+        <div class="member-card">
+          <div class="mc-top">
+            <div class="mc-av" style="background:linear-gradient(135deg,#BE185D,#7F1154)">PO</div>
+            <div style="flex:1">
+              <div class="mc-name">Patricia Anne O'Brien</div>
+              <div class="mc-sub">Individual #4822 · DOB Mar 8, 1957 (age 69)</div>
+              <div class="mc-role" style="background:var(--rosel);color:var(--rosed)">Secondary contact</div>
+            </div>
+          </div>
+          <div class="mc-body">
+            <div class="mc-row"><span class="mc-key">Email</span><span class="mc-val">patricia.obrien@email.com</span></div>
+            <div class="mc-row"><span class="mc-key">Own LTG</span><span class="mc-val mono">$5,500</span></div>
+            <div class="mc-row"><span class="mc-key">Last gift</span><span class="mc-val mono">$500 — Jan 8, 2026</span></div>
+            <div class="mc-row"><span class="mc-key">Pipeline stage</span><span class="mc-val">Stewardship</span></div>
+            <div class="mc-row"><span class="mc-key">Assigned officer</span><span class="mc-val">Mike Donovan</span></div>
+            <div style="display:flex;align-items:center;gap:5px;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;background:var(--amberl);color:var(--amberd);margin-top:4px;width:fit-content">
+              <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" width="10" height="10"><path d="M5 2v3M5 7v.5"/><path d="M1 9L5 1l4 8H1z"/></svg>
+              No GiveCentral account — invite pending
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Household-level fields -->
+      <div class="two-col anim">
+        <div class="card">
+          <div class="card-head">
+            <div class="ch-icon" style="background:var(--bluep)"><svg viewBox="0 0 12 12" fill="none" stroke="var(--blue)" stroke-width="1.4" stroke-linecap="round"><path d="M2 10.5l3-3 2 2 2-2.5 2 2.5"/><path d="M2 2v10h10"/></svg></div>
+            <span class="ch-title">Household fields</span>
+          </div>
+          <div class="card-body">
+            <div class="field-row"><span class="fr-key">Mailing address</span><span class="fr-val">124 Heritage Oak Dr, Fort Worth TX 76116</span></div>
+            <div class="field-row"><span class="fr-key">Formal salutation</span><span class="fr-val">Mr. and Mrs. James O'Brien</span></div>
+            <div class="field-row"><span class="fr-key">Informal salutation</span><span class="fr-val">James and Patricia</span></div>
+            <div class="field-row"><span class="fr-key">Envelope name</span><span class="fr-val">The O'Brien Family</span></div>
+            <div class="field-row"><span class="fr-key">Parish</span><span class="fr-val">Cathedral Parish</span></div>
+            <div class="field-row"><span class="fr-key">Combined LTG</span><span class="fr-val mono" style="color:var(--green)">$47,500</span></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head">
+            <div class="ch-icon" style="background:var(--purpl)"><svg viewBox="0 0 12 12" fill="none" stroke="var(--purp)" stroke-width="1.4" stroke-linecap="round"><path d="M6 2C6 2 4 1 3 2.5c-1 1.5-.5 3 0 4L6 10l3-3.5c.5-1 1-2.5 0-4C8 1 6 2 6 2z"/></svg></div>
+            <span class="ch-title">Planned giving & stewardship</span>
+          </div>
+          <div class="card-body">
+            <div class="field-row"><span class="fr-key">Bequest intention</span><span class="fr-val" style="color:var(--purp);font-weight:600">✦ Confirmed — residual estate</span></div>
+            <div class="field-row"><span class="fr-key">Legacy society tier</span><span class="fr-val">✦ Founding member (2019)</span></div>
+            <div class="field-row"><span class="fr-key">Expectancy value</span><span class="fr-val mono">$400K – $750K est.</span></div>
+            <div class="field-row"><span class="fr-key">Last stewardship</span><span class="fr-val">Bishop letter — Jan 2026</span></div>
+            <div class="field-row"><span class="fr-key">Anniversary</span><span class="fr-val">Legacy society — May 2019</span></div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /view-household -->
+
+    <!-- ══ NEW INDIVIDUAL ENTRY ══ -->
+    <div class="view" id="view-newentry">
+
+      <div class="form-card anim">
+        <div class="form-head">
+          <span class="fh-title">Add new individual — household matching</span>
+        </div>
+        <div class="form-body">
+
+          <!-- Name fields -->
+          <div>
+            <div class="fg-label">Name</div>
+            <div class="form-grid-3">
+              <div class="f-group">
+                <label class="f-label">Prefix</label>
+                <select class="f-select"><option>Mr.</option><option>Mrs.</option><option>Ms.</option><option>Dr.</option><option>Rev.</option></select>
+              </div>
+              <div class="f-group">
+                <label class="f-label">First name</label>
+                <input class="f-input filled" type="text" value="Patricia" oninput="checkMatch()">
+              </div>
+              <div class="f-group">
+                <label class="f-label">Last name</label>
+                <input class="f-input filled" type="text" value="O'Brien" oninput="checkMatch()">
+              </div>
+            </div>
+          </div>
+
+          <!-- Contact -->
+          <div>
+            <div class="fg-label">Contact details</div>
+            <div class="form-grid">
+              <div class="f-group">
+                <label class="f-label">Email address</label>
+                <input class="f-input filled" type="email" value="patricia.obrien@email.com">
+              </div>
+              <div class="f-group">
+                <label class="f-label">Mobile phone</label>
+                <input class="f-input" type="tel" placeholder="(817) 555-0000">
+              </div>
+              <div class="f-group">
+                <label class="f-label">Date of birth</label>
+                <input class="f-input" type="date" value="1957-03-08">
+              </div>
+              <div class="f-group">
+                <label class="f-label">GiveCentral account ID</label>
+                <input class="f-input" type="text" placeholder="Search or enter GC ID…">
+              </div>
+            </div>
+          </div>
+
+          <!-- Address — triggers household match -->
+          <div>
+            <div class="fg-label">Mailing address</div>
+            <div class="form-grid">
+              <div class="f-group" style="grid-column:1/-1">
+                <label class="f-label">Street address</label>
+                <input class="f-input filled" type="text" value="124 Heritage Oak Drive" oninput="checkMatch()">
+              </div>
+              <div class="f-group">
+                <label class="f-label">City</label>
+                <input class="f-input filled" type="text" value="Fort Worth">
+              </div>
+              <div class="f-group">
+                <label class="f-label">State / ZIP</label>
+                <input class="f-input filled" type="text" value="TX 76116">
+              </div>
+            </div>
+          </div>
+
+          <!-- ★ HOUSEHOLD MATCH ALERT — the key UI element ★ -->
+          <div class="hh-match-alert" id="match-alert">
+            <div class="hma-head">
+              <div class="hma-icon"><svg viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="1.4" stroke-linecap="round"><path d="M6 1v5M6 8v.5"/><path d="M1 11L6 1l5 10H1z"/></svg></div>
+              <div class="hma-title">Possible household match found — does Patricia belong to an existing household?</div>
+            </div>
+            <div class="hma-body">
+              <div style="font-size:12px;color:var(--amberd);margin-bottom:10px">Atlas found existing records at the same address and with the same last name. Review the matches below and link Patricia to the correct household, or create a new one.</div>
+
+              <!-- Match 1 — high confidence -->
+              <div class="match-result selected" id="match-1" onclick="selectMatch(1)">
+                <div class="mr-av" style="background:linear-gradient(135deg,#1B4CD8,#0B3A9E)">JO</div>
+                <div style="flex:1">
+                  <div class="mr-name">James Patrick O'Brien — O'Brien Household (#HH-2841)</div>
+                  <div class="mr-sub">124 Heritage Oak Dr, Fort Worth TX 76116 · Cathedral Parish · LTG $42,000 · donor since 2012</div>
+                </div>
+                <span class="mr-conf conf-high">98% match</span>
+              </div>
+
+              <!-- Match 2 — medium confidence, different parish -->
+              <div class="match-result" id="match-2" onclick="selectMatch(2)">
+                <div class="mr-av" style="background:linear-gradient(135deg,#7A4500,#A05A00)">TO</div>
+                <div style="flex:1">
+                  <div class="mr-name">Thomas O'Brien — O'Brien Household (#HH-4421)</div>
+                  <div class="mr-sub">1240 Heritage Park Blvd, Fort Worth TX 76116 · Holy Cross Parish · similar address</div>
+                </div>
+                <span class="mr-conf conf-med">61% match</span>
+              </div>
+
+              <div class="hma-actions">
+                <button class="hma-btn hma-btn-green" onclick="linkHousehold()">
+                  Link Patricia to O'Brien Household (#HH-2841)
+                </button>
+                <button class="hma-btn hma-btn-ghost" onclick="newHousehold()">
+                  Create new household instead
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- GiveCentral link status -->
+          <div class="gc-link-row">
+            <div class="gcl-icon"><svg viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round"><path d="M1.5 5l2 2 5-5"/></svg></div>
+            <div class="gcl-text"><b>GiveCentral account lookup:</b> No existing GC account found for patricia.obrien@email.com. A GiveCentral invitation will be sent to Patricia automatically when this record is saved — any future GC gifts will post directly to her individual record.</div>
+            <span class="gcl-status">Invite queued</span>
+          </div>
+
+          <div class="form-actions">
+            <button class="fa-btn">Cancel</button>
+            <button class="fa-btn">Save — create new household</button>
+            <button class="fa-btn fa-btn-blue" onclick="showSnack('Patricia O\'Brien linked to O\'Brien Household — record saved')">Save &amp; link to O'Brien Household</button>
+          </div>
+
+        </div>
+      </div>
+
+    </div><!-- /view-newentry -->
+
+    <!-- ══ GIVING ROLLUP ══ -->
+    <div class="view" id="view-rollup">
+
+      <div class="rollup-banner anim">
+        <div class="rb-icon"><svg viewBox="0 0 22 22" fill="none" stroke="white" stroke-width="1.4" stroke-linecap="round"><path d="M2 15l4-5 3 3 4-5 4 5"/><path d="M2 4v16h18"/></svg></div>
+        <div>
+          <div class="rb-title">O'Brien Household — combined giving view</div>
+          <div class="rb-sub">All gifts from James and Patricia O'Brien, attributed to each individual but visible at the household level. Used for stewardship, receipting, and pipeline management.</div>
+        </div>
+        <div class="rb-nums">
+          <div class="rb-stat"><div class="rb-val">$47,500</div><div class="rb-lbl">Household LTG</div></div>
+          <div class="rb-stat"><div class="rb-val">$3,000</div><div class="rb-lbl">YTD 2026</div></div>
+          <div class="rb-stat"><div class="rb-val">14 yrs</div><div class="rb-lbl">Combined tenure</div></div>
+        </div>
+      </div>
+
+      <div class="card anim">
+        <div class="card-head">
+          <div class="ch-icon" style="background:var(--greenl)"><svg viewBox="0 0 12 12" fill="none" stroke="var(--green)" stroke-width="1.4" stroke-linecap="round"><rect x="1.5" y="2" width="9" height="8" rx="1.5"/><path d="M1.5 5.5h9"/><path d="M4 2V1M8 2V1"/></svg></div>
+          <span class="ch-title">Gift history — individual attribution, household view</span>
+          <div style="display:flex;gap:6px;margin-left:auto">
+            <select style="font-size:12px;padding:4px 8px;border:1px solid var(--border);border-radius:7px;background:var(--surf);color:var(--text);font-family:'DM Sans',sans-serif;outline:none"><option>All years</option><option>2026</option><option>2025</option></select>
+            <select style="font-size:12px;padding:4px 8px;border:1px solid var(--border);border-radius:7px;background:var(--surf);color:var(--text);font-family:'DM Sans',sans-serif;outline:none"><option>All donors</option><option>James only</option><option>Patricia only</option></select>
+          </div>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="giving-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Donor</th>
+                <th>Fund</th>
+                <th>Amount</th>
+                <th>Source</th>
+                <th>Receipt issued to</th>
+                <th>Soft credits</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="font-family:'DM Mono',monospace;font-size:11px;white-space:nowrap">Apr 12, 2026</td>
+                <td><span class="donor-chip" style="background:var(--bluep);color:var(--blue)">James</span></td>
+                <td>Cathedral Capital</td>
+                <td style="font-family:'DM Mono',monospace;font-weight:500">$2,500</td>
+                <td style="font-size:11px;color:var(--text3)">GiveCentral online</td>
+                <td style="font-size:11px">James O'Brien</td>
+                <td style="font-size:11px;color:var(--text3)">O'Brien Household</td>
+              </tr>
+              <tr>
+                <td style="font-family:'DM Mono',monospace;font-size:11px;white-space:nowrap">Jan 8, 2026</td>
+                <td><span class="donor-chip" style="background:var(--rosel);color:var(--rosed)">Patricia</span></td>
+                <td>CMA Annual Fund</td>
+                <td style="font-family:'DM Mono',monospace;font-weight:500">$500</td>
+                <td style="font-size:11px;color:var(--text3)">GiveCentral online</td>
+                <td style="font-size:11px">Patricia O'Brien</td>
+                <td style="font-size:11px;color:var(--text3)">O'Brien Household</td>
+              </tr>
+              <tr>
+                <td style="font-family:'DM Mono',monospace;font-size:11px;white-space:nowrap">Nov 14, 2025</td>
+                <td><span class="donor-chip" style="background:var(--bluep);color:var(--blue)">James</span></td>
+                <td>CMA Annual Fund</td>
+                <td style="font-family:'DM Mono',monospace;font-weight:500">$5,000</td>
+                <td style="font-size:11px;color:var(--text3)">Check — batch #2841</td>
+                <td style="font-size:11px">James O'Brien</td>
+                <td style="font-size:11px;color:var(--text3)">O'Brien Household</td>
+              </tr>
+              <tr>
+                <td style="font-family:'DM Mono',monospace;font-size:11px;white-space:nowrap">May 2, 2025</td>
+                <td><span class="donor-chip" style="background:var(--bluep);color:var(--blue)">James</span></td>
+                <td>Cathedral Capital</td>
+                <td style="font-family:'DM Mono',monospace;font-weight:500">$25,000</td>
+                <td style="font-size:11px;color:var(--text3)">GiveCentral — QCD</td>
+                <td style="font-size:11px">James O'Brien <span style="background:var(--teall);color:var(--teal);font-size:10px;font-weight:600;padding:1px 5px;border-radius:10px;margin-left:3px">QCD</span></td>
+                <td style="font-size:11px;color:var(--text3)">O'Brien Household</td>
+              </tr>
+              <tr class="hh-total">
+                <td colspan="3" style="font-size:12px;font-weight:600;color:var(--text)">Household total — all years</td>
+                <td style="font-family:'DM Mono',monospace;font-weight:600;color:var(--green)">$47,500</td>
+                <td colspan="3" style="font-size:11px;color:var(--text3)">James $42,000 · Patricia $5,500</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Why individual attribution matters -->
+      <div style="background:var(--bluep);border:1px solid var(--bluel);border-left:3px solid var(--blue);border-radius:0 10px 10px 0;padding:12px 16px;font-size:12px;color:var(--navy);line-height:1.7">
+        <strong>Why attribution matters:</strong> Each gift is receipted to the individual who made it (James or Patricia) — critical for IRS compliance when spouses file separately. The household LTG ($47,500) is used for stewardship decisions and legacy society tier. Individual LTG (James $42,000, Patricia $5,500) is used for pipeline qualification and ask amount calibration. Guru AI can query either level: "Show households with combined LTG over $25,000" or "Show individuals with their own LTG over $10,000" return different results.
+      </div>
+
+    </div><!-- /view-rollup -->
+
+    <!-- ══ SALUTATION SETTINGS ══ -->
+    <div class="view" id="view-salutation">
+
+      <div class="card anim">
+        <div class="card-head">
+          <div class="ch-icon" style="background:var(--bluep)"><svg viewBox="0 0 12 12" fill="none" stroke="var(--blue)" stroke-width="1.4" stroke-linecap="round"><path d="M1.5 3h9v7h-9z"/><path d="M1.5 3.5l4.5 3 4.5-3"/></svg></div>
+          <span class="ch-title">Salutation configuration — O'Brien Household</span>
+          <span class="ch-badge" style="background:var(--greenl);color:var(--greend)">All fields configured</span>
+        </div>
+        <div class="card-body">
+
+          <div class="salut-preview">
+            <div class="sp-label">Current formal salutation preview</div>
+            <div class="sp-val" id="salut-preview-val">Dear Mr. and Mrs. James O'Brien,</div>
+          </div>
+
+          <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:10px">Formal salutation — used for major gift letters and Bishop correspondence</div>
+          <div class="salut-grid" style="margin-bottom:18px">
+            <div class="salut-option active" onclick="setSalut(this,'Dear Mr. and Mrs. James O\'Brien,')">
+              <div class="so-label">Formal — joint (current)</div>
+              <div class="so-val active">Dear Mr. and Mrs. James O'Brien,</div>
+            </div>
+            <div class="salut-option" onclick="setSalut(this,'Dear James and Patricia,')">
+              <div class="so-label">Informal — first names</div>
+              <div class="so-val">Dear James and Patricia,</div>
+            </div>
+            <div class="salut-option" onclick="setSalut(this,'Dear Mr. O\'Brien,')">
+              <div class="so-label">Formal — primary only</div>
+              <div class="so-val">Dear Mr. O'Brien,</div>
+            </div>
+            <div class="salut-option" onclick="setSalut(this,'Dear James O\'Brien and Patricia O\'Brien,')">
+              <div class="so-label">Full names — both</div>
+              <div class="so-val">Dear James O'Brien and Patricia O'Brien,</div>
+            </div>
+          </div>
+
+          <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:10px">Additional address formats</div>
+          <div style="display:flex;flex-direction:column;gap:0;border:1px solid var(--border);border-radius:10px;overflow:hidden">
+            <div class="field-row" style="padding:10px 14px"><span class="fr-key">Envelope / mailing label</span><span class="fr-val">The O'Brien Family</span></div>
+            <div class="field-row" style="padding:10px 14px"><span class="fr-key">Recognition / naming</span><span class="fr-val">James and Patricia O'Brien</span></div>
+            <div class="field-row" style="padding:10px 14px"><span class="fr-key">Legacy society listing</span><span class="fr-val">The O'Brien Family — Cathedral Parish</span></div>
+            <div class="field-row" style="padding:10px 14px;border-bottom:none"><span class="fr-key">Email greeting (automated)</span><span class="fr-val">Hi James / Hi Patricia (per individual)</span></div>
+          </div>
+
+          <!-- Survivor note -->
+          <div style="background:var(--amberl);border:1px solid #FDE68A;border-left:3px solid var(--amber);border-radius:0 9px 9px 0;padding:10px 14px;font-size:12px;color:var(--amberd);line-height:1.65;margin-top:14px">
+            <strong>Survivor handling:</strong> If James is marked as deceased in Atlas, the formal salutation will automatically update to "Dear Mrs. Patricia O'Brien" and the envelope name will update to "Patricia O'Brien." The household LTG and giving history are preserved. Patricia's individual record becomes the primary contact automatically.
+          </div>
+
+        </div>
+      </div>
+
+    </div><!-- /view-salutation -->
+
+  </div><!-- /content -->
+</main>
+</div>
+
+<!-- ADD MEMBER MODAL -->
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-head">
+      <span class="modal-title">Add member to O'Brien Household</span>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="font-size:13px;color:var(--text3);margin-bottom:8px;line-height:1.6">Search for an existing individual record to add to this household, or create a new individual and link them.</div>
+      <input class="f-input" type="text" placeholder="Search by name, email, or donor ID…" style="width:100%">
+      <div style="font-size:12px;color:var(--text3);margin-top:8px">— or —</div>
+      <button class="fa-btn fa-btn-blue" style="width:100%;justify-content:center;display:flex" onclick="closeModal();setTab('newentry',document.querySelectorAll('.vt')[1])">
+        Create new individual &amp; link to this household
+      </button>
+      <div style="font-size:12px;color:var(--text3);margin-top:6px">Set role as:</div>
+      <select class="f-select" style="width:100%">
+        <option>Secondary contact</option>
+        <option>Primary contact</option>
+        <option>Dependent / child</option>
+        <option>Other household member</option>
+      </select>
+    </div>
+    <div class="modal-foot">
+      <button class="mf-btn" onclick="closeModal()">Cancel</button>
+      <button class="mf-btn mf-btn-blue" onclick="closeModal()">Add to household</button>
+    </div>
+  </div>
+</div>
+
+<!-- SNACK -->
+<div id="snack" style="position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(14px);background:var(--green);color:white;padding:10px 20px;border-radius:10px;font-size:13px;display:flex;align-items:center;gap:8px;opacity:0;transition:all .25s;pointer-events:none;z-index:300">
+  <svg viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" width="14" height="14"><path d="M2 6l3 3 5-5"/></svg>
+  <span id="snack-text">Saved</span>
+</div>
+
+<script>
+function setTab(id, btn) {
+  document.querySelectorAll('.vt').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + id).classList.add('active');
+  if (btn) btn.classList.add('active');
+}
+function openModal() { document.getElementById('modal').classList.add('open'); }
+function closeModal() { document.getElementById('modal').classList.remove('open'); }
+function checkMatch() { /* match alert always visible in demo */ }
+function selectMatch(n) {
+  document.querySelectorAll('.match-result').forEach(m => m.classList.remove('selected'));
+  document.getElementById('match-' + n).classList.add('selected');
+}
+function linkHousehold() { showSnack("Patricia linked to O'Brien Household — record saved"); }
+function newHousehold() { showSnack("New household created — Patricia O'Brien #HH-5012"); }
+function setSalut(el, val) {
+  document.querySelectorAll('.salut-option').forEach(o => {
+    o.classList.remove('active');
+    o.querySelector('.so-val').classList.remove('active');
+  });
+  el.classList.add('active');
+  el.querySelector('.so-val').classList.add('active');
+  document.getElementById('salut-preview-val').textContent = val;
+}
+function showSnack(msg) {
+  const s = document.getElementById('snack');
+  document.getElementById('snack-text').textContent = msg;
+  s.style.opacity = '1'; s.style.transform = 'translateX(-50%) translateY(0)';
+  setTimeout(() => { s.style.opacity = '0'; s.style.transform = 'translateX(-50%) translateY(14px)'; }, 3000);
+}
+</script>
+</body>
+</html>
