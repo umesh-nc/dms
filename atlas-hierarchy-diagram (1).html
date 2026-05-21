@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Atlas — Four-Tier Hierarchy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0E1E35;--navy2:#152844;
+  --dioc:#1B3A6B;--diocl:#D0DDF5;--diocp:#EAF0FD;
+  --par:#0D6E6E;--parl:#A8E6E6;--parp:#D4F2F5;
+  --hh:#7C3AED;--hhl:#C4B5FD;--hhp:#EDE9FE;
+  --ind:#15803D;--indl:#86EFAC;--indp:#DCFCE7;
+  --gc:#D97706;--gcl:#FCD34D;--gcp:#FEF3C7;
+  --text:#0F172A;--text2:#334155;--text3:#64748B;--text4:#94A3B8;
+  --border:#E2E8F0;--surf:#F8FAFC;--white:#FFFFFF;
+}
+html{font-size:14px;-webkit-font-smoothing:antialiased}
+body{font-family:'DM Sans',sans-serif;background:#E8EFF8;color:var(--text);min-height:100vh;padding:0}
+
+/* ── TOPBAR ── */
+.topbar{background:var(--navy);padding:0 28px;height:52px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:50}
+.tb-mark{width:28px;height:28px;background:#2563EB;border-radius:7px;display:flex;align-items:center;justify-content:center}
+.tb-mark svg{width:13px;height:13px}
+.tb-name{font-family:'DM Serif Display',serif;font-size:16px;color:white;font-style:italic}
+.tb-sep{width:1px;height:18px;background:rgba(255,255,255,.12)}
+.tb-trail{font-size:12px;color:rgba(255,255,255,.45)}
+.tb-right{margin-left:auto;display:flex;gap:8px}
+.pill{font-size:11px;font-weight:600;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.6)}
+
+/* ── HERO ── */
+.hero{background:linear-gradient(135deg,var(--navy),#162A50,#1A3060);padding:32px 40px 28px;border-bottom:1px solid rgba(255,255,255,.04)}
+.hero-eyebrow{font-size:10px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:10px}
+.hero-title{font-family:'DM Serif Display',serif;font-size:30px;color:white;margin-bottom:7px;font-style:italic}
+.hero-sub{font-size:13px;color:rgba(255,255,255,.45);line-height:1.65;max-width:640px}
+
+/* ── MAIN ── */
+.main{max-width:1240px;margin:0 auto;padding:36px 40px 80px}
+
+/* ── VIEW TABS ── */
+.vtabs{display:flex;gap:0;background:white;border-bottom:1px solid var(--border);margin-bottom:28px;border-radius:0}
+.vt{padding:11px 18px;font-size:13px;font-weight:500;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;transition:all .13s;font-family:'DM Sans',sans-serif;background:none;border-top:none;border-left:none;border-right:none;white-space:nowrap}
+.vt:hover{color:var(--text2)}
+.vt.active{color:var(--dioc);border-bottom-color:var(--dioc);font-weight:600}
+
+/* ── VIEWS ── */
+.view{display:none;flex-direction:column;gap:24px}
+.view.active{display:flex}
+
+/* ══════════════════════════════════
+   DIAGRAM VIEW
+══════════════════════════════════ */
+.diag-wrap{background:white;border:1px solid var(--border);border-radius:16px;padding:36px 40px;overflow-x:auto}
+.diag-title{font-family:'DM Serif Display',serif;font-size:20px;color:var(--text);margin-bottom:28px;display:flex;align-items:center;gap:10px}
+.diag-title::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* Four-tier cascade */
+.cascade{display:flex;flex-direction:column;gap:0;min-width:900px}
+
+/* Tier row */
+.tier-row{display:flex;align-items:flex-start;gap:0;position:relative}
+/* connector line from tier down */
+.tier-row::before{
+  content:'';position:absolute;
+  left:140px;top:56px;
+  width:2px;height:calc(100% - 20px);
+  background:var(--border);
+  pointer-events:none;
+  z-index:0;
+}
+.tier-row:last-child::before{display:none}
+
+/* Tier label column */
+.tier-label-col{width:140px;flex-shrink:0;padding-top:14px;padding-right:24px;text-align:right}
+.tl-name{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.tl-sub{font-size:10px;color:var(--text4);margin-top:2px;line-height:1.4}
+.tl-badge{display:inline-block;margin-top:5px;font-size:9px;font-weight:600;padding:2px 8px;border-radius:20px}
+
+/* Connector dot */
+.conn-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;margin-top:18px;border:2px solid white;box-shadow:0 0 0 2px var(--border);z-index:1;position:relative}
+
+/* Tier content */
+.tier-content{flex:1;padding:0 0 32px 20px;position:relative}
+
+/* Entity card */
+.entity-card{border-radius:12px;overflow:hidden;display:inline-block;min-width:280px;max-width:460px;vertical-align:top;margin-right:12px;margin-bottom:10px;transition:all .15s;cursor:pointer;border:1.5px solid transparent}
+.entity-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(14,30,53,.1)}
+.ec-head{padding:12px 16px;display:flex;align-items:center;gap:10px}
+.ec-icon{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,.2)}
+.ec-icon svg{width:14px;height:14px;color:white}
+.ec-name{font-size:13px;font-weight:600;color:white;flex:1}
+.ec-id{font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,.5)}
+.ec-body{padding:10px 16px 12px;background:rgba(255,255,255,.96)}
+.ec-field{display:flex;justify-content:space-between;padding:4px 0;border-bottom:.5px solid var(--border);font-size:11px}
+.ec-field:last-child{border-bottom:none}
+.ecf-key{color:var(--text3)}
+.ecf-val{color:var(--text);font-weight:500;text-align:right;max-width:180px}
+.ecf-val.new{color:#7C3AED;font-weight:700}
+.ecf-val.calc{color:var(--ind);font-style:italic}
+.ecf-val.mono{font-family:'DM Mono',monospace;font-size:10px}
+
+/* Diocese tier */
+.tier-dioc .conn-dot{background:var(--dioc)}
+.tier-dioc .entity-card{border-color:var(--diocl)}
+.tier-dioc .ec-head{background:var(--dioc)}
+/* Parish tier */
+.tier-par .conn-dot{background:var(--par)}
+.tier-par .entity-card{border-color:var(--parl)}
+.tier-par .ec-head{background:var(--par)}
+/* HH tier */
+.tier-hh .conn-dot{background:var(--hh)}
+.tier-hh .entity-card{border-color:var(--hhl)}
+.tier-hh .ec-head{background:var(--hh)}
+/* Individual tier */
+.tier-ind .conn-dot{background:var(--ind)}
+.tier-ind .entity-card{border-color:var(--indl)}
+.tier-ind .ec-head{background:var(--ind)}
+
+/* Multiple-instance indicator */
+.multi-indicator{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--text3);margin-left:4px;margin-bottom:10px}
+.mi-dots{display:flex;gap:3px}
+.mi-dot{width:8px;height:8px;border-radius:2px;opacity:.7}
+
+/* ══════════════════════════════════
+   ACCESS CONTROL VIEW
+══════════════════════════════════ */
+.ac-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.ac-card{background:white;border:1px solid var(--border);border-radius:14px;overflow:hidden}
+.acc-head{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:9px}
+.acc-head-icon{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.acc-head-icon svg{width:13px;height:13px;color:white}
+.acc-head-title{font-size:13px;font-weight:600;color:var(--text);flex:1}
+.acc-head-role{font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px}
+.acc-body{padding:14px 18px}
+.acc-row{display:flex;align-items:flex-start;gap:8px;padding:7px 0;border-bottom:.5px solid var(--border);font-size:12px}
+.acc-row:last-child{border-bottom:none}
+.acc-icon{width:16px;height:16px;border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.acc-icon svg{width:8px;height:8px}
+.acc-text{flex:1;color:var(--text2);line-height:1.5}
+.acc-scope{font-size:10px;font-weight:600;padding:1px 6px;border-radius:20px;flex-shrink:0;margin-top:2px}
+
+/* ══════════════════════════════════
+   ROLLUP VIEW
+══════════════════════════════════ */
+.rollup-diagram{background:white;border:1px solid var(--border);border-radius:16px;padding:28px 32px}
+.rd-section{margin-bottom:28px}
+.rd-label{font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.rd-label::after{content:'';flex:1;height:1px;background:var(--border)}
+.rollup-flow{display:flex;align-items:center;gap:0;flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px}
+.rf-box{border-radius:10px;padding:12px 16px;flex-shrink:0;min-width:150px;text-align:center}
+.rf-label{font-size:9px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;margin-bottom:5px;opacity:.7}
+.rf-val{font-family:'DM Serif Display',serif;font-size:20px;line-height:1}
+.rf-sub{font-size:10px;opacity:.6;margin-top:3px}
+.rf-arrow{display:flex;align-items:center;padding:0 8px;color:var(--text4);flex-shrink:0}
+.rf-arrow svg{width:18px;height:18px}
+
+.donor-note{background:var(--parp);border:1px solid var(--parl);border-left:3px solid var(--par);border-radius:0 9px 9px 0;padding:10px 14px;font-size:12px;color:#0D3D3D;line-height:1.65;margin-top:14px}
+
+/* ══════════════════════════════════
+   PRODUCT ROADMAP VIEW
+══════════════════════════════════ */
+.roadmap-card{background:white;border:1px solid var(--border);border-radius:14px;overflow:hidden}
+.rm-head{background:var(--navy);padding:14px 20px;display:flex;align-items:center;gap:10px}
+.rm-title{font-family:'DM Serif Display',serif;font-size:17px;color:white;flex:1;font-style:italic}
+.rm-phases{display:flex;flex-direction:column}
+.rm-phase{display:flex;align-items:flex-start;gap:0;border-bottom:.5px solid var(--border)}
+.rm-phase:last-child{border-bottom:none}
+.rm-phase-label{width:180px;flex-shrink:0;padding:18px 20px;border-right:1px solid var(--border);background:var(--surf)}
+.rpl-name{font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px}
+.rpl-timeline{font-size:11px;color:var(--text3)}
+.rpl-badge{display:inline-block;margin-top:5px;font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px}
+.rm-phase-body{flex:1;padding:18px 20px}
+.rpm-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px}
+.rpm-items{display:flex;flex-direction:column;gap:4px}
+.rpm-item{display:flex;align-items:flex-start;gap:7px;font-size:12px;color:var(--text2);line-height:1.55}
+.rpm-item-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:5px}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.anim{animation:fadeUp .35s ease both}
+.a1{animation-delay:.05s}.a2{animation-delay:.1s}.a3{animation-delay:.15s}.a4{animation-delay:.2s}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="tb-mark"><svg viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7.5" stroke="white" stroke-width="1.5"/><path d="M5.5 9.5C6.5 11.5 9 13 9 13s2.5-1.5 3.5-3.5S12 5 9 5 4.5 7.5 5.5 9.5z" fill="white" fill-opacity=".9"/></svg></div>
+  <span class="tb-name">Atlas</span>
+  <div class="tb-sep"></div>
+  <span class="tb-trail">Architecture · Four-Tier Hierarchy & Parish Rollup</span>
+  <div class="tb-right">
+    <span class="pill">Data Model Spec v1.1</span>
+    <span class="pill">Internal — Engineering</span>
+  </div>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-eyebrow">Atlas data architecture · four-tier hierarchy</div>
+  <div class="hero-title">Diocese → Parish → Household → Individual</div>
+  <div class="hero-sub">Single-database, account-scoped architecture supporting both Diocesan Atlas (full view) and Parish Atlas (scoped view) from one data store — no synchronisation, no deduplication, one source of truth for every donor record.</div>
+</div>
+
+<div class="main">
+
+  <!-- VIEW TABS -->
+  <div class="vtabs">
+    <button class="vt active" onclick="setTab('diagram',this)">Hierarchy diagram</button>
+    <button class="vt" onclick="setTab('access',this)">Access control model</button>
+    <button class="vt" onclick="setTab('rollup',this)">Giving rollup logic</button>
+    <button class="vt" onclick="setTab('roadmap',this)">Product roadmap</button>
+  </div>
+
+  <!-- ══ DIAGRAM ══ -->
+  <div class="view active" id="view-diagram">
+    <div class="diag-wrap anim a1">
+      <div class="diag-title">Four-tier entity hierarchy — Diocese of Fort Worth example</div>
+      <div class="cascade">
+
+        <!-- DIOCESE TIER -->
+        <div class="tier-row tier-dioc">
+          <div class="tier-label-col">
+            <div class="tl-name" style="color:var(--dioc)">Diocese</div>
+            <div class="tl-sub">Account boundary · billing · admin</div>
+            <div class="tl-badge" style="background:var(--diocp);color:var(--dioc)">Tier 1</div>
+          </div>
+          <div class="conn-dot"></div>
+          <div class="tier-content">
+            <div class="entity-card">
+              <div class="ec-head">
+                <div class="ec-icon"><svg viewBox="0 0 14 14" fill="none" stroke="white" stroke-width="1.3" stroke-linecap="round"><path d="M7 1.5v3M4 4.5H3a1 1 0 00-1 1v5h10v-5a1 1 0 00-1-1h-1M4 4.5h6M4 4.5V3a3 3 0 016 0v1.5"/></svg></div>
+                <span class="ec-name">Diocese of Fort Worth</span>
+                <span class="ec-id">DIOC-0001</span>
+              </div>
+              <div class="ec-body">
+                <div class="ec-field"><span class="ecf-key">DioceseID</span><span class="ecf-val mono">DIOC-0001</span></div>
+                <div class="ec-field"><span class="ecf-key">DioceseName</span><span class="ecf-val">Diocese of Fort Worth</span></div>
+                <div class="ec-field"><span class="ecf-key">Bishop</span><span class="ecf-val">Most Rev. [Name]</span></div>
+                <div class="ec-field"><span class="ecf-key">AtlasTier</span><span class="ecf-val">Diocese ($65K/yr)</span></div>
+                <div class="ec-field"><span class="ecf-key">ParishCount</span><span class="ecf-val calc">84 parishes (calculated)</span></div>
+                <div class="ec-field"><span class="ecf-key">TotalDonorRecords</span><span class="ecf-val calc">84,312 (calculated)</span></div>
+                <div class="ec-field"><span class="ecf-key">DiocesanAtlasEnabled</span><span class="ecf-val" style="color:var(--ind)">✓ Active — Phase 1</span></div>
+                <div class="ec-field"><span class="ecf-key">ParishAtlasEnabled</span><span class="ecf-val new">→ Phase 2 addition</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PARISH TIER -->
+        <div class="tier-row tier-par">
+          <div class="tier-label-col">
+            <div class="tl-name" style="color:var(--par)">Parish</div>
+            <div class="tl-sub">Access boundary · scoped login · GL codes</div>
+            <div class="tl-badge" style="background:var(--parp);color:var(--par)">Tier 2</div>
+          </div>
+          <div class="conn-dot"></div>
+          <div class="tier-content">
+            <!-- Multiple parishes shown -->
+            <div class="multi-indicator">
+              <div class="mi-dots">
+                <div class="mi-dot" style="background:var(--par)"></div>
+                <div class="mi-dot" style="background:var(--par)"></div>
+                <div class="mi-dot" style="background:var(--par)"></div>
+              </div>
+              84 parishes in this diocese · each a scoped access boundary
+            </div>
+            <div style="display:flex;gap:12px;flex-wrap:wrap">
+              <div class="entity-card" style="min-width:240px">
+                <div class="ec-head">
+                  <div class="ec-icon"><svg viewBox="0 0 14 14" fill="none" stroke="white" stroke-width="1.3" stroke-linecap="round"><path d="M7 1L1.5 5.5V13h4V9h3v4h4V5.5L7 1z"/></svg></div>
+                  <span class="ec-name">Cathedral Parish</span>
+                  <span class="ec-id">PAR-0001</span>
+                </div>
+                <div class="ec-body">
+                  <div class="ec-field"><span class="ecf-key">DioceseID</span><span class="ecf-val new">DIOC-0001 ← new field</span></div>
+                  <div class="ec-field"><span class="ecf-key">Pastor</span><span class="ecf-val">Fr. [Name]</span></div>
+                  <div class="ec-field"><span class="ecf-key">HouseholdCount</span><span class="ecf-val calc">2,841 (calculated)</span></div>
+                  <div class="ec-field"><span class="ecf-key">ParishAtlasEnabled</span><span class="ecf-val new">Boolean ← new field</span></div>
+                  <div class="ec-field"><span class="ecf-key">ParishAtlasRole</span><span class="ecf-val new">Enum ← new field</span></div>
+                  <div class="ec-field"><span class="ecf-key">ParishGLCode</span><span class="ecf-val mono">4001-CAT</span></div>
+                </div>
+              </div>
+              <div class="entity-card" style="min-width:200px;opacity:.7">
+                <div class="ec-head">
+                  <div class="ec-icon"><svg viewBox="0 0 14 14" fill="none" stroke="white" stroke-width="1.3" stroke-linecap="round"><path d="M7 1L1.5 5.5V13h4V9h3v4h4V5.5L7 1z"/></svg></div>
+                  <span class="ec-name">Holy Cross Parish</span>
+                  <span class="ec-id">PAR-0002</span>
+                </div>
+                <div class="ec-body">
+                  <div class="ec-field"><span class="ecf-key">DioceseID</span><span class="ecf-val new">DIOC-0001</span></div>
+                  <div class="ec-field"><span class="ecf-key">ParishAtlasEnabled</span><span class="ecf-val" style="color:var(--text3)">false (Phase 2)</span></div>
+                  <div class="ec-field"><span class="ecf-key">ParishGLCode</span><span class="ecf-val mono">4002-HC</span></div>
+                </div>
+              </div>
+              <div class="entity-card" style="min-width:180px;opacity:.5">
+                <div class="ec-head" style="background:#4A7070">
+                  <div class="ec-icon"><svg viewBox="0 0 14 14" fill="none" stroke="white" stroke-width="1.3" stroke-linecap="round"><path d="M7 1L1.5 5.5V13h4V9h3v4h4V5.5L7 1z"/></svg></div>
+                  <span class="ec-name" style="font-size:12px">+ 82 more parishes</span>
+                </div>
+                <div class="ec-body">
+                  <div class="ec-field"><span class="ecf-key">All linked to</span><span class="ecf-val">DIOC-0001</span></div>
+                  <div class="ec-field"><span class="ecf-key">ParishAtlasEnabled</span><span class="ecf-val" style="color:var(--text3)">Rollout planned</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- HOUSEHOLD TIER -->
+        <div class="tier-row tier-hh">
+          <div class="tier-label-col">
+            <div class="tl-name" style="color:var(--hh)">Household</div>
+            <div class="tl-sub">Shared address · salutation · combined LTG</div>
+            <div class="tl-badge" style="background:var(--hhp);color:var(--hh)">Tier 3</div>
+          </div>
+          <div class="conn-dot"></div>
+          <div class="tier-content">
+            <div class="multi-indicator">
+              <div class="mi-dots">
+                <div class="mi-dot" style="background:var(--hh)"></div>
+                <div class="mi-dot" style="background:var(--hh)"></div>
+                <div class="mi-dot" style="background:var(--hh)"></div>
+              </div>
+              2,841 households in Cathedral Parish · 84,312 across diocese
+            </div>
+            <div class="entity-card">
+              <div class="ec-head">
+                <div class="ec-icon"><svg viewBox="0 0 14 14" fill="none" stroke="white" stroke-width="1.3" stroke-linecap="round"><path d="M2 12c0-2.5 2-4 4.5-4M6.5 3a2.5 2.5 0 100 5 2.5 2.5 0 000-5zM8 9h4M10 7v4"/></svg></div>
+                <span class="ec-name">O'Brien Household</span>
+                <span class="ec-id">HH-2841</span>
+              </div>
+              <div class="ec-body">
+                <div class="ec-field"><span class="ecf-key">ParishID</span><span class="ecf-val mono">PAR-0001</span></div>
+                <div class="ec-field"><span class="ecf-key">DioceseID</span><span class="ecf-val new">DIOC-0001 ← denormalised for query speed</span></div>
+                <div class="ec-field"><span class="ecf-key">MailingAddress</span><span class="ecf-val">124 Heritage Oak Dr, FTW TX 76116</span></div>
+                <div class="ec-field"><span class="ecf-key">FormalSalutation</span><span class="ecf-val">Dear Mr. and Mrs. James O'Brien,</span></div>
+                <div class="ec-field"><span class="ecf-key">CombinedLTG</span><span class="ecf-val calc">$47,500 (calculated from members)</span></div>
+                <div class="ec-field"><span class="ecf-key">LegacySocietyTier</span><span class="ecf-val">✦ Founding</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- INDIVIDUAL TIER -->
+        <div class="tier-row tier-ind">
+          <div class="tier-label-col">
+            <div class="tl-name" style="color:var(--ind)">Individual</div>
+            <div class="tl-sub">Own gifts · own email · GC account link</div>
+            <div class="tl-badge" style="background:var(--indp);color:var(--ind)">Tier 4</div>
+          </div>
+          <div class="conn-dot"></div>
+          <div class="tier-content">
+            <div class="multi-indicator">
+              <div class="mi-dots">
+                <div class="mi-dot" style="background:var(--ind)"></div>
+                <div class="mi-dot" style="background:var(--ind)"></div>
+              </div>
+              2 individuals in O'Brien Household · 1 GiveCentral account linked
+            </div>
+            <div style="display:flex;gap:12px;flex-wrap:wrap">
+              <div class="entity-card">
+                <div class="ec-head">
+                  <div class="ec-icon"><svg viewBox="0 0 14 14" fill="none" stroke="white" stroke-width="1.3" stroke-linecap="round"><circle cx="7" cy="5" r="3"/><path d="M1.5 13c0-3 2.5-5 5.5-5s5.5 2 5.5 5"/></svg></div>
+                  <span class="ec-name">James Patrick O'Brien</span>
+                  <span class="ec-id">IND-04821</span>
+                </div>
+                <div class="ec-body">
+                  <div class="ec-field"><span class="ecf-key">HouseholdID</span><span class="ecf-val mono">HH-2841</span></div>
+                  <div class="ec-field"><span class="ecf-key">HouseholdRole</span><span class="ecf-val">Primary</span></div>
+                  <div class="ec-field"><span class="ecf-key">GiveCentralAccountID</span><span class="ecf-val mono" style="color:var(--gc)">GC-29441 ← linked</span></div>
+                  <div class="ec-field"><span class="ecf-key">IndividualLTG</span><span class="ecf-val calc">$42,000 (calculated)</span></div>
+                  <div class="ec-field"><span class="ecf-key">PipelineStage</span><span class="ecf-val">Cultivation</span></div>
+                  <div class="ec-field"><span class="ecf-key">DeceasedFlag</span><span class="ecf-val">false</span></div>
+                </div>
+              </div>
+              <div class="entity-card">
+                <div class="ec-head">
+                  <div class="ec-icon"><svg viewBox="0 0 14 14" fill="none" stroke="white" stroke-width="1.3" stroke-linecap="round"><circle cx="7" cy="5" r="3"/><path d="M1.5 13c0-3 2.5-5 5.5-5s5.5 2 5.5 5"/></svg></div>
+                  <span class="ec-name">Patricia Anne O'Brien</span>
+                  <span class="ec-id">IND-04822</span>
+                </div>
+                <div class="ec-body">
+                  <div class="ec-field"><span class="ecf-key">HouseholdID</span><span class="ecf-val mono">HH-2841</span></div>
+                  <div class="ec-field"><span class="ecf-key">HouseholdRole</span><span class="ecf-val">Secondary</span></div>
+                  <div class="ec-field"><span class="ecf-key">GiveCentralAccountID</span><span class="ecf-val" style="color:var(--text3);font-style:italic">null — invite pending</span></div>
+                  <div class="ec-field"><span class="ecf-key">IndividualLTG</span><span class="ecf-val calc">$5,500 (calculated)</span></div>
+                  <div class="ec-field"><span class="ecf-key">PipelineStage</span><span class="ecf-val">Stewardship</span></div>
+                  <div class="ec-field"><span class="ecf-key">DeceasedFlag</span><span class="ecf-val">false</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /cascade -->
+
+      <!-- Legend -->
+      <div style="display:flex;gap:16px;flex-wrap:wrap;margin-top:24px;padding-top:20px;border-top:1px solid var(--border)">
+        <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text3)">
+          <div style="width:10px;height:10px;background:var(--diocp);border:1px solid var(--dioc);border-radius:2px"></div> Diocese tier
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text3)">
+          <div style="width:10px;height:10px;background:var(--parp);border:1px solid var(--par);border-radius:2px"></div> Parish tier
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text3)">
+          <div style="width:10px;height:10px;background:var(--hhp);border:1px solid var(--hh);border-radius:2px"></div> Household tier
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text3)">
+          <div style="width:10px;height:10px;background:var(--indp);border:1px solid var(--ind);border-radius:2px"></div> Individual tier
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text3)">
+          <span style="color:var(--hh);font-weight:700;font-size:12px">→ new field</span> Fields added for parish rollup (v1.1)
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text3)">
+          <span style="color:var(--ind);font-style:italic;font-size:12px">italic</span> Calculated fields — never manually editable
+        </div>
+      </div>
+    </div>
+
+    <!-- Key insight -->
+    <div style="background:var(--diocp);border:1px solid var(--diocl);border-left:3px solid var(--dioc);border-radius:0 10px 10px 0;padding:14px 18px;font-size:13px;color:var(--dioc);line-height:1.7" class="anim a2">
+      <strong>Why single database beats federated instances:</strong> William Andrews gives to Cathedral Parish and to St. Michael's capital campaign. In a federated model he has two records in two databases — creating the exact duplicate problem the household model was designed to prevent. In the single-database scoped model, William has one Individual record. Cathedral Parish sees his gifts to their funds. St. Michael's sees his gifts to their campaign. The diocese sees everything. No sync. No deduplication. One source of truth.
+    </div>
+  </div>
+
+  <!-- ══ ACCESS CONTROL ══ -->
+  <div class="view" id="view-access">
+
+    <div style="background:var(--navy);border-radius:14px;padding:20px 24px;display:flex;gap:20px;align-items:center" class="anim a1">
+      <div>
+        <div style="font-family:'DM Serif Display',serif;font-size:20px;color:white;margin-bottom:5px;font-style:italic">Single database · four access scopes</div>
+        <div style="font-size:13px;color:rgba(255,255,255,.5);line-height:1.65;max-width:560px">Every Atlas user is assigned a scope that determines which records they can see and edit. Scopes are enforced at the query layer — every database query automatically appends a WHERE clause filtering by the user's DioceseID and/or ParishID.</div>
+      </div>
+    </div>
+
+    <div class="ac-grid anim a2">
+
+      <div class="ac-card">
+        <div class="acc-head">
+          <div class="acc-head-icon" style="background:var(--dioc)"><svg viewBox="0 0 13 13" fill="none" stroke="white" stroke-width="1.3" stroke-linecap="round" width="13" height="13"><path d="M6.5 1.5v2M4 3.5H3a1 1 0 00-1 1v5h9v-5a1 1 0 00-1-1H9M4 3.5h5M4 3.5v-1a2.5 2.5 0 015 0v1"/></svg></div>
+          <div class="acc-head-title">Diocesan admin</div>
+          <span class="acc-head-role" style="background:var(--diocp);color:var(--dioc)">SCOPE_DIOCESE</span>
+        </div>
+        <div class="acc-body">
+          <div class="acc-row">
+            <div class="acc-icon" style="background:var(--indp)"><svg viewBox="0 0 8 8" fill="none" stroke="var(--ind)" stroke-width="1.5" stroke-linecap="round" width="8" height="8"><path d="M1 4l2 2 4-4"/></svg></div>
+            <div class="acc-text">Read and write all records across all parishes in the diocese</div>
+            <span class="acc-scope" style="background:var(--indp);color:var(--ind)">Full access</span>
+          </div>
+          <div class="acc-row">
+            <div class="acc-icon" style="background:var(--indp)"><svg viewBox="0 0 8 8" fill="none" stroke="var(--ind)" stroke-width="1.5" stroke-linecap="round" width="8" height="8"><path d="M1 4l2 2 4-4"/></svg></div>
+            <div class="acc-text">Access all diocesan reports, pipeline view, giving rollup across parishes</div>
+            <span class="acc-scope" style="background:var(--indp);color:var(--ind)">Full access</span>
+          </div>
+          <div class="acc-row">
+            <div class="acc-icon" style="background:var(--indp)"><svg viewBox="0 0 8 8" fill="none" stroke="var(--ind)" stroke-width="1.5" stroke-linecap="round" width="8" height="8"><path d="M1 4l2 2 4-4"/></svg></div>
+            <div class="acc-text">Provision and manage parish staff accounts, set ParishAtlasEnabled flag</div>
+            <span class="acc-scope" style="background:var(--indp);color:var(--ind)">Admin only</span>
+          </div>
+          <div class="acc-row">
+            <div class="acc-icon" style="background:var(--indp)"><svg viewBox="0 0 8 8" fill="none" stroke="var(--ind)" stroke-width="1.5" stroke-linecap="round" width="8" height="8"><path d="M1 4l2 2 4-4"/></svg></div>
+            <div class="acc-text">Configure diocese-wide settings, fund structure, GL codes, email templates</div>
+            <span class="acc-scope" style="background:var(--indp);color:var(--ind)">Admin only</span>
+          </div>
+          <div class="acc-row">
+            <div class="acc-icon" style="background:var(--parp)"><svg viewBox="0 0 8 8" fill="none" stroke="var(--par)" stroke-width="1.5" stroke-linecap="round" width="8" height="8"><path d="M1 4l2 2 4-4"/></svg></div>
+            <div class="acc-text">View a donor's giving to any parish, including cross-parish LTG</div>
+            <span class="acc-scope" style="background:var(--parp);color:var(--par)">Diocese only</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="ac-card">
+        <div class="acc-head">
+          <div class="acc-head-icon" style="background:var(--par)"><svg viewBox="0 0 13 13" fill="none" stroke="white" stroke-width="1.3" stroke-linecap="round" width="13" height="13"><path d="M6.5 1L1 5.5v7h4V9h3v3.5h4V5.5L6.5 1z"/></svg></div>
+          <div class="acc-head-title">Parish administrator</div>
+          <span class="acc-head-role" style="background:var(--parp);color:var(--par)">SCOPE_PARISH</span>
+        </div>
+        <div class="acc-body">
+          <div class="acc-row">
+            <div class="acc-icon" style="background:var(--indp)"><svg viewBox="0 0 8 8" fill="none" stroke="var(--ind)" stroke-width="1.5" stroke-linecap="round" width="8" height="8"><path d="M1 4l2 2 4-4"/></svg></div>
+            <div class="acc-text">Read and write all Individual and Household records in their own parish</div>
+            <span class="acc-scope" style="background:var(--indp);color:var(--ind)">Parish-scoped</span>
+          </div>
+          <div class="acc-row">
+            <div class="acc-icon" style="background:var(--indp)"><svg viewBox="0 0 8 8" fill="none" stroke="var(--ind)" stroke-width="1.5" stroke-linecap="round" width="8" height="8"><path d="M1 4l2 2 4-4"/></svg></div>
+            <div class="acc-text">View giving to their own parish funds only · own-parish batch entry and reports</div>
+            <span class="acc-scope" style="background:var(--indp);color:var(--ind)">Parish-scoped</span>
+          </div>
+          <div class="acc-row">
+            <div class="acc-icon" style="background:var(--gcp)"><svg viewBox="0 0 8 8" fill="none" stroke="var(--gc)" stroke-width="1.5" stroke-linecap="round" width="8" height="8"><path d="M1 4l2 2 4-4"/></svg></div>
+            <div class="acc-text">Can see that a donor exists in another parish — but cannot see that parish's gift amounts</div>
+            <span class="acc-scope" style="background:var(--gcp);color:var(--gc)">Name only</span>
+          </div>
+          <div class="acc-row">
+            <div class="acc-icon" style="background:var(--hhp)"><svg viewBox="0 0 8 8" fill="none" stroke="var(--hh)" stroke-width="1.5" stroke-linecap="round" width="8" height="8"><path d="M1 4h6M4 1.5l2.5 2.5L4 6.5"/></svg></div>
+            <div class="acc-text">Cannot see gifts made to other parishes · cannot see CombinedLTG that includes cross-parish gifts</div>
+            <span class="acc-scope" style="background:var(--hhp);color:var(--hh)">No access</span>
+          </div>
+          <div class="acc-row">
+            <div class="acc-icon" style="background:var(--hhp)"><svg viewBox="0 0 8 8" fill="none" stroke="var(--hh)" stroke-width="1.5" stroke-linecap="round" width="8" height="8"><path d="M1 4h6M4 1.5l2.5 2.5L4 6.5"/></svg></div>
+            <div class="acc-text">Cannot access diocese-level pipeline, major gift data, or planned giving pipeline</div>
+            <span class="acc-scope" style="background:var(--hhp);color:var(--hh)">No access</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="ac-card">
+        <div class="acc-head">
+          <div class="acc-head-icon" style="background:#7B3F00"><svg viewBox="0 0 13 13" fill="none" stroke="white" stroke-width="1.3" stroke-linecap="round" width="13" height="13"><path d="M6.5 1.5v2M4 3.5H3a1 1 0 00-1 1v5h9v-5a1 1 0 00-1-1H9"/><path d="M4 3.5h5M6.5 7v2M5 8.5h3"/></svg></div>
+          <div class="acc-head-title">Pastor (read-only)</div>
+          <span class="acc-head-role" style="background:#FEF3DC;color:#7B3F00">SCOPE_PASTOR</span>
+        </div>
+        <div class="acc-body">
+          <div class="acc-row">
+            <div class="acc-icon" style="background:var(--indp)"><svg viewBox="0 0 8 8" fill="none" stroke="var(--ind)" stroke-width="1.5" stroke-linecap="round" width="8" height="8"><path d="M1 4l2 2 4-4"/></svg></div>
+            <div class="acc-text">Read-only view of their own parish's giving — total, by fund, and by donor (LTG visible)</div>
+            <span class="acc-scope" style="background:var(--indp);color:var(--ind)">Read only</span>
+          </div>
+          <div class="acc-row">
+            <div class="acc-icon" style="background:var(--indp)"><svg viewBox="0 0 8 8" fill="none" stroke="var(--ind)" stroke-width="1.5" stroke-linecap="round" width="8" height="8"><path d="M1 4l2 2 4-4"/></svg></div>
+            <div class="acc-text">Receives auto-delivered monthly parish pulse report and CMA progress report</div>
+            <span class="acc-scope" style="background:var(--indp);color:var(--ind)">Reports only</span>
+          </div>
+          <div class="acc-row">
+            <div class="acc-icon" style="background:var(--hhp)"><svg viewBox="0 0 8 8" fill="none" stroke="var(--hh)" stroke-width="1.5" stroke-linecap="round" width="8" height="8"><path d="M1 4h6M4 1.5l2.5 2.5L4 6.5"/></svg></div>
+            <div class="acc-text">Cannot create, edit, or delete records · cannot run batches · cannot access financials</div>
+            <span class="acc-scope" style="background:var(--hhp);color:var(--hh)">No write</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="ac-card">
+        <div class="acc-head">
+          <div class="acc-head-icon" style="background:#2563EB"><svg viewBox="0 0 13 13" fill="none" stroke="white" stroke-width="1.3" stroke-linecap="round" width="13" height="13"><circle cx="6.5" cy="4.5" r="3"/><path d="M2 12c0-2.5 2-4 4.5-4s4.5 1.5 4.5 4"/></svg></div>
+          <div class="acc-head-title">Gift officer</div>
+          <span class="acc-head-role" style="background:var(--bluep);color:#2563EB">SCOPE_OFFICER</span>
+        </div>
+        <div class="acc-body">
+          <div class="acc-row">
+            <div class="acc-icon" style="background:var(--indp)"><svg viewBox="0 0 8 8" fill="none" stroke="var(--ind)" stroke-width="1.5" stroke-linecap="round" width="8" height="8"><path d="M1 4l2 2 4-4"/></svg></div>
+            <div class="acc-text">Full read/write access to their assigned portfolio — any parish within the diocese</div>
+            <span class="acc-scope" style="background:var(--indp);color:var(--ind)">Portfolio</span>
+          </div>
+          <div class="acc-row">
+            <div class="acc-icon" style="background:var(--indp)"><svg viewBox="0 0 8 8" fill="none" stroke="var(--ind)" stroke-width="1.5" stroke-linecap="round" width="8" height="8"><path d="M1 4l2 2 4-4"/></svg></div>
+            <div class="acc-text">Can see CombinedLTG (cross-parish) for donors in their portfolio</div>
+            <span class="acc-scope" style="background:var(--indp);color:var(--ind)">Portfolio</span>
+          </div>
+          <div class="acc-row">
+            <div class="acc-icon" style="background:var(--gcp)"><svg viewBox="0 0 8 8" fill="none" stroke="var(--gc)" stroke-width="1.5" stroke-linecap="round" width="8" height="8"><path d="M1 4l2 2 4-4"/></svg></div>
+            <div class="acc-text">Read-only on records outside their portfolio — can see donor exists but not contact details</div>
+            <span class="acc-scope" style="background:var(--gcp);color:var(--gc)">Limited</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══ ROLLUP LOGIC ══ -->
+  <div class="view" id="view-rollup">
+
+    <div class="rollup-diagram anim a1">
+
+      <div class="rd-section">
+        <div class="rd-label" style="color:var(--ind)">Individual giving → Household CombinedLTG rollup</div>
+        <div class="rollup-flow">
+          <div class="rf-box" style="background:var(--indp);border:1px solid var(--indl)">
+            <div class="rf-label" style="color:var(--ind)">James (IND-04821)</div>
+            <div class="rf-val" style="color:var(--ind)">$42,000</div>
+            <div class="rf-sub" style="color:var(--ind)">IndividualLTG</div>
+          </div>
+          <div class="rf-arrow"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 9h12M11 5l4 4-4 4"/></svg></div>
+          <div class="rf-box" style="background:var(--hhp);border:1px solid var(--hhl)">
+            <div class="rf-label" style="color:var(--hh)">O'Brien HH (HH-2841)</div>
+            <div class="rf-val" style="color:var(--hh)">$47,500</div>
+            <div class="rf-sub" style="color:var(--hh)">CombinedLTG = sum of all members</div>
+          </div>
+          <div class="rf-arrow"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 9h12M11 5l4 4-4 4"/></svg></div>
+          <div class="rf-box" style="background:var(--parp);border:1px solid var(--parl)">
+            <div class="rf-label" style="color:var(--par)">Cathedral Parish (PAR-0001)</div>
+            <div class="rf-val" style="color:var(--par)">$3.2M</div>
+            <div class="rf-sub" style="color:var(--par)">ParishLTG = sum of all HH</div>
+          </div>
+          <div class="rf-arrow"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 9h12M11 5l4 4-4 4"/></svg></div>
+          <div class="rf-box" style="background:var(--diocp);border:1px solid var(--diocl)">
+            <div class="rf-label" style="color:var(--dioc)">Diocese of Fort Worth (DIOC-0001)</div>
+            <div class="rf-val" style="color:var(--dioc)">$47.2M</div>
+            <div class="rf-sub" style="color:var(--dioc)">DioceseLTG = sum of all parishes</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--ind);margin-top:5px;padding:7px 12px;background:var(--indp);border-radius:8px;width:fit-content">
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" width="12" height="12"><path d="M6 1v5M6 8v.5"/><path d="M1 11L6 1l5 10H1z"/></svg>
+          Patricia's $5,500 IndividualLTG is also included in the $47,500 HouseholdCombinedLTG
+        </div>
+      </div>
+
+      <div class="rd-section">
+        <div class="rd-label" style="color:var(--par)">Cross-parish giving — why single database matters</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+          <div>
+            <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:8px">William Andrews gives to two parishes:</div>
+            <div class="rollup-flow" style="flex-direction:column;gap:8px">
+              <div style="display:flex;align-items:center;gap:10px">
+                <div class="rf-box" style="background:var(--indp);border:1px solid var(--indl);min-width:120px;padding:8px 12px">
+                  <div class="rf-label" style="color:var(--ind)">William Andrews</div>
+                  <div class="rf-val" style="color:var(--ind);font-size:16px">IND-07712</div>
+                  <div class="rf-sub" style="color:var(--ind)">One record · one household</div>
+                </div>
+                <div style="flex:1;display:flex;flex-direction:column;gap:6px">
+                  <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2)">
+                    <span style="width:6px;height:6px;border-radius:50%;background:var(--par);flex-shrink:0"></span>
+                    $5,000 → Cathedral Parish CMA 2026
+                  </div>
+                  <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2)">
+                    <span style="width:6px;height:6px;border-radius:50%;background:#0D9488;flex-shrink:0"></span>
+                    $2,500 → St. Michael's capital campaign
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="donor-note" style="margin-top:10px">In a single-database model, both gifts attach to IND-07712. Cathedral Parish sees the $5,000. St. Michael's sees the $2,500. The diocese sees the $7,500 combined LTG. No duplicate record. No sync required.</div>
+          </div>
+          <div>
+            <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:8px">Scoped LTG views — same data, different lens:</div>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <div style="background:var(--parp);border:1px solid var(--parl);border-radius:8px;padding:9px 12px;display:flex;justify-content:space-between;font-size:12px">
+                <span style="color:var(--par);font-weight:600">Cathedral Parish LTG</span>
+                <span style="font-family:'DM Mono',monospace;color:var(--par)">$5,000</span>
+              </div>
+              <div style="background:#D4F0EE;border:1px solid #A8E0DC;border-radius:8px;padding:9px 12px;display:flex;justify-content:space-between;font-size:12px">
+                <span style="color:#0D6060;font-weight:600">St. Michael's Parish LTG</span>
+                <span style="font-family:'DM Mono',monospace;color:#0D6060">$2,500</span>
+              </div>
+              <div style="background:var(--hhp);border:1px solid var(--hhl);border-radius:8px;padding:9px 12px;display:flex;justify-content:space-between;font-size:12px">
+                <span style="color:var(--hh);font-weight:600">Household CombinedLTG</span>
+                <span style="font-family:'DM Mono',monospace;color:var(--hh)">$7,500</span>
+              </div>
+              <div style="background:var(--diocp);border:1px solid var(--diocl);border-radius:8px;padding:9px 12px;display:flex;justify-content:space-between;font-size:12px">
+                <span style="color:var(--dioc);font-weight:600">Diocesan view (gift officer)</span>
+                <span style="font-family:'DM Mono',monospace;color:var(--dioc)">$7,500</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══ ROADMAP ══ -->
+  <div class="view" id="view-roadmap">
+    <div class="roadmap-card anim a1">
+      <div class="rm-head">
+        <span class="rm-title">Parish Atlas rollout — product phases</span>
+        <span style="font-size:11px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.6);padding:3px 10px;border-radius:20px">Diocese → Parish expansion plan</span>
+      </div>
+      <div class="rm-phases">
+
+        <div class="rm-phase">
+          <div class="rm-phase-label">
+            <div class="rpl-name">Phase 1</div>
+            <div class="rpl-timeline">Months 1–6</div>
+            <div class="rpl-badge" style="background:var(--indp);color:var(--ind)">✓ Current</div>
+          </div>
+          <div class="rm-phase-body">
+            <div class="rpm-title">Diocesan Atlas — foundation</div>
+            <div class="rpm-items">
+              <div class="rpm-item"><div class="rpm-item-dot" style="background:var(--ind)"></div>Build four-tier data model with Diocese entity and upgraded Parish entity — including DioceseID and ParishAtlasEnabled fields</div>
+              <div class="rpm-item"><div class="rpm-item-dot" style="background:var(--ind)"></div>Diocesan staff access only — SCOPE_DIOCESE and SCOPE_OFFICER roles</div>
+              <div class="rpm-item"><div class="rpm-item-dot" style="background:var(--ind)"></div>Parish records exist in the data model but ParishAtlasEnabled = false for all</div>
+              <div class="rpm-item"><div class="rpm-item-dot" style="background:var(--ind)"></div>Pastor receives auto-delivered reports via email — no login required yet</div>
+              <div class="rpm-item"><div class="rpm-item-dot" style="background:var(--ind)"></div>GiveCentral integration live — all GC gifts post to Individual records in real time</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="rm-phase">
+          <div class="rm-phase-label">
+            <div class="rpl-name">Phase 2</div>
+            <div class="rpl-timeline">Months 6–18</div>
+            <div class="rpl-badge" style="background:var(--bluep);color:#2563EB">Planned</div>
+          </div>
+          <div class="rm-phase-body">
+            <div class="rpm-title">Parish Atlas — scoped login and batch entry</div>
+            <div class="rpm-items">
+              <div class="rpm-item"><div class="rpm-item-dot" style="background:#2563EB)"></div>Enable SCOPE_PARISH role — parish administrator login with ParishID-scoped access</div>
+              <div class="rpm-item"><div class="rpm-item-dot" style="background:#2563EB"></div>Enable SCOPE_PASTOR role — read-only parish view, own-parish reports</div>
+              <div class="rpm-item"><div class="rpm-item-dot" style="background:#2563EB"></div>Parish batch gift entry — scoped to their own GL codes and funds</div>
+              <div class="rpm-item"><div class="rpm-item-dot" style="background:#2563EB"></div>Parish event management — events scoped to one parish, giving attribution correct</div>
+              <div class="rpm-item"><div class="rpm-item-dot" style="background:#2563EB"></div>Parish-level report queue — parish admins can generate and schedule their own reports</div>
+              <div class="rpm-item"><div class="rpm-item-dot" style="background:#2563EB"></div>Diocesan provisioning screen — development director enables parishes one at a time as they are ready</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="rm-phase">
+          <div class="rm-phase-label">
+            <div class="rpl-name">Phase 3</div>
+            <div class="rpl-timeline">Months 18–30</div>
+            <div class="rpl-badge" style="background:var(--hhp);color:var(--hh)">Future</div>
+          </div>
+          <div class="rm-phase-body">
+            <div class="rpm-title">Atlas Parish Edition — standalone SKU</div>
+            <div class="rpm-items">
+              <div class="rpm-item"><div class="rpm-item-dot" style="background:var(--hh)"></div>Atlas Parish Edition: a standalone offering for parishes not part of a Diocesan Atlas umbrella</div>
+              <div class="rpm-item"><div class="rpm-item-dot" style="background:var(--hh)"></div>Priced as a separate SKU below the Diocese tier — lighter feature set, single-parish scope</div>
+              <div class="rpm-item"><div class="rpm-item-dot" style="background:var(--hh)"></div>Upgrade path: when a diocese adopts Diocesan Atlas, standalone Parish Edition instances roll up automatically — data migrates into the diocesan database, no re-entry required</div>
+              <div class="rpm-item"><div class="rpm-item-dot" style="background:var(--hh)"></div>Parish Edition includes: household model, GiveCentral integration, batch entry, basic reports, event management, and Guru AI (query own-parish data only)</div>
+              <div class="rpm-item"><div class="rpm-item-dot" style="background:var(--hh)"></div>Parish Edition excludes: moves management pipeline, wealth screening, planned giving module, cross-parish reporting, diocesan hierarchy — all Diocese tier features</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="rm-phase" style="border-bottom:none">
+          <div class="rm-phase-label">
+            <div class="rpl-name">Phase 4</div>
+            <div class="rpl-timeline">Months 30+</div>
+            <div class="rpl-badge" style="background:var(--gcp);color:var(--gc)">Vision</div>
+          </div>
+          <div class="rm-phase-body">
+            <div class="rpm-title">Multi-diocese administration — National Catholic organisations</div>
+            <div class="rpm-items">
+              <div class="rpm-item"><div class="rpm-item-dot" style="background:var(--gc)"></div>A single Atlas instance spanning multiple dioceses — for Catholic national organisations, religious orders, and Catholic Charities networks</div>
+              <div class="rpm-item"><div class="rpm-item-dot" style="background:var(--gc)"></div>The Diocese entity already supports this — DioceseID is in the model from Phase 1. This phase is primarily an access control and billing extension</div>
+              <div class="rpm-item"><div class="rpm-item-dot" style="background:var(--gc)"></div>Each diocese remains its own billing account. A national admin role gets a cross-diocese read-only view for aggregate reporting</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<script>
+function setTab(id, btn) {
+  document.querySelectorAll('.vt').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+</script>
+</body>
+</html>
