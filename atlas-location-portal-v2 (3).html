@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -366,6 +367,11 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#EBF0F8;color:var(--t
 .nds-stage-pending{background:var(--bluep);color:var(--blue)}
 .nds-stage-committed{background:var(--greenl);color:var(--greend)}
 .nds-stage-rejected{background:var(--redl);color:var(--redd)}
+
+/* ── PLEDGE SUB-NAV ── */
+.pledge-subnav{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;background:white;border:1.5px solid var(--border);color:var(--text3);transition:all .13s;display:inline-flex;align-items:center}
+.pledge-subnav:hover{border-color:var(--blue);color:var(--blue)}
+.pledge-subnav.active{background:var(--navy);color:white;border-color:var(--navy)}
 
 /* ── CAMPAIGN TOGGLE ── */
 .campaign-switcher{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}
@@ -1005,6 +1011,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#EBF0F8;color:var(--t
   <!-- ══ PLEDGE MANAGEMENT ══ -->
   <div class="view" id="view-pledges">
 
+    <!-- Pledge summary KPIs -->
     <div class="pf-summary anim a1">
       <div class="pfs"><div class="pfs-val">$28,400</div><div class="pfs-lbl">Total pledged</div></div>
       <div class="pfs"><div class="pfs-val" style="color:var(--green)">$18,600</div><div class="pfs-lbl">Amount paid</div></div>
@@ -1013,105 +1020,346 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#EBF0F8;color:var(--t
       <div class="pfs"><div class="pfs-val" style="color:var(--blue)">83.1%</div><div class="pfs-lbl">Fulfillment rate</div></div>
     </div>
 
-    <!-- Pledge write-off detail -->
-    <div class="card anim a2">
-      <div class="card-head">
-        <div class="ch-icon" style="background:var(--navy)"><svg viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="1.4" stroke-linecap="round"><rect x="1.5" y="2" width="9" height="8" rx="1.5"/><path d="M4 5h4M4 7.5h2.5"/></svg></div>
-        <span class="ch-title">Pledge fulfillment detail — St. Michael's</span>
-        <button onclick="showSnack('Pledge report exported','g')" style="font-size:11px;padding:4px 10px;border-radius:6px;background:var(--surf);border:1px solid var(--border);cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;color:var(--text2)">Export ↓</button>
+    <!-- Sub-nav for the three pledge reports -->
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap" class="anim a1">
+      <span style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text3)">Reports:</span>
+      <button class="pledge-subnav active" id="psnav-all" onclick="setPledgeReport('all',this)">
+        All pledges
+        <span style="margin-left:5px;background:var(--navy);color:rgba(255,255,255,.6);font-size:9px;font-weight:700;padding:1px 6px;border-radius:20px">6</span>
+      </button>
+      <button class="pledge-subnav" id="psnav-pastdue" onclick="setPledgeReport('pastdue',this)">
+        Past due
+        <span style="margin-left:5px;background:var(--red);color:white;font-size:9px;font-weight:700;padding:1px 6px;border-radius:20px">2</span>
+      </button>
+      <button class="pledge-subnav" id="psnav-writeoffs" onclick="setPledgeReport('writeoffs',this)">
+        Write-offs
+        <span style="margin-left:5px;background:var(--amber);color:white;font-size:9px;font-weight:700;padding:1px 6px;border-radius:20px">1</span>
+      </button>
+      <div style="margin-left:auto;display:flex;gap:7px">
+        <button onclick="showSnack('Sending reminders to 2 past due donors…','g')" style="font-size:11px;padding:5px 12px;border-radius:7px;background:var(--amberl);border:1px solid var(--goldb);color:var(--amberd);cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;font-weight:600">Send reminders (2)</button>
+        <button onclick="showSnack('Pledge report exported','g')" style="font-size:11px;padding:5px 12px;border-radius:7px;background:var(--surf);border:1px solid var(--border);cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;color:var(--text2)">Export ↓</button>
       </div>
-      <div style="overflow-x:auto">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Donor</th>
-              <th class="num">Total pledged</th>
-              <th class="num">Amount paid</th>
-              <th class="num">Pledge balance</th>
-              <th class="num">Written off</th>
-              <th>Fulfillment</th>
-              <th>Next installment</th>
-              <th>Due date</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td class="td-name">Sullivan, Margaret</td>
-              <td class="td-num">$5,000</td>
-              <td class="td-num">$3,100</td>
-              <td class="td-num">$1,900</td>
-              <td class="td-num">$0</td>
-              <td><div class="fulfill-bar"><div class="fulfill-fill" style="width:62%;background:var(--blue)"></div></div>62%</td>
-              <td style="font-size:11px">Installment 3 of 3</td>
-              <td style="font-family:'JetBrains Mono',monospace;font-size:11px">Jun 15</td>
-              <td><span class="status-pill sp-track">On track</span></td>
-            </tr>
-            <tr style="background:var(--redl)">
-              <td class="td-name" style="color:var(--redd)">Hennessy, Robert &amp; Claire</td>
-              <td class="td-num">$10,500</td>
-              <td class="td-num">$7,000</td>
-              <td class="td-num" style="color:var(--red);font-weight:700">$3,500</td>
-              <td class="td-num">$0</td>
-              <td><div class="fulfill-bar"><div class="fulfill-fill" style="width:67%;background:var(--amber)"></div></div>67%</td>
-              <td style="font-size:11px">Installment 2 of 3</td>
-              <td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--red)">Apr 1 ⚠</td>
-              <td><span class="status-pill sp-late">2 days late</span></td>
-            </tr>
-            <tr>
-              <td class="td-name">Kowalski, Thomas &amp; Lisa</td>
-              <td class="td-num">$9,000</td>
-              <td class="td-num">$6,000</td>
-              <td class="td-num">$3,000</td>
-              <td class="td-num">$0</td>
-              <td><div class="fulfill-bar"><div class="fulfill-fill" style="width:67%;background:var(--blue)"></div></div>67%</td>
-              <td style="font-size:11px">Installment 3 of 3</td>
-              <td style="font-family:'JetBrains Mono',monospace;font-size:11px">May 1</td>
-              <td><span class="status-pill sp-track">On track</span></td>
-            </tr>
-            <tr>
-              <td class="td-name">Walsh, Catherine</td>
-              <td class="td-num">$6,000</td>
-              <td class="td-num">$3,000</td>
-              <td class="td-num">$3,000</td>
-              <td class="td-num">$0</td>
-              <td><div class="fulfill-bar"><div class="fulfill-fill" style="width:50%;background:var(--amber)"></div></div>50%</td>
-              <td style="font-size:11px">Installment 2 of 2</td>
-              <td style="font-family:'JetBrains Mono',monospace;font-size:11px">Apr 30</td>
-              <td><span class="status-pill sp-due">Due soon</span></td>
-            </tr>
-            <tr>
-              <td class="td-name">O'Brien, James &amp; Patricia</td>
-              <td class="td-num">$25,000</td>
-              <td class="td-num">$12,500</td>
-              <td class="td-num">$12,500</td>
-              <td class="td-num">$0</td>
-              <td><div class="fulfill-bar"><div class="fulfill-fill" style="width:50%;background:var(--blue)"></div></div>50%</td>
-              <td style="font-size:11px">Installments 3–5</td>
-              <td style="font-family:'JetBrains Mono',monospace;font-size:11px">Jun 30</td>
-              <td><span class="status-pill sp-track">On track</span></td>
-            </tr>
-            <tr>
-              <td class="td-name">Morrison, David</td>
-              <td class="td-num">$1,000</td>
-              <td class="td-num">$222</td>
-              <td class="td-num">$0</td>
-              <td class="td-num" style="color:var(--red)">$778</td>
-              <td><div class="fulfill-bar"><div class="fulfill-fill" style="width:22%;background:var(--red)"></div></div>22%</td>
-              <td style="font-size:11px">—</td>
-              <td style="font-family:'JetBrains Mono',monospace;font-size:11px">—</td>
-              <td><span class="status-pill sp-writeoff">Written off</span></td>
-            </tr>
-            <tr class="sum-row">
-              <td>Sum</td>
-              <td class="td-num">$56,500</td>
-              <td class="td-num">$31,822</td>
-              <td class="td-num">$23,900</td>
-              <td class="td-num">$778</td>
-              <td colspan="4" style="font-size:11px;color:var(--text3)">Overall fulfillment rate: 56.5% · Active pledges: 5 · Written off: 1</td>
-            </tr>
-          </tbody>
-        </table>
+    </div>
+
+    <!-- ── ALL PLEDGES ── -->
+    <div id="pledge-report-all" class="anim a2">
+      <div class="card">
+        <div class="card-head">
+          <div class="ch-icon" style="background:var(--navy)"><svg viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="1.4" stroke-linecap="round"><rect x="1.5" y="2" width="9" height="8" rx="1.5"/><path d="M4 5h4M4 7.5h2.5"/></svg></div>
+          <span class="ch-title">Pledge fulfillment — all pledges · St. Michael's</span>
+          <span style="font-size:11px;color:var(--text3)">6 total · 2 past due · 1 written off · 3 on track</span>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Donor</th>
+                <th class="num">Total pledged</th>
+                <th class="num">Amount paid</th>
+                <th class="num">Pledge balance</th>
+                <th class="num">Written off</th>
+                <th>Fulfillment</th>
+                <th>Next installment</th>
+                <th>Due date</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="td-name">Sullivan, Margaret</td>
+                <td class="td-num">$5,000</td>
+                <td class="td-num">$3,100</td>
+                <td class="td-num">$1,900</td>
+                <td class="td-num">$0</td>
+                <td><div class="fulfill-bar"><div class="fulfill-fill" style="width:62%;background:var(--blue)"></div></div>62%</td>
+                <td style="font-size:11px">Installment 3 of 3</td>
+                <td style="font-family:'JetBrains Mono',monospace;font-size:11px">Jun 15</td>
+                <td><span class="status-pill sp-track">On track</span></td>
+              </tr>
+              <tr style="background:var(--redl)">
+                <td class="td-name" style="color:var(--redd)">Hennessy, Robert &amp; Claire</td>
+                <td class="td-num">$10,500</td>
+                <td class="td-num">$7,000</td>
+                <td class="td-num" style="color:var(--red);font-weight:700">$3,500</td>
+                <td class="td-num">$0</td>
+                <td><div class="fulfill-bar"><div class="fulfill-fill" style="width:67%;background:var(--amber)"></div></div>67%</td>
+                <td style="font-size:11px">Installment 2 of 3</td>
+                <td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--red)">Apr 1 ⚠</td>
+                <td><span class="status-pill sp-late">2 days late</span></td>
+              </tr>
+              <tr>
+                <td class="td-name">Kowalski, Thomas &amp; Lisa</td>
+                <td class="td-num">$9,000</td>
+                <td class="td-num">$6,000</td>
+                <td class="td-num">$3,000</td>
+                <td class="td-num">$0</td>
+                <td><div class="fulfill-bar"><div class="fulfill-fill" style="width:67%;background:var(--blue)"></div></div>67%</td>
+                <td style="font-size:11px">Installment 3 of 3</td>
+                <td style="font-family:'JetBrains Mono',monospace;font-size:11px">May 1</td>
+                <td><span class="status-pill sp-track">On track</span></td>
+              </tr>
+              <tr style="background:var(--amberl)">
+                <td class="td-name" style="color:var(--amberd)">Walsh, Catherine</td>
+                <td class="td-num">$6,000</td>
+                <td class="td-num">$3,000</td>
+                <td class="td-num" style="color:var(--amber);font-weight:700">$3,000</td>
+                <td class="td-num">$0</td>
+                <td><div class="fulfill-bar"><div class="fulfill-fill" style="width:50%;background:var(--amber)"></div></div>50%</td>
+                <td style="font-size:11px">Installment 2 of 2</td>
+                <td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--amber)">Apr 30 ⚠</td>
+                <td><span class="status-pill sp-due">Due soon</span></td>
+              </tr>
+              <tr>
+                <td class="td-name">O'Brien, James &amp; Patricia</td>
+                <td class="td-num">$25,000</td>
+                <td class="td-num">$12,500</td>
+                <td class="td-num">$12,500</td>
+                <td class="td-num">$0</td>
+                <td><div class="fulfill-bar"><div class="fulfill-fill" style="width:50%;background:var(--blue)"></div></div>50%</td>
+                <td style="font-size:11px">Installments 3–5</td>
+                <td style="font-family:'JetBrains Mono',monospace;font-size:11px">Jun 30</td>
+                <td><span class="status-pill sp-track">On track</span></td>
+              </tr>
+              <tr>
+                <td class="td-name" style="color:var(--text3)">Morrison, David</td>
+                <td class="td-num">$1,000</td>
+                <td class="td-num">$222</td>
+                <td class="td-num">$0</td>
+                <td class="td-num" style="color:var(--red)">$778</td>
+                <td><div class="fulfill-bar"><div class="fulfill-fill" style="width:22%;background:var(--red)"></div></div>22%</td>
+                <td style="font-size:11px">—</td>
+                <td style="font-family:'JetBrains Mono',monospace;font-size:11px">—</td>
+                <td><span class="status-pill sp-writeoff">Written off</span></td>
+              </tr>
+              <tr class="sum-row">
+                <td>Sum</td>
+                <td class="td-num">$56,500</td>
+                <td class="td-num">$31,822</td>
+                <td class="td-num">$23,900</td>
+                <td class="td-num">$778</td>
+                <td colspan="4" style="font-size:11px;color:var(--text3)">Fulfillment rate: 56.5% · Active: 5 · Written off: 1</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PAST DUE REPORT ── -->
+    <div id="pledge-report-pastdue" style="display:none" class="anim">
+
+      <div style="background:var(--redl);border:1px solid #F5C8C8;border-left:3px solid var(--red);border-radius:0 10px 10px 0;padding:11px 14px;display:flex;align-items:flex-start;gap:9px;font-size:12px;color:var(--redd);line-height:1.65;margin-bottom:4px">
+        <div style="width:20px;height:20px;background:var(--red);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px"><svg viewBox="0 0 10 10" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" width="10" height="10"><path d="M5 2v3M5 7v.5"/><path d="M1 9L5 1l4 8H1z"/></svg></div>
+        <div><strong>2 past due installments — $6,500 outstanding.</strong> Hennessy (2 days overdue) and Walsh (due Apr 30) are the active past due pledges for this campaign. Pledge reminders can be sent directly from this report. Pledges more than 90 days past due are eligible for write-off review.</div>
+      </div>
+
+      <!-- Past due summary KPIs -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:4px">
+        <div class="pfs" style="border-left:3px solid var(--red)"><div class="pfs-val" style="color:var(--red)">2</div><div class="pfs-lbl">Past due pledges</div></div>
+        <div class="pfs" style="border-left:3px solid var(--red)"><div class="pfs-val" style="color:var(--red)">$6,500</div><div class="pfs-lbl">Past due amount</div></div>
+        <div class="pfs" style="border-left:3px solid var(--amber)"><div class="pfs-val" style="color:var(--amber)">2 days</div><div class="pfs-lbl">Most overdue (Hennessy)</div></div>
+        <div class="pfs" style="border-left:3px solid var(--amber)"><div class="pfs-val" style="color:var(--amber)">0</div><div class="pfs-lbl">Reminders sent this week</div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div class="ch-icon" style="background:var(--red)"><svg viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="1.4" stroke-linecap="round"><circle cx="6" cy="6" r="4.5"/><path d="M6 3.5v3M6 8.5v.3"/></svg></div>
+          <span class="ch-title">Past due pledge report — St. Michael's</span>
+          <span class="ch-badge" style="background:var(--redl);color:var(--redd)">2 past due · $6,500 outstanding</span>
+          <button onclick="showSnack('Past due report exported','g')" style="font-size:11px;padding:4px 10px;border-radius:6px;background:var(--surf);border:1px solid var(--border);cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;color:var(--text2);margin-left:8px">Export ↓</button>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Donor</th>
+                <th>Contact</th>
+                <th class="num">Total pledged</th>
+                <th class="num">Amount paid</th>
+                <th class="num">Past due amount</th>
+                <th>Original due date</th>
+                <th>Days overdue</th>
+                <th>Installment</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="background:var(--redl)">
+                <td>
+                  <div class="td-name" style="color:var(--redd)">Hennessy, Robert &amp; Claire</div>
+                  <div style="font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace">Donor #8812</div>
+                </td>
+                <td style="font-size:11px;color:var(--text3)">hennessy@email.com<br>(817) 555-0288</td>
+                <td class="td-num">$10,500</td>
+                <td class="td-num">$7,000</td>
+                <td class="td-num" style="color:var(--red);font-weight:700">$3,500</td>
+                <td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--red)">Apr 1, 2026</td>
+                <td>
+                  <span style="font-size:12px;font-weight:700;color:var(--red)">2 days</span>
+                  <div style="font-size:10px;color:var(--redd)">Last reminder: none sent</div>
+                </td>
+                <td style="font-size:11px">Installment 2 of 3<br><span style="color:var(--text3)">Remaining: $3,500</span></td>
+                <td>
+                  <div style="display:flex;flex-direction:column;gap:4px">
+                    <button onclick="showSnack('Reminder sent to Hennessy household','g')" style="font-size:10px;font-weight:600;padding:3px 9px;border-radius:6px;background:var(--amber);color:white;border:none;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;white-space:nowrap">Send reminder</button>
+                    <button onclick="showSnack('Pledge write-off review initiated for Hennessy')" style="font-size:10px;font-weight:600;padding:3px 9px;border-radius:6px;background:white;border:1px solid var(--border);color:var(--text2);cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;white-space:nowrap">Mark for review</button>
+                  </div>
+                </td>
+              </tr>
+              <tr style="background:var(--amberl)">
+                <td>
+                  <div class="td-name" style="color:var(--amberd)">Walsh, Catherine</div>
+                  <div style="font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace">Donor #8821</div>
+                </td>
+                <td style="font-size:11px;color:var(--text3)">cwalsh@newmail.com<br>(817) 555-0144</td>
+                <td class="td-num">$6,000</td>
+                <td class="td-num">$3,000</td>
+                <td class="td-num" style="color:var(--amber);font-weight:700">$3,000</td>
+                <td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--amber)">Apr 30, 2026</td>
+                <td>
+                  <span style="font-size:12px;font-weight:700;color:var(--amber)">Due tomorrow</span>
+                  <div style="font-size:10px;color:var(--amberd)">Last reminder: Apr 25</div>
+                </td>
+                <td style="font-size:11px">Installment 2 of 2<br><span style="color:var(--text3)">Final installment</span></td>
+                <td>
+                  <div style="display:flex;flex-direction:column;gap:4px">
+                    <button onclick="showSnack('Reminder sent to Walsh','g')" style="font-size:10px;font-weight:600;padding:3px 9px;border-radius:6px;background:var(--amber);color:white;border:none;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;white-space:nowrap">Send reminder</button>
+                    <button onclick="showSnack('Pledge logged as received for Walsh','g')" style="font-size:10px;font-weight:600;padding:3px 9px;border-radius:6px;background:var(--green);color:white;border:none;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;white-space:nowrap">Log payment</button>
+                  </div>
+                </td>
+              </tr>
+              <tr class="sum-row">
+                <td colspan="4">Past due totals</td>
+                <td class="td-num" style="color:var(--red)">$6,500</td>
+                <td colspan="4" style="font-size:11px;color:var(--text3)">2 donors · Hennessy 2 days overdue · Walsh due tomorrow · No reminders sent to Hennessy yet</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <!-- Reminder history -->
+        <div style="padding:12px 18px;border-top:1px solid var(--border);background:var(--surf)">
+          <div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Reminder history</div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text2)">
+              <span style="width:6px;height:6px;border-radius:50%;background:var(--amber);flex-shrink:0"></span>
+              <span><strong>Walsh, Catherine</strong> — reminder sent Apr 25, 2026 · email · no response</span>
+              <span style="margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text4)">Apr 25</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text4)">
+              <span style="width:6px;height:6px;border-radius:50%;background:var(--border);flex-shrink:0"></span>
+              <span>No reminders sent to Hennessy yet — send reminder to initiate contact</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── WRITE-OFFS REPORT ── -->
+    <div id="pledge-report-writeoffs" style="display:none" class="anim">
+
+      <div style="background:var(--amberl);border:1px solid var(--goldb);border-left:3px solid var(--amber);border-radius:0 10px 10px 0;padding:11px 14px;display:flex;align-items:flex-start;gap:9px;font-size:12px;color:var(--amberd);line-height:1.65;margin-bottom:4px">
+        <div style="width:20px;height:20px;background:var(--amber);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px"><svg viewBox="0 0 10 10" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" width="10" height="10"><path d="M5 2v3M5 7v.5"/><path d="M1 9L5 1l4 8H1z"/></svg></div>
+        <div><strong>Write-offs require diocese approval.</strong> Any pledge write-off proposed from this report is submitted to the Diocese data team as a Tier 1 change — it will not be applied until a second approver at the diocese confirms. The donor's record is flagged and their giving history is preserved. Write-offs are irreversible without a formal correction log entry.</div>
+      </div>
+
+      <!-- Write-off summary KPIs -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:4px">
+        <div class="pfs" style="border-left:3px solid var(--amber)"><div class="pfs-val" style="color:var(--amber)">1</div><div class="pfs-lbl">Written off this campaign</div></div>
+        <div class="pfs" style="border-left:3px solid var(--amber)"><div class="pfs-val" style="color:var(--amber)">$778</div><div class="pfs-lbl">Total written off</div></div>
+        <div class="pfs" style="border-left:3px solid var(--text3)"><div class="pfs-val" style="color:var(--text3)">22%</div><div class="pfs-lbl">Morrison fulfillment rate</div></div>
+        <div class="pfs" style="border-left:3px solid var(--navy)"><div class="pfs-val" style="color:var(--navy)">$32,514</div><div class="pfs-lbl">Diocese-wide write-offs</div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div class="ch-icon" style="background:var(--amber)"><svg viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="1.4" stroke-linecap="round"><path d="M2 2l8 8M10 2L2 10"/></svg></div>
+          <span class="ch-title">Pledge write-off report — St. Michael's</span>
+          <span class="ch-badge" style="background:var(--amberl);color:var(--amberd)">1 write-off · $778 · this campaign</span>
+          <button onclick="showSnack('Write-off report exported','g')" style="font-size:11px;padding:4px 10px;border-radius:6px;background:var(--surf);border:1px solid var(--border);cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;color:var(--text2);margin-left:8px">Export ↓</button>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Donor</th>
+                <th class="num">Total pledged</th>
+                <th class="num">Amount paid</th>
+                <th class="num">Pledge balance</th>
+                <th class="num">Amount written off</th>
+                <th>Fulfillment %</th>
+                <th>Write-off date</th>
+                <th>Approved by</th>
+                <th>Reason</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <div class="td-name">Morrison, David Sr.</div>
+                  <div style="font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace">Donor #3301</div>
+                </td>
+                <td class="td-num">$1,000</td>
+                <td class="td-num">$222</td>
+                <td class="td-num" style="color:var(--text3)">$0</td>
+                <td class="td-num" style="color:var(--amber);font-weight:700">$778</td>
+                <td>
+                  <div class="fulfill-bar"><div class="fulfill-fill" style="width:22%;background:var(--amber)"></div></div>22%
+                </td>
+                <td style="font-family:'JetBrains Mono',monospace;font-size:11px">May 22, 2026</td>
+                <td style="font-size:11px;color:var(--text2)">K. Novicky<br><span style="color:var(--text3)">Diocese admin</span></td>
+                <td style="font-size:11px;color:var(--text3)">Donor deceased May 18, 2026 · confirmed by family · balance written off per diocese policy</td>
+              </tr>
+              <tr class="sum-row">
+                <td colspan="3">Write-off totals — this campaign</td>
+                <td class="td-num">$0</td>
+                <td class="td-num" style="color:var(--amber)">$778</td>
+                <td colspan="4" style="font-size:11px;color:var(--text3)">1 write-off · Diocese-wide total: $32,514 · All write-offs approved by diocese admin</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Propose new write-off -->
+        <div style="padding:14px 18px;border-top:1px solid var(--border);background:var(--surf)">
+          <div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px">Propose a new write-off — submits to diocese for Tier 1 approval</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:10px;align-items:end">
+            <div>
+              <label class="f-label-sm">Donor / pledge</label>
+              <select class="f-select-sm">
+                <option>Select a pledge to write off…</option>
+                <option>Hennessy, Robert &amp; Claire — $3,500 balance</option>
+                <option>Walsh, Catherine — $3,000 balance</option>
+              </select>
+            </div>
+            <div>
+              <label class="f-label-sm">Amount to write off</label>
+              <input class="f-input-sm" type="text" placeholder="$0.00">
+            </div>
+            <div>
+              <label class="f-label-sm">Reason</label>
+              <select class="f-select-sm">
+                <option>Donor deceased</option>
+                <option>Donor hardship — approved by pastor</option>
+                <option>Pledge disputed by donor</option>
+                <option>Uncollectable after 90+ days</option>
+                <option>Other — see note</option>
+              </select>
+            </div>
+            <button onclick="showSnack('Write-off proposal submitted to diocese for Tier 1 approval')" style="padding:8px 14px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;background:var(--amber);color:white;border:none;white-space:nowrap">Submit for diocese approval →</button>
+          </div>
+        </div>
+
+        <!-- Diocese-wide write-off context -->
+        <div style="padding:12px 18px;border-top:1px solid var(--border);background:var(--navy);display:flex;align-items:center;gap:14px">
+          <div style="flex:1">
+            <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px">Diocese-wide write-off summary</div>
+            <div style="font-size:12px;color:rgba(255,255,255,.6);line-height:1.6">Total written off across all parishes: <strong style="color:white">$32,514</strong> · All write-offs require diocese admin approval · Write-off rate: 1.29% of total pledged ($2,515,429)</div>
+          </div>
+          <div style="text-align:right;flex-shrink:0">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:22px;color:#FCD34D;font-weight:500">$32,514</div>
+            <div style="font-size:10px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.05em">Diocese write-offs YTD</div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -2219,6 +2467,17 @@ const campaigns = {
     warnText: null // no warning — on track
   }
 };
+
+function setPledgeReport(id, btn) {
+  // Toggle sub-nav buttons
+  document.querySelectorAll('.pledge-subnav').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  // Toggle report sections
+  ['all','pastdue','writeoffs'].forEach(r => {
+    const el = document.getElementById('pledge-report-' + r);
+    if (el) el.style.display = r === id ? 'block' : 'none';
+  });
+}
 
 function switchCampaign(id, btn) {
   currentCampaign = id;
