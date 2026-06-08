@@ -1,0 +1,1200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Atlas CRM — Multi-Tenant Architecture</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,600&family=Syne:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --ink: #060D1A;
+  --ink2: #0B1628;
+  --ink3: #111E33;
+  --ink4: #1A2C48;
+
+  --gold: #C8920A;
+  --golda: #DBA420;
+  --goldl: #F5E9C8;
+
+  --purple: #6B4FC8;
+  --purplel: #E8E2FA;
+  --purpled: #3D2B8A;
+
+  --teal: #0D8A78;
+  --teall: #CCEEE8;
+  --teald: #065248;
+
+  --coral: #C84830;
+  --corall: #FAE2DC;
+  --corald: #7A2018;
+
+  --blue: #1E5CB8;
+  --bluel: #D8E8FA;
+  --blued: #0A3270;
+
+  --amber: #B87010;
+  --amberl: #FAF0D8;
+  --amberd: #6A3E04;
+
+  --steel: #344860;
+  --steell: #E8EDF4;
+  --steeld: #1A2838;
+
+  --white: #FFFFFF;
+  --off: #F8F5F0;
+
+  --border: rgba(255,255,255,.07);
+  --border2: rgba(255,255,255,.12);
+
+  --serif: 'Cormorant Garamond', Georgia, serif;
+  --sans: 'Syne', system-ui, sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+}
+
+html { font-size: 15px; -webkit-font-smoothing: antialiased; }
+body {
+  font-family: var(--sans);
+  background: var(--ink);
+  color: var(--white);
+  min-height: 100vh;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+/* ── grain overlay ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  opacity: .028;
+  pointer-events: none;
+  z-index: 1000;
+}
+
+/* ── layout ── */
+.page {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 64px 40px 100px;
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 0 48px;
+  align-items: start;
+}
+
+/* ── header ── */
+.header {
+  grid-column: 1 / -1;
+  margin-bottom: 56px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 40px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid var(--border2);
+}
+.header-left {}
+.eyebrow {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.eyebrow::before {
+  content: '';
+  display: block;
+  width: 28px;
+  height: 1px;
+  background: var(--gold);
+}
+.main-title {
+  font-family: var(--serif);
+  font-size: 52px;
+  font-weight: 500;
+  line-height: 1.05;
+  letter-spacing: -.01em;
+  margin-bottom: 6px;
+}
+.main-title em {
+  font-style: italic;
+  color: var(--gold);
+}
+.main-sub {
+  font-size: 14px;
+  color: rgba(255,255,255,.42);
+  line-height: 1.6;
+  max-width: 480px;
+}
+.header-meta {
+  text-align: right;
+  flex-shrink: 0;
+}
+.header-meta .meta-line {
+  font-size: 11px;
+  color: rgba(255,255,255,.3);
+  margin-bottom: 4px;
+  font-family: var(--mono);
+}
+.header-meta .meta-line b {
+  color: rgba(255,255,255,.55);
+  font-weight: 500;
+}
+
+/* ── left column: diagram ── */
+.diagram-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  position: relative;
+}
+
+/* vertical spine */
+.diagram-col::before {
+  content: '';
+  position: absolute;
+  left: 111px;
+  top: 24px;
+  bottom: 24px;
+  width: 1px;
+  background: linear-gradient(to bottom, transparent, rgba(255,255,255,.12) 8%, rgba(255,255,255,.12) 92%, transparent);
+  pointer-events: none;
+}
+
+/* ── tier rows ── */
+.tier-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+  position: relative;
+}
+
+.tier-label-wrap {
+  width: 120px;
+  flex-shrink: 0;
+  padding-right: 20px;
+  padding-top: 18px;
+  text-align: right;
+}
+.tier-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.28);
+  line-height: 1.5;
+  display: block;
+}
+
+.tier-body {
+  flex: 1;
+  padding: 10px 0 10px 20px;
+  border-left: 1px solid rgba(255,255,255,.06);
+}
+
+/* ── tier connector (between rows) ── */
+.connector-row {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  height: 36px;
+}
+.connector-spacer {
+  width: 120px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 20px;
+}
+.connector-line-wrap {
+  flex: 1;
+  padding-left: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-left: 1px solid rgba(255,255,255,.06);
+}
+.connector-pill {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  padding: 3px 11px;
+  border-radius: 20px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.cp-purple { background: rgba(107,79,200,.2); border: 1px solid rgba(107,79,200,.35); color: #B8A8F0; }
+.cp-teal   { background: rgba(13,138,120,.2); border: 1px solid rgba(13,138,120,.35); color: #8FD8CC; }
+.cp-blue   { background: rgba(30,92,184,.2);  border: 1px solid rgba(30,92,184,.35);  color: #8FC0F8; }
+.cp-amber  { background: rgba(184,112,16,.2); border: 1px solid rgba(184,112,16,.35); color: #E8C070; }
+.cp-coral  { background: rgba(200,72,48,.2);  border: 1px solid rgba(200,72,48,.35);  color: #F0A090; }
+.connector-rule {
+  flex: 1;
+  height: 1px;
+  background: rgba(255,255,255,.06);
+}
+
+/* ── node cards ── */
+.nodes {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.node {
+  border-radius: 10px;
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+  border: 1.5px solid transparent;
+  position: relative;
+  overflow: hidden;
+  flex: 1;
+  min-width: 120px;
+}
+.node::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity .2s;
+  border-radius: 10px;
+}
+.node:hover { transform: translateY(-2px); }
+.node:hover::before { opacity: 1; }
+.node.active {
+  transform: translateY(-2px);
+  box-shadow: 0 0 0 2px var(--node-accent, rgba(255,255,255,.3));
+}
+.node.active::before { opacity: 1; }
+
+.node-eyebrow {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.node-eyebrow::before {
+  content: '';
+  width: 14px;
+  height: 1.5px;
+  display: block;
+  background: currentColor;
+  flex-shrink: 0;
+}
+.node-title {
+  font-family: var(--serif);
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.2;
+  margin-bottom: 4px;
+}
+.node-sub {
+  font-size: 11px;
+  line-height: 1.55;
+  opacity: .6;
+}
+.node-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 20px;
+  margin-top: 8px;
+  font-family: var(--mono);
+}
+.node-badge::before {
+  content: '';
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+}
+
+/* colour variants */
+.n-purple {
+  --node-accent: #6B4FC8;
+  background: rgba(107,79,200,.1);
+  border-color: rgba(107,79,200,.25);
+}
+.n-purple::before { background: rgba(107,79,200,.06); }
+.n-purple .node-eyebrow { color: #B8A8F0; }
+.n-purple .node-title { color: #EAE5FF; }
+.n-purple .node-sub { color: rgba(200,190,255,.6); }
+.n-purple .node-badge { background: rgba(107,79,200,.25); color: #C8B8FF; border: 1px solid rgba(107,79,200,.3); }
+
+.n-teal {
+  --node-accent: #0D8A78;
+  background: rgba(13,138,120,.1);
+  border-color: rgba(13,138,120,.25);
+}
+.n-teal::before { background: rgba(13,138,120,.06); }
+.n-teal .node-eyebrow { color: #8FD8CC; }
+.n-teal .node-title { color: #D8F5F0; }
+.n-teal .node-sub { color: rgba(180,235,225,.6); }
+.n-teal .node-badge { background: rgba(13,138,120,.25); color: #9FE8DC; border: 1px solid rgba(13,138,120,.3); }
+
+.n-blue {
+  --node-accent: #1E5CB8;
+  background: rgba(30,92,184,.1);
+  border-color: rgba(30,92,184,.25);
+}
+.n-blue::before { background: rgba(30,92,184,.06); }
+.n-blue .node-eyebrow { color: #8FC0F8; }
+.n-blue .node-title { color: #D8ECFF; }
+.n-blue .node-sub { color: rgba(180,210,255,.6); }
+.n-blue .node-badge { background: rgba(30,92,184,.25); color: #A0D0FF; border: 1px solid rgba(30,92,184,.3); }
+
+.n-amber {
+  --node-accent: #B87010;
+  background: rgba(184,112,16,.1);
+  border-color: rgba(184,112,16,.25);
+}
+.n-amber::before { background: rgba(184,112,16,.06); }
+.n-amber .node-eyebrow { color: #E8C070; }
+.n-amber .node-title { color: #FAE8C0; }
+.n-amber .node-sub { color: rgba(240,210,150,.6); }
+.n-amber .node-badge { background: rgba(184,112,16,.25); color: #F0C878; border: 1px solid rgba(184,112,16,.3); }
+
+.n-coral {
+  --node-accent: #C84830;
+  background: rgba(200,72,48,.1);
+  border-color: rgba(200,72,48,.3);
+}
+.n-coral::before { background: rgba(200,72,48,.06); }
+.n-coral .node-eyebrow { color: #F0A090; }
+.n-coral .node-title { color: #FFE8E0; }
+.n-coral .node-sub { color: rgba(255,210,195,.6); }
+.n-coral .node-badge { background: rgba(200,72,48,.25); color: #FFB0A0; border: 1px solid rgba(200,72,48,.3); }
+
+.n-steel {
+  --node-accent: #344860;
+  background: rgba(52,72,96,.15);
+  border-color: rgba(52,72,96,.3);
+}
+.n-steel::before { background: rgba(52,72,96,.08); }
+.n-steel .node-eyebrow { color: rgba(180,200,220,.5); }
+.n-steel .node-title { color: rgba(220,235,250,.7); }
+.n-steel .node-sub { color: rgba(180,200,220,.4); }
+.n-steel .node-badge { background: rgba(52,72,96,.3); color: rgba(180,200,220,.6); border: 1px solid rgba(52,72,96,.4); }
+
+/* small compact nodes */
+.node-sm {
+  padding: 10px 12px;
+}
+.node-sm .node-title { font-size: 14px; }
+.node-sm .node-sub { font-size: 10px; }
+
+/* special cross-tenant connector */
+.cross-tenant-row {
+  margin: 4px 0;
+  padding: 0 0 0 140px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+}
+.ct-line {
+  flex: 1;
+  height: 1.5px;
+  border-top: 1.5px dashed;
+  position: relative;
+}
+.ct-green { border-color: rgba(13,138,120,.5); }
+.ct-amber { border-color: rgba(184,112,16,.5); }
+.ct-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .06em;
+  padding: 3px 10px;
+  border-radius: 20px;
+  white-space: nowrap;
+  font-family: var(--mono);
+  flex-shrink: 0;
+}
+.ct-label-green { background: rgba(13,138,120,.15); border: 1px solid rgba(13,138,120,.3); color: #8FD8CC; }
+.ct-label-amber { background: rgba(184,112,16,.15); border: 1px solid rgba(184,112,16,.3); color: #E8C070; }
+
+/* ── right column: detail panel ── */
+.detail-col {
+  position: sticky;
+  top: 40px;
+}
+
+.detail-hint {
+  border: 1.5px solid var(--border2);
+  border-radius: 14px;
+  padding: 28px 24px;
+  text-align: center;
+  color: rgba(255,255,255,.25);
+}
+.detail-hint-icon {
+  font-family: var(--serif);
+  font-size: 36px;
+  font-style: italic;
+  color: rgba(255,255,255,.12);
+  margin-bottom: 12px;
+  display: block;
+}
+.detail-hint p { font-size: 12px; line-height: 1.7; }
+
+.detail-panel {
+  display: none;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1.5px solid rgba(255,255,255,.1);
+}
+.detail-panel.visible { display: block; }
+
+.dp-head {
+  padding: 22px 22px 18px;
+  border-bottom: 1px solid rgba(255,255,255,.07);
+}
+.dp-eyebrow {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.dp-title {
+  font-family: var(--serif);
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.2;
+  margin-bottom: 8px;
+}
+.dp-sub {
+  font-size: 12px;
+  line-height: 1.7;
+  opacity: .55;
+}
+
+.dp-body { padding: 18px 22px; }
+
+.dp-section { margin-bottom: 18px; }
+.dp-section:last-child { margin-bottom: 0; }
+.dp-section-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.3);
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+}
+
+.access-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255,255,255,.04);
+  gap: 10px;
+}
+.access-row:last-child { border-bottom: none; }
+.ar-role {
+  font-size: 12px;
+  color: rgba(255,255,255,.55);
+  flex: 1;
+}
+.ap {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 9px;
+  border-radius: 20px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.ap-full   { background: rgba(13,138,120,.2);  color: #9FE8DC; border: 1px solid rgba(13,138,120,.3); }
+.ap-read   { background: rgba(184,112,16,.2);  color: #F0C878; border: 1px solid rgba(184,112,16,.3); }
+.ap-own    { background: rgba(30,92,184,.2);   color: #A0D0FF; border: 1px solid rgba(30,92,184,.3); }
+.ap-alert  { background: rgba(184,112,16,.15); color: #E8C878; border: 1px solid rgba(184,112,16,.25); }
+.ap-none   { background: rgba(200,72,48,.15);  color: #F0A090; border: 1px solid rgba(200,72,48,.25); }
+
+.fact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.fact-card {
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(255,255,255,.06);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+.fact-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.3);
+  margin-bottom: 5px;
+}
+.fact-val {
+  font-size: 11px;
+  color: rgba(255,255,255,.7);
+  line-height: 1.55;
+}
+.fact-val.mono { font-family: var(--mono); font-size: 10px; }
+
+.scenario-row {
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255,255,255,.04);
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.scenario-row:last-child { border-bottom: none; }
+.scenario-num {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(200,72,48,.25);
+  border: 1px solid rgba(200,72,48,.4);
+  color: #F0A090;
+  font-size: 10px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-family: var(--mono);
+  margin-top: 1px;
+}
+.scenario-body { flex: 1; }
+.scenario-title { font-size: 11px; font-weight: 600; color: rgba(255,255,255,.7); margin-bottom: 3px; }
+.scenario-answer { font-size: 11px; color: rgba(255,255,255,.4); line-height: 1.5; }
+
+/* legend */
+.legend {
+  grid-column: 1 / -1;
+  margin-top: 48px;
+  padding-top: 32px;
+  border-top: 1px solid var(--border2);
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+.legend-title {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.25);
+  flex-shrink: 0;
+}
+.legend-items {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: rgba(255,255,255,.4);
+}
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+.legend-note {
+  margin-left: auto;
+  font-size: 11px;
+  color: rgba(255,255,255,.2);
+  font-family: var(--mono);
+}
+
+/* animation */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.tier-row, .connector-row, .cross-tenant-row {
+  animation: fadeUp .4s ease both;
+}
+.tier-row:nth-child(1) { animation-delay: .05s; }
+.tier-row:nth-child(2) { animation-delay: .08s; }
+.tier-row:nth-child(3) { animation-delay: .11s; }
+.tier-row:nth-child(4) { animation-delay: .14s; }
+.tier-row:nth-child(5) { animation-delay: .17s; }
+.tier-row:nth-child(6) { animation-delay: .20s; }
+.tier-row:nth-child(7) { animation-delay: .23s; }
+.tier-row:nth-child(8) { animation-delay: .26s; }
+.tier-row:nth-child(9) { animation-delay: .29s; }
+.detail-panel { animation: fadeUp .25s ease both; }
+
+@media (max-width: 900px) {
+  .page { grid-template-columns: 1fr; padding: 40px 24px 80px; }
+  .detail-col { position: static; margin-top: 32px; }
+  .header { flex-direction: column; align-items: flex-start; gap: 20px; }
+  .header-meta { text-align: left; }
+  .main-title { font-size: 38px; }
+}
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-left">
+      <div class="eyebrow">Atlas CRM · Architecture specification</div>
+      <h1 class="main-title">Multi-tenant <em>data</em><br>architecture</h1>
+      <p class="main-sub">How the Diocese of Fort Worth, its legal entities, 84 parishes, and child tenants like Nolan Catholic High School share — and separate — donor data in Atlas.</p>
+    </div>
+    <div class="header-meta">
+      <div class="meta-line"><b>Version</b> 1.0 · June 2026</div>
+      <div class="meta-line"><b>Client</b> Diocese of Fort Worth</div>
+      <div class="meta-line"><b>Status</b> Pre-implementation design</div>
+      <div class="meta-line" style="margin-top:8px;color:rgba(255,255,255,.2)">Click any tier to explore →</div>
+    </div>
+  </header>
+
+  <!-- ── DIAGRAM COLUMN ── -->
+  <div class="diagram-col">
+
+    <!-- TIER: DIOCESE -->
+    <div class="tier-row">
+      <div class="tier-label-wrap">
+        <span class="tier-label">Parent<br>tenant</span>
+      </div>
+      <div class="tier-body">
+        <div class="nodes">
+          <div class="node n-purple" onclick="show('diocese',this)">
+            <div class="node-eyebrow">Diocese</div>
+            <div class="node-title">Diocese of Fort Worth</div>
+            <div class="node-sub">Master record owner · DioceseID stamped on every record · full visibility across all entities and child tenants</div>
+            <div class="node-badge">TenantType = Parent</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONNECTOR -->
+    <div class="connector-row">
+      <div class="connector-spacer"></div>
+      <div class="connector-line-wrap">
+        <div class="connector-pill cp-purple">Shared individual records · separate EIN receipts per entity</div>
+        <div class="connector-rule"></div>
+      </div>
+    </div>
+
+    <!-- TIER: LEGAL ENTITIES -->
+    <div class="tier-row">
+      <div class="tier-label-wrap">
+        <span class="tier-label">Legal<br>entities</span>
+      </div>
+      <div class="tier-body">
+        <div class="nodes">
+          <div class="node n-purple node-sm" onclick="show('entity-diocese',this)">
+            <div class="node-eyebrow">Diocese</div>
+            <div class="node-title">Diocese</div>
+            <div class="node-sub">CMA · pastoral</div>
+          </div>
+          <div class="node n-purple node-sm" onclick="show('entity-foundation',this)">
+            <div class="node-eyebrow">Foundation</div>
+            <div class="node-title">Foundation</div>
+            <div class="node-sub">Endowment · DAF</div>
+          </div>
+          <div class="node n-purple node-sm" onclick="show('entity-charities',this)">
+            <div class="node-eyebrow">Entity</div>
+            <div class="node-title">Cath. Charities</div>
+            <div class="node-sub">Social services</div>
+          </div>
+          <div class="node n-purple node-sm" onclick="show('entity-scholarship',this)">
+            <div class="node-eyebrow">Entity</div>
+            <div class="node-title">Scholarship</div>
+            <div class="node-sub">Student awards</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONNECTOR -->
+    <div class="connector-row">
+      <div class="connector-spacer"></div>
+      <div class="connector-line-wrap">
+        <div class="connector-pill cp-teal">Scoped views into shared database · not separate systems</div>
+        <div class="connector-rule"></div>
+      </div>
+    </div>
+
+    <!-- TIER: PARISHES -->
+    <div class="tier-row">
+      <div class="tier-label-wrap">
+        <span class="tier-label">Parishes<br>(84 total)</span>
+      </div>
+      <div class="tier-body">
+        <div class="nodes">
+          <div class="node n-teal node-sm" onclick="show('parish-cathedral',this)">
+            <div class="node-eyebrow">Parish</div>
+            <div class="node-title">Cathedral</div>
+            <div class="node-sub">Scoped · shared DB</div>
+          </div>
+          <div class="node n-teal node-sm" onclick="show('parish-holycross',this)">
+            <div class="node-eyebrow">Parish</div>
+            <div class="node-title">Holy Cross</div>
+            <div class="node-sub">Scoped · shared DB</div>
+          </div>
+          <div class="node n-steel node-sm" style="flex:1.2" onclick="show('parish-all',this)">
+            <div class="node-eyebrow">All parishes</div>
+            <div class="node-title">82 more…</div>
+            <div class="node-sub">Same model · 2028 pathway</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONNECTOR -->
+    <div class="connector-row">
+      <div class="connector-spacer"></div>
+      <div class="connector-line-wrap">
+        <div class="connector-pill cp-blue">Households link individuals · GiveCentral 1:1 account mapping</div>
+        <div class="connector-rule"></div>
+      </div>
+    </div>
+
+    <!-- TIER: DONORS -->
+    <div class="tier-row">
+      <div class="tier-label-wrap">
+        <span class="tier-label">Donors<br>(84,312)</span>
+      </div>
+      <div class="tier-body">
+        <div class="nodes">
+          <div class="node n-blue node-sm" onclick="show('individual',this)">
+            <div class="node-eyebrow">Atomic record</div>
+            <div class="node-title">Individual</div>
+            <div class="node-sub">1:1 GiveCentral account · all gifts, pledges, pipeline</div>
+          </div>
+          <div class="node n-blue node-sm" onclick="show('household',this)">
+            <div class="node-eyebrow">Family unit</div>
+            <div class="node-title">Household</div>
+            <div class="node-sub">Salutation · combined giving</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CROSS-TENANT CONNECTORS -->
+    <div class="cross-tenant-row" style="margin-top:16px; margin-bottom:4px;">
+      <div class="ct-line ct-green"></div>
+      <div class="ct-label ct-label-green">Diocese reads child tenant · read-only · child cannot see diocese</div>
+      <div class="ct-line ct-green"></div>
+    </div>
+    <div class="cross-tenant-row" style="margin-bottom:16px;">
+      <div class="ct-line ct-amber"></div>
+      <div class="ct-label ct-label-amber">Cross-Tenant Match · coordination alert only · no data exposed</div>
+      <div class="ct-line ct-amber"></div>
+    </div>
+
+    <!-- TIER: CHILD TENANT -->
+    <div class="tier-row">
+      <div class="tier-label-wrap">
+        <span class="tier-label">Child<br>tenant<br>eff. 7/1/26</span>
+      </div>
+      <div class="tier-body">
+        <div class="nodes">
+          <div class="node n-coral" onclick="show('nolan',this)">
+            <div class="node-eyebrow">Separate database</div>
+            <div class="node-title">Nolan Catholic High School</div>
+            <div class="node-sub">Nolan staff see only Nolan records · independent campaigns, batch entry, receipting under Nolan EIN · diocese reads but cannot edit</div>
+            <div class="node-badge">TenantType = Child · ParentTenantID = FortWorth</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONNECTOR -->
+    <div class="connector-row">
+      <div class="connector-spacer"></div>
+      <div class="connector-line-wrap">
+        <div class="connector-pill cp-amber">Phase 3 · ParishAtlasOrigin attribution auto-builds parish databases</div>
+        <div class="connector-rule"></div>
+      </div>
+    </div>
+
+    <!-- TIER: 2028 -->
+    <div class="tier-row">
+      <div class="tier-label-wrap">
+        <span class="tier-label">2028<br>pathway</span>
+      </div>
+      <div class="tier-body">
+        <div class="nodes">
+          <div class="node n-amber node-sm" onclick="show('2028',this)">
+            <div class="node-eyebrow">Parish Atlas Edition</div>
+            <div class="node-title">84 parish databases</div>
+            <div class="node-sub">Auto-provisioned from ParishAtlasOrigin records · no migration · no re-entry</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /diagram-col -->
+
+  <!-- ── DETAIL COLUMN ── -->
+  <div class="detail-col">
+
+    <div class="detail-hint" id="detail-hint">
+      <span class="detail-hint-icon">Atlas</span>
+      <p>Click any tier on the left to see access rules, key decisions, and real-world examples for that layer of the architecture.</p>
+    </div>
+
+    <div class="detail-panel" id="detail-panel">
+      <div class="dp-head" id="dp-head">
+        <div class="dp-eyebrow" id="dp-eyebrow"></div>
+        <div class="dp-title" id="dp-title"></div>
+        <div class="dp-sub" id="dp-sub"></div>
+      </div>
+      <div class="dp-body" id="dp-body"></div>
+    </div>
+
+  </div>
+
+  <!-- LEGEND -->
+  <div class="legend">
+    <span class="legend-title">Legend</span>
+    <div class="legend-items">
+      <div class="legend-item"><div class="legend-dot" style="background:rgba(107,79,200,.5)"></div>Diocese / legal entities — shared records</div>
+      <div class="legend-item"><div class="legend-dot" style="background:rgba(13,138,120,.5)"></div>Parishes — scoped views into shared DB</div>
+      <div class="legend-item"><div class="legend-dot" style="background:rgba(30,92,184,.5)"></div>Individuals / households — atomic records</div>
+      <div class="legend-item"><div class="legend-dot" style="background:rgba(200,72,48,.5)"></div>Child tenant — separate database</div>
+      <div class="legend-item"><div class="legend-dot" style="background:rgba(184,112,16,.5)"></div>2028 Parish Atlas pathway</div>
+    </div>
+    <div class="legend-note">GiveCentral · Atlas CRM · v1.0</div>
+  </div>
+
+</div><!-- /page -->
+
+<script>
+const panels = {
+  diocese: {
+    eyebrow: 'Parent tenant',
+    color: '#B8A8F0',
+    title: 'Diocese of Fort Worth',
+    sub: 'The diocese is the master record owner. Every record in Atlas carries a DioceseID, making the diocese the authoritative source for all data — regardless of entity or parish.',
+    body: `
+      <div class="dp-section">
+        <div class="dp-section-label">Access by role</div>
+        <div class="access-row"><span class="ar-role">Development Director</span><span class="ap ap-full">Full — all entities + all tenants</span></div>
+        <div class="access-row"><span class="ar-role">Database Admin</span><span class="ap ap-full">Full — all entities + all tenants</span></div>
+        <div class="access-row"><span class="ar-role">Gift Officer (diocesan)</span><span class="ap ap-own">Portfolio + coordination alerts</span></div>
+        <div class="access-row"><span class="ar-role">Parish Admin</span><span class="ap ap-own">Own parish only</span></div>
+        <div class="access-row"><span class="ar-role">Nolan staff</span><span class="ap ap-none">None — strict boundary</span></div>
+      </div>
+      <div class="dp-section">
+        <div class="dp-section-label">Key data fields</div>
+        <div class="fact-grid">
+          <div class="fact-card"><div class="fact-label">DioceseID</div><div class="fact-val mono">Stamped on every record in the database</div></div>
+          <div class="fact-card"><div class="fact-label">TenantType</div><div class="fact-val mono">Parent</div></div>
+        </div>
+      </div>`
+  },
+  'entity-diocese': {
+    eyebrow: 'Legal entity',
+    color: '#B8A8F0',
+    title: 'Diocese (CMA & pastoral)',
+    sub: 'Receives all CMA gifts and pastoral campaign contributions. Tagged with the Diocese entity on every transaction.',
+    body: `
+      <div class="dp-section">
+        <div class="dp-section-label">Key decisions</div>
+        <div class="fact-grid">
+          <div class="fact-card"><div class="fact-label">Receipting</div><div class="fact-val">Tax receipts issued under Diocese EIN with diocesan letterhead</div></div>
+          <div class="fact-card"><div class="fact-label">Who sees gifts</div><div class="fact-val">Diocese staff only — Foundation and Charities staff cannot see CMA data</div></div>
+          <div class="fact-card"><div class="fact-label">Shared record</div><div class="fact-val">Same Individual record as Foundation donors — gifts are tagged, not people</div></div>
+          <div class="fact-card"><div class="fact-label">Example</div><div class="fact-val">David Shipman: $42K CMA → Diocese receipt (EIN A) + $175K DAF → Foundation receipt (EIN B)</div></div>
+        </div>
+      </div>`
+  },
+  'entity-foundation': {
+    eyebrow: 'Legal entity',
+    color: '#B8A8F0',
+    title: 'Diocesan Foundation',
+    sub: 'Receives endowment gifts, DAF distributions, IRA/QCD rollovers, planned giving transfers, and major gifts to the Foundation\'s mission.',
+    body: `
+      <div class="dp-section">
+        <div class="dp-section-label">Key decisions</div>
+        <div class="fact-grid">
+          <div class="fact-card"><div class="fact-label">Primary gift types</div><div class="fact-val">DAF distributions · IRA/QCDs · large pledges · bequests</div></div>
+          <div class="fact-card"><div class="fact-label">Staff scope</div><div class="fact-val">Foundation staff see Foundation transactions only — cannot see CMA pledge balances</div></div>
+          <div class="fact-card"><div class="fact-label">Diocese oversight</div><div class="fact-val">Development Director sees both gifts on the same donor profile across entities</div></div>
+          <div class="fact-card"><div class="fact-label">Nolan overlap</div><div class="fact-val">A Nolan alumni donor who also gives to the Foundation may appear in both databases — CrossTenantLink coordinates</div></div>
+        </div>
+      </div>`
+  },
+  'entity-charities': {
+    eyebrow: 'Legal entity',
+    color: '#B8A8F0',
+    title: 'Catholic Charities',
+    sub: 'Social services funding, grants, and charitable contributions. Some Charities donors may have no diocesan relationship — entity scoping keeps them out of CMA lists.',
+    body: `
+      <div class="dp-section">
+        <div class="dp-section-label">Key decisions</div>
+        <div class="fact-grid">
+          <div class="fact-card"><div class="fact-label">Scope boundary</div><div class="fact-val">Patricia (Charities staff) sees contact details + Charities transactions only — Foundation gifts are hidden</div></div>
+          <div class="fact-card"><div class="fact-label">Receipting</div><div class="fact-val">Catholic Charities of Fort Worth EIN and letterhead</div></div>
+          <div class="fact-card"><div class="fact-label">Cross-entity donor</div><div class="fact-val">If a Charities donor also gives to the CMA, one record — gifts tagged to separate entities</div></div>
+          <div class="fact-card"><div class="fact-label">Diocese view</div><div class="fact-val">Diocese Development Director sees all transactions across all entities on one profile</div></div>
+        </div>
+      </div>`
+  },
+  'entity-scholarship': {
+    eyebrow: 'Legal entity',
+    color: '#B8A8F0',
+    title: 'Scholarship Foundation',
+    sub: 'Student award funding, alumni gifts designated for scholarships, and matching gift programmes operating under a separate 501(c)(3).',
+    body: `
+      <div class="dp-section">
+        <div class="dp-section-label">Key decisions</div>
+        <div class="fact-grid">
+          <div class="fact-card"><div class="fact-label">Receipting</div><div class="fact-val">Separate EIN · Scholarship Foundation letterhead</div></div>
+          <div class="fact-card"><div class="fact-label">Nolan overlap</div><div class="fact-val">Nolan alumni who also give to Scholarship may appear in both DBs — CrossTenantLink handles coordination without exposing either database</div></div>
+        </div>
+      </div>`
+  },
+  'parish-cathedral': {
+    eyebrow: 'Parish — scoped view',
+    color: '#8FD8CC',
+    title: 'Cathedral Parish',
+    sub: 'Parish admins and pastors see only their parish\'s data. They are not in a separate database — they have a restricted view into the shared diocesan database.',
+    body: `
+      <div class="dp-section">
+        <div class="dp-section-label">Access by role</div>
+        <div class="access-row"><span class="ar-role">Parish Admin (Sarah Reyes)</span><span class="ap ap-own">Own parish donors only</span></div>
+        <div class="access-row"><span class="ar-role">Pastor</span><span class="ap ap-read">Read-only reports</span></div>
+        <div class="access-row"><span class="ar-role">Diocese staff</span><span class="ap ap-full">See all parishes</span></div>
+      </div>
+      <div class="dp-section">
+        <div class="dp-section-label">2028 pathway</div>
+        <div class="fact-card" style="margin-top:0">
+          <div class="fact-label">ParishAtlasOrigin</div>
+          <div class="fact-val">Every record submitted via the Data Management portal is tagged ParishAtlasOrigin = Cathedral. These records auto-provision Cathedral's own database when Parish Atlas launches in Phase 3.</div>
+        </div>
+      </div>`
+  },
+  'parish-holycross': {
+    eyebrow: 'Parish — scoped view',
+    color: '#8FD8CC',
+    title: 'Holy Cross Parish',
+    sub: 'Same scoping model as Cathedral. Parish admins see only their parish. The diocese sees all.',
+    body: `
+      <div class="dp-section">
+        <div class="dp-section-label">Cross-parish donor example</div>
+        <div class="fact-card">
+          <div class="fact-label">William Andrews</div>
+          <div class="fact-val">Attends Cathedral and gives to Holy Cross. One Individual record (#7712). Cathedral admin sees only Cathedral gifts. Holy Cross admin sees only Holy Cross gifts. Diocese Development Director sees the full $47,500 combined LTG.</div>
+        </div>
+      </div>
+      <div class="dp-section">
+        <div class="dp-section-label">Access by role</div>
+        <div class="access-row"><span class="ar-role">Parish Admin</span><span class="ap ap-own">Own parish only</span></div>
+        <div class="access-row"><span class="ar-role">Pastor</span><span class="ap ap-read">Read-only</span></div>
+      </div>`
+  },
+  'parish-all': {
+    eyebrow: 'All 84 parishes',
+    color: '#8FD8CC',
+    title: 'All 84 parishes — same model',
+    sub: 'All 84 parishes use the same scoped-access model. One diocesan database. Each parish sees their slice of it.',
+    body: `
+      <div class="dp-section">
+        <div class="dp-section-label">Key decisions</div>
+        <div class="fact-grid">
+          <div class="fact-card"><div class="fact-label">Not separate systems</div><div class="fact-val">Parishes share one database with restricted views — not 84 separate databases</div></div>
+          <div class="fact-card"><div class="fact-label">Cross-parish donors</div><div class="fact-val">One record per person. Each parish sees only their gifts on that record.</div></div>
+          <div class="fact-card"><div class="fact-label">Data governance</div><div class="fact-val">Parish admins propose changes · diocese reviews · three-tier approval model</div></div>
+          <div class="fact-card"><div class="fact-label">2028 pathway</div><div class="fact-val">Every parish-submitted record earns ParishAtlasOrigin. These auto-build 84 parish databases in Phase 3 — no migration needed.</div></div>
+        </div>
+      </div>`
+  },
+  individual: {
+    eyebrow: 'Atomic donor record',
+    color: '#8FC0F8',
+    title: 'Individual record',
+    sub: 'The foundational unit of the Atlas data model. One Individual per person — regardless of how many entities they give to or parishes they attend.',
+    body: `
+      <div class="dp-section">
+        <div class="dp-section-label">Key fields</div>
+        <div class="fact-grid">
+          <div class="fact-card"><div class="fact-label">DioceseID</div><div class="fact-val mono">Foreign key to diocese — on every record</div></div>
+          <div class="fact-card"><div class="fact-label">ParishAtlasOrigin</div><div class="fact-val mono">Set when parish admin submits via Data Management portal</div></div>
+          <div class="fact-card"><div class="fact-label">CrossTenantMatchID</div><div class="fact-val mono">Links to CrossTenantLink when same person found in child tenant DB</div></div>
+          <div class="fact-card"><div class="fact-label">GiveCentral account</div><div class="fact-val mono">1:1 mapping · gifts post real-time · no sync file</div></div>
+        </div>
+      </div>
+      <div class="dp-section">
+        <div class="dp-section-label">Multi-entity receipting</div>
+        <div class="fact-card">
+          <div class="fact-label">One email · separate PDFs</div>
+          <div class="fact-val">David Shipman gives $175K to Foundation and $42K to Diocese. One Individual record. One email delivery containing two PDFs — each signed with the correct EIN and entity letterhead.</div>
+        </div>
+      </div>`
+  },
+  household: {
+    eyebrow: 'Family unit',
+    color: '#8FC0F8',
+    title: 'Household',
+    sub: 'Sits between Parish and Individual. Holds salutation, envelope name, and combined giving summary for a family unit.',
+    body: `
+      <div class="dp-section">
+        <div class="dp-section-label">Example — Andrews family</div>
+        <div class="fact-grid">
+          <div class="fact-card"><div class="fact-label">Household HH-3318</div><div class="fact-val">William (#7712) + Grace (#7713) · "Dear William and Grace," · "The Andrews Family"</div></div>
+          <div class="fact-card"><div class="fact-label">Survivor handling</div><div class="fact-val">If William passes, Grace stays on the household. Deceased flag lives on his Individual record — not on the household itself.</div></div>
+          <div class="fact-card"><div class="fact-label">Combined LTG</div><div class="fact-val">Diocese staff see combined household LTG across all entities. Parish admin sees only parish-level combined LTG.</div></div>
+          <div class="fact-card"><div class="fact-label">GiveCentral</div><div class="fact-val">Each Individual has their own GC account mapping. Household giving rollup is calculated in Atlas — not in GC.</div></div>
+        </div>
+      </div>`
+  },
+  nolan: {
+    eyebrow: 'Child tenant · eff. 7/1/26',
+    color: '#F0A090',
+    title: 'Nolan Catholic High School',
+    sub: 'A completely separate database — not a parish scope. Nolan staff see only Nolan records. The diocese reads Nolan\'s data but cannot edit it. Nolan cannot see the diocesan database.',
+    body: `
+      <div class="dp-section">
+        <div class="dp-section-label">Access by role</div>
+        <div class="access-row"><span class="ar-role">Nolan Development Director</span><span class="ap ap-full">Full — own tenant only</span></div>
+        <div class="access-row"><span class="ar-role">Nolan Admin Staff</span><span class="ap ap-full">Full — own tenant only</span></div>
+        <div class="access-row"><span class="ar-role">Diocese staff</span><span class="ap ap-read">Read-only — cannot edit Nolan</span></div>
+        <div class="access-row"><span class="ar-role">Nolan re: diocese data</span><span class="ap ap-none">None — strict boundary</span></div>
+      </div>
+      <div class="dp-section">
+        <div class="dp-section-label">The four Fort Worth scenarios</div>
+        <div class="scenario-row">
+          <div class="scenario-num">1</div>
+          <div class="scenario-body">
+            <div class="scenario-title">Nolan-only alumni donor</div>
+            <div class="scenario-answer">Lives in Nolan DB only · invisible to CMA lists · diocese can read but does not manage</div>
+          </div>
+        </div>
+        <div class="scenario-row">
+          <div class="scenario-num">2</div>
+          <div class="scenario-body">
+            <div class="scenario-title">Same person in both databases</div>
+            <div class="scenario-answer">CrossTenantLink created · neither org sees other's data · diocese sees both · coordination alert fires</div>
+          </div>
+        </div>
+        <div class="scenario-row">
+          <div class="scenario-num">3</div>
+          <div class="scenario-body">
+            <div class="scenario-title">Both teams cultivating same major donor</div>
+            <div class="scenario-answer">Alert to both development directors · no data exposure · coordinate before any ask</div>
+          </div>
+        </div>
+        <div class="scenario-row">
+          <div class="scenario-num">4</div>
+          <div class="scenario-body">
+            <div class="scenario-title">Nolan runs completely independently</div>
+            <div class="scenario-answer">Own campaigns, batch entry, receipts under Nolan EIN · feels like their own CRM</div>
+          </div>
+        </div>
+      </div>
+      <div class="dp-section">
+        <div class="dp-section-label">New data fields required</div>
+        <div class="fact-grid">
+          <div class="fact-card"><div class="fact-label">TenantType</div><div class="fact-val mono">Child</div></div>
+          <div class="fact-card"><div class="fact-label">ParentTenantID</div><div class="fact-val mono">Diocese of Fort Worth UUID</div></div>
+          <div class="fact-card"><div class="fact-label">CrossTenantLinkID</div><div class="fact-val mono">Links matching records across DBs without merging</div></div>
+          <div class="fact-card"><div class="fact-label">MatchConfidence</div><div class="fact-val mono">0.85 threshold for auto-linking · below = manual review</div></div>
+        </div>
+      </div>`
+  },
+  '2028': {
+    eyebrow: '2028 · Phase 3',
+    color: '#E8C070',
+    title: 'Parish Atlas Edition',
+    sub: 'Every parish that participates in Atlas data governance from Phase 2 onwards automatically gets its own database in Phase 3 — built from records they submitted, with no migration or re-entry.',
+    body: `
+      <div class="dp-section">
+        <div class="dp-section-label">How the pathway works</div>
+        <div class="fact-grid">
+          <div class="fact-card"><div class="fact-label">Phase 1 — now</div><div class="fact-val">ParishAtlasOrigin field added to data model. Attribution begins on every parish-submitted record.</div></div>
+          <div class="fact-card"><div class="fact-label">Phase 2 — months 6–18</div><div class="fact-val">Parish admins submit data changes and new donors via Data Management portal. Attribution accumulates silently.</div></div>
+          <div class="fact-card"><div class="fact-label">Phase 3 — 2028</div><div class="fact-val">Atlas partitions attributed records into 84 parish-owned databases. No migration. Parishes didn't know they were building their DB all along.</div></div>
+          <div class="fact-card"><div class="fact-label">Relationship to diocese</div><div class="fact-val">Same parent-child model as Nolan. Each parish becomes a Child Tenant. Diocese remains Parent Tenant.</div></div>
+        </div>
+      </div>
+      <div class="dp-section">
+        <div class="dp-section-label">Why it's industry standard</div>
+        <div class="fact-card">
+          <div class="fact-label">Not a one-off exception</div>
+          <div class="fact-val">Blackbaud RENXT (consortia), Salesforce Nonprofit (multi-org), and every major higher education CRM support this parent-child tenant model. Fort Worth's Nolan scenario is representative of the Catholic diocese market — not an edge case.</div>
+        </div>
+      </div>`
+  }
+};
+
+let activeNode = null;
+
+function show(key, el) {
+  const p = panels[key];
+  if (!p) return;
+
+  if (activeNode) activeNode.classList.remove('active');
+  el.classList.add('active');
+  activeNode = el;
+
+  document.getElementById('detail-hint').style.display = 'none';
+
+  const panel = document.getElementById('detail-panel');
+  const head = document.getElementById('dp-head');
+
+  document.getElementById('dp-eyebrow').textContent = p.eyebrow;
+  document.getElementById('dp-eyebrow').style.color = p.color;
+  document.getElementById('dp-title').textContent = p.title;
+  document.getElementById('dp-sub').textContent = p.sub;
+  document.getElementById('dp-body').innerHTML = p.body;
+
+  head.style.background = `linear-gradient(135deg, rgba(${hexToRgb(p.color)},.07) 0%, transparent 80%)`;
+  head.style.borderBottom = `1px solid rgba(${hexToRgb(p.color)},.15)`;
+
+  panel.classList.add('visible');
+  panel.style.borderColor = `rgba(${hexToRgb(p.color)},.2)`;
+
+  setTimeout(() => {
+    panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }, 50);
+}
+
+function hexToRgb(hex) {
+  const r = parseInt(hex.slice(1,3),16);
+  const g = parseInt(hex.slice(3,5),16);
+  const b = parseInt(hex.slice(5,7),16);
+  return `${r},${g},${b}`;
+}
+</script>
+</body>
+</html>
