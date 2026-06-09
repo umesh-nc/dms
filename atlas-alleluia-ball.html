@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Atlas — Alleluia Ball 2025</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,600&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0B1929;--navy2:#102236;--navy3:#162E48;
+  --gold:#C8920A;--golda:#DBA420;--goldl:#FBF2DC;--goldb:#F0D890;--goldd:#7A5208;
+  --green:#147A48;--greenl:#D8F2E4;--greend:#083D24;
+  --amber:#C07810;--amberl:#FEF0D8;--amberd:#704408;
+  --red:#A82828;--redl:#FAEAEA;--redd:#6A1414;
+  --blue:#1A5AB8;--bluep:#E8F0FD;--bluel:#C0D4F8;
+  --purp:#7030C8;--purpl:#EDE8FC;
+  --teal:#0A7878;--teall:#CCF0F0;
+  --border:#D8E4EC;--border2:#BED0DC;--surf:#F4F8FC;--white:#FFFFFF;
+  --text:#0B1929;--text2:#1E3A52;--text3:#4A6478;--text4:#809AA8;
+  --shadow:0 2px 12px rgba(11,25,41,.07);--shadow-lg:0 8px 32px rgba(11,25,41,.12);
+}
+html{font-size:14px;-webkit-font-smoothing:antialiased}
+body{font-family:'DM Sans',sans-serif;background:#E4EDF5;color:var(--text);min-height:100vh}
+
+/* ── TOPBAR ── */
+.topbar{background:var(--navy);height:52px;padding:0 28px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:80;border-bottom:1px solid rgba(255,255,255,.04)}
+.tb-mark{width:28px;height:28px;background:var(--gold);border-radius:7px;display:flex;align-items:center;justify-content:center}
+.tb-mark svg{width:13px;height:13px;color:var(--navy)}
+.tb-name{font-family:'Cormorant Garamond',serif;font-size:16px;color:white;font-style:italic;font-weight:500}
+.tb-sep{width:1px;height:16px;background:rgba(255,255,255,.1)}
+.tb-crumb{font-size:12px;color:rgba(255,255,255,.4);display:flex;align-items:center;gap:6px}
+.tb-crumb b{color:rgba(255,255,255,.75);font-weight:500}
+.tb-crumb span{color:rgba(255,255,255,.2)}
+.tb-right{margin-left:auto;display:flex;gap:8px;align-items:center}
+.tbtn{padding:6px 14px;border-radius:7px;font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .13s;border:none}
+.tbtn-ghost{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.6)}
+.tbtn-ghost:hover{background:rgba(255,255,255,.12)}
+.tbtn-gold{background:var(--gold);color:var(--navy);font-weight:600}
+.tbtn-gold:hover{background:var(--golda)}
+
+/* ── EVENT HERO ── */
+.event-hero{background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 50%,#1A2E48 100%);padding:36px 28px 32px;position:relative;overflow:hidden;border-bottom:3px solid var(--gold)}
+.event-hero::before{content:'';position:absolute;top:-120px;right:-80px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(200,146,10,.08) 0%,transparent 70%);pointer-events:none}
+.event-hero::after{content:'';position:absolute;bottom:-60px;left:20%;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(26,90,184,.06) 0%,transparent 70%);pointer-events:none}
+.hero-inner{max-width:1240px;margin:0 auto;display:flex;align-items:flex-start;gap:24px;position:relative;z-index:1}
+.hero-left{flex:1}
+.hero-breadcrumb{font-size:11px;color:rgba(255,255,255,.3);margin-bottom:14px;display:flex;align-items:center;gap:6px}
+.hero-breadcrumb span{color:rgba(255,255,255,.15)}
+.hero-type-pill{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;padding:3px 11px;border-radius:20px;background:rgba(200,146,10,.18);border:1px solid rgba(200,146,10,.3);color:var(--goldb);margin-bottom:14px}
+.hero-title{font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:600;color:white;line-height:1.1;margin-bottom:8px;letter-spacing:-.01em}
+.hero-title em{font-style:italic;color:var(--golda)}
+.hero-meta{font-size:13px;color:rgba(255,255,255,.5);display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:20px}
+.hero-meta-item{display:flex;align-items:center;gap:5px}
+.hero-meta-item svg{width:13px;height:13px;flex-shrink:0}
+.hero-tags{display:flex;gap:7px;flex-wrap:wrap}
+.hero-tag{font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px;letter-spacing:.04em}
+.tag-sold{background:rgba(20,122,72,.2);border:1px solid rgba(20,122,72,.3);color:#86EFAC}
+.tag-complete{background:rgba(26,90,184,.2);border:1px solid rgba(26,90,184,.3);color:#93C5FD}
+.tag-featured{background:rgba(200,146,10,.2);border:1px solid rgba(200,146,10,.3);color:var(--goldb)}
+
+.hero-stats{display:flex;gap:0;background:rgba(0,0,0,.3);border-radius:14px;overflow:hidden;flex-shrink:0;align-self:center}
+.hs{padding:16px 22px;border-right:1px solid rgba(255,255,255,.06);text-align:center}
+.hs:last-child{border-right:none}
+.hs-val{font-family:'Cormorant Garamond',serif;font-size:26px;color:white;line-height:1;margin-bottom:3px;font-weight:600}
+.hs-val.gold{color:var(--golda)}
+.hs-val.green{color:#86EFAC}
+.hs-val.red{color:#FCA5A5}
+.hs-lbl{font-size:10px;color:rgba(255,255,255,.28);text-transform:uppercase;letter-spacing:.07em}
+
+/* ── TAB NAV ── */
+.tab-nav{background:white;border-bottom:1px solid var(--border);padding:0 28px;display:flex;gap:0;overflow-x:auto;position:sticky;top:52px;z-index:60}
+.tab{padding:12px 18px;font-size:13px;font-weight:500;color:var(--text3);cursor:pointer;border-bottom:2.5px solid transparent;white-space:nowrap;font-family:'DM Sans',sans-serif;background:none;border-top:none;border-left:none;border-right:none;transition:all .13s}
+.tab:hover{color:var(--text2)}
+.tab.active{color:var(--navy);border-bottom-color:var(--gold);font-weight:600}
+.tab-badge{font-size:9px;font-weight:700;padding:1px 6px;border-radius:20px;margin-left:5px;background:var(--redl);color:var(--redd)}
+.tab-badge.g{background:var(--greenl);color:var(--greend)}
+
+/* ── MAIN ── */
+.main{max-width:1240px;margin:0 auto;padding:24px 28px 80px;display:flex;flex-direction:column;gap:18px}
+.view{display:none;flex-direction:column;gap:18px}
+.view.active{display:flex}
+
+/* ── CARDS ── */
+.card{background:white;border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:var(--shadow)}
+.card-head{padding:12px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:9px;background:var(--surf)}
+.ch-icon{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ch-icon svg{width:12px;height:12px}
+.ch-title{font-size:12px;font-weight:600;color:var(--text);flex:1;text-transform:uppercase;letter-spacing:.05em}
+.ch-badge{font-size:10px;font-weight:600;padding:2px 9px;border-radius:20px}
+.card-body{padding:16px 18px}
+
+/* ── KPI GRID ── */
+.kpi-grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.kpi-grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.kpi-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.kpi{background:white;border:1px solid var(--border);border-radius:12px;padding:16px 18px;box-shadow:var(--shadow)}
+.kpi-label{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text4);margin-bottom:7px}
+.kpi-val{font-family:'Cormorant Garamond',serif;font-size:28px;color:var(--text);line-height:1;margin-bottom:4px;font-weight:600}
+.kpi-sub{font-size:11px;color:var(--text3)}
+.kpi-sub.up{color:var(--green)}
+.kpi-sub.warn{color:var(--amber)}
+.kpi-bar{height:4px;background:var(--border);border-radius:2px;margin-top:8px;overflow:hidden}
+.kpi-bar-fill{height:100%;border-radius:2px}
+
+/* ── TICKET TIERS ── */
+.tier-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.tier-card{border-radius:12px;border:1.5px solid var(--border);padding:18px;position:relative;overflow:hidden;transition:all .15s}
+.tier-card:hover{box-shadow:var(--shadow-lg);transform:translateY(-2px)}
+.tier-card.t-top{border-color:var(--gold);background:linear-gradient(135deg,#FFFBF0 0%,white 100%)}
+.tier-card.t-soldout{opacity:.65}
+.tier-card.t-soldout::after{content:'SOLD OUT';position:absolute;top:14px;right:14px;font-size:9px;font-weight:700;letter-spacing:.08em;padding:2px 8px;border-radius:20px;background:var(--redl);color:var(--redd)}
+.tier-top-row{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px}
+.tier-name{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;color:var(--text);line-height:1.1}
+.tier-name.gold{color:var(--gold)}
+.tier-price{font-family:'DM Mono',monospace;font-size:14px;font-weight:500;color:var(--text3);text-align:right}
+.tier-price b{display:block;font-size:18px;color:var(--text);font-weight:500}
+.tier-desc{font-size:12px;color:var(--text3);line-height:1.65;margin-bottom:12px}
+.tier-stats{display:flex;gap:12px}
+.ts{text-align:center}
+.ts-val{font-family:'DM Mono',monospace;font-size:15px;font-weight:500;color:var(--text)}
+.ts-lbl{font-size:10px;color:var(--text4);text-transform:uppercase;letter-spacing:.05em}
+.tier-bar{height:4px;background:var(--border);border-radius:2px;margin:10px 0 0;overflow:hidden}
+.tier-bar-fill{height:100%;border-radius:2px;background:var(--gold)}
+.tier-actions{display:flex;gap:6px;margin-top:12px}
+.tier-btn{padding:5px 12px;border-radius:7px;font-size:11px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;border:1px solid var(--border);background:white;color:var(--text2);transition:all .13s}
+.tier-btn:hover{background:var(--goldl);border-color:var(--goldb)}
+.tier-btn-primary{background:var(--gold);color:white;border-color:var(--gold)}
+.tier-btn-primary:hover{background:var(--golda)}
+
+/* ── GUEST LIST TABLE ── */
+.data-table{width:100%;border-collapse:collapse;font-size:12px}
+.data-table th{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.7);background:var(--navy);padding:9px 14px;border-right:1px solid rgba(255,255,255,.06);text-align:left;white-space:nowrap}
+.data-table th:last-child{border-right:none}
+.data-table td{padding:10px 14px;border-bottom:.5px solid var(--border);color:var(--text2);vertical-align:middle}
+.data-table tr:last-child td{border-bottom:none}
+.data-table tr:hover td{background:var(--surf)}
+.dt-num{font-family:'DM Mono',monospace;font-size:11px}
+.dt-name{font-weight:500;color:var(--text)}
+.pill{display:inline-flex;align-items:center;font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px}
+.pill-gold{background:var(--goldl);color:var(--goldd)}
+.pill-green{background:var(--greenl);color:var(--greend)}
+.pill-blue{background:var(--bluep);color:var(--blue)}
+.pill-red{background:var(--redl);color:var(--redd)}
+.pill-amber{background:var(--amberl);color:var(--amberd)}
+.pill-purp{background:var(--purpl);color:var(--purp)}
+.pill-teal{background:var(--teall);color:var(--teal)}
+.pill-steel{background:var(--surf);color:var(--text3);border:1px solid var(--border)}
+
+/* ── TABLE LAYOUT ── */
+.table-floor{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.table-card{background:var(--surf);border:1.5px solid var(--border);border-radius:10px;padding:12px;cursor:pointer;transition:all .15s;position:relative}
+.table-card:hover{border-color:var(--navy);box-shadow:var(--shadow)}
+.table-card.full{border-color:var(--green);background:var(--greenl)}
+.table-card.partial{border-color:var(--amber);background:var(--amberl)}
+.table-card.empty{border-color:var(--border);background:white}
+.table-card.vip{border-color:var(--gold);background:linear-gradient(135deg,#FFFBF0,white)}
+.tc-num{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;color:var(--text);margin-bottom:4px}
+.tc-sponsor{font-size:10px;font-weight:600;color:var(--text3);margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tc-seats{display:flex;gap:2px;flex-wrap:wrap;margin-bottom:6px}
+.seat{width:8px;height:8px;border-radius:2px}
+.seat-filled{background:var(--navy)}
+.seat-empty{background:var(--border)}
+.tc-total{font-size:10px;color:var(--text3);font-family:'DM Mono',monospace}
+
+/* ── ATTRIBUTION ── */
+.attr-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:.5px solid var(--border)}
+.attr-row:last-child{border-bottom:none}
+.attr-av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:14px;color:white;flex-shrink:0;font-weight:600;font-style:italic}
+.attr-body{flex:1}
+.attr-name{font-size:13px;font-weight:600;color:var(--text)}
+.attr-detail{font-size:11px;color:var(--text3);margin-top:2px;display:flex;align-items:center;gap:6px}
+.attr-amount{font-family:'DM Mono',monospace;font-size:13px;font-weight:500;color:var(--green)}
+.attr-tag{font-size:10px;font-weight:600;padding:1px 7px;border-radius:20px}
+
+/* ── CHECKIN FLOW ── */
+.ci-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:.5px solid var(--border)}
+.ci-row:last-child{border-bottom:none}
+.ci-check{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;transition:all .15s}
+.ci-check.checked{background:var(--green);border-color:var(--green)}
+.ci-check.checked svg{color:white}
+.ci-name{font-size:13px;font-weight:500;color:var(--text);flex:1}
+.ci-table{font-size:11px;color:var(--text3)}
+.ci-tier{font-size:10px;font-weight:600;padding:1px 7px;border-radius:20px}
+.ci-time{font-family:'DM Mono',monospace;font-size:11px;color:var(--text4)}
+
+/* ── PROGRESS ── */
+.prog-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:.5px solid var(--border);font-size:12px}
+.prog-row:last-child{border-bottom:none}
+.prog-label{width:160px;color:var(--text2);flex-shrink:0;font-weight:500}
+.prog-bar-wrap{flex:1;height:8px;background:var(--border);border-radius:4px;overflow:hidden}
+.prog-bar-fill{height:100%;border-radius:4px}
+.prog-val{font-family:'DM Mono',monospace;color:var(--text3);width:80px;text-align:right;flex-shrink:0}
+
+/* ── GIVING TIMELINE ── */
+.timeline-row{display:flex;gap:10px;padding:10px 0;border-bottom:.5px solid var(--border)}
+.timeline-row:last-child{border-bottom:none}
+.tl-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.tl-body{flex:1}
+.tl-title{font-size:13px;font-weight:500;color:var(--text);margin-bottom:2px}
+.tl-meta{font-size:11px;color:var(--text3);display:flex;align-items:center;gap:6px}
+.tl-amount{font-family:'DM Mono',monospace;font-size:13px;font-weight:500;color:var(--green);flex-shrink:0}
+
+/* ── CHAIRS SECTION ── */
+.chairs-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.chair-card{background:linear-gradient(135deg,#FFFBF0,white);border:1.5px solid var(--goldb);border-radius:12px;padding:16px;text-align:center}
+.chair-av{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--navy),var(--navy2));display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:16px;color:white;margin:0 auto 10px;font-style:italic;font-weight:600}
+.chair-name{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:600;color:var(--text);margin-bottom:3px}
+.chair-role{font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+.chair-ltg{font-family:'DM Mono',monospace;font-size:13px;color:var(--green);margin-bottom:4px}
+.chair-detail{font-size:11px;color:var(--text3)}
+
+/* ── SNACK ── */
+.snack{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(14px);background:var(--navy);border:1px solid rgba(255,255,255,.08);color:white;padding:10px 20px;border-radius:10px;font-size:13px;display:flex;align-items:center;gap:8px;opacity:0;transition:all .25s;pointer-events:none;z-index:300;box-shadow:0 8px 24px rgba(0,0,0,.2)}
+.snack.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.snack.g{background:var(--green)}
+
+/* ── TWO COL ── */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+
+/* ── SECTION LABEL ── */
+.sec-label{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:-6px;padding-bottom:12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.sec-label a{font-size:11px;font-weight:500;color:var(--navy);text-decoration:none;letter-spacing:.01em;text-transform:none}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.anim{animation:fadeUp .3s ease both}
+.a1{animation-delay:.04s}.a2{animation-delay:.09s}.a3{animation-delay:.14s}.a4{animation-delay:.19s}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="tb-mark"><svg viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7.5" stroke="currentColor" stroke-width="1.5"/><path d="M5.5 9.5C6.5 11.5 9 13 9 13s2.5-1.5 3.5-3.5S12 5 9 5 4.5 7.5 5.5 9.5z" fill="currentColor" fill-opacity=".9"/></svg></div>
+  <span class="tb-name">Atlas</span>
+  <div class="tb-sep"></div>
+  <div class="tb-crumb">
+    Events <span>›</span> Galas & Dinners <span>›</span> <b>Alleluia Ball 2025</b>
+  </div>
+  <div class="tb-right">
+    <button class="tbtn tbtn-ghost">← All events</button>
+    <button class="tbtn tbtn-ghost" onclick="showSnack('Email blast drafted for committee')">Send update</button>
+    <button class="tbtn tbtn-gold" onclick="showSnack('Event settings opened')">Edit event</button>
+  </div>
+</div>
+
+<!-- HERO -->
+<div class="event-hero">
+  <div class="hero-inner">
+    <div class="hero-left">
+      <div class="hero-type-pill">
+        <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" width="10" height="10"><path d="M6 1l1.5 3 3.5.5-2.5 2.5.5 3.5L6 9l-3 1.5.5-3.5L1 4.5 4.5 4z"/></svg>
+        Gala fundraiser · Completed
+      </div>
+      <h1 class="hero-title"><em>Alleluia</em> Ball 2025</h1>
+      <div class="hero-meta">
+        <div class="hero-meta-item">
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><rect x="1.5" y="2" width="9" height="9" rx="1.5"/><path d="M8 1v2M4 1v2M1.5 5h9"/></svg>
+          Saturday, October 25, 2025
+        </div>
+        <div class="hero-meta-item">
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M6 1C4 1 2 2.8 2 5c0 3 4 7 4 7s4-4 4-7c0-2.2-2-4-4-4z"/><circle cx="6" cy="5" r="1.5"/></svg>
+          Huntington Convention Center, Cleveland OH
+        </div>
+        <div class="hero-meta-item">
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="6" cy="4.5" r="2.5"/><path d="M1.5 11c0-2.5 2-4 4.5-4s4.5 1.5 4.5 4"/></svg>
+          448 attendees · 42 tables
+        </div>
+      </div>
+      <div class="hero-tags">
+        <span class="hero-tag tag-complete">Catholic Community Foundation</span>
+        <span class="hero-tag tag-featured">Matthew Kelly — featured guest</span>
+        <span class="hero-tag tag-sold">5 of 6 tiers sold out</span>
+      </div>
+    </div>
+    <div class="hero-stats">
+      <div class="hs"><div class="hs-val gold">$1.24M</div><div class="hs-lbl">Total raised</div></div>
+      <div class="hs"><div class="hs-val green">448</div><div class="hs-lbl">Attendees</div></div>
+      <div class="hs"><div class="hs-val">42</div><div class="hs-lbl">Tables</div></div>
+      <div class="hs"><div class="hs-val green">98%</div><div class="hs-lbl">Check-in rate</div></div>
+      <div class="hs"><div class="hs-val gold">$2,770</div><div class="hs-lbl">Avg per donor</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- TAB NAV -->
+<div class="tab-nav">
+  <button class="tab active" onclick="setTab('overview',this)">Overview</button>
+  <button class="tab" onclick="setTab('tickets',this)">Tickets & sponsorships</button>
+  <button class="tab" onclick="setTab('tables',this)">Table management</button>
+  <button class="tab" onclick="setTab('guests',this)">Guest list <span class="tab-badge g">448</span></button>
+  <button class="tab" onclick="setTab('giving',this)">Giving & attribution</button>
+  <button class="tab" onclick="setTab('committee',this)">Chairs & committee</button>
+  <button class="tab" onclick="setTab('next',this)">Next event · 2027</button>
+</div>
+
+<div class="main">
+
+  <!-- ══ OVERVIEW ══ -->
+  <div class="view active" id="view-overview">
+
+    <div class="kpi-grid-4 anim a1">
+      <div class="kpi" style="border-left:3px solid var(--gold)">
+        <div class="kpi-label">Total raised</div>
+        <div class="kpi-val" style="color:var(--gold)">$1,240,000</div>
+        <div class="kpi-sub up">↑ 18% vs. 2023 Alleluia Ball</div>
+        <div class="kpi-bar"><div class="kpi-bar-fill" style="width:100%;background:var(--gold)"></div></div>
+      </div>
+      <div class="kpi" style="border-left:3px solid var(--green)">
+        <div class="kpi-label">Ticket revenue</div>
+        <div class="kpi-val">$892,500</div>
+        <div class="kpi-sub">72% of total · 6 tier levels</div>
+        <div class="kpi-bar"><div class="kpi-bar-fill" style="width:72%;background:var(--green)"></div></div>
+      </div>
+      <div class="kpi" style="border-left:3px solid var(--blue)">
+        <div class="kpi-label">Live auction & donations</div>
+        <div class="kpi-val">$347,500</div>
+        <div class="kpi-sub">28% of total · night-of gifts</div>
+        <div class="kpi-bar"><div class="kpi-bar-fill" style="width:28%;background:var(--blue)"></div></div>
+      </div>
+      <div class="kpi" style="border-left:3px solid var(--purp)">
+        <div class="kpi-label">Major gift follow-ups</div>
+        <div class="kpi-val">14</div>
+        <div class="kpi-sub warn">Pending cultivation actions</div>
+        <div class="kpi-bar"><div class="kpi-bar-fill" style="width:40%;background:var(--purp)"></div></div>
+      </div>
+    </div>
+
+    <!-- Revenue breakdown + ticket performance -->
+    <div class="two-col anim a2">
+      <div class="card">
+        <div class="card-head">
+          <div class="ch-icon" style="background:var(--goldl)"><svg viewBox="0 0 12 12" fill="none" stroke="var(--gold)" stroke-width="1.4" stroke-linecap="round"><path d="M2 10l2.5-3 2 2 2.5-3 2.5 3"/><path d="M2 2v10h10"/></svg></div>
+          <span class="ch-title">Revenue by category</span>
+        </div>
+        <div class="card-body">
+          <div class="prog-row">
+            <span class="prog-label">Dream Maker ($100K)</span>
+            <div class="prog-bar-wrap"><div class="prog-bar-fill" style="width:100%;background:var(--gold)"></div></div>
+            <span class="prog-val dt-num">$100,000</span>
+          </div>
+          <div class="prog-row">
+            <span class="prog-label">Visionary ($50K × 2)</span>
+            <div class="prog-bar-wrap"><div class="prog-bar-fill" style="width:80%;background:var(--golda)"></div></div>
+            <span class="prog-val dt-num">$100,000</span>
+          </div>
+          <div class="prog-row">
+            <span class="prog-label">Inspiration ($25K × 4)</span>
+            <div class="prog-bar-wrap"><div class="prog-bar-fill" style="width:80%;background:var(--amber)"></div></div>
+            <span class="prog-val dt-num">$100,000</span>
+          </div>
+          <div class="prog-row">
+            <span class="prog-label">Illuminated ($10K × 12)</span>
+            <div class="prog-bar-wrap"><div class="prog-bar-fill" style="width:96%;background:var(--blue)"></div></div>
+            <span class="prog-val dt-num">$120,000</span>
+          </div>
+          <div class="prog-row">
+            <span class="prog-label">Good Shepherd ($5K × 8)</span>
+            <div class="prog-bar-wrap"><div class="prog-bar-fill" style="width:32%;background:var(--teal)"></div></div>
+            <span class="prog-val dt-num">$40,000</span>
+          </div>
+          <div class="prog-row">
+            <span class="prog-label">Individual ($625 × 372)</span>
+            <div class="prog-bar-wrap"><div class="prog-bar-fill" style="width:30%;background:var(--text4)"></div></div>
+            <span class="prog-val dt-num">$232,500</span>
+          </div>
+          <div class="prog-row" style="margin-top:6px;padding-top:10px;border-top:1px solid var(--border)">
+            <span class="prog-label" style="font-weight:700">Live auction / donations</span>
+            <div class="prog-bar-wrap"><div class="prog-bar-fill" style="width:27%;background:var(--purp)"></div></div>
+            <span class="prog-val dt-num" style="color:var(--text);font-weight:700">$347,500</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div class="ch-icon" style="background:var(--goldl)"><svg viewBox="0 0 12 12" fill="none" stroke="var(--gold)" stroke-width="1.4" stroke-linecap="round"><circle cx="6" cy="6" r="4.5"/><path d="M6 3v3.5l2 1.5"/></svg></div>
+          <span class="ch-title">Post-event giving pipeline</span>
+          <span class="ch-badge" style="background:var(--purpl);color:var(--purp)">14 prospects</span>
+        </div>
+        <div class="card-body" style="display:flex;flex-direction:column;gap:0">
+          <div class="attr-row">
+            <div class="attr-av" style="background:linear-gradient(135deg,#1A4FAA,#0D3480)">MH</div>
+            <div class="attr-body">
+              <div class="attr-name">Hudec, Mike & Meredith <span style="font-size:10px;color:var(--gold)">★ Chair</span></div>
+              <div class="attr-detail">$100,000 Dream Maker · pipeline: ask $250K capital campaign</div>
+            </div>
+            <span class="attr-tag pill-purp">Cultivation</span>
+          </div>
+          <div class="attr-row">
+            <div class="attr-av" style="background:linear-gradient(135deg,#A04028,#682A18)">TC</div>
+            <div class="attr-body">
+              <div class="attr-name">Conti, Tim & Amy <span style="font-size:10px;color:var(--gold)">★ Co-Chair</span></div>
+              <div class="attr-detail">$50,000 Visionary · first-time gala chair · high engagement</div>
+            </div>
+            <span class="attr-tag pill-amber">Qualify</span>
+          </div>
+          <div class="attr-row">
+            <div class="attr-av" style="background:linear-gradient(135deg,#0A6060,#054040)">MV</div>
+            <div class="attr-body">
+              <div class="attr-name">Valentine, Mike & Beth <span style="font-size:10px;color:var(--gold)">★ Co-Chair</span></div>
+              <div class="attr-detail">$25,000 Inspiration · second year as co-chair · legacy society interest</div>
+            </div>
+            <span class="attr-tag pill-teal">Stewardship</span>
+          </div>
+          <div class="attr-row">
+            <div class="attr-av" style="background:linear-gradient(135deg,#5020A0,#340070)">DS</div>
+            <div class="attr-body">
+              <div class="attr-name">Shipman, David P.</div>
+              <div class="attr-detail">$10,000 Illuminated · LTG $212K · IRA opportunity identified</div>
+            </div>
+            <span class="attr-tag pill-purp">Major gift</span>
+          </div>
+          <div class="attr-row" style="border-bottom:none">
+            <div class="attr-av" style="background:linear-gradient(135deg,#1A5890,#0C3060)">JO</div>
+            <div class="attr-body">
+              <div class="attr-name">O'Brien, James & Patricia</div>
+              <div class="attr-detail">$10,000 Illuminated · second consecutive year · pledge potential</div>
+            </div>
+            <span class="attr-tag pill-blue">Pipeline</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chairs summary -->
+    <div class="sec-label anim a3">Event chairs & co-chairs <a href="#" onclick="setTab('committee',document.querySelectorAll('.tab')[5])">See full committee →</a></div>
+    <div class="chairs-grid anim a3">
+      <div class="chair-card">
+        <div class="chair-av">MH</div>
+        <div class="chair-name">Mike & Meredith Hudec</div>
+        <div class="chair-role">Chair — 2025</div>
+        <div class="chair-ltg">$100,000 this event</div>
+        <div class="chair-detail">Dream Maker sponsor · Donor #4821</div>
+      </div>
+      <div class="chair-card">
+        <div class="chair-av">TC</div>
+        <div class="chair-name">Tim & Amy Conti</div>
+        <div class="chair-role">Co-Chair — 2025</div>
+        <div class="chair-ltg">$50,000 this event</div>
+        <div class="chair-detail">Visionary sponsor · Donor #6612</div>
+      </div>
+      <div class="chair-card">
+        <div class="chair-av">MV</div>
+        <div class="chair-name">Mike & Beth Valentine</div>
+        <div class="chair-role">Co-Chair — 2025</div>
+        <div class="chair-ltg">$25,000 this event</div>
+        <div class="chair-detail">Inspiration sponsor · Donor #7714</div>
+      </div>
+    </div>
+
+  </div><!-- /overview -->
+
+  <!-- ══ TICKETS & SPONSORSHIPS ══ -->
+  <div class="view" id="view-tickets">
+    <div style="background:linear-gradient(135deg,var(--goldl),#FFFDF5);border:1.5px solid var(--goldb);border-radius:12px;padding:16px 20px;display:flex;align-items:center;gap:14px" class="anim a1">
+      <div style="width:44px;height:44px;background:var(--goldb);border-radius:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <svg viewBox="0 0 18 18" fill="none" stroke="var(--goldd)" stroke-width="1.4" stroke-linecap="round" width="18" height="18"><path d="M6 1l1.5 3 3.5.5-2.5 2.5.5 3.5L6 9l-3 1.5.5-3.5L1 4.5 4.5 4z"/></svg>
+      </div>
+      <div>
+        <div style="font-weight:600;color:var(--goldd);font-size:13px;margin-bottom:2px">5 of 6 tiers sold out · $892,500 ticket revenue</div>
+        <div style="font-size:12px;color:var(--amberd)">Only the Dream Maker $100K tier had remaining availability. The 2027 Alleluia Ball should open Dream Maker and Visionary tiers 6 months in advance.</div>
+      </div>
+    </div>
+
+    <div class="tier-grid anim a2">
+      <!-- Dream Maker -->
+      <div class="tier-card t-top" style="grid-column:span 1">
+        <div class="tier-top-row">
+          <div>
+            <div class="tier-name gold">Dream Maker</div>
+          </div>
+          <div class="tier-price"><b>$100,000</b>per sponsorship</div>
+        </div>
+        <div class="tier-desc">Premier naming sponsorship. Table for 10, reserved front section. Named recognition in all event materials, Bishop's personal acknowledgement, and cultivation meeting with Foundation leadership.</div>
+        <div class="tier-stats">
+          <div class="ts"><div class="ts-val">1</div><div class="ts-lbl">Sold</div></div>
+          <div class="ts"><div class="ts-val">1</div><div class="ts-lbl">Remaining</div></div>
+          <div class="ts"><div class="ts-val" style="color:var(--gold)">$100K</div><div class="ts-lbl">Revenue</div></div>
+        </div>
+        <div class="tier-bar"><div class="tier-bar-fill" style="width:50%;background:var(--gold)"></div></div>
+        <div class="tier-actions">
+          <button class="tier-btn tier-btn-primary" onclick="showSnack('Dream Maker donor: Hudec family opened')">View donor</button>
+          <button class="tier-btn" onclick="showSnack('2027 tier copied to new event')">Copy to 2027</button>
+        </div>
+      </div>
+
+      <!-- Visionary -->
+      <div class="tier-card t-soldout">
+        <div class="tier-top-row">
+          <div class="tier-name">Visionary</div>
+          <div class="tier-price"><b>$50,000</b>per sponsorship</div>
+        </div>
+        <div class="tier-desc">Table for 10, priority seating. Named in programme, VIP reception access, and stewardship report on fund impact.</div>
+        <div class="tier-stats">
+          <div class="ts"><div class="ts-val">2</div><div class="ts-lbl">Sold</div></div>
+          <div class="ts"><div class="ts-val">0</div><div class="ts-lbl">Remaining</div></div>
+          <div class="ts"><div class="ts-val" style="color:var(--green)">$100K</div><div class="ts-lbl">Revenue</div></div>
+        </div>
+        <div class="tier-bar"><div class="tier-bar-fill" style="width:100%;background:var(--green)"></div></div>
+        <div class="tier-actions">
+          <button class="tier-btn" onclick="showSnack('Visionary donors listed')">View donors (2)</button>
+          <button class="tier-btn" onclick="showSnack('2027 tier opened')">Copy to 2027</button>
+        </div>
+      </div>
+
+      <!-- Inspiration -->
+      <div class="tier-card t-soldout">
+        <div class="tier-top-row">
+          <div class="tier-name">Inspiration</div>
+          <div class="tier-price"><b>$25,000</b>per sponsorship</div>
+        </div>
+        <div class="tier-desc">Table for 10. Named in event programme. Impact report. VIP reception access.</div>
+        <div class="tier-stats">
+          <div class="ts"><div class="ts-val">4</div><div class="ts-lbl">Sold</div></div>
+          <div class="ts"><div class="ts-val">0</div><div class="ts-lbl">Remaining</div></div>
+          <div class="ts"><div class="ts-val" style="color:var(--green)">$100K</div><div class="ts-lbl">Revenue</div></div>
+        </div>
+        <div class="tier-bar"><div class="tier-bar-fill" style="width:100%;background:var(--green)"></div></div>
+        <div class="tier-actions">
+          <button class="tier-btn" onclick="showSnack('Inspiration donors listed')">View donors (4)</button>
+          <button class="tier-btn" onclick="showSnack('2027 tier opened')">Copy to 2027</button>
+        </div>
+      </div>
+
+      <!-- Illuminated -->
+      <div class="tier-card t-soldout">
+        <div class="tier-top-row">
+          <div class="tier-name">Illuminated</div>
+          <div class="tier-price"><b>$10,000</b>per sponsorship</div>
+        </div>
+        <div class="tier-desc">Table for 10. Named in programme. Recognition during programme.</div>
+        <div class="tier-stats">
+          <div class="ts"><div class="ts-val">12</div><div class="ts-lbl">Sold</div></div>
+          <div class="ts"><div class="ts-val">0</div><div class="ts-lbl">Remaining</div></div>
+          <div class="ts"><div class="ts-val" style="color:var(--green)">$120K</div><div class="ts-lbl">Revenue</div></div>
+        </div>
+        <div class="tier-bar"><div class="tier-bar-fill" style="width:100%;background:var(--green)"></div></div>
+        <div class="tier-actions">
+          <button class="tier-btn" onclick="showSnack('Illuminated donors listed')">View donors (12)</button>
+        </div>
+      </div>
+
+      <!-- Good Shepherd -->
+      <div class="tier-card t-soldout">
+        <div class="tier-top-row">
+          <div class="tier-name">Good Shepherd</div>
+          <div class="tier-price"><b>$5,000</b>per sponsorship</div>
+        </div>
+        <div class="tier-desc">Table for 10. Named in programme. Limited availability — 8 tables total.</div>
+        <div class="tier-stats">
+          <div class="ts"><div class="ts-val">8</div><div class="ts-lbl">Sold</div></div>
+          <div class="ts"><div class="ts-val">0</div><div class="ts-lbl">Remaining</div></div>
+          <div class="ts"><div class="ts-val" style="color:var(--green)">$40K</div><div class="ts-lbl">Revenue</div></div>
+        </div>
+        <div class="tier-bar"><div class="tier-bar-fill" style="width:100%;background:var(--green)"></div></div>
+        <div class="tier-actions">
+          <button class="tier-btn" onclick="showSnack('Good Shepherd donors listed')">View donors (8)</button>
+        </div>
+      </div>
+
+      <!-- Individual -->
+      <div class="tier-card t-soldout">
+        <div class="tier-top-row">
+          <div class="tier-name">Individual ticket</div>
+          <div class="tier-price"><b>$625</b>per person</div>
+        </div>
+        <div class="tier-desc">General seating. Dinner and programme included. Open to all — sold out due to demand.</div>
+        <div class="tier-stats">
+          <div class="ts"><div class="ts-val">372</div><div class="ts-lbl">Sold</div></div>
+          <div class="ts"><div class="ts-val">0</div><div class="ts-lbl">Remaining</div></div>
+          <div class="ts"><div class="ts-val" style="color:var(--green)">$232K</div><div class="ts-lbl">Revenue</div></div>
+        </div>
+        <div class="tier-bar"><div class="tier-bar-fill" style="width:100%;background:var(--green)"></div></div>
+        <div class="tier-actions">
+          <button class="tier-btn" onclick="showSnack('Individual ticket holders exported')">Export list</button>
+        </div>
+      </div>
+    </div>
+  </div><!-- /tickets -->
+
+  <!-- ══ TABLE MANAGEMENT ══ -->
+  <div class="view" id="view-tables">
+    <div class="kpi-grid-3 anim a1">
+      <div class="kpi" style="border-left:3px solid var(--green)"><div class="kpi-label">Tables total</div><div class="kpi-val">42</div><div class="kpi-sub">420 seats · 448 attendees (standing allowed)</div></div>
+      <div class="kpi" style="border-left:3px solid var(--gold)"><div class="kpi-label">Named sponsorship tables</div><div class="kpi-val">27</div><div class="kpi-sub">Tables 1–27 · named sponsor on placard</div></div>
+      <div class="kpi" style="border-left:3px solid var(--blue)"><div class="kpi-label">General seating tables</div><div class="kpi-val">15</div><div class="kpi-sub">Tables 28–42 · individual ticket holders</div></div>
+    </div>
+
+    <div class="card anim a2">
+      <div class="card-head">
+        <div class="ch-icon" style="background:var(--goldl)"><svg viewBox="0 0 12 12" fill="none" stroke="var(--gold)" stroke-width="1.4" stroke-linecap="round"><rect x="2" y="2" width="8" height="8" rx="1.5"/><path d="M5 2v8M2 5h8"/></svg></div>
+        <span class="ch-title">Table floor plan — Huntington Convention Center</span>
+        <div style="display:flex;gap:8px;font-size:11px;align-items:center;margin-left:auto">
+          <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;background:var(--gold);border-radius:2px;display:inline-block"></span>VIP / named</span>
+          <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;background:var(--green);border-radius:2px;display:inline-block"></span>Full</span>
+          <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;background:var(--amber);border-radius:2px;display:inline-block"></span>Partial</span>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="table-floor" id="table-floor"></div>
+      </div>
+    </div>
+  </div><!-- /tables -->
+
+  <!-- ══ GUEST LIST ══ -->
+  <div class="view" id="view-guests">
+    <div class="card anim a1">
+      <div class="card-head">
+        <div class="ch-icon" style="background:var(--bluep)"><svg viewBox="0 0 12 12" fill="none" stroke="var(--blue)" stroke-width="1.4" stroke-linecap="round"><circle cx="6" cy="4.5" r="2.5"/><path d="M1.5 11c0-2.5 2-4 4.5-4s4.5 1.5 4.5 4"/></svg></div>
+        <span class="ch-title">Guest list — 448 attendees</span>
+        <div style="display:flex;gap:7px;margin-left:auto">
+          <input style="padding:5px 10px;border:1px solid var(--border);border-radius:7px;font-size:12px;width:180px;outline:none;background:var(--surf)" placeholder="Search guests…">
+          <button onclick="showSnack('Guest list exported to CSV','g')" style="font-size:11px;padding:5px 11px;border-radius:7px;background:var(--surf);border:1px solid var(--border);cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--text2)">Export ↓</button>
+        </div>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="data-table">
+          <thead><tr>
+            <th>Donor</th><th>Donor ID</th><th>Ticket tier</th><th>Table</th><th>Checked in</th><th>LTG</th><th>Officer</th><th>Post-event action</th>
+          </tr></thead>
+          <tbody>
+            <tr>
+              <td><div class="dt-name">Hudec, Mike & Meredith</div><div style="font-size:10px;color:var(--gold)">★ Chair 2025</div></td>
+              <td class="dt-num">#4821</td>
+              <td><span class="pill pill-gold">Dream Maker</span></td>
+              <td class="dt-num">Table 1 (front)</td>
+              <td><span class="pill pill-green">✓ 6:02 PM</span></td>
+              <td class="dt-num" style="color:var(--green)">$284,000</td>
+              <td style="font-size:12px">M. Donovan</td>
+              <td><span class="pill pill-purp">Capital ask $250K</span></td>
+            </tr>
+            <tr>
+              <td><div class="dt-name">Conti, Tim & Amy</div><div style="font-size:10px;color:var(--gold)">★ Co-Chair</div></td>
+              <td class="dt-num">#6612</td>
+              <td><span class="pill pill-gold">Visionary</span></td>
+              <td class="dt-num">Table 2</td>
+              <td><span class="pill pill-green">✓ 5:58 PM</span></td>
+              <td class="dt-num" style="color:var(--green)">$78,000</td>
+              <td style="font-size:12px">M. Donovan</td>
+              <td><span class="pill pill-amber">Qualify — legacy</span></td>
+            </tr>
+            <tr>
+              <td><div class="dt-name">Valentine, Mike & Beth</div><div style="font-size:10px;color:var(--gold)">★ Co-Chair</div></td>
+              <td class="dt-num">#7714</td>
+              <td><span class="pill" style="background:var(--amberl);color:var(--amberd)">Inspiration</span></td>
+              <td class="dt-num">Table 3</td>
+              <td><span class="pill pill-green">✓ 6:14 PM</span></td>
+              <td class="dt-num" style="color:var(--green)">$52,000</td>
+              <td style="font-size:12px">K. Novicky</td>
+              <td><span class="pill pill-teal">Stewardship visit</span></td>
+            </tr>
+            <tr>
+              <td class="dt-name">Shipman, David P.</td>
+              <td class="dt-num">#5972</td>
+              <td><span class="pill pill-blue">Illuminated</span></td>
+              <td class="dt-num">Table 4</td>
+              <td><span class="pill pill-green">✓ 6:08 PM</span></td>
+              <td class="dt-num" style="color:var(--green)">$212,000</td>
+              <td style="font-size:12px">M. Donovan</td>
+              <td><span class="pill pill-purp">IRA/QCD ask</span></td>
+            </tr>
+            <tr>
+              <td class="dt-name">O'Brien, James & Patricia</td>
+              <td class="dt-num">#4821</td>
+              <td><span class="pill pill-blue">Illuminated</span></td>
+              <td class="dt-num">Table 5</td>
+              <td><span class="pill pill-green">✓ 6:22 PM</span></td>
+              <td class="dt-num" style="color:var(--green)">$42,000</td>
+              <td style="font-size:12px">M. Donovan</td>
+              <td><span class="pill pill-blue">Pledge ask</span></td>
+            </tr>
+            <tr>
+              <td class="dt-name">Barboza, Launa M.</td>
+              <td class="dt-num">#4765</td>
+              <td><span class="pill pill-blue">Illuminated</span></td>
+              <td class="dt-num">Table 6</td>
+              <td><span class="pill pill-green">✓ 5:52 PM</span></td>
+              <td class="dt-num" style="color:var(--green)">$84,000</td>
+              <td style="font-size:12px">M. Donovan</td>
+              <td><span class="pill pill-teal">Legacy society</span></td>
+            </tr>
+            <tr>
+              <td class="dt-name">Sullivan, Margaret T.</td>
+              <td class="dt-num">#2201</td>
+              <td><span class="pill" style="background:var(--teall);color:var(--teal)">Good Shepherd</span></td>
+              <td class="dt-num">Table 14</td>
+              <td><span class="pill pill-green">✓ 6:35 PM</span></td>
+              <td class="dt-num" style="color:var(--green)">$18,400</td>
+              <td style="font-size:12px">K. Novicky</td>
+              <td><span class="pill pill-steel">Thank-you note</span></td>
+            </tr>
+            <tr>
+              <td class="dt-name">Morrison, Karen & David</td>
+              <td class="dt-num">#3302</td>
+              <td><span class="pill pill-steel">Individual</span></td>
+              <td class="dt-num">Table 31</td>
+              <td><span class="pill pill-red">✗ No-show</span></td>
+              <td class="dt-num" style="color:var(--text3)">$2,800</td>
+              <td style="font-size:12px">—</td>
+              <td><span class="pill pill-amber">Re-engagement</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="padding:10px 16px;border-top:1px solid var(--border);font-size:11px;color:var(--text3);background:var(--surf);display:flex;justify-content:space-between">
+        <span>Showing 8 of 448 attendees · 438 checked in (98%) · 10 no-shows</span>
+        <span>Sorted by tier descending</span>
+      </div>
+    </div>
+  </div><!-- /guests -->
+
+  <!-- ══ GIVING & ATTRIBUTION ══ -->
+  <div class="view" id="view-giving">
+    <div class="kpi-grid-4 anim a1">
+      <div class="kpi" style="border-left:3px solid var(--gold)"><div class="kpi-label">Night-of giving</div><div class="kpi-val">$347,500</div><div class="kpi-sub">Auction + appeal donations</div></div>
+      <div class="kpi" style="border-left:3px solid var(--green)"><div class="kpi-label">Post-event gifts (30d)</div><div class="kpi-val">$84,200</div><div class="kpi-sub up">Attribution: Alleluia Ball 2025</div></div>
+      <div class="kpi" style="border-left:3px solid var(--purp)"><div class="kpi-label">Major gift pipeline value</div><div class="kpi-val">$680K</div><div class="kpi-sub">14 prospects · 3 in solicitation</div></div>
+      <div class="kpi" style="border-left:3px solid var(--blue)"><div class="kpi-label">Avg new donor LTG start</div><div class="kpi-val">$1,250</div><div class="kpi-sub">22 first-time attendees gave</div></div>
+    </div>
+
+    <div class="two-col anim a2">
+      <div class="card">
+        <div class="card-head">
+          <div class="ch-icon" style="background:var(--goldl)"><svg viewBox="0 0 12 12" fill="none" stroke="var(--gold)" stroke-width="1.4" stroke-linecap="round"><circle cx="6" cy="6" r="4.5"/><path d="M6 3.5v3l2 1.5"/></svg></div>
+          <span class="ch-title">Giving timeline — night of & post-event</span>
+        </div>
+        <div class="card-body" style="display:flex;flex-direction:column;gap:0">
+          <div class="timeline-row">
+            <div class="tl-dot" style="background:var(--gold)"></div>
+            <div class="tl-body">
+              <div class="tl-title">Live auction — Fund A Dream</div>
+              <div class="tl-meta">Night of event · 14 winning bids · Oct 25, 2025</div>
+            </div>
+            <span class="tl-amount">$128,000</span>
+          </div>
+          <div class="timeline-row">
+            <div class="tl-dot" style="background:var(--gold)"></div>
+            <div class="tl-body">
+              <div class="tl-title">Mission appeal — teacher development fund</div>
+              <div class="tl-meta">Live ask by Fr. Smith · 89 donors responded · Oct 25</div>
+            </div>
+            <span class="tl-amount">$219,500</span>
+          </div>
+          <div class="timeline-row">
+            <div class="tl-dot" style="background:var(--green)"></div>
+            <div class="tl-body">
+              <div class="tl-title">Shipman, David P. — IRA distribution</div>
+              <div class="tl-meta">Post-event · attributed to Alleluia Ball cultivation · Nov 12</div>
+            </div>
+            <span class="tl-amount">$37,000</span>
+          </div>
+          <div class="timeline-row">
+            <div class="tl-dot" style="background:var(--green)"></div>
+            <div class="tl-body">
+              <div class="tl-title">Hudec family — additional pledge</div>
+              <div class="tl-meta">Post-event · capital campaign pledge · Nov 8</div>
+            </div>
+            <span class="tl-amount">$25,000</span>
+          </div>
+          <div class="timeline-row" style="border-bottom:none">
+            <div class="tl-dot" style="background:var(--blue)"></div>
+            <div class="tl-body">
+              <div class="tl-title">22 first-time donors — follow-up gifts</div>
+              <div class="tl-meta">Post-event · avg $1,009 · Nov 2025</div>
+            </div>
+            <span class="tl-amount">$22,200</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div class="ch-icon" style="background:var(--purpl)"><svg viewBox="0 0 12 12" fill="none" stroke="var(--purp)" stroke-width="1.4" stroke-linecap="round"><path d="M2 10l2.5-3 2 2 2.5-3 2.5 3"/><path d="M2 2v10h10"/></svg></div>
+          <span class="ch-title">Event attribution to pipeline</span>
+        </div>
+        <div class="card-body" style="display:flex;flex-direction:column;gap:0">
+          <div class="prog-row">
+            <span class="prog-label">Identified at event</span>
+            <div class="prog-bar-wrap"><div class="prog-bar-fill" style="width:100%;background:var(--text4)"></div></div>
+            <span class="prog-val dt-num">28 donors</span>
+          </div>
+          <div class="prog-row">
+            <span class="prog-label">Qualified (post-event)</span>
+            <div class="prog-bar-wrap"><div class="prog-bar-fill" style="width:79%;background:var(--blue)"></div></div>
+            <span class="prog-val dt-num">22 donors</span>
+          </div>
+          <div class="prog-row">
+            <span class="prog-label">In active cultivation</span>
+            <div class="prog-bar-wrap"><div class="prog-bar-fill" style="width:50%;background:var(--amber)"></div></div>
+            <span class="prog-val dt-num">14 donors</span>
+          </div>
+          <div class="prog-row">
+            <span class="prog-label">In solicitation</span>
+            <div class="prog-bar-wrap"><div class="prog-bar-fill" style="width:11%;background:var(--purp)"></div></div>
+            <span class="prog-val dt-num">3 donors</span>
+          </div>
+          <div class="prog-row" style="border-bottom:none">
+            <span class="prog-label">Closed (30 days)</span>
+            <div class="prog-bar-wrap"><div class="prog-bar-fill" style="width:18%;background:var(--green)"></div></div>
+            <span class="prog-val dt-num">5 · $84,200</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div><!-- /giving -->
+
+  <!-- ══ COMMITTEE ══ -->
+  <div class="view" id="view-committee">
+    <div class="sec-label anim a1">Event chairs — 2025</div>
+    <div class="chairs-grid anim a1">
+      <div class="chair-card">
+        <div class="chair-av">MH</div>
+        <div class="chair-name">Mike & Meredith Hudec</div>
+        <div class="chair-role">Chair — Alleluia Ball 2025</div>
+        <div class="chair-ltg">$100,000 · Dream Maker</div>
+        <div class="chair-detail" style="margin-bottom:8px">LTG: $284,000 · Donor #4821</div>
+        <button onclick="showSnack('Opening Hudec donor record')" style="font-size:11px;padding:4px 11px;border-radius:7px;background:var(--goldl);border:1px solid var(--goldb);color:var(--goldd);cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600">View record →</button>
+      </div>
+      <div class="chair-card">
+        <div class="chair-av">TC</div>
+        <div class="chair-name">Tim & Amy Conti</div>
+        <div class="chair-role">Co-Chair — Alleluia Ball 2025</div>
+        <div class="chair-ltg">$50,000 · Visionary</div>
+        <div class="chair-detail" style="margin-bottom:8px">LTG: $78,000 · Donor #6612 · First year as co-chair</div>
+        <button onclick="showSnack('Opening Conti donor record')" style="font-size:11px;padding:4px 11px;border-radius:7px;background:var(--goldl);border:1px solid var(--goldb);color:var(--goldd);cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600">View record →</button>
+      </div>
+      <div class="chair-card">
+        <div class="chair-av">MV</div>
+        <div class="chair-name">Mike & Beth Valentine</div>
+        <div class="chair-role">Co-Chair — Alleluia Ball 2025</div>
+        <div class="chair-ltg">$25,000 · Inspiration</div>
+        <div class="chair-detail" style="margin-bottom:8px">LTG: $52,000 · Donor #7714 · Second year as co-chair</div>
+        <button onclick="showSnack('Opening Valentine donor record')" style="font-size:11px;padding:4px 11px;border-radius:7px;background:var(--goldl);border:1px solid var(--goldb);color:var(--goldd);cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600">View record →</button>
+      </div>
+    </div>
+  </div><!-- /committee -->
+
+  <!-- ══ NEXT EVENT 2027 ══ -->
+  <div class="view" id="view-next">
+    <div style="background:linear-gradient(135deg,var(--navy),var(--navy2));border-radius:14px;padding:36px;position:relative;overflow:hidden" class="anim a1">
+      <div style="position:absolute;top:-60px;right:-60px;width:240px;height:240px;border-radius:50%;background:radial-gradient(circle,rgba(200,146,10,.08) 0%,transparent 70%);pointer-events:none"></div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:11px;font-style:italic;color:var(--golda);letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px">Save the date</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:36px;color:white;font-style:italic;font-weight:600;margin-bottom:8px"><em>Alleluia</em> Ball 2027</div>
+      <div style="font-size:14px;color:rgba(255,255,255,.5);margin-bottom:24px">October 30, 2027 · Huntington Convention Center, Cleveland OH</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button onclick="showSnack('2027 Alleluia Ball event created in Atlas','g')" style="padding:9px 20px;border-radius:8px;background:var(--gold);color:var(--navy);font-size:13px;font-weight:600;border:none;cursor:pointer;font-family:'DM Sans',sans-serif">Create 2027 event in Atlas</button>
+        <button onclick="showSnack('2025 committee invited to 2027 planning')" style="padding:9px 20px;border-radius:8px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.7);font-size:13px;border:1px solid rgba(255,255,255,.12);cursor:pointer;font-family:'DM Sans',sans-serif">Invite 2025 committee</button>
+        <button onclick="showSnack('2025 sponsorship tiers copied to 2027')" style="padding:9px 20px;border-radius:8px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.7);font-size:13px;border:1px solid rgba(255,255,255,.12);cursor:pointer;font-family:'DM Sans',sans-serif">Copy 2025 tiers</button>
+      </div>
+    </div>
+
+    <div class="card anim a2">
+      <div class="card-head">
+        <div class="ch-icon" style="background:var(--goldl)"><svg viewBox="0 0 12 12" fill="none" stroke="var(--gold)" stroke-width="1.4" stroke-linecap="round"><path d="M6 1v10M1 6h10"/></svg></div>
+        <span class="ch-title">Recommendations for 2027 — based on 2025 data</span>
+      </div>
+      <div class="card-body" style="display:flex;flex-direction:column;gap:12px">
+        <div style="background:var(--greenl);border:1px solid #90D8A8;border-left:3px solid var(--green);border-radius:0 8px 8px 0;padding:11px 14px;font-size:12px;color:var(--greend);line-height:1.65"><strong>Open Dream Maker and Visionary tiers 6 months early.</strong> In 2025, Dream Maker had remaining capacity while all other tiers sold out. Offering early-bird access to top-tier sponsors 6 months in advance gives major donors first-mover recognition and allows the committee to plan table seating earlier.</div>
+        <div style="background:var(--bluep);border:1px solid var(--bluel);border-left:3px solid var(--blue);border-radius:0 8px 8px 0;padding:11px 14px;font-size:12px;color:var(--blued);line-height:1.65"><strong>Increase Good Shepherd from 8 to 12 tables.</strong> The $5,000 tier sold out and had significant waitlist demand. At 12 tables, this tier would generate an additional $20,000 in revenue and accommodate more mid-level major gift prospects who are appropriate for this giving level.</div>
+        <div style="background:var(--amberl);border:1px solid var(--goldb);border-left:3px solid var(--amber);border-radius:0 8px 8px 0;padding:11px 14px;font-size:12px;color:var(--amberd);line-height:1.65"><strong>Invite the 14 cultivation prospects from 2025 as priority registrants.</strong> Mike & Meredith Hudec, the Contis, and the Valentines should all be personally invited to chair or co-chair 2027. Their combined LTG of $414,000 and demonstrated event commitment makes them the strongest chair candidates in the portfolio.</div>
+        <div style="background:var(--purpl);border:1px solid #C0A8F0;border-left:3px solid var(--purp);border-radius:0 8px 8px 0;padding:11px 14px;font-size:12px;color:var(--purpd);line-height:1.65"><strong>Add a planned giving recognition moment to the programme.</strong> Launa Barboza and David Shipman both have legacy society affiliation. A brief on-stage recognition of bequests and planned gifts — without naming amounts — creates a social norm among attendees and has been shown to increase planned giving conversations in the following 12 months.</div>
+      </div>
+    </div>
+  </div><!-- /next -->
+
+</div><!-- /main -->
+
+<div class="snack" id="snack"><span id="snack-text"></span></div>
+
+<script>
+function setTab(id, btn) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + id).classList.add('active');
+  if (btn) btn.classList.add('active');
+  else document.querySelectorAll('.tab').forEach((t, i) => {
+    if (t.textContent.toLowerCase().includes(id.replace('-',' '))) t.classList.add('active');
+  });
+}
+
+function showSnack(msg, type) {
+  const s = document.getElementById('snack');
+  document.getElementById('snack-text').textContent = msg;
+  s.className = 'snack show' + (type === 'g' ? ' g' : '');
+  setTimeout(() => s.classList.remove('show'), 3000);
+}
+
+// Build table floor
+const tiers = {
+  1: {name:'Hudec Family', tier:'Dream Maker', full:true, vip:true},
+  2: {name:'Conti Family', tier:'Visionary', full:true, vip:true},
+  3: {name:'Valentine Family', tier:'Inspiration', full:true, vip:true},
+  4: {name:'Shipman Trust', tier:'Illuminated', full:true, vip:true},
+  5: {name:"O'Brien Family", tier:'Illuminated', full:true, vip:true},
+  6: {name:'Barboza Family', tier:'Illuminated', full:true, vip:true},
+  7: {name:'Sullivan Found.', tier:'Good Shepherd', full:true, vip:false},
+  8: {name:'Andrews Family', tier:'Good Shepherd', full:true, vip:false},
+  9: {name:'Diocese Found.', tier:'Illuminated', full:true, vip:false},
+  10:{name:'CCF Board', tier:'Illuminated', full:true, vip:false},
+};
+const floor = document.getElementById('table-floor');
+for (let i = 1; i <= 42; i++) {
+  const t = tiers[i];
+  const filled = t ? (t.full ? 10 : Math.floor(Math.random()*7)+3) : (Math.random()>.3?10:Math.floor(Math.random()*7)+3);
+  const cls = t?.vip ? 'vip' : filled>=10?'full':filled>=5?'partial':'empty';
+  const seats = Array.from({length:10},(_,j)=>`<div class="seat ${j<filled?'seat-filled':'seat-empty'}"></div>`).join('');
+  floor.innerHTML += `<div class="table-card ${cls}" onclick="showSnack('Table ${i}${t?' — '+t.name:''}: ${filled}/10 seats filled')">
+    <div class="tc-num">T${i}</div>
+    <div class="tc-sponsor">${t?.name || (i<=27?'Named sponsor':'General seating')}</div>
+    <div class="tc-seats">${seats}</div>
+    <div class="tc-total">${filled}/10 seats · ${t?.tier||'Individual'}</div>
+  </div>`;
+}
+</script>
+</body>
+</html>
